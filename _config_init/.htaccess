@@ -1,0 +1,19 @@
+## VOIR https://www.windows8facile.fr/apache-deny-from-all-require-all-denied/
+
+# C'est Apache 2.4 minimum
+#<IfModule mod_authz_core.c>
+<IfModule mod_version.c>
+   Require all denied
+   <Files *.css>
+      Require all granted
+   </Files>
+</IfModule>
+# C'est avant Apache 2.4 donc 2.2
+#<IfModule !mod_authz_core.c>
+<IfModule !mod_version.c>
+   order deny,allow
+   deny from all
+   <Files *.css>
+      allow from all
+   </Files>
+</IfModule>
