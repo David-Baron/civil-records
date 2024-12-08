@@ -9,7 +9,7 @@
 //   Fonctions pour autentification générale  Version 3 : avec cryptage SHA-1 et expiration des comptes
 //   Adaptée pour travail avec une base user déportée dans la connexion $u_db (V3.1)
 //------------------------------------------------------------------------
-require('traceIP/trace_ip.php');
+require(__DIR__ . '/traceIP/trace_ip.php');
 if (!defined("TIP_LEVEL_NO_IP_TEST")) {
     define("TIP_LEVEL_NO_IP_TEST", 9);
 }

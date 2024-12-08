@@ -410,7 +410,7 @@ Groupe Deleted = parametres devenus sans objet
         <type>B</type>
         <valeur>1</valeur>
         <libelle>Publier la liste éclair pour Généanet</libelle>
-        <aide>Cette liste éclair permet à Généanet d'indexer facilement les données de votre base pour en favoriser l'usage par les généalogistes. Cette page page est visible à l'adresse &lt;a href=../eclair.php&gt;eclair.php&lt;/a&gt;</aide>
+        <aide>Cette liste éclair permet à Généanet d'indexer facilement les données de votre base pour en favoriser l'usage par les généalogistes. Cette page page est visible à l'adresse &lt;a href=/eclair.php&gt;eclair.php&lt;/a&gt;</aide>
     </act_params>
     <act_params>
         <param>ECLAIR_MAX_ROW</param>

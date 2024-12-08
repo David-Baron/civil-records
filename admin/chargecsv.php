@@ -1,15 +1,13 @@
 <?php
 
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 10);
+
+require(__DIR__ . '/../tools/_COMMUN_env.inc.php');
+
 my_ob_start_affichage_continu();
 
-include("../tools/traitements.inc.php");
-include("../tools/adodb-time.inc.php");
+require(__DIR__ . '/../tools/traitements.inc.php');
+require(__DIR__ . '/../tools/adodb-time.inc.php');
 
 
 //------------------------------------------------------------------------------
@@ -48,19 +46,11 @@ function listbox_cols($fieldname, $default)
     echo " </select>\n";
 }
 
-//------------------------------------------------------------------------------
-
-$root = "";
-$path = "";
 $userlogin = "";
 //$T0 = time();
 $Max_time = min(ini_get("max_execution_time") - 3, MAX_EXEC_TIME);
 
-//**************************** ADMIN **************************
-
 pathroot($root, $path, $xcomm, $xpatr, $page);
-
-//{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; }
 
 $userlogin = "";
 $userlevel = logonok(6);

@@ -1,21 +1,7 @@
 <?php
+define('ADM', 0);
+require(__DIR__ . '/tools/_COMMUN_env.inc.php');
 
-// Page de recherche du programmes ExpoActes
-// Copyright (C) : André Delacharlerie, 2005-2008
-// Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les termes de la
-// Licence Publique Générale GNU, version 2 (GPLv2), publiée par la Free Software Foundation
-// Texte de la licence : https://www.gnu.org/licenses/old-licenses/gpl-2.0.fr.html
-//-------------------------------------------------------------------
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
-
-
-$root = "";
-$path = "";
 $xcomm = "";
 $xpatr = "";
 $page = "";

@@ -1,10 +1,9 @@
 <?php
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+
+define('ADM', 10);
+
+require(__DIR__ . '/../tools/_COMMUN_env.inc.php');
+
 my_ob_start_affichage_continu();
 
 $autorise_autoload = true;  // Autorise le rechargement automatisé
@@ -77,22 +76,22 @@ function init_page($head = "")
             $bodyaction = " onload='updatemessage()'";
         }
         open_page($titre, $root, $js, $bodyaction, $head);
-        ?>
-		<script type="text/javascript">
-			function ShowSpinner() {
-				document.getElementById("spinner").style.visibility = "visible";
-			}
-		</script>
+?>
+        <script type="text/javascript">
+            function ShowSpinner() {
+                document.getElementById("spinner").style.visibility = "visible";
+            }
+        </script>
 <?php
 
-                // Ajaxify Your PHP Functions
-                include("../tools/PHPLiveX/PHPLiveX.php");
+        // Ajaxify Your PHP Functions
+        require(__DIR__ . '/../tools/PHPLiveX/PHPLiveX.php');
         $ajax = new PHPLiveX(array("getBkFiles"));
         $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
 
         navadmin($root, $titre);
 
-        zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+        zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
 
         echo '<div id="col_main_adm">';
         if ($moderestore) {
@@ -213,16 +212,12 @@ function messageFinChargement()
         echo '</p>';
     }
 }
-//---------------------------------------------------------
 
-$root = "";
-$path = "";
+
 $delaireload = 10;
 $MT0 = microtime_float();
 $Max_time = min(ini_get("max_execution_time") - 3, MAX_EXEC_TIME);
 $Max_size = return_bytes(ini_get("upload_max_filesize"));
-
-//**************************** ADMIN **************************
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
@@ -293,9 +288,9 @@ $passlign   = getparam('passlign');
 if ($passlign == '') {
     $passlign = 0;
 }
-$photo   		= getparam('photo');
-$trans   		= getparam('trans');
-$verif   		= getparam('verif');
+$photo           = getparam('photo');
+$trans           = getparam('trans');
+$verif           = getparam('verif');
 $commune = '';
 $depart = '';
 $NewId      = ischecked('NewId');
@@ -660,7 +655,6 @@ if ($ok) {
                     echo '<div id="topmsg"><p>Traitement en cours ... <b>!! NE PAS INTERROMPRE !!</b></p><p align="center"><img src="../img/spinner.gif"></p></div>';
                     my_flush(); // On affiche un minimum
                 }
-
             } // ligne 0
             // Se positionner au bon endroit dans le fichier : SAUTER LES LIGNES A PASSER
             $trouve = false;
@@ -675,8 +669,8 @@ if ($ok) {
             if ($traiter_fichier) { // Blocage sur erreur ligne 0 =>  if ($no_ligne !== -1)
                 while ($line !== false) { // par ligne
                     my_flush(200);
-                    if  (time() - $T0 > $Max_time) {
-                        break ;
+                    if (time() - $T0 > $Max_time) {
+                        break;
                     } // Le temps limite d'un script est atteint, on sort de la boucle pour relance
                     /*
                     $TX = time();
@@ -689,7 +683,7 @@ if ($ok) {
                     $no_ligne = $line_num;
                     $reqmaj = "";
                     if (!$isUTF8) { // Supprime les caractères réservés qui plantent l'encodage
-                        $line = str_replace(array(chr(129),chr(141),chr(143),chr(144),chr(157)), '', $line); // 81, 8d, 8f, 90, 9D
+                        $line = str_replace(array(chr(129), chr(141), chr(143), chr(144), chr(157)), '', $line); // 81, 8d, 8f, 90, 9D
                         $line = ea_utf8_encode($line); // ADLC 24/09/2015
                     }
                     if ($line === false) { // Erreur d'encodage
@@ -699,7 +693,7 @@ if ($ok) {
                         $acte = quote_explode(';', $separateur_champ, $line);
                     }
 
-                    if ($oktype == true and $line_num >= $passlign) {	// --------- Traitement ----------
+                    if ($oktype == true and $line_num >= $passlign) {    // --------- Traitement ----------
                         $data = acte2data($acte, $moderestore);
                         if ($data["BIDON"] == "EA_NEXT") {
                             $fichiersuivant = true;
@@ -890,7 +884,7 @@ if ($ok) {
                                 } // reqmaj pas vide
                             }  // complet
                         } // lignvalide
-                    }	// --------- Traitement ----------
+                    }    // --------- Traitement ----------
                     // Passe à la ligne suivante
                     $line = fgets($csv_file);
                     $line_num++;
@@ -957,17 +951,17 @@ if ($ok) {
 if (!$missingargs) {
     $tof = @fopen($tokenfile, "w");
     $token  = "EA_RESTORE;" . $autokey . ";";      // 0 et 1
-    $token .= ($totactes) . ";" . ($file_no) . ";";	 // 2 et 3 : total des actes et indice fichier backup
+    $token .= ($totactes) . ";" . ($file_no) . ";";     // 2 et 3 : total des actes et indice fichier backup
     $token .= $uploadfile . ";" . ($deposant) . ";"; // 4 et 5 : nom fichier import NIMEGUE + code déposant
     $token .= ($passlign) . ";";                 // 6  : lignes à passer
     $token .= ($totpart) . ";" . ($numpart) . ";";   // 7 et 8 : totale de parties et de la partie traitée
-    $token .= ($commune) . ";" . ($depart) . ";";		 // 9 et 10: commune et depart
-    $token .= ($photo) . ";" . ($trans) . ";" . ($verif) . ";";	// 11,12 et 13: credits
+    $token .= ($commune) . ";" . ($depart) . ";";         // 9 et 10: commune et depart
+    $token .= ($photo) . ";" . ($trans) . ";" . ($verif) . ";";    // 11,12 et 13: credits
 
     if (!isset($continue)) {
         $continue = 0;
     }
-    $token .= ($continue) . ";";								 // 14 : continue ?
+    $token .= ($continue) . ";";                                 // 14 : continue ?
     $token .= ($multiples_communes) . ";"; // 15 : nombre de communes traitées
     fwrite($tof, $token . "\r\n");
     fclose($tof);

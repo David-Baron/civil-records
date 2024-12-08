@@ -32,7 +32,7 @@ if ($xtyp == "" or $xtyp == "A") {
     $condit1 = " WHERE TYPACT='" . $xtyp . "'";
 }
 
-$request = "SELECT DEPART,COMMUNE,TYPACT,LIBELLE, sum(NB_TOT) AS NB_TOT"
+$request = "SELECT DEPART,COMMUNE,TYPACT,LIBELLE, sum(NB_TOT) AS NB_TOT "
                 . " FROM " . EA_DB . "_sums " . $condit1
                 . " GROUP BY DEPART,COMMUNE,TYPACT,LIBELLE"
                 . " ORDER BY DEPART,COMMUNE,INSTR('NMDV',TYPACT),LIBELLE; ";

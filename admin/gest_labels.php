@@ -1,14 +1,10 @@
 <?php
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
 
+define('ADM', 10);
 //define('EA_MASTER',"Y"); // pour editer les zones "Techniques"
 
-//------------------------------------------------------------------------------
+require(__DIR__ . '/../tools/_COMMUN_env.inc.php');
+
 
 function show_grp($grp, $current, $barre)
 {
@@ -34,13 +30,7 @@ function alaligne($texte)
     return str_replace($order, $replace, $texte);
 }
 
-//------------------------------------------------------------------------------
-
-$root = "";
-$path = "";
 $lg = $GLOBALS['lg'];
-
-//**************************** ADMIN **************************
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
@@ -62,7 +52,6 @@ navadmin($root, "Paramétrage des étiquettes");
 	}
 </script>
 <?php
-//{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; }
 
 zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
 

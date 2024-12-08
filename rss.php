@@ -1,32 +1,14 @@
 <?php
-
-// Page d'accueil publique du programmes ExpoActes
-// Copyright (C) : André Delacharlerie, 2005-2006
-// Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les termes de la
-// Licence Publique Générale GNU, version 2 (GPLv2), publiée par la Free Software Foundation
-// Texte de la licence : https://www.gnu.org/licenses/old-licenses/gpl-2.0.fr.html
-// Corrigé 07/09/2014 ADLC : Codage caractères pour XML (HTML)
-// Adapté 06/10/2014  EL : Corrigé l'appel à la table des utilisateurs EA_UDB ligne 45, Remis le département dans le lien ligne 111, Mis le port du serveur lignes 66 et 119
-//-------------------------------------------------------------------
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
-
-include('tools/MakeRss/MakeRss.class.php');
+define('ADM', 0);
+require(__DIR__ . '/tools/_COMMUN_env.inc.php');
+require(__DIR__ . '/tools/MakeRss/MakeRss.class.php');
 
 function antispam($email)
 {
     return str_replace(array("@"), array("@anti.spam.com@"), $email);
 }
 
-$root = "";
-$path = "";
-
 $max = 10;
-
 $xtyp = getparam('type');
 $xall = getparam('all');
 $xcomm = $xpatr = $page = "";
@@ -54,13 +36,15 @@ $request  .= "SELECT TYPACT AS TYP, sum(NB_TOT) AS CPT, COMMUNE, DEPART, concat(
     . ' ORDER BY DTE desc '
     . $limit;
 */
-$request = "SELECT TYPACT AS TYP, sum(NB_TOT) AS CPT, COMMUNE, DEPART, max(DTDEPOT) AS DTE, min(AN_MIN) AS DEB, max(AN_MAX) AS FIN"
-    . " FROM " . EA_DB . "_sums AS a "
-    . $condit
-    . ' GROUP BY COMMUNE, DEPART, TYP  '
-    . ' ORDER BY DTE desc, COMMUNE, DEPART '
-    . $limit;
-//echo $request;
+$request = "SELECT TYPACT AS TYP, 
+    sum(NB_TOT) AS CPT, COMMUNE, DEPART, 
+    max(DTDEPOT) AS DTE, 
+    min(AN_MIN) AS DEB, 
+    max(AN_MAX) AS FIN 
+    FROM " . EA_DB . "_sums AS a $condit 
+    GROUP BY COMMUNE, DEPART, TYP 
+    ORDER BY DTE desc, COMMUNE, DEPART $limit"
+;
 
 $result = EA_sql_query($request);
 

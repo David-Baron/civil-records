@@ -1,18 +1,11 @@
 <?php
 
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
-my_ob_start_affichage_continu();
-
-$root = "";
-$path = "";
 // SUPPRESSION D'UNE SERIE D'ACTES ***
 
-//**************************** ADMIN **************************
+define('ADM', 10);
+
+require(__DIR__ . '/../tools/_COMMUN_env.inc.php');
+my_ob_start_affichage_continu();
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
@@ -28,7 +21,7 @@ $userid = current_user("ID");
 open_page("Suppression d'une série d'actes", $root);
 
 // Ajaxify Your PHP Functions
-include("../tools/PHPLiveX/PHPLiveX.php");
+require(__DIR__ . '/../tools/PHPLiveX/PHPLiveX.php');
 $ajax = new PHPLiveX(array("getCommunes"));
 $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
 

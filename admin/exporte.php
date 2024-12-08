@@ -7,7 +7,7 @@ function init_page($head = "")
     open_page($titre, $root, null, null, $head);
 
     // Ajaxify Your PHP Functions
-    include("../tools/PHPLiveX/PHPLiveX.php");
+    require(__DIR__ . '/../tools/PHPLiveX/PHPLiveX.php');
     $ajax = new PHPLiveX(array("getCommunes"));
     $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
 
@@ -20,28 +20,21 @@ function init_page($head = "")
     my_flush(); // On affiche un minimum
 }
 
-//-----------------------------------------
+define('ADM', 10);
 
 $bypassTIP = 1; // pas de tracing ici
 
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+require(__DIR__ . '/../tools/_COMMUN_env.inc.php');
+
 my_ob_start_affichage_continu();
 
 $tpsreserve = 3;
-$root = "";
-$path = "";
 $separator = ';';
 $htmlpage = false;
 $Max_exe_time = ini_get("max_execution_time");
 $Max_time = min($Max_exe_time - $tpsreserve, MAX_EXEC_TIME);
 $Max_size = return_bytes(ini_get("upload_max_filesize"));
 
-//**************************** ADMIN **************************
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 

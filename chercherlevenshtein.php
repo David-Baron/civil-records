@@ -1,16 +1,8 @@
 <?php
-
-// Module de recherche "levenshtein" du programmes ExpoActes
-// Copyright (C) : André Delacharlerie + Jean Louis Cazor, 2006
-
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
-include("tools/cree_table_levenshtein.php");
-include("tools/traite_tables_levenshtein.php");
+define('ADM', 0);
+require(__DIR__ . '/tools/_COMMUN_env.inc.php');
+require(__DIR__ . '/tools/cree_table_levenshtein.php');
+require(__DIR__ . '/tools/traite_tables_levenshtein.php');
 
 //---------------------------------------------------------
 function makecritjlc($xmin, $xmax, $xcomm, $xdepa, $pre, $c_pre, $xpre, $xc_pre) //
@@ -38,35 +30,6 @@ function makecritjlc($xmin, $xmax, $xcomm, $xdepa, $pre, $c_pre, $xpre, $xc_pre)
 
     return $crit;
 }
-/*
-function makecritjlcOLD($xmin,$xmax,$xcomm,$xdepa,$pre,$c_pre,$xpre,$xc_pre) //
-{
-$crit ="";
-    if ($xmin!="")
-        {
-        $crit = " (year(LADATE)>= " . $xmin.")";
-        }
-    if ($xmax!="")
-        {
-        $critx = " (year(LADATE)<= " . $xmax.")";
-        $crit = sql_and($crit).$critx;
-        }
-    if (mb_substr($xcomm,0,2)!="**")
-        {
-        $critx = " (COMMUNE = '" . sql_quote($xcomm)."' and DEPART= '" . sql_quote($xdepa)."')";
-        $crit = sql_and($crit).$critx;
-        }
-       $critx = "(" . $pre. "  LIKE '" . $xpre."%')  ";
-       $crit = sql_and($crit).$critx;
-   if ($c_pre!="") {
-        $critx = "(" . $c_pre. "  LIKE '" . $xc_pre."%')  ";
-        $crit = sql_and($crit).$critx;
-    }
-
-    return $crit;
-}
-*/
-//---------------------------------------------------------
 
 function cree_table_temp_sup($nom, $original)
 {
@@ -94,11 +57,7 @@ if (!defined("SECURITE_TIME_OUT_PHP")) {
 }
 
 $Max_time = ini_get("max_execution_time") - $SECURITE_TIME_OUT_PHP;
-
 $T0 = time();
-
-$root = "";
-$path = "";
 $txtcomp = "";
 
 if (!defined("CHERCH_TS_TYP")) {
@@ -157,7 +116,7 @@ if (current_user_solde() > 0 or RECH_ZERO_PTS == 1) {
 
     $nav = "";
     if ($xcomp != "") {
-        $nav = '<a href="rechlevenshtein.php">Recherche Levenshtein</a> &gt; ';
+        $nav = '<a href="' . $root . '/rechlevenshtein.php">Recherche Levenshtein</a> &gt; ';
     }
     navigation($root, 2, 'A', $nav . "Résultats de la recherche");
 

@@ -1,28 +1,9 @@
 <?php
 
-// Page d'accueil ADMIN du programmes ExpoActes
-// Copyright (C) : André Delacharlerie, 2005-2007
-// Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les termes de la
-// Licence Publique Générale GNU, version 2 (GPLv2), publiée par la Free Software Foundation
-// Texte de la licence : https://www.gnu.org/licenses/old-licenses/gpl-2.0.fr.html
-//-------------------------------------------------------------------
-//ob_start(); //Pour éviter de tout recevoir en un seul bloc
-//ob_implicit_flush(1);
+define('ADM', 10);
 
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+require(__DIR__ . '/../tools/_COMMUN_env.inc.php');
 
-$root = "";
-$path = "";
-
-//**************************** ADMIN **************************
-//{ print '<pre>';  print_r($_POST); echo '</pre>'; }
-
-//$xtyp="A";
 pathroot($root, $path, $xtyp, $xpatr, $page);
 
 $init  = getparam('init');
@@ -67,8 +48,6 @@ if ($xtyp == "") {
 echo '<div id="col_main">';
 
 echo '<h1 align="center">Administration des actes &amp; tables</h1>';
-
-//{ print '<pre>';  print_r($lines); echo '</pre>'; }
 
 if ((! check_version(phpversion(), "5.1.0")) or (! check_version("8.1.999", phpversion()))) {
     echo '<p class="erreur">Vous utilisez ExpoActes sur une version de PHP ' . phpversion() . ' non validée.<br /></p>';
@@ -128,8 +107,7 @@ if ($xtyp == "A") {
 
 echo '<p><b>' . $menu_actes . '</b></p>';
 
-// --- module principal
-include("../tools/tableau_index.php");
+require(__DIR__ . '/../tools/tableau_index.php');
 
 // verification des statistiques
 $request = "SELECT sum(NB_TOT) AS nb_sum FROM " . EA_DB . "_sums WHERE TYPACT='N'";
@@ -144,8 +122,6 @@ if ($nb_sum <> $nb_cnt and $nb_cnt > 0) {
     msg("Attention : les statistiques doivent être recalculées");
     echo '<p><a href="maj_sums.php"><b>Calcul des statistiques</b></a></p>';
 }
-
-
 
 echo '</div>';
 

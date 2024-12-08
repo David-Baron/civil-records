@@ -1,13 +1,9 @@
 <?php
 
-error_reporting(E_ALL);
+define('ADM', 10);
 
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+require(__DIR__ . '/../tools/_COMMUN_env.inc.php');
+
 my_ob_start_affichage_continu();
 
 global $dbaddr, $dbuser, $dbpass, $dbname;

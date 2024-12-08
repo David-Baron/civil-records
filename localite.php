@@ -1,11 +1,6 @@
 <?php
-
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 0);
+require(__DIR__ . '/tools/_COMMUN_env.inc.php');
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
@@ -19,12 +14,9 @@ while ($userlevel < 1) {
 
 $ok = true;
 $JSheader = "";
-//print '<pre>';  print_r($_REQUEST); echo '</pre>';
 
 if ($id > 0) { // édition
-    $request = "SELECT *"
-        . " FROM " . EA_DB . "_geoloc "
-        . " WHERE ID =" . $id;
+    $request = "SELECT * FROM " . EA_DB . "_geoloc WHERE ID=$id";
     if ($result = EA_sql_query($request)) {
         $row = EA_sql_fetch_array($result);
         $commune   = $row["COMMUNE"];
@@ -37,7 +29,7 @@ if ($id > 0) { // édition
         $noteD     = $row["NOTE_D"];
         $noteV     = $row["NOTE_V"];
 
-        $request = "SELECT TYPACT, LIBELLE, sum(NB_TOT) AS NB_TOT, COMMUNE, DEPART, max(DTDEPOT) AS DTDEPOT, min(AN_MIN) AS AN_MIN, max(AN_MAX) AS AN_MAX"
+        $request = "SELECT TYPACT, LIBELLE, sum(NB_TOT) AS NB_TOT, COMMUNE, DEPART, max(DTDEPOT) AS DTDEPOT, min(AN_MIN) AS AN_MIN, max(AN_MAX) AS AN_MAX "
             . " FROM " . EA_DB . "_sums WHERE COMMUNE = '" . sql_quote($commune) . "' AND DEPART = '" . sql_quote($depart) . "'"
                 . ' GROUP BY DEPART, COMMUNE, TYPACT, LIBELLE  '
             . " ORDER BY INSTR('NMDV',TYPACT),LIBELLE; ";
@@ -72,8 +64,8 @@ if ($id > 0) { // édition
         $ok = false;
     }
 
-    include_once("tools/GoogleMap/OrienteMap.inc.php");
-    include_once("tools/GoogleMap/Jsmin.php");
+    require(__DIR__ . '/tools/GoogleMap/OrienteMap.inc.php');
+    require(__DIR__ . '/tools/GoogleMap/Jsmin.php');
 
     $carto = new GoogleMapAPI();
     $carto->_minify_js = isset($_REQUEST["min"]) ? false : true;

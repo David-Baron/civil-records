@@ -1,19 +1,14 @@
 <?php
 
 // NB : programme distinct de update_params situé dans install !!
-//error_reporting(E_ALL);
+define('ADM', 10);
 
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+require(__DIR__ . '/../tools/_COMMUN_env.inc.php');
+
 my_ob_start_affichage_continu();
 
-include("../install/instutils.php");
+require(__DIR__ . '/../install/instutils.php');
 
-$root = "";
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
 $userlogin = "";
@@ -38,8 +33,6 @@ echo ' || <a href="gest_params.php">Retour</a>';
 echo '</p>';
 
 $missingargs = true;
-
-//$message    = getparam('Message');
 $xaction    = getparam('action');
 
 if ($xaction == 'submitted') {

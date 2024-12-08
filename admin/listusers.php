@@ -1,16 +1,9 @@
 <?php
 
-// Intègration du tri sur ID     :   v. 1 	14 mars 2014 11:05 	Serge Milani - Original Yannick H -Yannick Quéré  (demande Yvon Leriche ) 6 mars 2014
-// Intègration du tri sur ID     :   v 3.10x 	06 octobre 2014  Emmanuel Lethrosne  : correction et amélioration d'écriture,  Version en fonction de la compatibilité d'ExpoActe
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 10);
 
-$root = "";
-$path = "";
+require(__DIR__ . '/../tools/_COMMUN_env.inc.php');
+
 $xcomm = "";
 $xpatr = "";
 $page = 1;

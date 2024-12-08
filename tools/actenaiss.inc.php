@@ -1,11 +1,9 @@
 <?php
 
 $TIPlevel = 1;
-
-$root = "";
-$path = "";
 $error = 0;
 $xcomm = $xpatr = $page = "";
+
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
 $xid = $_REQUEST['xid'];

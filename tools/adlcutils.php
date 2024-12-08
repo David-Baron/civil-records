@@ -1,12 +1,5 @@
 <?php
 
-// Utilitaires généraux aux programmes ExpoActes
-// Copyright (C) : André Delacharlerie, 2005-2006
-// Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les termes de la
-// Licence Publique Générale GNU, version 2 (GPLv2), publiée par la Free Software Foundation
-// Texte de la licence : https://www.gnu.org/licenses/old-licenses/gpl-2.0.fr.html
-
-//-------------------------------------------------------------------
 
 function pathroot(&$root, &$path, &$arg1, &$arg2, &$arg3)
 {
@@ -184,9 +177,9 @@ function checked($valeur, $defaut = 1)  // retourne le mot checked si $valeur=1 
 {
     if ($valeur == $defaut) {
         return ' checked="checked"';
-    } else {
-        return '';
-    }
+    } 
+    
+    return '';
 }
 
 //-------------------------------------------------------------------
@@ -195,9 +188,9 @@ function ischecked($name)  // retourne 1 ou 0 suivant que le parmetres est check
 {
     if (!isset($_REQUEST[$name])) {
         return 0;
-    } else {
-        return $_REQUEST[$name];
-    }
+    } 
+    
+    return $_REQUEST[$name];
 }
 //-------------------------------------------------------------------
 
@@ -205,9 +198,9 @@ function strmin($str1, $str2)
 { // Retourne la chaine la plus en avant par ordre alphabétique
     if ($str1 > $str2) {
         return $str2;
-    } else {
-        return $str1;
-    }
+    } 
+    
+    return $str1;
 }
 
 //-------------------------------------------------------------------
@@ -216,9 +209,9 @@ function strmax($str1, $str2)
 { // Retourne la chaine la plus en arriere par ordre alphabétique
     if ($str1 < $str2) {
         return $str2;
-    } else {
-        return $str1;
-    }
+    } 
+    
+    return $str1;
 }
 
 //-------------------------------------------------------------------

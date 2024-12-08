@@ -1,23 +1,11 @@
 <?php
-
-// Copyright (C) : André Delacharlerie, 2005-20010
-// Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les termes de la
-// Licence Publique Générale GNU, version 2 (GPLv2), publiée par la Free Software Foundation
-// Texte de la licence : https://www.gnu.org/licenses/old-licenses/gpl-2.0.fr.html
-//-------------------------------------------------------------------
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 0);
+require(__DIR__ . '/tools/_COMMUN_env.inc.php');
 
 if (!defined("ECLAIR_LOG")) {
     define("ECLAIR_LOG", 0);
 }
 
-$root = "";
-$path = "";
 $MT0 = microtime_float();
 $cptrec = 0;
 $cptper = 0;
@@ -28,21 +16,20 @@ $xtyp = getparam('xtyp');
 $xini = getparam('xini');
 
 $xcomm = $xpatr = $page = "";
+$carcode = 'UTF-8'; // UTF-8|ISO-8859-1
+
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
-$carcode = 'UTF-8';
-//$carcode = 'ISO-8859-1';
 header('Content-Type: text/html; charset=' . $carcode);
 
-echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
-echo '<html xmlns="http://www.w3.org/1999/xhtml">';
+echo '<!DOCTYPE html>';
+echo '<html lang="fr">';
 echo '<head>';
-echo '<meta name="robots" content="nofollow" />';
-echo '<meta name="generator" content="ExpoActes" />';
-echo '<meta http-equiv="Content-Type" content="text/html; charset=' . $carcode . '" />';
+echo '<meta charset="' . $carcode . '">';
+echo '<meta name="robots" content="nofollow">';
+echo '<meta name="generator" content="Civil-Records">';
 echo '</head>';
 echo '<body>';
-
 
 if (ECLAIR_AUTORISE == 1) {
     if (($xcom == "") or ($xtyp == "")) {

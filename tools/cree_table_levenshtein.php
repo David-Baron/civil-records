@@ -57,7 +57,7 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
 
 
 
-            $result = EA_sql_query($request) or die('Erreur SQL creation !' . $sql . '<br>' . EA_sql_error());
+            $result = EA_sql_query($request) or die('Erreur SQL creation !' . $request . '<br>' . EA_sql_error());
             if ($table == EA_DB . "_div3") { // ##########################NOUVEAU###############################"
                 if ($commune1 == "U") {
                     if ($crit != '') {
@@ -113,7 +113,7 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
 			(`distf` int( 11 ) NOT NULL DEFAULT 0, PRIMARY KEY ( `nomlev` ) )
 			AS  (SELECT   `NOM` AS `nomlev` FROM " . $table . " WHERE `ID` = '0');";
 
-            $result = EA_sql_query($request) or die('Erreur SQL creation !' . $sql . '<br>' . EA_sql_error());
+            $result = EA_sql_query($request) or die('Erreur SQL creation !' . $request . '<br>' . EA_sql_error());
             if ($table == EA_DB . "_div3") {   // ##########################NOUVEAU###############################"
                 if ($commune1 == "U") {
                     if ($crit != '') {
@@ -169,7 +169,7 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
 			(`distd` int( 11 ) NOT NULL DEFAULT 0, PRIMARY KEY ( `nomlev` ) )
 			AS  (SELECT   `NOM` AS `nomlev` FROM " . $table . " WHERE `ID` = '0');";
 
-            $result = EA_sql_query($request) or die('Erreur SQL creation !' . $sql . '<br>' . EA_sql_error());
+            $result = EA_sql_query($request) or die('Erreur SQL creation !' . $request . '<br>' . EA_sql_error());
             if ($commune1 == "U") {
                 if ($crit != '') {
                     $request = "SELECT nom FROM " . $table . "  WHERE  " . $crit . " AND commune ='" . sql_quote($xcomm) . "' GROUP BY nom ORDER BY nom";
@@ -194,7 +194,7 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
 			(`distn` int( 11 ) NOT NULL DEFAULT 0, PRIMARY KEY ( `nomlev` ) )
 			AS  (SELECT   `NOM` AS `nomlev` FROM " . $table . " WHERE `ID` = '0');";
 
-            $result = EA_sql_query($request) or die('Erreur SQL creation !' . $sql . '<br>' . EA_sql_error());
+            $result = EA_sql_query($request) or die('Erreur SQL creation !' . $request . '<br>' . EA_sql_error());
             if ($commune1 == "U") {
                 if ($crit != '') {
                     $request = "SELECT nom FROM " . $table . "  WHERE  " . $crit . " AND  commune ='" . sql_quote($xcomm) . "' GROUP BY nom ORDER BY nom";
@@ -213,7 +213,7 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
         //$T5 = time();
 
 
-        $result = EA_sql_query($request) or die('Erreur SQL !' . $sql . '<br>' . EA_sql_error());
+        $result = EA_sql_query($request) or die('Erreur SQL !' . $request . '<br>' . EA_sql_error());
         $nbtot = EA_sql_num_rows($result);
         $nb = $nbtot;
 
@@ -237,7 +237,7 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
                         $request1 = "INSERT IGNORE INTO " . EA_DB . "_" . $ip_adr_trait . "_n (nomlev,distn) VALUES ('" . sql_quote($ligne[0]) . "'," . $k . " )";
                     }
 
-                    $result1 = EA_sql_query($request1) or die('Erreur SQL insertion !' . $sql . '<br>' . EA_sql_error());
+                    $result1 = EA_sql_query($request1) or die('Erreur SQL insertion !' . $request . '<br>' . EA_sql_error());
                     //$i++;
                 }
             }

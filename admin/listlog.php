@@ -1,16 +1,11 @@
 <?php
 
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 10);
+// define ("OPTIMIZE",1);
 
-//define ("OPTIMIZE",1);
+require(__DIR__ . '/../tools/_COMMUN_env.inc.php');
+
 $MT0 = microtime_float();
-$root = "";
-$path = "";
 $xcomm = "";
 $xpatr = "";
 $page = 1;

@@ -1,20 +1,6 @@
 <?php
-
-// Page d'accueil publique du programmes ExpoActes
-// Copyright (C) : André Delacharlerie, 2005-2006
-// Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les termes de la
-// Licence Publique Générale GNU, version 2 (GPLv2), publiée par la Free Software Foundation
-// Texte de la licence : https://www.gnu.org/licenses/old-licenses/gpl-2.0.fr.html
-//-------------------------------------------------------------------
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
-
-$root = "";
-$path = "";
+define('ADM', 0);
+require(__DIR__ . '/tools/_COMMUN_env.inc.php');
 
 $xcomm = $xpatr = $page = "";
 pathroot($root, $path, $xcomm, $xpatr, $page);
@@ -29,14 +15,7 @@ zone_menu(0, 0);
 
 echo '<div id="col_main">';
 echo "<h2>Conditions d'accès aux détails des données</h2>";
-
-if (is_file("_config/acces.htm")) {
-    include("_config/acces.htm");
-} else {
-    include("_config/commentaire.htm");
-}
-
-echo '<p>&nbsp;</p>';
+require(__DIR__ . '/_config/commentaire.htm');
 
 echo '</div>';
 close_page(1, $root);

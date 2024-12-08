@@ -1,11 +1,6 @@
 <?php
-
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 0);
+require(__DIR__ . '/tools/_COMMUN_env.inc.php');
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
@@ -24,8 +19,6 @@ if (USER_AUTO_DEF == 0) {
 }
 
 $missingargs = true;
-
-//print '<pre>';  print_r($_REQUEST); echo '</pre>';
 
 // Données postées -> ajouter ou modifier
 $ok = true;

@@ -1,28 +1,5 @@
 <?php
 
-// VERSION 2015
-// Utilitaires génériques
-// Copyright (C) : André Delacharlerie, 2005-2015
-// Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les termes de la
-// Licence Publique Générale GNU, version 2 (GPLv2), publiée par la Free Software Foundation
-// Texte de la licence : https://www.gnu.org/licenses/old-licenses/gpl-2.0.fr.html
-
-//-------------------------------------------------------------------
-
-//error_reporting(1);  // redefini ensuite dans actutils...
-
-if (file_exists(dirname(__FILE__) . '/EA_sql.inc.php')) {
-    include_once(dirname(__FILE__) . '/EA_sql.inc.php');
-} else {
-    // Spécial pour EA 322 détourner les appels mysql  (BG: TODO cette branche else est-elle vraiment nécessaire ?)
-    if (!function_exists('mysql_query') and ((!extension_loaded('mysql') or (substr(phpversion(), 0, 1) >= '7')))) {
-        include_once(dirname(__FILE__) . '/mysql2i.class.php');
-    }
-}
-
-//set_magic_quotes_runtime(0);  // annulation des magic quotes sur les téléchargements (obsolète à partir de 5.3)
-dequote_magic_quotes();      // suppression des magic quotes sur les paramètres REQUEST et COOKIE
-
 define('INTERNAL_CHARSET', 'UTF-8');
 define('MAIL_CHARSET', INTERNAL_CHARSET); // Charset pour les mails
 
@@ -125,17 +102,6 @@ function isin($grand, $petit, $debut = 0) // retourne la position de $petit dans
     }
 }
 
-//---------------------------------------------------------
-// André DELACHARLERIE
-/*
-function getparam($name) // initialise proprement une variable avec le contenu d'un paramètre facultatif
-  {
-  if (isset($_REQUEST[$name]))
-    return $_REQUEST[$name];
-   else
-    return "";
-  }
-*/
 function getparam($name, $default = "", $allow_sql = 0) // initialise proprement une variable avec le contenu d'un paramètre facultatif et filtrage anti injection de code
 {
     if (isset($_REQUEST[$name])) {
@@ -410,159 +376,6 @@ function linkifie($texte, $mode)  // transforme en lien actif les noms de fichie
     }
 }
 
-//------------------------------------------------------------
-
-/*
-function linkjpg($texte) // adapté pour la syntaxe de http://marmottesdesavoie.org/
-
-    {
-    $result = '';
-    $cpt = 1;
-
-    if ($texte !="") and ($userlevel >= LEVEL_JPG_PRIVE)
-        {
-        $longref = strlen($texte);
-        $suffixe = mb_substr(strrchr($texte,"_"),1);
-        $longsuffixe = strlen($suffixe);
-        $longprefixe = $longref-$longsuffixe;
-        $prefixe = mb_substr($texte,0,$longprefixe);
-
-
-        //CAS 00A
-        If ($longsuffixe==3)
-            {
-            $image=URL_JPG.$texte.".jpg";
-            $result .= ' <a href="'.$image.'" target="_blank">Image'.$cpt++.'</a> ';
-            }
-
-
-        //CAS 00A-00B
-        If ($longsuffixe ==7)
-            {
-            $prem=mb_substr($suffixe,0,3);
-            $dern=mb_substr($suffixe,4,3);
-            $nb=$dern-$prem;
-
-            for ($k = 0; $k <= $nb; $k++)
-                {
-                $index2=$prem+$k;
-                $index1 = "000".$index2;
-                $index = mb_substr($index1,-3);
-                $image=URL_JPG.$prefixe.$index.".jpg";
-                $result .= ' <a href="'.$image.'" target="_blank">Image'.$cpt++.'</a> ';
-                }
-            }
-
-
-        //CAS 00Aet00B
-        If ($longsuffixe ==8)
-            {
-            $prem=mb_substr($suffixe,0,3);
-            $dern=mb_substr($suffixe,5,3);
-            $image=URL_JPG.$prefixe.$prem.".jpg";
-            $result .= ' <a href="'.$image.'" target="_blank">Image'.$cpt++.'</a> ';
-            $image=URL_JPG.$prefixe.$dern.".jpg";
-            $result .= ' <a href="'.$image.'" target="_blank">Image'.$cpt++.'</a> ';
-            }
-
-        //CAS  00Aet00B-00C et 00A-00Bet00C
-
-IF ($longsuffixe ==12)
-    {
-    $test=mb_substr($suffixe,3,1);
-    if ($test =="e")
-        // Cas 00Aet00B-00C
-        {
-        $prem=mb_substr($suffixe,5,3);
-        $dern=mb_substr($suffixe,-3);
-        $extra=mb_substr($suffixe,0,3);
-        $nb=$dern-$prem;
-        $image=URL_JPG.$prefixe.$extra.".jpg";
-        $result .= ' <a href="'.$image.'" target="_blank">Image'.$cpt++.'</a> ';
-        for ($k = 0; $k <= $nb; $k++)
-            {
-            $index2=$prem+$k;
-            $index1 = "000".$index2;
-            $index = mb_substr($index1,-3);
-            $image=URL_JPG.$prefixe.$index.".jpg";
-            $result .= ' <a href="'.$image.'" target="_blank">Image'.$cpt++.'</a> ';
-            }
-        }
-    else
-    // Cas 00A-00Bet00C
-        {
-        $prem=mb_substr($suffixe,0,3);
-        $dern=mb_substr($suffixe,4,3);
-        $extra=mb_substr($suffixe,-3);
-        $nb=$dern-$prem;
-        for ($k = 0; $k <= $nb; $k++)
-            {
-            $index2=$prem+$k;
-            $index1 = "000".$index2;
-            $index = mb_substr($index1,-3);
-            $image=URL_JPG.$prefixe.$index.".jpg";
-            $result .= ' <a href="'.$image.'" target="_blank">Image'.$cpt++.'</a> ';
-            }
-        $image=URL_JPG.$prefixe.$extra.".jpg";
-        $result .= ' <a href="'.$image.'" target="_blank">Image'.$cpt++.'</a> ';
-        }
-    }
-// Cas 00A-00Bet00C-00D
-IF ($longsuffixe >12)
-    {
-    $prem=mb_substr($suffixe,0,3);
-    $dern=mb_substr($suffixe,4,3);
-    $prem2=mb_substr($suffixe,9,3);
-    $dern2=mb_substr($suffixe,13,3);
-    $nb=$dern-$prem;
-    $nb2=$dern2-$prem2;
-    for ($k = 0; $k <= $nb; $k++)
-        {
-        $index2=$prem+$k;
-        $index1 = "000".$index2;
-        $index = mb_substr($index1,-3);
-        $image=URL_JPG.$prefixe.$index.".jpg";
-        $result .= ' <a href="'.$image.'" target="_blank">Image'.$cpt++.'</a> ';
-        }
-    for ($k = 0; $k <= $nb2; $k++)
-        {
-        $index2=$prem2+$k;
-        $index1 = "000".$index2;
-        $index = mb_substr($index1,-3);
-        $image=URL_JPG.$prefixe.$index.".jpg";
-        $result .= ' <a href="'.$image.'" target="_blank">Image'.$cpt++.'</a> ';
-        }
-    }
-
-    return $result;
-    }
-//*/
-
-//---------------------------------------------------------
-
-function dequote_magic_quotes() // pour retirer les magic quotes s il y en a !! sur REQUEST et $_COOKIE
-{   // deprecated from PHP 7.4 and useless since 5.4)
-    if (version_compare(phpversion(), '5.4.0', '<')) {
-        if (get_magic_quotes_gpc()) {
-            if (is_array($_REQUEST)) {
-                foreach ($_REQUEST as $k => $v) {
-                    if (is_string($v)) {
-                        $_REQUEST[$k] = stripslashes($v);
-                    }
-                }
-            }
-            if (is_array($_COOKIE)) {
-                foreach ($_COOKIE as $k => $v) {
-                    if (is_string($v)) {
-                        $_COOKIE[$k]  = stripslashes($v);
-                    }
-                }
-            }
-        }
-    }
-}
-
-//---------------------------------------------------------
 
 function sql_and($cond) // ajoute and si condition non vide
 {
@@ -573,32 +386,15 @@ function sql_and($cond) // ajoute and si condition non vide
     }
 }
 
-//---------------------------------------------------------
-
-// André DELACHARLERIE
-/*
-function sql_quote($texte) // pour passer texte à MySQL en escapant les ' " \ ...
-  {
-    if (true) // (!get_magic_quotes_gpc()) // get_magic_quotes_gpc ne porte que sur les éléments recus via GET/POST
-        {
-        $result = addslashes(trim($texte));
-//		$result = addslashes($texte);
-        }
-     else
-        {
-        $result = trim($texte);
-        }
-  return $result;
-  }
-*/
+// pour passer texte à MySQL en escapant les ' " \ ...
 function sql_quote($texte) // pour passer texte a MySQL en escapant les ' " \ ...
 {
-    $result = EA_sql_real_escape_string(trim($texte));
-    return $result;
-}
-// André DELACHARLERIE
+    if ($texte) {
+        return EA_sql_real_escape_string(trim($texte));
+    }
 
-//---------------------------------------------------------
+    return $texte;
+}
 
 function sql_virgule($cond, $add) // ajoute , si liste non vide
 {
@@ -800,16 +596,13 @@ function close_db($dblink) // ferme la connexion à la DB
 
 function msg($desc, $type = "erreur")
 {
+    global $root;
     if ($desc <> null) {
         echo "<p class=\"$type\">";
         if ($type == "erreur") {
             echo "Erreur : ";
         }
         echo "$desc</p>\n";
-        global $root;
-        if (empty($root)) {
-            $root = ".";
-        }
         if (intval($desc) > 0) {
             echo '<p>Consultez la liste des <a href="' . $root . '/admin/aide/codeserreurs.html">codes d\'erreurs</a>.</p>';
         }

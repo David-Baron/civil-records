@@ -13,26 +13,17 @@ function init_page()
     $htmlpage = true;
 }
 
-//-----------------------------------------
+define('ADM', 10);
 
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+require(__DIR__ . '/../tools/_COMMUN_env.inc.php');
+
 my_ob_start_affichage_continu();
 
-include("../install/instutils.php");
+require(__DIR__ . '/../install/instutils.php');
 
-
-$root = "";
-$path = "";
 $enclosed = '"';  // ou '"'
 $separator = ';';
 $htmlpage = false;
-
-//**************************** ADMIN **************************
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
@@ -43,16 +34,12 @@ while ($userlevel < 9) {
 }
 
 $userid = current_user("ID");
-
 $missingargs = false;
 $oktype = false;
-
 $Destin = 'T'; // Toujours vers fichier (T) (sauf pour debug .. D )
-
-//{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; }
-
 $filename = "ea_params_" . gmdate('Ymd') . '.xml';
 $mime_type = 'text/xml';
+
 if ($Destin == 'T') {
     // Download
     header('Content-Type: ' . $mime_type);

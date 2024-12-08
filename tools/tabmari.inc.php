@@ -1,7 +1,5 @@
 <?php
 
-$root = "";
-$path = "";
 $xcomm = "";
 $xpatr = "";
 $page = 1;

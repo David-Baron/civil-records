@@ -1,16 +1,8 @@
 <?php
 
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 10);
 
-$root = "";
-$path = "";
-
-//**************************** ADMIN **************************
+require(__DIR__ . '/../tools/_COMMUN_env.inc.php');
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
@@ -22,13 +14,13 @@ while ($userlevel < 7) {
 $title = "Ajout d'un acte";
 open_page($title, $root);
 
-include("../tools/PHPLiveX/PHPLiveX.php");
+require(__DIR__ . '/../tools/PHPLiveX/PHPLiveX.php');
 $ajax = new PHPLiveX(array("getCommunes"));
 $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
 
 navadmin($root, $title);
 
-zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
 
 echo '<div id="col_main_adm">';
 menu_datas('A');
@@ -38,27 +30,24 @@ $missingargs = false;
 $oktype = false;
 $today = today();
 
+echo '<form method="post" action="edit_acte.php">' . "\n";
+echo '<h2 align="center">' . $title . '</h2>';
+echo '<table  align="center" cellspacing="0" cellpadding="1" border="0" summary="Formulaire">' . "\n";
 
-{
-    //{ print '<pre>';  print_r($col); echo '</pre>'; }
-    echo '<form method="post" action="edit_acte.php">' . "\n";
-    echo '<h2 align="center">' . $title . '</h2>';
-    echo '<table  align="center" cellspacing="0" cellpadding="1" border="0" summary="Formulaire">' . "\n";
+//echo " <tr><td colspan=\"2\"><h3>Acte à ajouter : </h3></td></tr>\n";
+form_typeactes_communes('', 0);
+echo " <tr>\n";
 
-    //echo " <tr><td colspan=\"2\"><h3>Acte à ajouter : </h3></td></tr>\n";
-    form_typeactes_communes('', 0);
-    echo " <tr>\n";
+echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";
 
-    echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";
+echo ' <tr><td>' . "\n";
+echo '  <input type="hidden" name="action" value="submitted" />';
+echo '  <input type="hidden" name="xid" value="-1" />';
+echo '  <input type="reset" value="Annuler" />' . "\n";
+echo '</td><td><input type="submit" value=" >> AJOUTER >> " />' . "\n";
+echo "</td></tr></table>\n";
+echo "</form>\n";
 
-    echo ' <tr><td>' . "\n";
-    echo '  <input type="hidden" name="action" value="submitted" />';
-    echo '  <input type="hidden" name="xid" value="-1" />';
-    echo '  <input type="reset" value="Annuler" />' . "\n";
-    echo '</td><td><input type="submit" value=" >> AJOUTER >> " />' . "\n";
-    echo "</td></tr></table>\n";
-    echo "</form>\n";
-}
 
 echo '</div>';
 close_page(1, $root);

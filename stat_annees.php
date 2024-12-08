@@ -1,3 +1,4 @@
 <?php
+define('ADM', 0);
 
-include("tools/statannees.inc.php");
+require(__DIR__ . '/tools/statannees.inc.php');

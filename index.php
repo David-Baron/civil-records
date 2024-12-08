@@ -1,23 +1,6 @@
 <?php
-
-// Page d'accueil publique du programmes ExpoActes
-// Copyright (C) : André Delacharlerie, 2005-2006
-// Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les termes de la
-// Licence Publique Générale GNU, version 2 (GPLv2), publiée par la Free Software Foundation
-// Texte de la licence : https://www.gnu.org/licenses/old-licenses/gpl-2.0.fr.html
-//-------------------------------------------------------------------
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
-
-if ((!defined('GEO_MODE_PUBLIC')) or (!file_exists("_config/connect.inc.php"))) {
-    echo '<p class="erreur">Lancer le script d\'installation pour avoir acc&egrave;s &agrave; l\'application<br />';
-    echo 'Pour des raisons de s&eacute;curit&eacute; il n\'a pas &eacute;t&eacute; fait de lien direct.<br /></p>';
-    exit;
-}
+define('ADM', 0);
+require(__DIR__ . '/tools/_COMMUN_env.inc.php');
 
 $xtyp = getparam('xtyp');
 $act = getparam('act');
@@ -30,11 +13,10 @@ if (($vue == "" and GEO_MODE_PUBLIC % 2 == 0) or $init <> "") {
     $vue = "T";
 }
 
-$root = "";
 $xpatr = "";
 $page = "";
-pathroot($root, $path, $xtyp, $xpatr, $page);
 
+pathroot($root, $path, $xtyp, $xpatr, $page);
 
 if ($act == "logout") {
     setcookie('userid', "", 0, $root);
@@ -43,30 +25,9 @@ if ($act == "logout") {
     die();
 }
 
-$dbok = false;
-$userlogin = "";
-
-$request = "SHOW TABLES LIKE '" . EA_DB . "_%'";
-$result = EA_sql_query($request);
-$dbok = (EA_sql_num_rows($result) >= 7);
-if (!$dbok) {
-    header("Location: " . $root . "/install/install.php");
-    die();
-}
-if (!check_version(EA_VERSION, '3.2.2')) { // si version mémorisée < 3.2.2
-    echo '<p class="erreur">Vous utilisez ExpoActes.<br /></p>';
-    echo '<p class="erreur">La mont&eacute;e de version d\'ExpoActes n\'est possible que depuis la version 3.2.2.<br /></p>';
-    echo 'Installer la version 3.2.2 pour pouvoir faire cette mise &agrave; jour.<br /></p>';
-    exit;
-}
-if (!check_version(EA_VERSION, EA_VERSION_PRG)) { // si version mémorisée < version du programme
-    header("Location: " . $root . "/install/update.php");
-    die();
-}
-//{ print '<pre>INDEX:';  print_r($_SERVER); echo '</pre>'; }
-//{ print '<pre>INDEX:';  print_r($_REQUEST); echo '</pre>'; }
 global $u_db;
 
+$userlogin = "";
 $userlevel = logonok(1);
 if ($userlevel == 0) {
     login($root);
@@ -86,12 +47,12 @@ if ($xtyp == "" or $xtyp == 'A') {
 
 $chemin = "/";
 if (GEO_MODE_PUBLIC == 5 or $vue == "C") { // si pas localité isolée et avec carte
-    include_once("tools/GoogleMap/OrienteMap.inc.php");
-    include_once("tools/GoogleMap/Jsmin.php");
+    require(__DIR__ . '/tools/GoogleMap/OrienteMap.inc.php');
+    require(__DIR__ . '/tools/GoogleMap/Jsmin.php');
 
     $carto = new GoogleMapAPI();
     $carto->_minify_js = isset($_REQUEST["min"]) ? false : true;
-    include("tools/carto_index.php");
+    require(__DIR__ . '/tools/carto_index.php');
     //$carto->addMarkerByAddress("Bievre, Namur","Bièvre", "Texte de la bulle");
     $carto->setMapType("terrain");
     $carto->setTypeControlsStyle("dropdown");
@@ -182,10 +143,10 @@ if (GEO_MODE_PUBLIC == 5 or $vue == "C") { // si pas localité isolée et avec c
 if (GEO_MODE_PUBLIC == 5 or $vue == "T") { // si pas localité isolée et avec carte
     // $menu_actes calculé dans le module statistiques
     echo '<p><b>' . $menu_actes . '</b></p>';
-    include("tools/tableau_index.php");
+    require(__DIR__ . '/tools/tableau_index.php');
 }
 echo '<p>&nbsp;</p>';
-include("_config/commentaire.htm");
+require(__DIR__ . '/_config/commentaire.htm');
 
 echo '</div>';
 close_page(1, $root);

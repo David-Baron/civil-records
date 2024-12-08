@@ -1,11 +1,9 @@
 <?php
 
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 10);
+
+require(__DIR__ . '/../tools/_COMMUN_env.inc.php');
+
 my_ob_start_affichage_continu();
 
 function paspoint($string)
@@ -17,11 +15,6 @@ function paspoint($string)
         return "";
     }
 }
-
-$root = "";
-$path = "";
-
-//**************************** ADMIN **************************
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 

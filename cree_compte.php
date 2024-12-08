@@ -1,11 +1,6 @@
 <?php
-
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 0);
+require(__DIR__ . '/tools/_COMMUN_env.inc.php');
 
 global $loc_mail;
 if (AUTO_CAPTCHA) {
@@ -36,8 +31,6 @@ $email   = getparam('email');
 $emailverif = getparam('emailverif');
 $libre   = getparam('libre');
 $accept  = getparam('acceptcond');
-
-//print '<pre>';  print_r($_REQUEST); echo '</pre>';
 $ok = false;
 
 // Données postées -> ajouter ou modifier

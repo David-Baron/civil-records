@@ -1,11 +1,8 @@
 <?php
 
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 10);
+
+require(__DIR__ . '/../tools/_COMMUN_env.inc.php');
 
 function show_grp($grp, $current, $barre)
 {
@@ -28,9 +25,6 @@ function alaligne($texte)
     return str_replace($order, $replace, $texte);
 }
 
-$root = "";
-$path = "";
-
 $js_show_help = "";
 $js_show_help .= "function show(id) \n ";
 $js_show_help .= "{ \n ";
@@ -45,9 +39,6 @@ $js_show_help .= "		el = document.getElementById('help' + id); \n ";
 $js_show_help .= "	} \n ";
 $js_show_help .= "} \n ";
 
-
-//**************************** ADMIN **************************
-
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
 $userlogin = "";
@@ -58,8 +49,6 @@ while ($userlevel < 9) {
 
 open_page("Paramétrage du logiciel", $root, $js_show_help);
 navadmin($root, "Paramétrage du logiciel");
-
-//{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; }
 
 zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
 
@@ -94,8 +83,6 @@ while ($row = EA_sql_fetch_array($result)) {
 }
 echo ' || <a href="update_params.php">Backup</a>';
 echo '</p>';
-
-//{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; }
 
 if (!$missingargs) {
     $oktype = true;

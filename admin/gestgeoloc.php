@@ -1,11 +1,8 @@
 <?php
 
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 10);
+
+require(__DIR__ . '/../tools/_COMMUN_env.inc.php');
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
@@ -24,15 +21,13 @@ $noteN  = getparam('noteN');
 $noteM  = getparam('noteM');
 $noteD  = getparam('noteD');
 $noteV  = getparam('noteV');
+$leid = getparam('id');
 
 $missingargs = true;
 $JSheader = "";
-//print '<pre>';  print_r($_REQUEST); echo '</pre>';
 
-$leid = getparam('id');
 
 if ($id > 0) {  // édition
-    //
     $action = 'Modification';
     $request = "SELECT *"
                 . " FROM " . EA_DB . "_geoloc "
@@ -68,8 +63,8 @@ if ($id > 0) {  // édition
         $zoom = 5;
     }
 
-    include_once("../tools/GoogleMap/OrienteMap.inc.php");
-    include_once("../tools/GoogleMap/Jsmin.php");
+    require(__DIR__ . '/../tools/GoogleMap/OrienteMap.inc.php');
+    require(__DIR__ . '/../tools/GoogleMap/Jsmin.php');
 
     $carto = new GoogleMapAPI();
     $carto->_minify_js = isset($_REQUEST["min"]) ? false : true;

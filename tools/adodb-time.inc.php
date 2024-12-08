@@ -1,5 +1,5 @@
 <?php
-/**
+/*
 ** Dans expoactes, nécessaire à la gestion des dates républicaines.
 
 ADOdb Date Library, part of the ADOdb abstraction library
@@ -404,7 +404,7 @@ function adodb_date_test_strftime($fmt)
     return false;
 }
 
-/**
+/*
      Test Suite
 */
 function adodb_date_test()

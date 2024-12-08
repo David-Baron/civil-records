@@ -1,11 +1,5 @@
 <?php
 
-// Utilitaires spécifiques aux programmes ExpoActes
-// Copyright (C) : André Delacharlerie, 2005-2008
-// Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les termes de la
-// Licence Publique Générale GNU, version 2 (GPLv2), publiée par la Free Software Foundation
-// Texte de la licence : https://www.gnu.org/licenses/old-licenses/gpl-2.0.fr.html
-
 function load_params()
 {
     // De ce script DEPLACES n'aparaissant pas dans la table des paramètres (avant load_params)
@@ -39,29 +33,7 @@ function load_params()
 
     // De ce script DEPLACES n'aparaissant pas dans la table des paramètres (après load_params)
     $GLOBALS['TIPmsg'] = "";
-    if (!defined("EA_ERROR")) { /// en principe est lu dans les paramètres
-        define("EA_ERROR", 0);
-    }  // Pas d'affichage d'erreur en production
-    $ea_error = 0;
-    switch (EA_ERROR) {
-        case 0:
-            $ea_error = 0;
-            break;
-        case 1:
-            $ea_error = E_ERROR; // Erreurs uniquements
-            break;
-        case 2:
-            $ea_error = E_ERROR | E_WARNING;
-            break;
-        case 3:
-            $ea_error = E_ALL | E_STRICT;
-            break;
-        case 4:
-            $ea_error = E_ALL;
-            define("OPTIMIZE", "YES");
-            break;
-    }
-    error_reporting($ea_error);  // définition du niveau d'erreur
+
     if (defined('EA_LANG')) {
         $GLOBALS['lg'] = EA_LANG;
     } else {
@@ -108,14 +80,13 @@ function load_params()
         define('PUB_ZONE_MENU', "Zone info libre");
     }
     if (!defined("SITENAME")) {
-        define("SITENAME", "Expoactes");
+        define("SITENAME", "Civil-Records");
     }
-    // Nouveautés v3.2.3
     if (!defined('SITE_URL')) {
         define('SITE_URL', '');
     }
     if (!defined("SITE_INVENTAIRE")) {
-        define("SITE_INVENTAIRE", "https://expoactes.monrezo.be/");
+        define("SITE_INVENTAIRE", "");
     }
     // On peut a) mettre dans "config" : define('EA_URL_CE_SERVEUR', 'http://127.0.0.1'); b) ajouter dans act_params "EA_URL_CE_SERVEUR"
     if (!defined('EA_URL_CE_SERVEUR')) {
@@ -134,10 +105,10 @@ function load_params()
 // Lecture des paramètres de configuration
 
 // Pour déplacer dans load_params, il faut protéger par if (!defined)
-define("EA_VERSION_PRG", "3.2.4");
+define("EA_VERSION_PRG", "0.0.0");
 //{ $GLOBALS['EAg_BETA']="-beta"; }
 //{ $GLOBALS['EAg_BETA']="-rc6"; }
-{ $GLOBALS['EAg_BETA'] = "-p406"; }
+{ $GLOBALS['EAg_BETA'] = "-alpha"; }
 
 $lg = '';
 load_params();
@@ -149,12 +120,9 @@ define("DIR_BACKUP", "_backup/");
 
 function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = null, $index = null, $rss = null)
 {
-    $carcode = 'UTF-8';
-    //$carcode = 'ISO-8859-1';
+    $carcode = 'UTF-8'; // UTF-8|ISO-8859-1
     header('Content-Type: text/html; charset=' . $carcode);
-    if (file_exists(dirname(__FILE__) . '/trt_charset.inc.php')) {
-        include(dirname(__FILE__) . '/trt_charset.inc.php');
-    }
+
     global $path, $userlogin, $scriptname, $commune;
     if ($scriptname == "") {
         $scriptname = "index";
@@ -171,16 +139,24 @@ function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = n
         $meta_keywords = META_KEYWORDS;
     }
 
-    echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">' . "\n";
-    echo '<html xmlns="http://www.w3.org/1999/xhtml">' . "\n";
+    echo '<!DOCTYPE html>' . "\n";
+    echo '<html lang="fr">' . "\n";
     echo "<head>\n";
-    echo '<link rel="shortcut icon" href="' . $root . '/img/favicon.ico" type="image/x-icon" />' . "\n";
-    echo '<link rel="stylesheet" href="' . $root . '/tools/css/actes.css" type="text/css" />' . "\n";
+    echo '<meta charset="' . $carcode . '">' . "\n";
+    echo '<meta name="expires" content="never">' . "\n";
+    echo '<meta name="revisit-after" content="15 days">' . "\n";
+    echo '<meta name="robots" content="index, nofollow">' . "\n";
+    echo '<meta name="description" content="' . $meta_description . ' ' . $titre . '">' . "\n";
+    echo '<meta name="keywords" content="' . $meta_keywords . ', ' . $titre . '">' . "\n";
+    echo '<meta name="generator" content="Civil-Records">' . "\n";
+    echo "<title>$titre</title>\n";
+    echo '<link rel="shortcut icon" href="' . $root . '/img/favicon.ico" type="image/x-icon">' . "\n";
+    echo '<link rel="stylesheet" href="' . $root . '/tools/css/actes.css" type="text/css">' . "\n";
     //  if (file_exists($GLOBALS['EA_Appel_dOu'].'_config/actes.css'))
-    if (file_exists(dirname(dirname(__FILE__)) . '/_config/actes.css')) {
-        echo '<link rel="stylesheet" href="' . $root . '/_config/actes.css" type="text/css" />' . "\n";
+    if (file_exists(__DIR__ . '/../_config/actes.css')) {
+        echo '<link rel="stylesheet" href="' . $root . '/_config/actes.css" type="text/css">' . "\n";
     }
-    echo '<link rel="stylesheet" href="' . $root . '/tools/css/actes_print.css" type="text/css"  media="print" />' . "\n";
+    echo '<link rel="stylesheet" href="' . $root . '/tools/css/actes_print.css" type="text/css"  media="print">' . "\n";
 
     // Adapté de Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent
     // ADLC - 9/8/2015
@@ -210,27 +186,20 @@ function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = n
     echo '<script type="text/javascript" src="' . $root . '/tools/js/cookieconsent.min.js"></script>';
     // Cookie Consent plugin //
 
-    $t = dirname(dirname(__FILE__)) . '/_config/js_externe_header.inc.php';
-    if (file_exists($t)) {
-        include($t);
+    if (file_exists(__DIR__ . '/../_config/js_externe_header.inc.php')) {
+        include(__DIR__ . '/../_config/js_externe_header.inc.php');
     }
 
     if ($rss <> "") {
         echo '<link rel="alternate" type="application/rss+xml" title="' . $titre . '" href="' . $root . '/' . $rss . '" />';
     }
     if (!($js == null)) {
-        echo '<script language="Javascript 1.2" type="text/javascript">' . "\n";
+        echo '<script type="text/javascript">' . "\n";
         echo $js;
         echo '</script>' . "\n";
     }
-    echo "<title>$titre</title>\n";
-    echo '<meta http-equiv="Content-Type" content="text/html; charset=' . $carcode . '" />' . "\n";
-    echo '<meta name="expires" content="never" />' . "\n";
-    echo '<meta name="revisit-after" content="15 days" />' . "\n";
-    echo '<meta name="robots" content="index, nofollow" />' . "\n";
-    echo '<meta name="description" content="' . $meta_description . ' ' . $titre . '" />' . "\n";
-    echo '<meta name="keywords" content="' . $meta_keywords . ', ' . $titre . '" />' . "\n";
-    echo '<meta name="generator" content="ExpoActes" />' . "\n";
+    
+
     echo INCLUDE_HEADER . "\n";
     if (!($addhead == null)) {
         echo $addhead . "\n";
@@ -251,11 +220,7 @@ function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = n
         echo '<font color="#FF0000"><b>!! MAINTENANCE !!</b></font>';
     }
 
-    $bandeau = "_config/bandeau.htm";
-    if ($root != $path) {
-        $bandeau = "../" . $bandeau;
-    }
-    include($bandeau);
+    include(__DIR__ . '/../_config/bandeau.htm');
     echo "</div>\n";
 }
 
@@ -266,20 +231,23 @@ function close_page($complet = 0, $root = null)
     echo '<div id="pied_page2" class="pied_page2">';
     echo '<div id="totop2" class="totop2"><p class="totop2"><strong><a href="#top">Top</a></strong> &nbsp; </p></div>';
     echo '<div id="texte_pied2" class="texte_pied2"><p class="texte_pied2">' . PIED_PAGE . '</p></div>';
-    echo '<div id="copyright2" class="copyright2"><p class="copyright2"><em><a href="http://expocartes.monrezo.be/">ExpoActes</a></em> version ' . EA_VERSION . $GLOBALS['EAg_BETA'] . ' (&copy;<em> 2005-' . date("Y") . ', ADSoft)</em></p></div>';
-    // echo '<div id="copyright2" class="copyright2"><p class="copyright2"><em><a href="http://expocartes.monrezo.be/">ExpoActes</a></em> version '.EA_VERSION.' (&copy;<em> 2005-2015, ADSoft)</em></p></div>';
+    echo '<div id="copyright2" class="copyright2">
+    <p class="copyright2">
+    Copyrights © 2022-' . date("Y") . ' your-domain.com all rights reserved 
+    - Propulsed by <em><a href="https://github.com/David-Baron/civil-records">Civil-Records</a></em>
+    </p>
+    </div>';
     echo '</div>';
 
-    $t = dirname(dirname(__FILE__)) . '/_config/js_externe_footer.inc.php';
-    if (file_exists($t)) {
-        include($t);
+    if (file_exists(__DIR__ . '/../_config/js_externe_footer.inc.php')) {
+        include(__DIR__ . '/../_config/js_externe_footer.inc.php');
     }
 
     global $TIPmsg;  // message d'alerte pré-blocage IP
     if ($TIPmsg <> "" and TIP_MODE_ALERT >= 2) {
-        echo "<SCRIPT language=javascript>";
+        echo '<script language="javascript">';
         echo 'alert("' . $TIPmsg . '")';
-        echo '</SCRIPT>';
+        echo '</script>';
     }
     echo "</body>\n";
     echo "</html>\n";

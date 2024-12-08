@@ -1,26 +1,14 @@
 <?php
 
 // Mise a jour des sommes
-// Copyright (C) : André Delacharlerie, 2005-2006
-// Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les termes de la
-// Licence Publique Générale GNU, version 2 (GPLv2), publiée par la Free Software Foundation
-// Texte de la licence : https://www.gnu.org/licenses/old-licenses/gpl-2.0.fr.html
-//-------------------------------------------------------------------
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 10);
+
+require(__DIR__ . '/../tools/_COMMUN_env.inc.php');
+
 my_ob_start_affichage_continu();
 
-$root = "";
-$path = "";
-
-//**************************** ADMIN **************************
-//{ print '<pre>';  print_r($_POST); echo '</pre>'; }
-
 $xtyp = "";
+
 pathroot($root, $path, $xtyp, $xpatr, $page);
 
 $userlogin = "";
@@ -61,7 +49,7 @@ echo '<p><b>' . $menu_actes . '</b></p>';
 my_flush(); // On affiche un minimum
 
 if ($xtyp == "") {
-    $request = "SELECT TYPACT, max(DER_MAJ) AS DERMAJ, count(COMMUNE) AS CPTCOM"
+    $request = "SELECT TYPACT, max(DER_MAJ) AS DERMAJ, count(COMMUNE) AS CPTCOM "
                     . " FROM " . EA_DB . "_sums"
                     . " GROUP BY TYPACT"
                     . " ORDER BY INSTR('NMDV',TYPACT)"     // cette ligne permet de trier dans l'ordre voulu

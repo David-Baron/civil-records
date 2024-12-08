@@ -1,7 +1,5 @@
 <?php
 
-// VERSION DU 26/09/2014
-// Tableau en version texte pour la page d'accueil
 
 if ($xtyp == "" or $xtyp == "A") {
     $condit1 = "";

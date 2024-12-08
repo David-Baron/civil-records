@@ -1,11 +1,8 @@
 <?php
 
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 10);
+
+require(__DIR__ . '/_COMMUN_env.inc.php');
 
 function barre($valeur, $max)
 {
@@ -15,11 +12,6 @@ function barre($valeur, $max)
     $chaine  = '<div class="histo"><strong class="barre" style="width:' . $long . '%;">' . $valeur . '</strong></div>';
     return $chaine;
 }
-
-$root = "";
-$path = "";
-
-//**************************** ADMIN **************************
 
 $xcomm = $xpatr = $page = "";
 pathroot($root, $path, $xcomm, $xpatr, $page);
@@ -45,8 +37,6 @@ $xtdiv      = getparam('tdiv');
 $comdep  = html_entity_decode(getparam('comdep'), ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
 $Commune = communede($comdep);
 $Depart  = departementde($comdep);
-
-//{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; }
 
 // Données postées
 if(empty($TypeActes)) {

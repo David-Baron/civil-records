@@ -1,16 +1,7 @@
 <?php
+define('ADM', 10);
 
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
-
-$root = "";
-$path = "";
-
-//**************************** ADMIN **************************
+require(__DIR__ . '/../tools/_COMMUN_env.inc.php');
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
@@ -22,7 +13,7 @@ while ($userlevel < 8) {
 $title = "Corrections groupées d'actes";
 open_page($title, $root);
 
-include("../tools/PHPLiveX/PHPLiveX.php");
+require(__DIR__ . '/../tools/PHPLiveX/PHPLiveX.php');
 $ajax = new PHPLiveX(array("getCommunes"));
 $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
 

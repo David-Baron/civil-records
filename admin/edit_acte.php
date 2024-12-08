@@ -1,22 +1,14 @@
 <?php
 
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 10);
 
-$root = "";
-$path = "";
+require(__DIR__ . '/../tools/_COMMUN_env.inc.php');
+
 $lg = $GLOBALS['lg'];
-
-//**************************** ADMIN **************************
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
 $userlogin = "";
-
 $needlevel = 6;  // niveau d'accès (anciennement 5)
 $userlevel = logonok($needlevel);
 while ($userlevel < $needlevel) {
@@ -53,8 +45,6 @@ $ok = false;
 $missingargs = false;
 $oktype = false;
 $today = today();
-
-//{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; }
 
 if ($xid == '' or $xtyp == '' or $xtyp == 'X') {
     // Données postées
@@ -184,7 +174,6 @@ if (! $missingargs) {
                 $col[$colname[0]] = $xt;
                 $xx++;
             }
-            //{ print '<pre>';  print_r($col); echo '</pre>'; }
 
             echo '<form method="post" action="">' . "\n";
             echo '<h2 align="center">' . sprintf('%1$s %2$s', $logtxt, $ntype) . '</h2>';
