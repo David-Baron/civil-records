@@ -1,0 +1,90 @@
+/*
+MANQUE CLASS ".aide" réfécencé dans config.html
+*/
+  a {
+      text-decoration: underline;
+    }
+  a:hover {
+      text-decoration: none;
+    }
+
+  body, h4, h5, html, li, p, td, th {
+    font-family: Verdana,Arial,Helvetica,sans-serif;
+    font-size: 12px;
+  }
+
+  h1, h2 {
+    font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;
+  }
+
+  h2, h4 {
+    color: rgb(102, 102, 102);
+    }
+
+  html {
+    margin: 0px;
+    padding: 0px;
+    }
+
+  body 
+    {
+    margin: 15px 10px;
+    padding: 0px;
+    }
+
+  h1 {
+    font-size: 18px;
+    font-weight: bolder;
+    }
+
+  h2 {
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    }
+
+  h4 {
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 2px;
+    }
+
+  h5 {
+    color: rgb(32, 32, 255);
+    font-weight: bold;
+    line-height:12px;
+    }
+
+  li {
+    line-height: 16px;
+    }
+
+  table {
+    margin: 0pt auto;
+    }
+  th {
+    color: rgb(112, 128, 144);
+    line-height: 18px;
+    }
+  td {
+    line-height: 14px;
+    }
+
+  dt {
+    font-weight: bold;
+    padding-bottom: 6px;
+    padding-top: 12px;
+    }
+
+/* gestuser.html */
+  .row0 { 
+    background-color: rgb(255, 246, 143);
+    text-align: left;
+    padding: 1px 5px 1px 5px;
+    }
+
+ .rowheader {
+    background-color: rgb(255, 204, 102);
+    text-align: center;
+    padding: 1px 5px 1px 5px;
+   }
