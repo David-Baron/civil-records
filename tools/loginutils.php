@@ -1,20 +1,9 @@
 <?php
 
-// Copyright (C) : André Delacharlerie, 2005-2010
-// Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les termes de la
-// Licence Publique Générale GNU, version 2 (GPLv2), publiée par la Free Software Foundation
-// Texte de la licence : https://www.gnu.org/licenses/old-licenses/gpl-2.0.fr.html
+require(__DIR__ . '/traceIP/trace_ip.php');
 
-//------------------------------------------------------------------------
-//   Fonctions pour autentification générale  Version 3 : avec cryptage SHA-1 et expiration des comptes
-//   Adaptée pour travail avec une base user déportée dans la connexion $u_db (V3.1)
-//------------------------------------------------------------------------
-require('traceIP/trace_ip.php');
-if (!defined("TIP_LEVEL_NO_IP_TEST")) {
-    define("TIP_LEVEL_NO_IP_TEST", 9);
-}
+if (!defined("TIP_LEVEL_NO_IP_TEST")) define("TIP_LEVEL_NO_IP_TEST", 9);
 
-//------------------------------------------------------------------------
 function login($path = '', $cas = 3)  // Uniquement utilisé par authentification
 {
     global $root;
@@ -45,8 +34,6 @@ function current_user($zone)
         }
     }
 }
-
-//------------------------------------------------------------------------
 
 function logonok($level = 0)
 {
@@ -127,8 +114,6 @@ function logonok($level = 0)
     return $niveau;
 }
 
-//------------------------------------------------------------------------
-
 function CheckUser($login, $pw, $codedpw, $coded, &$userid)
 // Vérification réelle du droit d'accès
 {
@@ -171,8 +156,6 @@ function CheckUser($login, $pw, $codedpw, $coded, &$userid)
         }
     }
 }
-
-//------------------------------------------------------------------------
 
 function CheckMD5($userid, $md5)
 {

@@ -13,7 +13,6 @@ while ($userlevel < $needlevel) {
     login($root);
 }
 
-
 pathroot($root, $path, $xtyp, $xpatr, $page);
 
 $init  = getparam('init');

@@ -3,8 +3,8 @@ define('ADM', 0); // Compatibility only
 $admtxt = ''; // Compatibility only
 require(__DIR__ . '/next/bootstrap.php');
 require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
-include("tools/cree_table_levenshtein.php");
-include("tools/traite_tables_levenshtein.php");
+include(__DIR__ . '/tools/cree_table_levenshtein.php');
+include(__DIR__ . '/tools/traite_tables_levenshtein.php');
 
 //---------------------------------------------------------
 function makecritjlc($xmin, $xmax, $xcomm, $xdepa, $pre, $c_pre, $xpre, $xc_pre) //
@@ -46,40 +46,35 @@ function cree_table_temp_sup($nom, $original)
 
 //--------------------------------------------------------
 
+$userlogin = "";
+$userlevel = logonok(LEVEL_LEVENSHTEIN);
+while ($userlevel < LEVEL_LEVENSHTEIN) {
+    login($root);
+}
+
 // récupération d l'adresse IP et substition de "_" aux "." pour créer les tables temporaires
 // Modifié pour tenir compte des adresses IPV6
 $orig = array('.', ':');
 $repl = array('_', '_');
 $ip_adr_trait = 'tmp_lev_' . str_replace($orig, $repl, getenv("REMOTE_ADDR"));
 
-if (!defined("SECURITE_TIME_OUT_PHP")) {
-    $SECURITE_TIME_OUT_PHP = 5;
-} else {
-    $SECURITE_TIME_OUT_PHP = SECURITE_TIME_OUT_PHP;
-}
+$SECURITE_TIME_OUT_PHP = 5;
+$cherch_ts_typ = 1;
+$rech_min = 3;
+if (defined("SECURITE_TIME_OUT_PHP")) $SECURITE_TIME_OUT_PHP = SECURITE_TIME_OUT_PHP;
+if (defined("CHERCH_TS_TYP")) $cherch_ts_typ = CHERCH_TS_TYP;
+if (defined("RECH_MIN")) $rech_min = RECH_MIN;
 
 $Max_time = ini_get("max_execution_time") - $SECURITE_TIME_OUT_PHP;
-
 $T0 = time();
-
-$root = "";
-$path = "";
 $txtcomp = "";
-
-if (!defined("CHERCH_TS_TYP")) {
-    $cherch_ts_typ = 1;
-} else {
-    $cherch_ts_typ = CHERCH_TS_TYP;
-}
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
 $xach  = getparam('achercher');
 $xpre  = getparam('prenom');
-
 $xach2 = getparam('achercher2');
 $xpre2 = getparam('prenom2');
-
 $xtyps = getparam('TypNDMV');
 if ($xtyps == "") { // plusieurs types possibles
     $xtypN = (getparam('TypN') == 'N');
@@ -97,26 +92,11 @@ $xmin  = getparam('amin');
 $xmax  = getparam('amax');
 $xcomp = getparam('comp');
 $xcomp2 = getparam('comp2');
-
 $comdep  = html_entity_decode(getparam('ComDep'), ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
 $xcomm = communede($comdep);
 $xdepa  = departementde($comdep);
-
 $xord  = getparam('xord');
 $page  = getparam('pg');
-
-$userlogin = "";
-$db  = con_db();
-$userlevel = logonok(LEVEL_LEVENSHTEIN);
-while ($userlevel < LEVEL_LEVENSHTEIN) {
-    login($root);
-}
-
-if (!defined("RECH_MIN")) {
-    $rech_min = 3;
-} else {
-    $rech_min = RECH_MIN;
-}
 
 ob_start();
 open_page("Recherches dans les tables", $root);
@@ -129,7 +109,6 @@ if (current_user_solde() > 0 or RECH_ZERO_PTS == 1) {
     navigation($root, 2, 'A', $nav . "Résultats de la recherche");
 
     echo '<div class="contenu">';
-
     echo '<h2>Résultats de la recherche</h2>';
 
     // Controles critères  de la recherche
@@ -364,26 +343,25 @@ if (current_user_solde() > 0 or RECH_ZERO_PTS == 1) {
 
         if ((time() - $T0 >= $Max_time) or ($fin_ok != 'ok')) {
             echo msg('La recherche ne peut aboutir car elle prend trop de temps !');
-            echo '<th> &nbsp; </th>' . "\n";
-            echo '<th> &nbsp; </th>' . "\n";
-            echo '<th> &nbsp; </th>' . "\n";
-            echo '<th> &nbsp; </th>' . "\n";
+            echo '<th></th>';
+            echo '<th></th>';
+            echo '<th></th>';
+            echo '<th></th>';
             echo '<p>Quelques suggestions :</p>';
-            echo '<th> &nbsp; </th>' . "\n";
-            echo '<th> &nbsp; </th>' . "\n";
-            echo '<p>1- Mettez si ce n' . "'" . 'est déjà fait des dates min et max</p>';
-            echo '<p>2- Réduisez l' . "'" . 'intervalle de recherche sur les dates</p>';
+            echo '<th></th>';
+            echo '<th></th>';
+            echo '<p>1- Mettez si ce n\'est déjà fait des dates min et max</p>';
+            echo '<p>2- Réduisez l\'intervalle de recherche sur les dates</p>';
             echo '<p>3- Diminuez le nombre de différences</p>';
-            echo '<p>4- Ne faite la recherche que sur un type d' . "'" . 'acte</p>';
+            echo '<p>4- Ne faite la recherche que sur un type d\'acte</p>';
             echo '<p>5-  .....</p>';
             echo '<p>En désespoir de cause, essayez plus tard, le serveur est peut être trop chargé</p>';
-            echo '<th> &nbsp; </th>' . "\n";
-            echo '<th> &nbsp; </th>' . "\n";
+            echo '<th></th>';
+            echo '<th></th>';
         } else {
 
             $result = EA_sql_query($request) or die('Erreur SQL requete générale!' . $sql . '<br>' . EA_sql_error());
             $nbtot = EA_sql_num_rows($result);
-            //echo "nb" . $nbtot . "<br>";
             $baselink = $path . '/chercherlevenshtein.php?achercher=' . $xach . '&amp;prenom=' . $xpre . '&amp;comp=' . $xcomp;
             $baselink .= '&amp;achercher2=' . $xach2 . '&amp;prenom2=' . $xpre2 . '&amp;comp2=' . $xcomp2;
             $baselink .= iif($xtypN, '&amp;TypN=N', '') . iif($xtypD, '&amp;TypD=D', '') . iif($xtypM, '&amp;TypM=M', '') . iif($xtypV, '&amp;TypV=V', '');
@@ -399,45 +377,45 @@ if (current_user_solde() > 0 or RECH_ZERO_PTS == 1) {
             } else {
                 $nb = $nbtot;
             }
-            echo '<div class="critrech">Recherche Levenshtein <ul>' . "\n" . $mes . '</ul></div>' . "\n";
+            echo '<div class="critrech">Recherche Levenshtein <ul>' . $mes . '</ul></div>';
             if ($nb > 0) {
                 $i = ($page - 1) * MAX_PAGE + 1;
-                echo '<p><b>' . $nbtot . ' actes trouvés</b></p>' . "\n";
-                echo '<p>' . $listpages . '</p>' . "\n";
-                echo '<table summary="Liste des résultats">' . "\n";
-                echo '<tr class="rowheader">' . "\n";
-                echo '<th> &nbsp; </th>' . "\n";
-                echo '<th>Type</th>' . "\n";
-                echo '<th>Date</th>' . "\n";
-                echo '<th>Intéressé(e)</th>' . "\n";
-                echo '<th>Parents</th>' . "\n";
-                echo '<th>Commune/Paroisse</th>' . "\n";
-                echo '</tr>' . "\n";
+                echo '<p><b>' . $nbtot . ' actes trouvés</b></p>';
+                echo '<p>' . $listpages . '</p>';
+                echo '<table summary="Liste des résultats">';
+                echo '<tr class="rowheader">';
+                echo '<th> &nbsp; </th>';
+                echo '<th>Type</th>';
+                echo '<th>Date</th>';
+                echo '<th>Intéressé(e)</th>';
+                echo '<th>Parents</th>';
+                echo '<th>Commune/Paroisse</th>';
+                echo '</tr>';
                 while ($ligne = EA_sql_fetch_row($result)) {
                     switch ($ligne[1]) {
                         case "N":
-                            $url = "acte_naiss.php";
+                            $url = $root . '/acte_naiss.php';
                             break;
                         case "D":
-                            $url = "acte_deces.php";
+                            $url = $root . '/acte_deces.php';
                             break;
                         case "M":
-                            $url = "acte_mari.php";
+                            $url = $root . '/acte_mari.php';
                             break;
                         case "V":
-                            $url = "acte_bans.php";
+                            $url = $root . '/acte_bans.php';
                             break;
                     }
-                    echo '<tr class="row' . (fmod($i, 2)) . '">' . "\n";
-                    echo '<td>' . $i . '. </td>' . "\n";
-                    echo '<td>' . $ligne[9] . ' </td>' . "\n";
-                    echo '<td>&nbsp;' . annee_seulement($ligne[2]) . '&nbsp;</td>' . "\n";
+                    echo '<tr class="row' . (fmod($i, 2)) . '">';
+                    echo '<td>' . $i . '. </td>';
+                    echo '<td>' . $ligne[9] . ' </td>';
+                    echo '<td>&nbsp;' . annee_seulement($ligne[2]) . '&nbsp;</td>';
                     $EA_url = '<a href="' . $url . '?xid=' . $ligne[0] . '&amp;xct=' . ctrlxid($ligne[4], $ligne[5]) . '">';
                     echo '<td>' . $EA_url . $ligne[4] . ' ' . $ligne[5] . '</a>';
                     if ($ligne[1] == 'M' or ($ligne[1] == 'V' and $ligne[6] <> '')) {
                         echo ' x ' . $EA_url . $ligne[6] . ' ' . $ligne[7] . '</a>';
                     }
-                    echo '</td>' . "\n";
+                    echo '</td>';
                     if ($ligne[1] == 'N' or $ligne[1] == 'D') {
                         if ($ligne[6] == '') {
                             $ligne[6] = ' ';
@@ -446,24 +424,24 @@ if (current_user_solde() > 0 or RECH_ZERO_PTS == 1) {
                             $ligne[7] = ' ';
                         }
                         if ($ligne[6][0] . $ligne[10] . $ligne[7][0] . $ligne[11] != 'XZYT') {
-                            echo '<td>' . $ligne[6][0] . ". " . $ligne[10] . " - " . $ligne[7][0] . ". " . $ligne[11] . ' </td>' . "\n";
+                            echo '<td>' . $ligne[6][0] . ". " . $ligne[10] . " - " . $ligne[7][0] . ". " . $ligne[11] . ' </td>';
                         } else {
-                            echo '<td>' . "  " . ' </td>' . "\n";
+                            echo '<td></td>';
                         }
                     } else {
-                        echo '<td>' . "  " . ' </td>' . "\n";
+                        echo '<td></td>';
                     }
-                    echo '<td>' . $ligne[3] . '</td>' . "\n";
-                    echo '</tr>' . "\n";
+                    echo '<td>' . $ligne[3] . '</td>';
+                    echo '</tr>';
                     $i++;
                 }
-                echo '</table>' . "\n";
-                echo '<p>' . $listpages . '</p>' . "\n";
+                echo '</table>';
+                echo '<p>' . $listpages . '</p>';
             } else {
-                echo '<p> Aucun acte trouvé </p>' . "\n";
+                echo '<p> Aucun acte trouvé </p>';
             }
-            echo '<p>Durée du traitement  : ' . (time() - $T0) . ' sec.</p>' . "\n";
-            echo '</div>' . "\n";
+            echo '<p>Durée du traitement  : ' . (time() - $T0) . ' sec.</p>';
+            echo '</div>';
         }
     }
 } else {

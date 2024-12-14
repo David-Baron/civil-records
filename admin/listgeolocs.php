@@ -4,35 +4,39 @@ $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
-$root = "";
-$path = "";
-$xcomm = "";
-$xpatr = "";
-$page = 1;
-
-pathroot($root, $path, $xcomm, $xpatr, $page);
-
-$xord  = getparam('xord');
-if ($xord == "") {
-    $xord = "N";
-}   // N = Nom
-$page  = getparam('pg');
-$init  = getparam('init');
-
-
 $userlogin = "";
 $userlevel = logonok(9);
 while ($userlevel < 9) {
     login($root);
 }
 
+pathroot($root, $path, $xcomm, $xpatr, $page);
+
+$xcomm = "";
+$xpatr = "";
+$page = 1;
+$xord  = getparam('xord', 'N');// N = Nom
+$page  = getparam('pg');
+$init  = getparam('init');
+
 ob_start();
 open_page(SITENAME . " : Liste des localités (communes et paroisses)", $root);
 navadmin($root, "Liste des localités");
-zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
 echo '<div id="col_main_adm">';
 // Lister les actes
-menu_datas('L');
+echo '<p align="center"><strong>Administration des données : </strong>';
+showmenu('Statistiques', 'maj_sums.php', 'S', 'L', false);
+if ($userlevel > 7) {
+    showmenu('Localités', 'listgeolocs.php', 'L', 'L');
+}
+showmenu('Ajout d\'un acte', 'ajout_1acte.php', 'A', 'L');
+if ($userlevel > 7) {
+    showmenu('Corrections groupées', 'corr_grp_acte.php', 'G', 'L');
+    showmenu('Backup', 'exporte.php?Destin=B', 'B', 'L');
+    showmenu('Restauration', 'charge.php?Origine=B', 'R', 'L');
+}
+echo '</p>';
 echo '<h2>Localités connues du site ' . SITENAME . '</h2>';
 
 $baselink = $root . '/admin/listgeolocs.php';
@@ -83,9 +87,9 @@ if ($init == "") {
 
 
 $request = "SELECT ID,COMMUNE,DEPART,LON,LAT,STATUT"
-            . " FROM " . EA_DB . "_geoloc "
-            . $condit
-            . " ORDER BY " . $order;
+    . " FROM " . EA_DB . "_geoloc "
+    . $condit
+    . " ORDER BY " . $order;
 //echo $request;
 $result = EA_sql_query($request);
 $nbtot = EA_sql_num_rows($result);
@@ -125,7 +129,7 @@ if ($nb > 0) {
         }
         echo '<td><a href="' . $root . '/admin/gestgeoloc.php?id=' . $ligne['ID'] . '">' . $lenom . '</a> </td>';
         echo '<td>' . $ligne['DEPART'] . ' </td>';
-        $ast = array("M" => "Manuelle", "N" => "Non définie","A" => "Auto");
+        $ast = array("M" => "Manuelle", "N" => "Non définie", "A" => "Auto");
         echo '<td align="center">' . $ast[$ligne['STATUT']] . '</td>';
         echo '</tr>';
         $i++;

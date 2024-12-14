@@ -113,6 +113,119 @@ function navigation($root = "", $level = 1, $type = "", $commune = null, $patron
     echo '</div>' . "\n";
 }
 
+function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = null, $index = null, $rss = null)
+{
+    $carcode = 'UTF-8';
+    //$carcode = 'ISO-8859-1';
+    header('Content-Type: text/html; charset=' . $carcode);
+    if (file_exists(dirname(__FILE__) . '/trt_charset.inc.php')) {
+        include(dirname(__FILE__) . '/trt_charset.inc.php');
+    }
+    global $path, $userlogin, $scriptname, $commune;
+    if ($scriptname == "") {
+        $scriptname = "index";
+    }
+
+    if (!defined("META_DESCRIPTION")) {
+        $meta_description = "";
+    } else {
+        $meta_description = META_DESCRIPTION;
+    }
+    if (!defined("META_KEYWORDS")) {
+        $meta_keywords = "";
+    } else {
+        $meta_keywords = META_KEYWORDS;
+    }
+
+    echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">' . "\n";
+    echo '<html xmlns="http://www.w3.org/1999/xhtml">' . "\n";
+    echo "<head>\n";
+    echo '<link rel="shortcut icon" href="' . $root . '/img/favicon.ico" type="image/x-icon" />' . "\n";
+    echo '<link rel="stylesheet" href="' . $root . '/tools/css/actes.css" type="text/css" />' . "\n";
+    //  if (file_exists($GLOBALS['EA_Appel_dOu'].'_config/actes.css'))
+    if (file_exists(dirname(dirname(__FILE__)) . '/_config/actes.css')) {
+        echo '<link rel="stylesheet" href="' . $root . '/_config/actes.css" type="text/css" />' . "\n";
+    }
+    echo '<link rel="stylesheet" href="' . $root . '/tools/css/actes_print.css" type="text/css"  media="print" />' . "\n";
+
+    /**
+     * @deprecated, admin will use the 'cookie tool' he want.
+     * // Adapté de Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent
+     * if (!defined("COOKIE_MESSAGE")) {
+    *     $cookie_message = "Acceptez-vous d'utiliser les Cookies ?";
+    * } else {
+    *     $cookie_message = COOKIE_MESSAGE;
+    * }
+    * if (!defined("COOKIE_URL_INFO")) {
+    *     $cookie_url = "";
+    * } else {
+    *     $cookie_url = COOKIE_URL_INFO;
+    * }
+    * $cookie_styles = array(1 => "dark-top", 2 => "light-top", 3 => "dark-bottom", 4 => "light-bottom", 5 => "dark-floating", 6 => "light-floating");
+    * if (!defined("COOKIE_STYLE")) {
+    *     $cookie_style = $cookie_styles[1];
+    * } else {
+    *     $cookie_style = $cookie_styles[COOKIE_STYLE];
+    * }
+    * echo '<script type="text/javascript">
+  	* 	window.cookieconsent_options = {
+  	* 		"message":"' . $cookie_message . '",
+  	* 		"dismiss":"Accepter les cookies",
+  	* 		"learnMore":"En savoir plus",
+  	* 		"link":"' . $cookie_url . '",
+  	* 		"theme":"' . $cookie_style . '"};</script>';
+    * echo '<script type="text/javascript" src="' . $root . '/tools/js/cookieconsent.min.js"></script>';
+    * // Cookie Consent plugin //
+    */
+    $t = dirname(dirname(__FILE__)) . '/_config/js_externe_header.inc.php';
+    if (file_exists($t)) {
+        include($t);
+    }
+
+    if ($rss <> "") {
+        echo '<link rel="alternate" type="application/rss+xml" title="' . $titre . '" href="' . $root . '/' . $rss . '" />';
+    }
+    if (!($js == null)) {
+        echo '<script language="Javascript 1.2" type="text/javascript">' . "\n";
+        echo $js;
+        echo '</script>' . "\n";
+    }
+    echo "<title>$titre</title>\n";
+    echo '<meta http-equiv="Content-Type" content="text/html; charset=' . $carcode . '" />' . "\n";
+    echo '<meta name="expires" content="never" />' . "\n";
+    echo '<meta name="revisit-after" content="15 days" />' . "\n";
+    echo '<meta name="robots" content="index, nofollow" />' . "\n";
+    echo '<meta name="description" content="' . $meta_description . ' ' . $titre . '" />' . "\n";
+    echo '<meta name="keywords" content="' . $meta_keywords . ', ' . $titre . '" />' . "\n";
+    echo '<meta name="generator" content="ExpoActes" />' . "\n";
+    echo INCLUDE_HEADER . "\n";
+    if (!($addhead == null)) {
+        echo $addhead . "\n";
+    }
+    echo "</head>\n";
+    echo '<body id="' . $scriptname . '" ' . " $addbody>\n";
+
+    if (getparam(EL) == 'O') {
+        echo $ExpoActes_Charset;
+    }
+
+    global $TIPmsg;  // message d'alerte pré-blocage IP
+    if ($TIPmsg <> "" and (TIP_MODE_ALERT % 2) == 1) {
+        echo '<h2><font color="#FF0000">' . $TIPmsg . "</font></h2>\n";
+    }
+    echo '<div id="top" class="entete">';
+    if (EA_MAINTENANCE == 1) {
+        echo '<font color="#FF0000"><b>!! MAINTENANCE !!</b></font>';
+    }
+
+    $bandeau = "_config/bandeau.htm";
+    if ($root != $path) {
+        $bandeau = "../" . $bandeau;
+    }
+    include($bandeau);
+    echo "</div>\n";
+}
+
 function close_page($complet = 0, $root = null)
 {
     global $TIPmsg;  // message d'alerte pré-blocage IP
@@ -133,4 +246,231 @@ function close_page($complet = 0, $root = null)
     }
     echo "</body>\n";
     echo "</html>\n";
+}
+
+
+/**
+ * @deprecated
+ * $script = file_get_contents(__DIR__ . '/tools/js/sha1.js');
+ * <!-- @deprecated <script type="text/javascript">
+ *   //<![CDATA[
+ *   function pwProtect() {
+ *       form = document.forms["eaform"];
+ *       if (form.oldpassw.value == "") {
+ *           alert("Erreur : L'ancien mot de passe est vide !");
+ *           return false;
+ *       }
+ *       if (form.passw.value == "") {
+ *           alert("Erreur : Le nouveau mot de passe est vide !");
+ *           return false;
+ *       }
+ *       if (form.passw.value.length < 6) {
+ *           alert("Erreur : Le nouveau mot de passe est trop court (min 6 caractères) !");
+ *           return false;
+ *       }
+ *       if (!(form.passw.value == form.passwverif.value)) {
+ *           alert("Erreur : Les nouveaux mots de passes ne sont pas identiques !");
+ *           return false;
+ *       }
+ *       if (sha1_vm_test()) { // si le codage marche alors on l'utilise
+ *           form.codedpass.value = hex_sha1(form.passw.value);
+ *           form.codedoldpass.value = hex_sha1(form.oldpassw.value);
+ *           form.passw.value = "";
+ *           form.oldpassw.value = "";
+ *           form.passwverif.value = "";
+ *           form.iscoded.value = "Y";
+ *       }
+ *       return true;
+ *   }
+ *
+ *   function seetext(x) {
+ *       x.type = 'text';
+ *   }
+ *
+ *   function seeasterisk(x) {
+ *       x.type = 'password';
+ *   }
+ *   //]]>
+ * </script> -->
+ */
+
+ function edit_text($name, $size, $value, $caption)
+{
+    echo ' <tr class="row1">' . "\n";
+    echo "  <td align=right>" . $caption . " : </td>\n";
+    echo '  <td>';
+    if ($size <= 70) {
+        $value = str_replace('"', '&quot;', $value);
+
+        echo '<input type="text" name="' . $name . '" size=' . $size . '" maxlength=' . $size . ' value="' . $value . '">';
+    } else {
+        echo '<textarea name="' . $name . '" cols=70 rows=' . (min(4, $size / 70)) . '>' . $value . '</textarea>';
+    }
+    echo '  </td>';
+    echo " </tr>\n";
+}
+
+/**
+ * @deprecated Expoactes system
+ */
+function check_new_version($key, $urlsite, $type_site = '')
+{
+    //$MODE_check = '';
+    $MODE_check = 'JSON';
+
+    // Par défaut :
+    $lavaleur = EA_VERSION . '|l';
+    if (!isset($_COOKIE[$key])) {
+        $h = $_SERVER['HTTP_HOST'];
+        $r = $_SERVER['REQUEST_URI'];
+
+        if ($MODE_check === 'JSON') {
+            if (!isset($_REQUEST['EA_VERSION_LAST'])) {
+                $serveur_addrPhpSQL = '&addr=' . $_SERVER['SERVER_ADDR'] . '&PhpSQL=PHP-' . phpversion() . '_SQL-' . EA_sql_get_server_info() . '&V=' . EA_VERSION;
+                $X = '<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+<script language="javascript">
+    $.extend( {
+        redirectPost: function (location, args) {
+            var form = $("<form>", { action: location, method: "post" });
+            $.each(args,
+                function (key, val) {
+                    $(form).append(
+                        $("<input>", { type: "hidden", name: key, value: val })
+                    );
+                });
+            $(form).appendTo("body").submit();
+        }
+    });
+    window.onload = function(e) {
+        var toLoad = "' . SITE_INVENTAIRE . 'versions.php?type=JSON&req=' . $h . $r . '&inv=' . $type_site . $serveur_addrPhpSQL . '";
+        var retourne = "";
+        $.ajax({ url: toLoad,
+            dataType: "json",
+            timeout: 3000, // sets timeout to 3 seconds (ok 30 génère  erreur)
+            success: function(REPONSE) {
+				retourner(JSON.stringify(REPONSE));
+			},
+            error: function (jqXHR, textStatus, errorThrown) {
+				retourner("erreur");
+			},
+        });
+        function retourner(retourne) {
+    		var myArray = {"EA_VERSION_LAST": retourne };
+    	    $.redirectPost("", myArray);
+        }
+    }
+</script>
+';
+                echo $X;
+                return $lavaleur;
+            } else {
+                $obj = json_decode($_REQUEST['EA_VERSION_LAST'], true);
+                if (!isset($obj['EXPOACTES'])) {
+                    $newvers = EA_VERSION;
+                    $status_inv = 'l';
+                    $lavaleur = EA_VERSION . '|l';
+                } else {
+                    $lavaleur = $obj['EXPOACTES'];
+                    $t = explode('|', $lavaleur . '|l');
+                    $newvers = $t[0];
+                    $status_inv = $t[1];
+                }
+            }
+        } else {
+            $lines = @file($urlsite . 'versions.php?req=' . $h . $r . '&inv=' . $type_site);
+            if ($lines) {
+                $lavaleur = "";
+                foreach ($lines as $line) {
+                    $laligne = explode(":", $line);
+                    if ($laligne[0] == $key) {
+                        $lavaleur = $laligne[1];
+                    }
+                }
+            }
+        }
+        // setcookie($key, $lavaleur);  // session uniquement
+    }
+    return $lavaleur;
+}
+
+
+/**
+ * @deprecated Expoactes system
+ */
+function check_version($currentversion, $requiredversion)
+// retourne VRAI si currentversion est superieur ou égal à requiredversion
+{
+    list($majorC, $minorC, $editC) = explode(".", $currentversion);
+    list($majorR, $minorR, $editR) = explode(".", $requiredversion);
+
+    $majorC = intval($majorC);
+    $majorR = intval($majorR);
+    $minorC = intval($minorC);
+    $minorR = intval($minorR);
+    $editC  = intval($editC);
+    $editR  = intval($editR);
+
+    if ($majorC > $majorR) {
+        return true;
+    }
+    if ($majorC < $majorR) {
+        return false;
+    }
+
+    if ($minorC > $minorR) {
+        return true;
+    }
+    if ($minorC < $minorR) {
+        return false;
+    }
+
+    if ($editC  >= $editR) {
+        return true;
+    }
+    if ($editC  >= $editR) {
+        return true;
+    }
+
+    return false;
+}
+
+
+function dequote_magic_quotes() // pour retirer les magic quotes s il y en a !! sur REQUEST et $_COOKIE
+{   // deprecated from PHP 7.4 and useless since 5.4)
+    if (version_compare(phpversion(), '5.4.0', '<')) {
+        if (get_magic_quotes_gpc()) {
+            if (is_array($_REQUEST)) {
+                foreach ($_REQUEST as $k => $v) {
+                    if (is_string($v)) {
+                        $_REQUEST[$k] = stripslashes($v);
+                    }
+                }
+            }
+            if (is_array($_COOKIE)) {
+                foreach ($_COOKIE as $k => $v) {
+                    if (is_string($v)) {
+                        $_COOKIE[$k]  = stripslashes($v);
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+function menu_datas($current)
+{
+    global $userlevel;
+    echo '<p align="center"><strong>Administration des données : </strong>';
+    showmenu('Statistiques', 'maj_sums.php', 'S', $current, false);
+    if ($userlevel > 7) {
+        showmenu('Localités', 'listgeolocs.php', 'L', $current);
+    }
+    showmenu('Ajout d\'un acte', 'ajout_1acte.php', 'A', $current);
+    if ($userlevel > 7) {
+        showmenu('Corrections groupées', 'corr_grp_acte.php', 'G', $current);
+        showmenu('Backup', 'exporte.php?Destin=B', 'B', $current);
+        showmenu('Restauration', 'charge.php?Origine=B', 'R', $current);
+    }
+    echo '</p>';
 }

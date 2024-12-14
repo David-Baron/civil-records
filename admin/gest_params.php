@@ -4,6 +4,12 @@ $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
+$userlogin = "";
+$userlevel = logonok(9);
+while ($userlevel < 9) {
+    login($root);
+}
+
 function show_grp($grp, $current, $barre)
 {
     if ($barre) {
@@ -25,9 +31,6 @@ function alaligne($texte)
     return str_replace($order, $replace, $texte);
 }
 
-$root = "";
-$path = "";
-
 $js_show_help = "";
 $js_show_help .= "function show(id) \n ";
 $js_show_help .= "{ \n ";
@@ -42,28 +45,8 @@ $js_show_help .= "		el = document.getElementById('help' + id); \n ";
 $js_show_help .= "	} \n ";
 $js_show_help .= "} \n ";
 
-
-//**************************** ADMIN **************************
-
-pathroot($root, $path, $xcomm, $xpatr, $page);
-
-$userlogin = "";
-$userlevel = logonok(9);
-while ($userlevel < 9) {
-    login($root);
-}
-
-ob_start();
-open_page("Paramétrage du logiciel", $root, $js_show_help);
-navadmin($root, "Paramétrage du logiciel");
-zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
-echo '<div id="col_main_adm">';
-menu_software('P');
-echo '<h2>Paramétrage du site "' . SITENAME . '"</h2>';
-
 $ok = false;
 $missingargs = false;
-
 $xgroupe  = getparam('grp');
 $xconfirm = getparam('xconfirm');
 
@@ -73,17 +56,32 @@ if ($xgroupe == '') {
     $missingargs = true;  // par défaut
 }
 
-//$request = "SELECT distinct groupe FROM ".EA_DB."_params ORDER BY groupe";
+pathroot($root, $path, $xcomm, $xpatr, $page);
+
+ob_start();
+open_page("Paramétrage du logiciel", $root, $js_show_help);
+navadmin($root, "Paramétrage du logiciel");
+zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
+echo '<div id="col_main_adm">';
+echo '<p align="center"><strong>Administration du logiciel : </strong>';
+showmenu('Paramétrage', 'gest_params.php', 'P', 'P', false);
+showmenu('Etiquettes', 'gest_labels.php', 'Q', 'P');
+showmenu('Etat serveur', 'serv_params.php', 'E', 'P');
+showmenu('Fitrage IP', 'gesttraceip.php', 'F', 'P');
+showmenu('Index', 'gestindex.php', 'I', 'P');
+showmenu('Journal', 'listlog.php', 'J', 'P');
+echo '</p>';
+echo '<h2>Paramétrage du site "' . SITENAME . '"</h2>';
+
 $request = "SELECT distinct groupe FROM " . EA_DB . "_params WHERE NOT (groupe in ('Hidden','Deleted')) ORDER BY groupe";
 $result = EA_sql_query($request);
-//echo $request;
 $barre = false;
 echo '<p align="center"><strong>Paramètres : </strong>';
 while ($row = EA_sql_fetch_array($result)) {
     show_grp($row["groupe"], $xgroupe, $barre);
     $barre = true;
 }
-echo ' || <a href="update_params.php">Backup</a>';
+echo ' || <a href="'.$root.'/admin/update_params.php">Backup</a>';
 echo '</p>';
 
 if (!$missingargs) {
@@ -139,7 +137,7 @@ while ($row = EA_sql_fetch_array($result)) {
     echo ' <tr>' . "\n";
     echo '  <td align="right"><b>' . $row["libelle"] . "</b>";
     echo ' <a href="' . $prog . '" id="help' . $i . '" onclick="javascript:show(\'aide' . $i . '\');return false;"><b>(?)</b></a>';
-    echo '<span id="aide' . $i . '" style="display: none" class="aide"><br />' . $row["param"] . " : " . alaligne($row["aide"]) . '</span>';
+    echo '<span id="aide' . $i . '" style="display: none" class="aide"><br>' . $row["param"] . " : " . alaligne($row["aide"]) . '</span>';
     echo " : </td>\n";
     echo '  <td>';
     echo '<input type="hidden" name="parname' . $i . '"  value="' . $row["param"] . '" />' . "\n";
@@ -170,7 +168,7 @@ while ($row = EA_sql_fetch_array($result)) {
     } elseif ($row["type"] == "L") {
         $leschoix = explode(";", $row["listval"]);
         echo '<select name="parvalue' . $i . '">' . "\n";
-        foreach($leschoix as $lechoix) {
+        foreach ($leschoix as $lechoix) {
             echo '<option ' . selected_option(intval(mb_substr($lechoix, 0, isin($lechoix, "-", 0) - 1)), $row["valeur"]) . '>' . $lechoix . '</option>' . "\n";
         }
         echo " </select>\n";

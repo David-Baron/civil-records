@@ -4,33 +4,25 @@ $admtxt = ''; // Compatibility only
 require(__DIR__ . '/next/bootstrap.php');
 require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
-$root = "";
-$path = "";
-
 $xcomm = $xpatr = $page = "";
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
-$uri = getparam('uri');
-if ($uri == "") {
-    $uri = "login.php";
-}
+$uri = getparam('uri', $root . '/login.php');
 $ok = false;
 
 ob_start();
 open_page("ExpoActes : Renvoi codes d'accès", $root, null, null, null, '../index.htm');
 navigation($root, 2, "R", "Renvoi des codes d'accès");
+zone_menu(0, 0, array('f' => 'N')); //PUBLIC SANS FORM_RECHERCHE
+?>
+<div id="col_main">
 
-
-zone_menu(0, 0, array('f' => 'N'));//PUBLIC SANS FORM_RECHERCHE
-echo '<div id="col_main">' . "\n";
-
-if (getparam('submit') <> '') {
+<?php if (getparam('submit') <> '') {
     if (getparam('email') == "") {
         msg('Vous devez fournir votre adresse email');
     } else {
         $missingargs = false;
         $request = "SELECT nom, prenom,login,email,level FROM " . EA_UDB . "_user3 WHERE email = '" . getparam('email') . "'; ";
-
         $result = EA_sql_query($request, $u_db);
         $nb = EA_sql_num_rows($result);
         if ($nb == 1) {
@@ -50,8 +42,6 @@ if (getparam('submit') <> '') {
                 echo ' -> Erreur : ';
                 echo '<p>' . EA_sql_error() . '<br>' . $reqmaj . '</p>';
             }
-
-            //echo '<p>ENVOI DU MAIL à ' . $user['login'];
 
             $lb        = "\r\n";
             $message  = "Bonjour," . $lb;
@@ -94,22 +84,27 @@ if (getparam('submit') <> '') {
     }
 }
 
-if (!$ok) {
-    echo "<h2>Renvoi des codes d'accès au site</h2>" . "\n";
-    echo '<p>Vos codes d\'accès peuvent vous être renvoyés à l\'adresse mail associée à votre compte d\'utilisateur</p>' . "\n";
-
-    echo '<form id="log" method="post" action="">' . "\n";
-    echo '<table align="center" summary="Formulaire">' . "\n";
-    echo '<tr><td align="right">Adresse e-mail : </td><td><input name="email" /></td></tr>' . "\n";
-    echo '<tr><td colspan="2" align="center"><input type="submit" name="submit" value=" Envoyer " /></td></tr>' . "\n";
-    echo '</table>' . "\n";
-    echo '</form>' . "\n";
-
-    echo '<p><a href="' . $root . '/acces.php">Voir les conditions d\'accès à la partie privée du site</a></p>' . "\n";
-
-    echo '<p>&nbsp;</p>' . "\n";
-}
-echo '</div>' . "\n";
-include(__DIR__ . '/templates/front/_footer.php');
+if (!$ok) { ?>
+    <h2>Renvoi des codes d'accès au site</h2>
+    <p>Vos codes d'accès peuvent vous être renvoyés à l'adresse mail associée à votre compte d'utilisateur</p>
+    <form id="log" method="post">
+        <table align="center" summary="Formulaire">
+            <tr>
+                <td>Adresse e-mail : </td>
+                <td><input name="email" /></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button type="submit" name="submit">Envoyer</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+    <p>
+        <a href="<?= $root; ?>/acces.php">Voir les conditions d'accès à la partie privée du site</a>
+    </p>
+<?php } ?>
+</div>
+<?php include(__DIR__ . '/templates/front/_footer.php');
 $response->setContent(ob_get_clean());
 $response->send();

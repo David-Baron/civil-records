@@ -1,32 +1,28 @@
 <?php
 define('ADM', 10); // Compatibility only
+// define ("OPTIMIZE", 1);
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
-
-//define ("OPTIMIZE",1);
-$MT0 = microtime_float();
-$root = "";
-$path = "";
-$xcomm = "";
-$xpatr = "";
-$page = 1;
-
-pathroot($root, $path, $xcomm, $xpatr, $page);
-
-$xord  = getparam('xord');
-if ($xord == "") {
-    $xord = "D";
-}   // N = Nom
-$page  = getparam('pg');
-$xdel  = getparam('xdel');
-$xfilter = getparam('xfilter');
 
 $userlogin = "";
 $userlevel = logonok(9);
 while ($userlevel < 9) {
     login($root);
 }
+
+
+
+pathroot($root, $path, $xcomm, $xpatr, $page);
+
+$MT0 = microtime_float();
+$xcomm = "";
+$xpatr = "";
+$page = 1;
+$xord  = getparam('xord', 'D');// N = Nom
+$page  = getparam('pg');
+$xdel  = getparam('xdel');
+$xfilter = getparam('xfilter');
 
 ob_start();
 open_page(SITENAME . " : Activité du site", $root);

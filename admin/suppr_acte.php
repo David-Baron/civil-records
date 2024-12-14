@@ -4,14 +4,14 @@ $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
-pathroot($root, $path, $xcomm, $xpatr, $page);
-
 $userlogin = "";
 $needlevel = 6;  // niveau d'accès (anciennement 5)
 $userlevel = logonok($needlevel);
 while ($userlevel < $needlevel) {
     login($root);
 }
+
+pathroot($root, $path, $xcomm, $xpatr, $page);
 
 $missingargs = false;
 $oktype = false;

@@ -143,8 +143,6 @@ function moisrepub($moisrepub, $typ = 0)
     }
 }
 
-//------------------------------------------------------------------------------
-
 function chiffres($texte)
 {
     $l = strlen($texte);
@@ -156,8 +154,6 @@ function chiffres($texte)
     }
     return $result;
 }
-
-//------------------------------------------------------------------------------
 
 function anneerepub($anneerepub)
 {
@@ -210,8 +206,6 @@ function anneerepub($anneerepub)
     return $MM;
 }
 
-//------------------------------------------------------------------------------
-
 function convert_dt_repub($rj, $rm, $ra) // transforme une date républicaine en date grégorienne
 {
     $nbannee = anneerepub($ra);
@@ -222,8 +216,6 @@ function convert_dt_repub($rj, $rm, $ra) // transforme une date républicaine en
     return $reponse;
 }
 
-//------------------------------------------------------------------------------
-
 function formate_dt_repub($rj, $rm, $ra) // formate une date républicaine longue en courte
 {
     $nbannee = mb_substr("0" . anneerepub($ra), -2, 2);
@@ -232,7 +224,6 @@ function formate_dt_repub($rj, $rm, $ra) // formate une date républicaine longu
     $reponse = $nojour . "/" . $moisrep . "/" . $nbannee;
     return $reponse;
 }
-//------------------------------------------------------------------------------
 
 function quelmois($MMM)
 {
@@ -283,8 +274,6 @@ function quelmois($MMM)
     return $MM;
 }
 
-//------------------------------------------------------------------------------
-
 function listbox_trait($fieldname, $typetrait, $default)
 { // Liste des définitions de traitements
     global $trait;
@@ -301,8 +290,6 @@ function listbox_trait($fieldname, $typetrait, $default)
     }
     echo " </select>\n";
 }
-
-//------------------------------------------------------------------------------
 
 function traitement($indice, $objet, $code)
 {
@@ -521,7 +508,7 @@ function traitement($indice, $objet, $code)
                 case "I":  // Inverse la date de AAAA MM JJ vers JJ MM AAAA avec séparateurs espace / . -
                     $tdate = explode_date($acte[$indice]);
                     if (count($tdate) == 3) {
-                        $reponse = 	trim($tdate[2]) . '-' . trim($tdate[1]) . '-' . trim($tdate[0]);
+                        $reponse =     trim($tdate[2]) . '-' . trim($tdate[1]) . '-' . trim($tdate[0]);
                     } else {
                         $reponse = $acte[$indice];
                     }  // on ne change rien !!
@@ -529,7 +516,7 @@ function traitement($indice, $objet, $code)
                 case "S":
                     $tdate = explode_date($acte[$indice]);
                     if (count($tdate) == 3) {
-                        $reponse = 	trim($tdate[0]) . '-' . trim($tdate[1]) . '-' . trim($tdate[2]);
+                        $reponse =     trim($tdate[0]) . '-' . trim($tdate[1]) . '-' . trim($tdate[2]);
                     } else {
                         $reponse = $acte[$indice];
                     }  // on ne change rien !!
@@ -594,8 +581,6 @@ function traitement($indice, $objet, $code)
     return $reponse;
 }
 
-//------------------------------------------------------------------------------
-
 function comparer($comp1, $comp2, $code)
 {
     global $trait;
@@ -643,8 +628,6 @@ function comparer($comp1, $comp2, $code)
     return $reponse;
 }
 
-//------------------------------------------------------------------------------
-
 function comparerSQL($var, $comp, $code)
 {
     global $trait;
@@ -678,5 +661,3 @@ function comparerSQL($var, $comp, $code)
     }
     return $reponse;
 }
-
-//------------------------------------------------------------------------------

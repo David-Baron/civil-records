@@ -4,6 +4,12 @@ $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
+$userlogin = "";
+$userlevel = logonok(9);
+while ($userlevel < 9) {
+    login($root);
+}
+
 function paspoint($string)
 {
     $x = strpos($string, ":");
@@ -15,12 +21,6 @@ function paspoint($string)
 }
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
-
-$userlogin = "";
-$userlevel = logonok(9);
-while ($userlevel < 9) {
-    login($root);
-}
 
 $action = getparam('maint');
 if ($action <> "") {

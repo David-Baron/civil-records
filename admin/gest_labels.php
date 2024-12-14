@@ -6,7 +6,12 @@ require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
 //define('EA_MASTER',"Y"); // pour editer les zones "Techniques"
 
-//------------------------------------------------------------------------------
+
+$userlogin = "";
+$userlevel = logonok(9);
+while ($userlevel < 9) {
+    login($root);
+}
 
 function show_grp($grp, $current, $barre)
 {
@@ -21,8 +26,6 @@ function show_grp($grp, $current, $barre)
     }
 }
 
-//------------------------------------------------------------------------------
-
 function alaligne($texte)
 {
     // insert des BR pour provoquer des retour à la ligne
@@ -32,21 +35,27 @@ function alaligne($texte)
     return str_replace($order, $replace, $texte);
 }
 
-//------------------------------------------------------------------------------
-
-$root = "";
-$path = "";
 $lg = $GLOBALS['lg'];
-
-//**************************** ADMIN **************************
+$ok = false;
+$missingargs = false;
+$xfile  = getparam('file');
+$xconfirm = getparam('xconfirm');
+$lesigle = getparam('SIGLE');
+$code_liste = '';
+$sans_sigle_par_defaut = 'CestUnCodeBidonQuiNeRisquePasDExister-jkhdkfjpqsifjzpekflskjfnksdf';
+$chsigle = getparam('chsigle'); // 1 : on vient de le changer --> reconstruire la liste
+if ($xfile == '') {
+    // Données postées
+    $xfile = "N";
+    $missingargs = true;  // par défaut
+}
+$files = array('N', 'M', 'D', 'V', 'X');
+$bases = array('N' => 'Naissances', 'M' => 'Mariages', 'D' => 'Décès', 'V' => 'Divers (par défaut)', 'X' => 'Divers spécifiques');
+$grpes = array('A0' => 'Technique', 'A1' => 'Document', 'D1' => 'Intéressé', 'D2' => 'Parents intéressé', 'F1' => 'Second intéressé', 'F2' => 'Parents 2d intéressé', 'T1' => 'Témoins', 'V1' => 'Références', 'W1' => 'Crédits', 'X0' => 'Gestion');
+$gspec = array('D1', 'D2', 'F1', 'F2', 'T1');
+$barre = false;
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
-
-$userlogin = "";
-$userlevel = logonok(9);
-while ($userlevel < 9) {
-    login($root);
-}
 
 ob_start();
 open_page("Paramétrage des étiquettes", $root);
@@ -61,45 +70,23 @@ navadmin($root, "Paramétrage des étiquettes");
 	}
 </script>
 <?php
-//{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; }
-
 zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
-
 echo '<div id="col_main_adm">';
-
-menu_software('Q');
-
+echo '<p align="center"><strong>Administration du logiciel : </strong>';
+    showmenu('Paramétrage', 'gest_params.php', 'P', 'Q', false);
+    showmenu('Etiquettes', 'gest_labels.php', 'Q', 'Q');
+    showmenu('Etat serveur', 'serv_params.php', 'E', 'Q');
+    showmenu('Fitrage IP', 'gesttraceip.php', 'F', 'Q');
+    showmenu('Index', 'gestindex.php', 'I', 'Q');
+    showmenu('Journal', 'listlog.php', 'J', 'Q');
+    echo '</p>';
 echo '<h2>Gestions des étiquettes des données</h2>';
-
-$ok = false;
-$missingargs = false;
-
-$xfile  = getparam('file');
-$xconfirm = getparam('xconfirm');
-$lesigle = getparam('SIGLE');
-$code_liste = '';
-$sans_sigle_par_defaut = 'CestUnCodeBidonQuiNeRisquePasDExister-jkhdkfjpqsifjzpekflskjfnksdf';
-$chsigle = getparam('chsigle'); // 1 : on vient de le changer --> reconstruire la liste
-
-if ($xfile == '') {
-    // Données postées
-    $xfile = "N";
-    $missingargs = true;  // par défaut
-}
-$files = array('N', 'M', 'D', 'V', 'X');
-$bases = array('N' => 'Naissances', 'M' => 'Mariages', 'D' => 'Décès', 'V' => 'Divers (par défaut)', 'X' => 'Divers spécifiques');
-$grpes = array('A0' => 'Technique', 'A1' => 'Document', 'D1' => 'Intéressé', 'D2' => 'Parents intéressé', 'F1' => 'Second intéressé', 'F2' => 'Parents 2d intéressé', 'T1' => 'Témoins', 'V1' => 'Références', 'W1' => 'Crédits', 'X0' => 'Gestion');
-$gspec = array('D1', 'D2', 'F1', 'F2', 'T1');
-$barre = false;
 echo '<p align="center"><strong>Bases : </strong>';
 foreach ($files as $file) {
     show_grp($file, $xfile, $barre);
     $barre = true;
 }
 echo '</p>';
-
-
-//{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; }
 
 if (!$missingargs) {
     $oktype = true;

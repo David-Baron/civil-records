@@ -15,13 +15,11 @@ function linkjpg($texte)   // transforme en lien actif les nom de fichier JPG re
         $longprefixe = $longref - $longsuffixe;
         $prefixe = mb_substr($texte, 0, $longprefixe);
 
-
         //CAS 00A
         if ($longsuffixe == 3) {
             $image = URK_JPG . $texte . ".jpg";
             $result .= ' <a href="' . $image . '" target="_blank">Image' . $cpt++ . '</a> ';
         }
-
 
         //CAS 00A-00B
         if ($longsuffixe == 7) {
@@ -38,7 +36,6 @@ function linkjpg($texte)   // transforme en lien actif les nom de fichier JPG re
                 $result .= ' <a href="' . $image . '" target="_blank">Image' . $cpt++ . '</a> ';
             }
         }
-
 
         //CAS 00Aet00B
         if ($longsuffixe == 8) {
@@ -71,7 +68,6 @@ function linkjpg($texte)   // transforme en lien actif les nom de fichier JPG re
                 }
 
             } else {
-
                 // Cas 00A-00Bet00C
                 $prem = mb_substr($suffixe, 0, 3);
                 $dern = mb_substr($suffixe, 4, 3);

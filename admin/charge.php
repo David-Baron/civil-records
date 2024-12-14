@@ -4,6 +4,7 @@ $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
+
 my_ob_start_affichage_continu();
 
 $autorise_autoload = true;  // Rechargement automatisé: true|false
@@ -43,8 +44,6 @@ function msgplus($msg) // ouvre la page si elle ne l'est pas encore
     msg($msg);
 }
 
-//---------------------------------------------------------
-
 function lienautoreload($msg)
 {
     global $url_de_base;
@@ -57,8 +56,6 @@ function lienautoreload($msg)
         echo '</p>';
     }
 }
-
-//---------------------------------------------------------
 
 function init_page($head = "")
 {
@@ -92,13 +89,23 @@ function init_page($head = "")
         zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
         echo '<div id="col_main_adm">';
         if ($moderestore) {
-            menu_datas('R');
+            echo '<p align="center"><strong>Administration des données : </strong>';
+            showmenu('Statistiques', 'maj_sums.php', 'S', 'R', false);
+            if ($userlevel > 7) {
+                showmenu('Localités', 'listgeolocs.php', 'L', 'R');
+            }
+            showmenu('Ajout d\'un acte', 'ajout_1acte.php', 'A', 'R');
+            if ($userlevel > 7) {
+                showmenu('Corrections groupées', 'corr_grp_acte.php', 'G', 'R');
+                showmenu('Backup', 'exporte.php?Destin=B', 'B', 'R');
+                showmenu('Restauration', 'charge.php?Origine=B', 'R', 'R');
+            }
+            echo '</p>';
         }
         $pageinited = true;
     }
 }
 
-//---------------------------------------------------------
 function quote_explode($sep, $qot, $line) // découpe la ligne selon le separateur en tenant compte des quotes
 {
     if ($qot == '') {

@@ -1,16 +1,5 @@
 <?php
 
-// VERSION 2015
-// Utilitaires génériques
-// Copyright (C) : André Delacharlerie, 2005-2015
-// Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les termes de la
-// Licence Publique Générale GNU, version 2 (GPLv2), publiée par la Free Software Foundation
-// Texte de la licence : https://www.gnu.org/licenses/old-licenses/gpl-2.0.fr.html
-
-//-------------------------------------------------------------------
-
-//error_reporting(1);  // redefini ensuite dans actutils...
-
 if (file_exists(dirname(__FILE__) . '/EA_sql.inc.php')) {
     include_once(dirname(__FILE__) . '/EA_sql.inc.php');
 } else {
@@ -19,9 +8,6 @@ if (file_exists(dirname(__FILE__) . '/EA_sql.inc.php')) {
         include_once(dirname(__FILE__) . '/mysql2i.class.php');
     }
 }
-
-//set_magic_quotes_runtime(0);  // annulation des magic quotes sur les téléchargements (obsolète à partir de 5.3)
-dequote_magic_quotes();      // suppression des magic quotes sur les paramètres REQUEST et COOKIE
 
 define('INTERNAL_CHARSET', 'UTF-8');
 define('MAIL_CHARSET', INTERNAL_CHARSET); // Charset pour les mails
@@ -32,8 +18,6 @@ mb_internal_encoding(INTERNAL_CHARSET);
 define('ENTITY_REPLACE_FLAGS', ENT_COMPAT | 16); // idem ci dessus (ENT_XHTML n'est pas défini avant  php 5.4)
 define('EL', '');  // definie mais vide
 
-
-//-------------------------------------------------------------------
 /**
  * Converti une chaine Windows en UTF8 après avoir recodé le caractère 134 : †
  * @param string $text
@@ -48,7 +32,6 @@ function ea_utf8_encode($text)
     return $text;
 }
 
-//-------------------------------------------------------------------
 /**
  * Converti une chaine UTF8 en Windows avec recodage du caractère 134 : †
  * @param string $text
@@ -62,8 +45,6 @@ function ea_utf8_decode($text)
     $text = iconv("UTF-8", "Windows-1252", $text);
     return $text;
 }
-
-//-------------------------------------------------------------------
 
 function optimize($request)  // pour détection des optimisations à faire
 {
@@ -87,15 +68,13 @@ function optimize($request)  // pour détection des optimisations à faire
     }
 }
 
-//-----------------------------------------
-
 function return_bytes($val)
 {  // conversion des valeurs de paramètres PHP de type 2M ou 256K
     $val = trim($val);
     $last = strtolower($val[strlen($val) - 1]);
     $val = substr($val, 0, -1);     // BG: 28/10/2021: enlever le dernier caractère pour n'avoir qu'une valeur numérique
-    switch($last) {
-        // Le modifieur 'G' est disponible depuis PHP 5.1.0
+    switch ($last) {
+            // Le modifieur 'G' est disponible depuis PHP 5.1.0
         case 'g':
             $val *= 1024;
             // no break
@@ -108,33 +87,29 @@ function return_bytes($val)
     return $val;
 }
 
-//---------------------------------------------------------
-
 function isin($grand, $petit, $debut = 0) // retourne la position de $petit dans $grand ou -1 si non présent
 {
     //echo "recherche de ".$petit." dans ".$grand.".";
     if ($petit == "") {
         return -1;
-    } else {
-        $pos = mb_strpos($grand, $petit, $debut);
-        if ($pos === false) {
-            return -1;
-        } else {
-            return $pos;
-        }
     }
-}
 
+    $pos = mb_strpos($grand, $petit, $debut);
+    if ($pos === false) {
+        return -1;
+    }
+
+    return $pos;
+}
 
 function getparam($name, $default = "")
 {
     if (isset($_REQUEST[$name])) {
         return $_REQUEST[$name];
-    } 
+    }
 
     return $default;
 }
-
 
 function mydir($dir, $ext) // retourne la liste des fichiers d'un répertoire
 // (et remplace la fonction glob qui n'est pas supportée sur tous les hébergements)
@@ -155,35 +130,28 @@ function mydir($dir, $ext) // retourne la liste des fichiers d'un répertoire
     return $files;
 }
 
-//---------------------------------------------------------
-
 function iif($bool, $vrai, $faux) // is bool alors vrai sinon faux
 {
     if ($bool) {
         return $vrai;
-    } 
-    
+    }
+
     return $faux;
 }
-
 
 function div($nbre, $diviseur) // division entière
 {
     return floor($nbre / $diviseur);
 }
 
-//---------------------------------------------------------
-
 function entier($nbre) // pour mettre au format entier avec séparateur
 {
     if ($nbre == '') {
         return '';
-    } 
-    
+    }
+
     return number_format(intval($nbre), 0, ',', '.');
 }
-
-//---------------------------------------------------------
 
 function ads_explode($chaine, $separ, $nbre) // explose une chaines dans un tableau et complete si besoin les cases manquantes
 {
@@ -196,14 +164,10 @@ function ads_explode($chaine, $separ, $nbre) // explose une chaines dans un tabl
     return $tableau;
 }
 
-//---------------------------------------------------------
-
 function zeros($nbre, $chiffres) // pour précéder un entier de 0  (ex 006)
 {
     return mb_substr('0000000000' . $nbre, -$chiffres, $chiffres);
 }
-
-//---------------------------------------------------------
 
 function sans_quote($texte)  // retourne vrai si aucune quote dans le texte
 {
@@ -214,7 +178,6 @@ function sans_quote($texte)  // retourne vrai si aucune quote dans le texte
     }
 }
 
-//---------------------------------------------------------
 function multisin($grand, $listpetits)
 { // retourne la position de la première petite chaine trouvée dans la grande
     $resu = -1;
@@ -226,7 +189,6 @@ function multisin($grand, $listpetits)
     }
     return $resu;
 }
-//---------------------------------------------------------
 
 function linkifie($texte, $mode)  // transforme en lien actif les noms de fichier image et les URL rencontrées
 // mode : 0 = ne rien faire, >0 activer les lien : 1 = séparés par des , ou des blancs ou  2 = séparés par des ;
@@ -337,13 +299,13 @@ function linkifie($texte, $mode)  // transforme en lien actif les noms de fichie
                             $ipublic = false;
                             if ($userlevel < LEVEL_JPG_PRIVE) {
                                 $result .= " ";
-                            }	// On ne montre pas si prive et pas le niveau suffisant
+                            }    // On ne montre pas si prive et pas le niveau suffisant
                             else {
                                 $ipublic = true;
                             }
                         } elseif (($userlogin == "") and (JPG_SI_LOGIN == 1)) {
                             $cpt++;
-                            $result .= $ecarte_element . 'Image' . $cpt . ' privée';	// On ne montre pas car login obligatoire
+                            $result .= $ecarte_element . 'Image' . $cpt . ' privée';    // On ne montre pas car login obligatoire
                             $ipublic = false;
                         }
 
@@ -365,206 +327,29 @@ function linkifie($texte, $mode)  // transforme en lien actif les noms de fichie
     }
 }
 
-//------------------------------------------------------------
-
-/*
-function linkjpg($texte) // adapté pour la syntaxe de http://marmottesdesavoie.org/
-
-    {
-    $result = '';
-    $cpt = 1;
-
-    if ($texte !="") and ($userlevel >= LEVEL_JPG_PRIVE)
-        {
-        $longref = strlen($texte);
-        $suffixe = mb_substr(strrchr($texte,"_"),1);
-        $longsuffixe = strlen($suffixe);
-        $longprefixe = $longref-$longsuffixe;
-        $prefixe = mb_substr($texte,0,$longprefixe);
-
-
-        //CAS 00A
-        If ($longsuffixe==3)
-            {
-            $image=URL_JPG.$texte.".jpg";
-            $result .= ' <a href="'.$image.'" target="_blank">Image'.$cpt++.'</a> ';
-            }
-
-
-        //CAS 00A-00B
-        If ($longsuffixe ==7)
-            {
-            $prem=mb_substr($suffixe,0,3);
-            $dern=mb_substr($suffixe,4,3);
-            $nb=$dern-$prem;
-
-            for ($k = 0; $k <= $nb; $k++)
-                {
-                $index2=$prem+$k;
-                $index1 = "000".$index2;
-                $index = mb_substr($index1,-3);
-                $image=URL_JPG.$prefixe.$index.".jpg";
-                $result .= ' <a href="'.$image.'" target="_blank">Image'.$cpt++.'</a> ';
-                }
-            }
-
-
-        //CAS 00Aet00B
-        If ($longsuffixe ==8)
-            {
-            $prem=mb_substr($suffixe,0,3);
-            $dern=mb_substr($suffixe,5,3);
-            $image=URL_JPG.$prefixe.$prem.".jpg";
-            $result .= ' <a href="'.$image.'" target="_blank">Image'.$cpt++.'</a> ';
-            $image=URL_JPG.$prefixe.$dern.".jpg";
-            $result .= ' <a href="'.$image.'" target="_blank">Image'.$cpt++.'</a> ';
-            }
-
-        //CAS  00Aet00B-00C et 00A-00Bet00C
-
-IF ($longsuffixe ==12)
-    {
-    $test=mb_substr($suffixe,3,1);
-    if ($test =="e")
-        // Cas 00Aet00B-00C
-        {
-        $prem=mb_substr($suffixe,5,3);
-        $dern=mb_substr($suffixe,-3);
-        $extra=mb_substr($suffixe,0,3);
-        $nb=$dern-$prem;
-        $image=URL_JPG.$prefixe.$extra.".jpg";
-        $result .= ' <a href="'.$image.'" target="_blank">Image'.$cpt++.'</a> ';
-        for ($k = 0; $k <= $nb; $k++)
-            {
-            $index2=$prem+$k;
-            $index1 = "000".$index2;
-            $index = mb_substr($index1,-3);
-            $image=URL_JPG.$prefixe.$index.".jpg";
-            $result .= ' <a href="'.$image.'" target="_blank">Image'.$cpt++.'</a> ';
-            }
-        }
-    else
-    // Cas 00A-00Bet00C
-        {
-        $prem=mb_substr($suffixe,0,3);
-        $dern=mb_substr($suffixe,4,3);
-        $extra=mb_substr($suffixe,-3);
-        $nb=$dern-$prem;
-        for ($k = 0; $k <= $nb; $k++)
-            {
-            $index2=$prem+$k;
-            $index1 = "000".$index2;
-            $index = mb_substr($index1,-3);
-            $image=URL_JPG.$prefixe.$index.".jpg";
-            $result .= ' <a href="'.$image.'" target="_blank">Image'.$cpt++.'</a> ';
-            }
-        $image=URL_JPG.$prefixe.$extra.".jpg";
-        $result .= ' <a href="'.$image.'" target="_blank">Image'.$cpt++.'</a> ';
-        }
-    }
-// Cas 00A-00Bet00C-00D
-IF ($longsuffixe >12)
-    {
-    $prem=mb_substr($suffixe,0,3);
-    $dern=mb_substr($suffixe,4,3);
-    $prem2=mb_substr($suffixe,9,3);
-    $dern2=mb_substr($suffixe,13,3);
-    $nb=$dern-$prem;
-    $nb2=$dern2-$prem2;
-    for ($k = 0; $k <= $nb; $k++)
-        {
-        $index2=$prem+$k;
-        $index1 = "000".$index2;
-        $index = mb_substr($index1,-3);
-        $image=URL_JPG.$prefixe.$index.".jpg";
-        $result .= ' <a href="'.$image.'" target="_blank">Image'.$cpt++.'</a> ';
-        }
-    for ($k = 0; $k <= $nb2; $k++)
-        {
-        $index2=$prem2+$k;
-        $index1 = "000".$index2;
-        $index = mb_substr($index1,-3);
-        $image=URL_JPG.$prefixe.$index.".jpg";
-        $result .= ' <a href="'.$image.'" target="_blank">Image'.$cpt++.'</a> ';
-        }
-    }
-
-    return $result;
-    }
-//*/
-
-//---------------------------------------------------------
-
-function dequote_magic_quotes() // pour retirer les magic quotes s il y en a !! sur REQUEST et $_COOKIE
-{   // deprecated from PHP 7.4 and useless since 5.4)
-    if (version_compare(phpversion(), '5.4.0', '<')) {
-        if (get_magic_quotes_gpc()) {
-            if (is_array($_REQUEST)) {
-                foreach ($_REQUEST as $k => $v) {
-                    if (is_string($v)) {
-                        $_REQUEST[$k] = stripslashes($v);
-                    }
-                }
-            }
-            if (is_array($_COOKIE)) {
-                foreach ($_COOKIE as $k => $v) {
-                    if (is_string($v)) {
-                        $_COOKIE[$k]  = stripslashes($v);
-                    }
-                }
-            }
-        }
-    }
-}
-
-//---------------------------------------------------------
-
 function sql_and($cond) // ajoute and si condition non vide
 {
     if ($cond != "") {
         return $cond . " and ";
-    } else {
-        return "";
-    }
+    } 
+    
+    return "";
 }
 
-//---------------------------------------------------------
-
-// André DELACHARLERIE
-/*
-function sql_quote($texte) // pour passer texte à MySQL en escapant les ' " \ ...
-  {
-    if (true) // (!get_magic_quotes_gpc()) // get_magic_quotes_gpc ne porte que sur les éléments recus via GET/POST
-        {
-        $result = addslashes(trim($texte));
-//		$result = addslashes($texte);
-        }
-     else
-        {
-        $result = trim($texte);
-        }
-  return $result;
-  }
-*/
 function sql_quote($texte) // pour passer texte a MySQL en escapant les ' " \ ...
 {
     $result = EA_sql_real_escape_string(trim($texte));
     return $result;
 }
-// André DELACHARLERIE
-
-//---------------------------------------------------------
 
 function sql_virgule($cond, $add) // ajoute , si liste non vide
 {
     if ($cond != "") {
         return $cond . ", " . $add;
-    } else {
-        return $add;
-    }
+    } 
+    
+    return $add;
 }
-
-//---------------------------------------------------------
 
 function heureminsec($totalsecondes)
 {
@@ -575,31 +360,25 @@ function heureminsec($totalsecondes)
     return sprintf("%02dj %02dh %02d' %02d\"", $jours, $heures, $minutes, $secondes);
 }
 
-//---------------------------------------------------------
-
 function val_var_mysql($label)
 {
     if ($result = EA_sql_query("SHOW VARIABLES LIKE '" . $label . "'")) {
         $row = EA_sql_fetch_assoc($result);
         return $row['Value'];
-    } else {
-        return "??";
-    }
+    } 
+    
+    return "??";
 }
-
-//---------------------------------------------------------
 
 function val_status_mysql($label)
 {
     if ($result = EA_sql_query("SHOW STATUS LIKE '" . $label . "'")) {
         $row = EA_sql_fetch_assoc($result);
         return $row['Value'];
-    } else {
-        return "??";
-    }
+    } 
+    
+    return "??";
 }
-
-//---------------------------------------------------------
 
 function explode_csv($line)
 // décompose selon ; ou tab en respectant les guillements éventuels
@@ -625,8 +404,6 @@ function explode_csv($line)
     return $res;
 }
 
-//------------------------------------------------------------
-
 function is__writable($path, $show = true)  // Teste si acces en ecriture est possible : attention aux deux _ _
 {
     if ($path[strlen($path) - 1] == '/') {
@@ -651,8 +428,6 @@ function is__writable($path, $show = true)  // Teste si acces en ecriture est po
     return true;
 }
 
-//---------------------------------------------------------
-
 function permuter(&$un, &$deux)
 {
     $trois = $un;
@@ -660,16 +435,12 @@ function permuter(&$un, &$deux)
     $deux = $trois;
 }
 
-//---------------------------------------------------------
-
 function remove_accent($txt)
 { // adaptée UTF-8
-    $tofind = array('À','Á','Â','Ã','Ä','Å','à','á','â','ã','ä','å','Ò','Ó','Ô','Õ','Ö','Ø','ò','ó','ô','õ','ö','ø','È','É','Ê','Ë','è','é','ê','ë','Ç','ç','Ì','Í','Î','Ï','ì','í','î','ï','Ù','Ú','Û','Ü','ù','ú','û','ü','ÿ','Ñ','ñ');
-    $replac = array('A','A','A','A','A','A','a','a','a','a','a','a','O','O','O','O','O','O','o','o','o','o','o','o','E','E','E','E','e','e','e','e','C','c','I','I','I','I','i','i','i','i','U','U','U','U','u','u','u','u','y','N','n');
+    $tofind = array('À', 'Á', 'Â', 'Ã', 'Ä', 'Å', 'à', 'á', 'â', 'ã', 'ä', 'å', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', 'Ø', 'ò', 'ó', 'ô', 'õ', 'ö', 'ø', 'È', 'É', 'Ê', 'Ë', 'è', 'é', 'ê', 'ë', 'Ç', 'ç', 'Ì', 'Í', 'Î', 'Ï', 'ì', 'í', 'î', 'ï', 'Ù', 'Ú', 'Û', 'Ü', 'ù', 'ú', 'û', 'ü', 'ÿ', 'Ñ', 'ñ');
+    $replac = array('A', 'A', 'A', 'A', 'A', 'A', 'a', 'a', 'a', 'a', 'a', 'a', 'O', 'O', 'O', 'O', 'O', 'O', 'o', 'o', 'o', 'o', 'o', 'o', 'E', 'E', 'E', 'E', 'e', 'e', 'e', 'e', 'C', 'c', 'I', 'I', 'I', 'I', 'i', 'i', 'i', 'i', 'U', 'U', 'U', 'U', 'u', 'u', 'u', 'u', 'y', 'N', 'n');
     return (str_replace($tofind, $replac, $txt));
 }
-
-//---------------------------------------------------------
 
 function con_une_db($ladbaddr, $ladbuser, $ladbpass, $ladbname, $show = false, $new_link = false) // fonction de connexion à une DB
 {
@@ -719,8 +490,6 @@ function con_une_db($ladbaddr, $ladbuser, $ladbpass, $ladbname, $show = false, $
     }
 }
 
-///---------------------------------------------------------
-
 function con_db($show = false) // fonction de connexion des DB
 {
     global $dbaddr, $dbuser, $dbpass, $dbname, $a_db, $dbok;
@@ -744,14 +513,10 @@ function con_db($show = false) // fonction de connexion des DB
     return $a_db;
 }
 
-//---------------------------------------------------------
-
 function close_db($dblink) // ferme la connexion à la DB
 {
     EA_sql_close($dblink);
 }
-
-//---------------------------------------------------------
 
 function msg($desc, $type = "erreur")
 {
@@ -771,7 +536,6 @@ function msg($desc, $type = "erreur")
     }
 }
 
-//---------------------------------------------------------
 function update_sql_mode($allow_mode = '', $replace = false)
 {
     /*
@@ -810,31 +574,24 @@ function writelog($texte, $commune = "-", $nbactes = 0)
     update_sql_mode('', false); // sur la session, reset
 }
 
-//---------------------------------------------------------
 /**
-* Fonction simple identique à celle en PHP 5
-*/
+ * Fonction simple identique à celle en PHP 5
+ */
 function microtime_float()
 {
     list($usec, $sec) = explode(" ", microtime());
     return ((float) $usec + (float) $sec);
 }
 
-//---------------------------------------------------------
-
 function now()
 {
     return date("Y-m-d H:i:s", time());
 }
 
-//---------------------------------------------------------
-
 function today()
 {
     return date("Y-m-d", time());
 }
-
-//---------------------------------------------------------
 
 function showdate($sqldate, $mode = "T")
 {
@@ -855,7 +612,6 @@ function showdate($sqldate, $mode = "T")
     //echo $sqldate ."-->".$ladate;
     return $ladate;
 }
-//---------------------------------------------------------
 
 function date_rss($ladate)
 {
@@ -865,8 +621,6 @@ function date_rss($ladate)
     $texte = gmdate("D, d M Y H:i:s", $dtunix) . " GMT";
     return $texte;
 }
-
-//---------------------------------------------------------
 
 function date_sql($ladate)
 {
@@ -881,14 +635,10 @@ function date_sql($ladate)
     }
 }
 
-//---------------------------------------------------------
-
 function microdelay($delay) //Just for the fun ! ;-)
 {
     @fsockopen("tcp://localhost", 31238, $errno, $errstr, $delay);
 }
-
-//---------------------------------------------------------------
 
 function MakeRandomPassword($length = 6)
 {
@@ -908,8 +658,6 @@ function MakeRandomPassword($length = 6)
     return $newpass;
 }
 
-//------------------------------------------------------------------------
-
 function valid_mail_adrs($email)
 {
     if (preg_match('`^\w([-_.]?\w)*@\w([-_.]?\w)*\.([a-z]{2,4})$`', $email)) {
@@ -919,15 +667,11 @@ function valid_mail_adrs($email)
     }
 }
 
-//------------------------------------------------------------------------
-
 function mail_encode($texte)
 {
     // code les textes pour l'adresse mail ou le sujet de façon à passer même en 7bits
     return "=?" . MAIL_CHARSET . "?B?" . base64_encode($texte) . "?=";
 }
-
-//------------------------------------------------------------------------
 
 function sendmail($from, $to, $sujet, $message)
 {
@@ -957,7 +701,7 @@ function sendmail($from, $to, $sujet, $message)
         }
         return $ok;
     } else {
-        if (file_exists( dirname(__FILE__) . '/PHPMailer/') and file_exists(dirname(__FILE__) . '/mail_externe.inc.php')) {
+        if (file_exists(dirname(__FILE__) . '/PHPMailer/') and file_exists(dirname(__FILE__) . '/mail_externe.inc.php')) {
             // Gestion Envoi mel par script externe local et PHPMailer
             $retour_mail_externe = false;
             // Le script doit positionner la variable $retour_mail_externe à "false" ou "true", à défaut ce script considérera que l'envoi de mél a échoué même s'il a réussi.
@@ -1048,16 +792,12 @@ function sendmail($from, $to, $sujet, $message)
         }
         $result = fgets($fp, 1024);
 
-        // close socket
         fclose($fp);
         return true;
     }
 }
 
-//------------------------------------------------------------------------
-
 function crypter($mes, $password)
-// source : www.phpcs.com :  Tadpole
 {
     $res = ' ';
     $j = 0;
@@ -1079,10 +819,7 @@ function crypter($mes, $password)
     return $res;
 }
 
-//------------------------------------------------------------------------
-
 function decrypter($mes, $password)
-// source : www.phpcs.com :  Tadpole
 {
     $res = ' ';
     $j = 0;
@@ -1103,8 +840,6 @@ function decrypter($mes, $password)
     }
     return $res;
 }
-
-//------------------------------------------------------------------------
 
 function my_flush($minsize = 0)
 {
@@ -1128,10 +863,8 @@ function my_ob_start_affichage_continu()
     ob_implicit_flush(1);
 }
 
-//------------------------------------------------------------------------
 
 // Détection du codage UTF-8 d'une chaîne.
-// source : http://www.cylman.com/php/detecter-si-une-chaine-est-encodee-en-utf-8_qr13.html
 function is_utf8($str)
 {
     $c = 0;

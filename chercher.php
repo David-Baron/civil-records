@@ -53,9 +53,6 @@ function sqlcomp($lazone, $valeur)
     return $sql;
 }
 
-//---------------------------------------------------------
-
-
 function makecrit($nom, $pre, $zone, $comp)
 {
     global $critN, $critD, $critM, $critM1, $critM2, $mes;  // valeurs mises à jour par la procédure
@@ -220,15 +217,10 @@ function makecrit($nom, $pre, $zone, $comp)
     }
 }
 
-//---------------------------------------------------------
+
 $T0 = time();
 $MT0 = microtime_float();
-
-$root = "";
-$path = "";
 $txtcomp = "";
-
-//{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; }
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
@@ -297,22 +289,17 @@ while ($userlevel < 3) {
 }
 
 $userid = current_user('ID');
+
 ob_start();
 open_page("Recherches dans les tables", $root);
 if (current_user_solde() > 0 or RECH_ZERO_PTS == 1) {
     $nav = "";
     if ($xcomp != "") {
-        $nav = '<a href="rechavancee.php">Recherche (avancée)</a> &gt; ';
+        $nav = '<a href="' .$root. '/rechavancee.php">Recherche (avancée)</a> &gt; ';
     }
     navigation($root, 2, 'A', $nav . "Résultats de la recherche");
-
     echo '<div class="contenu">';
-
     echo '<h2>Résultats de la recherche</h2>';
-
-    //echo '<p>Mode : ' . $compmode . "</p>";
-    //define ("OPTIMIZE","YES");
-
 
     // Résultats de la recherche
     $critN = "";
@@ -394,11 +381,11 @@ if (current_user_solde() > 0 or RECH_ZERO_PTS == 1) {
         if (!empty($critV2)) {
             $critV2 = sql_and($critV2) . " (LIBELLE='" . sql_quote(urldecode($xtdiv)) . "')";
         }
-        $mes .= '<li>Actes divers de type <b>' . $xtdiv . "</b></li>" . "\n";
+        $mes .= '<li>Actes divers de type <b>' . $xtdiv . "</b></li>";
     }
 
     if (trim($critN . $critM . $critD) == "") {
-        msg('Aucun critère de recherche n\'a été spécifié.' . "\n");
+        msg('Aucun critère de recherche n\'a été spécifié.');
     } else {
         $request = "";
         $listactes = "";
@@ -503,60 +490,60 @@ if (current_user_solde() > 0 or RECH_ZERO_PTS == 1) {
             $nb = $nbtot;
         }
 
-        echo '<div class="critrech">Recherche de : <ul>' . "\n" . $mes . $listactes . '</ul></div>' . "\n";
+        echo '<div class="critrech">Recherche de : <ul>' . $mes . $listactes . '</ul></div>';
 
         if ($nb > 0) {
             $i = ($page - 1) * MAX_PAGE + 1;
-            echo '<p><b>' . $nbtot . ' actes trouvés</b></p>' . "\n";
-            echo '<p>' . $listpages . '</p>' . "\n";
-            echo '<table summary="Liste des résultats">' . "\n";
-            echo '<tr class="rowheader">' . "\n";
-            echo '<th> &nbsp; </th>' . "\n";
-            echo '<th>Type</th>' . "\n";
-            echo '<th>Date</th>' . "\n";
-            echo '<th>Intéressé(e)</th>' . "\n";
-            echo '<th>Commune/Paroisse</th>' . "\n";
-            echo '</tr>' . "\n";
+            echo '<p><b>' . $nbtot . ' actes trouvés</b></p>';
+            echo '<p>' . $listpages . '</p>';
+            echo '<table summary="Liste des résultats">';
+            echo '<tr class="rowheader">';
+            echo '<th> &nbsp; </th>';
+            echo '<th>Type</th>';
+            echo '<th>Date</th>';
+            echo '<th>Intéressé(e)</th>';
+            echo '<th>Commune/Paroisse</th>';
+            echo '</tr>';
             while ($ligne = EA_sql_fetch_row($result)) {
                 switch ($ligne[1]) {
                     case "N":
-                        $url = "acte_naiss.php";
+                        $url = $root . '/acte_naiss.php';
                         break;
                     case "D":
-                        $url = "acte_deces.php";
+                        $url = $root . '/acte_deces.php';
                         break;
                     case "M":
-                        $url = "acte_mari.php";
+                        $url = $root . '/acte_mari.php';
                         break;
                     case "V":
-                        $url = "acte_bans.php";
+                        $url = $root . '/acte_bans.php';
                         break;
                 }
-                echo '<tr class="row' . (fmod($i, 2)) . '">' . "\n";
-                echo '<td>' . $i . '. </td>' . "\n";
-                echo '<td>' . $ligne[9] . ' </td>' . "\n";
-                echo '<td>&nbsp;' . annee_seulement($ligne[2]) . '&nbsp;</td>' . "\n";
+                echo '<tr class="row' . (fmod($i, 2)) . '">';
+                echo '<td>' . $i . '. </td>';
+                echo '<td>' . $ligne[9] . ' </td>';
+                echo '<td>&nbsp;' . annee_seulement($ligne[2]) . '&nbsp;</td>';
                 $EA_url = '<a href="' . $url . '?xid=' . $ligne[0] . '&amp;xct=' . ctrlxid($ligne[4], $ligne[5]) . '">';
                 echo '<td>' . $EA_url . $ligne[4] . ' ' . $ligne[5] . '</a>';
                 if ($ligne[1] == 'M' or ($ligne[1] == 'V' and $ligne[6] <> '')) {
                     echo ' x ' . $EA_url . $ligne[6] . ' ' . $ligne[7] . '</a>';
                 }
-                echo '</td>' . "\n";
-                echo '<td>' . $ligne[3] . '</td>' . "\n";
-                echo '</tr>' . "\n";
+                echo '</td>';
+                echo '<td>' . $ligne[3] . '</td>';
+                echo '</tr>';
                 $i++;
             }
-            echo '</table>' . "\n";
-            echo '<p>' . $listpages . '</p>' . "\n";
+            echo '</table>';
+            echo '<p>' . $listpages . '</p>';
         } else {
-            echo '<p> Aucun acte trouvé </p>' . "\n";
+            echo '<p> Aucun acte trouvé </p>';
         }
     }
-    echo '<p>Durée du traitement  : ' . round(microtime_float() - $MT0, 3) . ' sec.</p>' . "\n";
+    echo '<p>Durée du traitement  : ' . round(microtime_float() - $MT0, 3) . ' sec.</p>';
 } else {
     msg('Recherche non autorisée car votre solde de points est épuisé !');
 }
-echo '</div>' . "\n";
+echo '</div>';
 include(__DIR__ . '/templates/front/_footer.php');
 $response->setContent(ob_get_clean());
 $response->send();

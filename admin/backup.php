@@ -4,29 +4,27 @@ $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
-my_ob_start_affichage_continu();
-
-global $dbaddr, $dbuser, $dbpass, $dbname;
-
-if (!defined("MYSQL_PATH")) {
-    $mysql_path = "";
-} else {
-    $mysql_path = MYSQL_PATH;
-    if (mb_substr($mysql_path, -1, 1) != "\\") {
-        $mysql_path .= "\\";
-    }
-}
-
-$root = $path = "";
-$xcomm = $xpatr = $page = "";
-pathroot($root, $path, $xcomm, $xpatr, $page);
-
 $userlogin = "";
 $userlevel = logonok(9);
 while  ($userlevel < 9) {
     login($root);
 }
 
+global $dbaddr, $dbuser, $dbpass, $dbname;
+
+$mysql_path = "";
+if (defined("MYSQL_PATH")) {
+    $mysql_path = MYSQL_PATH;
+    if (mb_substr($mysql_path, -1, 1) != "\\") {
+        $mysql_path .= "\\";
+    }
+}
+
+$xcomm = $xpatr = $page = "";
+
+pathroot($root, $path, $xcomm, $xpatr, $page);
+
+my_ob_start_affichage_continu();
 open_page("Backup de votre base de données", $root);
 navadmin($root, "Backup de la base");
 

@@ -3,24 +3,18 @@ define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
+require(__DIR__ . '/../tools/traitements.inc.php');
 
-include("../tools/traitements.inc.php");
-
-$path = "";
 $userlogin = "";
-$T0 = time();
-
-//**************************** ADMIN **************************
-
-pathroot($root, $path, $xcomm, $xpatr, $page);
-
-
 $userlogin = "";
 $userlevel = logonok(9);
 while ($userlevel < 9) {
     login($root);
 }
 
+pathroot($root, $path, $xcomm, $xpatr, $page);
+
+$T0 = time();
 $oper     = getparam('oper');
 $nbrepts  = getparam('nbrepts');
 $xdroits  = getparam('lelevel');
@@ -30,25 +24,22 @@ $condit   = getparam('condit');
 $statut   = getparam('statut');
 $dtexpir   = getparam('dtexpir');
 $conditexp = getparam('conditexp');
-
 $ptitle = "Modifications groupées";
-
-ob_start();
-open_page($ptitle, $root);
-navadmin($root, $ptitle);
-
-zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
-
-echo '<div id="col_main_adm">';
 $missingargs = true;
 $emailfound = false;
 $cptok = 0;
 $cptko = 0;
-
-menu_users('S');
 $ok = true;
 $today = today();
 $condrem = "";
+
+ob_start();
+open_page($ptitle, $root);
+navadmin($root, $ptitle);
+zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+echo '<div id="col_main_adm">';
+menu_users('S');
+
 if (getparam('action') == 'submitted') {
     if ($oper == "") {
         msg("Vous devez préciser une action à réaliser");

@@ -3,12 +3,7 @@ define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
-
-
-include(__DIR__ . "/../tools/defindex.inc.php");
-
-
-pathroot($root, $path, $xcomm, $xpatr, $page);
+require(__DIR__ . '/../tools/defindex.inc.php');
 
 $userlogin = "";
 $userlevel = logonok(9);
@@ -16,19 +11,19 @@ while ($userlevel < 9) {
     login($root);
 }
 
-ob_start();
-open_page("Gestion des index", $root);
-navadmin($root, "Gestion des index");
-zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
-echo '<div id="col_main_adm">';
-menu_software('I');
+pathroot($root, $path, $xcomm, $xpatr, $page);
 
 $action = getparam('act');
 $aindex = getparam('ti');
 $confirm = getparam('confirm');
 $tablename = getparam('tbl');
 
-//$confirm='YES';
+ob_start();
+open_page("Gestion des index", $root);
+navadmin($root, "Gestion des index");
+zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+echo '<div id="col_main_adm">';
+menu_software('I');
 
 if ($action == "ADD") {
     echo '<h2>Ajout d\'un index</h2>';

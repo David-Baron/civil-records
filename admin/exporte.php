@@ -4,6 +4,12 @@ $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
+$userlogin = "";
+$userlevel = logonok($needlevel);
+while ($userlevel < $needlevel) {
+    login($root);
+}
+
 function init_page($head = "")
 {
     global $root,$userlevel,$htmlpage,$titre;
@@ -24,29 +30,16 @@ function init_page($head = "")
     my_flush(); // On affiche un minimum
 }
 
-my_ob_start_affichage_continu();
-
 $tpsreserve = 3;
-$root = "";
-$path = "";
 $separator = ';';
 $htmlpage = false;
 $Max_exe_time = ini_get("max_execution_time");
 $Max_time = min($Max_exe_time - $tpsreserve, MAX_EXEC_TIME);
 $Max_size = return_bytes(ini_get("upload_max_filesize"));
-
-//**************************** ADMIN **************************
-
-pathroot($root, $path, $xcomm, $xpatr, $page);
-
 $Destin   = getparam('Destin');
 $Format   = getparam('Format');
-$TypeActes = getparam('TypeActes');
-if ($TypeActes == "") {
-    $TypeActes = 'N';
-}
+$TypeActes = getparam('TypeActes', 'N');
 
-$userlogin = "";
 if ($Destin == "B") {  // Backup
     $needlevel = 8;  // niveau d'accès
     $listcom = 2;  // liste de commune avec *** Backup complet
@@ -66,17 +59,14 @@ if ($Destin == "B") {  // Backup
         $enteteligne = "NIMEGUEV3;";
     }
 }
-
-$userlevel = logonok($needlevel);
-while ($userlevel < $needlevel) {
-    login($root);
-}
-
 $userid = current_user("ID");
-
 $missingargs = false;
 $oktype = false;
 $tokenfile  = "../" . DIR_BACKUP . $userlogin . '.txt';
+
+pathroot($root, $path, $xcomm, $xpatr, $page);
+
+my_ob_start_affichage_continu();
 
 $comdep  = html_entity_decode(getparam('ComDep'), ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
 $Commune = communede($comdep);
@@ -104,7 +94,18 @@ if ($xaction == 'go') {
     // Données postées
     if((empty($TypeActes) or ($TypeActes == 'X'))  or empty($Destin) or (empty($Commune))) {
         init_page();
-        menu_datas('B');
+        echo '<p align="center"><strong>Administration des données : </strong>';
+    showmenu('Statistiques', 'maj_sums.php', 'S', 'B', false);
+    if ($userlevel > 7) {
+        showmenu('Localités', 'listgeolocs.php', 'L', 'B');
+    }
+    showmenu('Ajout d\'un acte', 'ajout_1acte.php', 'A', 'B');
+    if ($userlevel > 7) {
+        showmenu('Corrections groupées', 'corr_grp_acte.php', 'G', 'B');
+        showmenu('Backup', 'exporte.php?Destin=B', 'B', 'B');
+        showmenu('Restauration', 'charge.php?Origine=B', 'R', 'B');
+    }
+    echo '</p>';
         if(empty($TypeActes) or ($TypeActes == 'X')) {
             msg('Vous devez préciser le type des actes');
         }
@@ -146,7 +147,18 @@ if ($xaction == 'go') {
     $missingargs = true;  // par défaut
     init_page();
     if ($Destin == "B") {  // Backup
-        menu_datas('B');
+        echo '<p align="center"><strong>Administration des données : </strong>';
+        showmenu('Statistiques', 'maj_sums.php', 'S', 'B', false);
+        if ($userlevel > 7) {
+            showmenu('Localités', 'listgeolocs.php', 'L', 'B');
+        }
+        showmenu('Ajout d\'un acte', 'ajout_1acte.php', 'A', 'B');
+        if ($userlevel > 7) {
+            showmenu('Corrections groupées', 'corr_grp_acte.php', 'G', 'B');
+            showmenu('Backup', 'exporte.php?Destin=B', 'B', 'B');
+            showmenu('Restauration', 'charge.php?Origine=B', 'R', 'B');
+        }
+        echo '</p>';
     }
 }
 if (! $missingargs) {
@@ -158,7 +170,18 @@ if (! $missingargs) {
 
     if ($continue == 0) { // fin d'une chaine automatique
         init_page();
-        menu_datas('B');
+        echo '<p align="center"><strong>Administration des données : </strong>';
+        showmenu('Statistiques', 'maj_sums.php', 'S', 'B', false);
+        if ($userlevel > 7) {
+            showmenu('Localités', 'listgeolocs.php', 'L', 'B');
+        }
+        showmenu('Ajout d\'un acte', 'ajout_1acte.php', 'A', 'B');
+        if ($userlevel > 7) {
+            showmenu('Corrections groupées', 'corr_grp_acte.php', 'G', 'B');
+            showmenu('Backup', 'exporte.php?Destin=B', 'B', 'B');
+            showmenu('Restauration', 'charge.php?Origine=B', 'R', 'B');
+        }
+        echo '</p>';
         echo '<p>Le backup est terminé, il a sauvegardé ' . entier($skip) . ' ' . typact_txt($TypeActes) . '.</p>';
         echo '<p><b>' . $file . ' fichier(s) peut/peuvent à présent être récupéré(s) via FTP dans le répertoire "_backup".</b></p>';
     } else {
@@ -241,7 +264,18 @@ if (! $missingargs) {
                         //$prc = intval($skip/$nbdocs*100);
                         //$titre = $prc." % ".$titre;
                         init_page($metahead);
-                        menu_datas('B');
+                        echo '<p align="center"><strong>Administration des données : </strong>';
+                        showmenu('Statistiques', 'maj_sums.php', 'S', 'B', false);
+                        if ($userlevel > 7) {
+                            showmenu('Localités', 'listgeolocs.php', 'L', 'B');
+                        }
+                        showmenu('Ajout d\'un acte', 'ajout_1acte.php', 'A', 'B');
+                        if ($userlevel > 7) {
+                            showmenu('Corrections groupées', 'corr_grp_acte.php', 'G', 'B');
+                            showmenu('Backup', 'exporte.php?Destin=B', 'B', 'B');
+                            showmenu('Restauration', 'charge.php?Origine=B', 'R', 'B');
+                        }
+                        echo '</p>';
                         if (mb_substr($comdep, 0, 6) == "BACKUP") {
                             $com_name = "FULL";
                         } else {

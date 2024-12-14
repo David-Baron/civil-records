@@ -1,21 +1,15 @@
 <?php
 
-$root = "";
-$path = "";
+$userlogin = "";
+
 $xcomm = "";
 $xpatr = "";
 $page = 1;
 $program = "tab_deces.php";
-
-pathroot($root, $path, $xcomm, $xpatr, $page);
-
 $comdep  = html_entity_decode($xcomm, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
 $Commune = communede($comdep);
 $Depart  = departementde($comdep);
-$xord  = getparam('xord');
-if ($xord == "") {
-    $xord = "D";
-}   // N = Nom, D = dates
+$xord  = getparam('xord', 'D'); // N = Nom, D = dates
 $pg = getparam('pg');
 if ($pg <> "") {
     $page = $pg;
@@ -24,9 +18,10 @@ $xannee = "";
 if (mb_substr($xpatr, 0, 1) == "!") {
     $xannee = mb_substr($xpatr, 1);
 }
-$userlogin = "";
 $gid = 0;
 $note = geoNote($Commune, $Depart, 'D');
+
+pathroot($root, $path, $xcomm, $xpatr, $page);
 
 if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
     // Lister les patronymes avec groupements si trop nombreux

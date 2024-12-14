@@ -1,11 +1,16 @@
 <?php
 
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
+require(__DIR__ . '/../next/bootstrap.php');
+include(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
+
+$lvl = 2;
+if (ADM == 10) $lvl = 5;
+
+$userlogin = "";
+$userlevel = logonok($lvl);
+while ($userlevel < $lvl) {
+    login($root);
 }
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
 
 function barre($valeur, $max)
 {
@@ -16,37 +21,17 @@ function barre($valeur, $max)
     return $chaine;
 }
 
-$root = "";
-$path = "";
-
-//**************************** ADMIN **************************
-
 $xcomm = $xpatr = $page = "";
-pathroot($root, $path, $xcomm, $xpatr, $page);
-
-$userlogin = "";
-if (ADM == 10) {
-    $lvl = 5;
-} else {
-    $lvl = 2;
-}
-$userlevel = logonok($lvl);
-while ($userlevel < $lvl) {
-    login($root);
-}
-
 $userid = current_user("ID");
-
 $missingargs = false;
 $oktype = false;
-
 $TypeActes  = getparam('xtyp');
 $xtdiv      = getparam('tdiv');
 $comdep  = html_entity_decode(getparam('comdep'), ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
 $Commune = communede($comdep);
 $Depart  = departementde($comdep);
 
-//{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; }
+pathroot($root, $path, $xcomm, $xpatr, $page);
 
 // Données postées
 if(empty($TypeActes)) {

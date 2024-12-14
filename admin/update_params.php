@@ -3,16 +3,15 @@ define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
-
-include("../install/instutils.php");
-
-pathroot($root, $path, $xcomm, $xpatr, $page);
+require(__DIR__ . '/../install/instutils.php');
 
 $userlogin = "";
 $userlevel = logonok(9);
 if ($userlevel == 0) {
     login($root);
 }
+
+pathroot($root, $path, $xcomm, $xpatr, $page);
 
 $missingargs = true;
 //$message    = getparam('Message');

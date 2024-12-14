@@ -12,9 +12,10 @@ ob_start();
 open_page("Activer mon compte utilisateur", $root);
 navigation($root, 2, "", "Activation de mon compte");
 zone_menu(0, 0, array('f' => 'N')); //PUBLIC SANS FORM_RECHERCHE
-echo '<div id="col_main_adm">' . "\n";
+?>
+<div id="col_main_adm">
 
-if (USER_AUTO_DEF == 0) {
+<?php if (USER_AUTO_DEF == 0) {
     echo "<p><b>Désolé : Cette action n'est pas autorisée sur ce site</b></p>";
     echo "<p>Vous devez contacter le gestionnaire du site pour demander un compte utilisateur</p>";
     echo '</div>';
@@ -49,18 +50,12 @@ if ($ok) {
     $login = $row['login'];
     $missingargs = false;
     $mes = "";
+    $statut = 'N'; // A = attente approbation par admin, N = normal
     if (USER_AUTO_DEF == 1) {
         $statut = 'A';
-    }  // attente approbation par admin
-    else {
-        $statut = 'N';
-    }  // normal
-    $reqmaj = "UPDATE " . EA_UDB . "_user3 SET "
-        . " statut = '" . $statut . "',"
-        . " rem = ' '"
-        . " WHERE id=" . $id . ";";
-
-    //echo "<p>" . $reqmaj . "</p>";
+    }
+    
+    $reqmaj = "UPDATE " . EA_UDB . "_user3 SET statut='" . $statut . "', rem=' ' WHERE id=" . $id . ";";
     if ($result = EA_sql_query($reqmaj, $u_db)) {
         $crlf = chr(10) . chr(13);
         $log = "Activation compte";
@@ -88,10 +83,10 @@ if ($ok) {
             $log .= " NO mail";
         }
         writelog($log, $login, 0);
-        echo '<p><b>Votre adresse a été vérifiée.<br />' . $mes . '</b></p>';
+        echo '<p><b>Votre adresse a été vérifiée.<br>' . $mes . '</b></p>';
     } else {
         echo ' -> Erreur : ';
-        echo '<p>' . EA_sql_error() . '<br />' . $reqmaj . '</p>';
+        echo '<p>' . EA_sql_error() . '<br>' . $reqmaj . '</p>';
     }
 }
 
@@ -102,36 +97,34 @@ if (!$ok) {
     $action = 'Ajout';
     $login = $_REQUEST['login'];
     $key   = $_REQUEST['key'];
+?>
+    <h2>Activation de mon compte d'utilisateur</h2>
+    <form method="post">
+        <table>
+            <tr>
+                <td>Login : </td>
+                <td><input type="text" size="30" name="login" value="<?= $login; ?>"></td>
+            </tr>
 
-    echo '<h2>Activation de mon compte d\'utilisateur</h2>' . "\n";
-    echo '<form method="post"  action="">' . "\n";
-    echo '<table cellspacing="0" cellpadding="1" border="0" summary="Formulaire">' . "\n";
-
-    echo " <tr>\n";
-    echo '  <td align="right">' . "Login : </td>\n";
-    echo '  <td><input type="text" size="30" name="login" value="' . $login . '" />' . "</td>\n";
-    echo " </tr>\n";
-
-    echo " <tr>\n";
-    echo '  <td align="right">' . "Clé d'activation : </td>\n";
-    echo '  <td><input type="text" name="key" size="30" value="' . $key . '" />' . "</td>\n";
-    echo " </tr>\n";
-
-    echo " <tr>\n";
-    echo '  <td colspan="2">&nbsp;</td>' . "\n";
-    echo " </tr>\n";
-
-    echo " <tr><td align=\"right\">\n";
-    echo '  <input type="reset" value=" Effacer " />' . "\n";
-    echo " </td><td align=\"left\">\n";
-    echo ' &nbsp; <input type="submit" value=" *** ACTIVER LE COMPTE *** " />' . "\n";
-    echo " </td></tr>\n";
-    echo "</table>\n";
-    echo "</form>\n";
-} else {
-    echo '<p align="center"><a href="index.php">Retour à la page d\'accueil</a></p>';
-}
-echo '</div>';
-include(__DIR__ . '/templates/front/_footer.php');
+            <tr>
+                <td>Clé d'activation : </td>
+                <td><input type="text" name="key" size="30" value="<?= $key; ?>"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <button type="reset">Effacer</button>
+                    <button type="submit">Activer le compte</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+<?php } else { ?>
+    <p>
+        <a href="<?= $root; ?>/">Retour à la page d'accueil</a>
+    </p>
+<?php } ?>
+</div>
+<?php include(__DIR__ . '/templates/front/_footer.php');
 $response->setContent(ob_get_clean());
 $response->send();

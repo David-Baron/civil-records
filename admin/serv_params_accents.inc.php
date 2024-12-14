@@ -1,9 +1,7 @@
 <?php
 
-// VERSION 5 : 03/01/2022
 
-$MODE_DEBUG = true; // N'applique pas les mises à jour & affiche les information DEBUG de la fin et des requêtes
-$MODE_DEBUG = false; // Production
+$MODE_DEBUG = false; // N'applique pas les mises à jour & affiche les information DEBUG de la fin et des requêtes true|false
 
 function init_page_EL_GENERALE($head = "", $ajax = "", $affiche = '') // SOURCE DE exporte.php
 {
@@ -165,7 +163,6 @@ function check_collation($mes_variables_divers, $Trt_accents = 'N')
 
     // PARTIE  CONTROLE
     $Collation_ref = $mes_variables_divers['actuel_collation_tables'];
-
     $Collation_nb_diff = 0;
     $affiche = '';
 

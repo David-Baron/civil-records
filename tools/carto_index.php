@@ -25,20 +25,17 @@ function plot_commune($carto, $depart, $commune, $etiquette, $texte_html, $listT
 http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=o|FFCC66|000000
 */
 
-if ($xtyp == "" or $xtyp == "A") {
-    $condit1 = "";
-} else {
+$condit1 = "";
+if ($xtyp != '' || $xtyp != "A") {
     $xtyp = sql_quote(mb_substr($xtyp, 0, 1));
     $condit1 = " WHERE TYPACT='" . $xtyp . "'";
 }
 
-$request = "SELECT DEPART,COMMUNE,TYPACT,LIBELLE, sum(NB_TOT) AS NB_TOT"
+$request = "SELECT DEPART,COMMUNE,TYPACT,LIBELLE, sum(NB_TOT) AS NB_TOT "
                 . " FROM " . EA_DB . "_sums " . $condit1
                 . " GROUP BY DEPART,COMMUNE,TYPACT,LIBELLE"
                 . " ORDER BY DEPART,COMMUNE,INSTR('NMDV',TYPACT),LIBELLE; ";
 
-optimize($request);
-//echo '<p>'.$request;
 $pre_libelle = "XXX";
 $pre_commune = "XXX";
 $txthtml = "";
@@ -111,7 +108,6 @@ if ($result = EA_sql_query($request)) {
         }
         $href = '<a href="' . mkurl($root . $chemin . $prog, $ligne['COMMUNE'] . ' [' . $ligne['DEPART'] . ']' . $linkdiv) . '">';
         $txthtml .= $href . entier($ligne['NB_TOT']) . " " . $typel . "</a><br />";
-        //echo $pre_type." --> ".$href."</p>";
     }
     if ($pre_commune <> "XXX") {
         plot_commune($carto, $depart, $commune, $etiquette, $txthtml, $listTypes, $listSigles);

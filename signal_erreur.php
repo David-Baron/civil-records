@@ -7,8 +7,7 @@ require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 global $crlf;
 $crlf = chr(10) . chr(13);
 
-$AVEC_INFOS_SUGGESTION = true;
-$AVEC_INFOS_SUGGESTION = false; // DÉSACTIVE LA GESTION DES INFOS DETAILLÉES
+$AVEC_INFOS_SUGGESTION = false; // DÉSACTIVE LA GESTION DES INFOS DETAILLÉES true|false
 
 function gen_desc($fld_attr)
 {
@@ -77,7 +76,7 @@ function gen_id_nim($xty, $xacte)
 }
 
 function set_table_type_script_acte($TypeActes)
-{	// ENTREE : $TypeActes
+{    // ENTREE : $TypeActes
     // SORTIE : array($table, $ntype, $script);
     // Utilisé dans search_acte et construction formulaire    list($table, $ntype, $script) = set_table_type_script_acte($TypeActes);
     $EA_TypAct_Txt = array('N' => 'de naissances', 'M' => 'de mariages', 'D' => 'de décès', 'V' => 'divers');
@@ -174,7 +173,18 @@ function search_acte($xid, $xtyp, $TYPE_TRT)
                         $value = $acte[$mdb[$i]['ZONE']];
                     }
                 } // if $value
-                edit_text($mdb[$i]['ZONE'], $col[$mdb[$i]['ZONE']], $value, $mdb[$i]['ETIQ']);
+                echo ' <tr class="row1">';
+                echo "  <td align=right>" . $mdb[$i]['ETIQ'] . " : </td>";
+                echo '  <td>';
+                if ($col[$mdb[$i]['ZONE']] <= 70) {
+                    $value = str_replace('"', '&quot;', $value);
+
+                    echo '<input type="text" name="' . $mdb[$i]['ZONE'] . '" size=' . $col[$mdb[$i]['ZONE']] . '" maxlength=' . $col[$mdb[$i]['ZONE']] . ' value="' . $value . '">';
+                } else {
+                    echo '<textarea name="' . $mdb[$i]['ZONE'] . '" cols=70 rows=' . (min(4, $col[$mdb[$i]['ZONE']] / 70)) . '>' . $value . '</textarea>';
+                }
+                echo '  </td>';
+                echo " </tr>";
             } // for
             echo ' <tr class="row0"><td>' . "\n";
             echo "</td></tr></table>\n";
@@ -211,35 +221,27 @@ if (AUTO_CAPTCHA) {
     session_start();
 }  // pour captcha
 
+$userlevel = logonok(1);
+
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
-ob_start();
-open_page("Signaler une erreur dans un acte", $root);
-navigation($root, 2, "", "Signaler une erreur dans un acte");
-
-zone_menu(0, 0, array('f' => 'N'));//PUBLIC SANS FORM_RECHERCHE
-echo '<div id="col_main_adm">' . "\n";
-
 $missingargs = true;
-$nompre = getparam('nompre');
+$nompre = getparam('nompre', current_user('nom') . ", " . current_user('prenom'));
 $msgerreur = getparam('msgerreur');
-$email = getparam('email');
+$email = getparam('email', current_user('email'));
 $xid   = getparam('xid');
 $xct   = getparam('xct');
 $xty   = getparam('xty');
 $xdf   = getparam('xdf');
 $xcc   = getparam('xcc');
-
-$userlevel = logonok(1);
-if ($nompre == "") {
-    $nompre = current_user('nom') . ", " . current_user('prenom');
-}
-if ($email == "") {
-    $email = current_user('email');
-}
-
-//print '<pre>';  print_r($_REQUEST); echo '</pre>';
 $ok = false;
+
+ob_start();
+open_page("Signaler une erreur dans un acte", $root);
+navigation($root, 2, "", "Signaler une erreur dans un acte");
+zone_menu(0, 0, array('f' => 'N')); //PUBLIC SANS FORM_RECHERCHE
+
+echo '<div id="col_main_adm">' . "\n";
 
 // Données postées -> ajouter ou modifier
 if (getparam('action') == 'submitted') {
@@ -309,8 +311,6 @@ if (getparam('action') == 'submitted') {
             $lemessage .= $urlmodif . $nouveaux_champs . $crlf . $crlf;
         }
 
-        //echo "<p>MES = ".$lemessage."<p>";
-
         $sujet = "Erreur signalée sur " . SITENAME;
         $sender = mail_encode($nompre) . ' <' . $email . ">";
 
@@ -339,10 +339,6 @@ if (getparam('action') == 'submitted') {
     }
 }
 
-echo '<script language="javascript1.4" type="text/javascript">';
-echo 'function _closeWindow() { window.opener = self; self.close();}';
-echo '</script>';
-
 //Si pas tous les arguments nécessaires, on affiche le formulaire
 if (!$ok) {
     echo "<h2>Signalement d'une erreur dans un acte</h2>" . "\n";
@@ -363,37 +359,32 @@ if (!$ok) {
     echo '  <td colspan="2">' . "<h4>Description de l'erreur observée si elle est générale : </h4><br />\n";
     echo '  <textarea name="msgerreur" cols="80" rows="12">' . $msgerreur . '</textarea>' . "</td>\n";
     echo " </tr>\n";
-
     echo " <tr>\n";
-    echo '  <td align="right">' . "Vos nom et prénom : </td>\n";
+    echo '  <td>' . "Vos nom et prénom : </td>\n";
     echo '  <td><input type="text" size="50" name="nompre" value="' . $nompre . '" />' . "</td>\n";
     echo " </tr>\n";
-
     echo " <tr>\n";
-    echo '  <td align="right">' . "Votre e-mail : </td>\n";
+    echo '  <td>' . "Votre e-mail : </td>\n";
     echo '  <td><input type="text" name="email" size="50" value="' . $email . '" />' . "</td>\n";
     echo " </tr>\n";
     if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
         echo " <tr>\n";
-        echo '  <td align="right">' . "Copie Courriel : </td>\n";
+        echo '  <td>' . "Copie Courriel : </td>\n";
         echo '  <td><input type="checkbox" id="xcc" name="xcc" value="cc" checked/>' . "</td>\n";
         echo " </tr>\n";
-    }
+    } ?>
 
-    if (AUTO_CAPTCHA) {
-        echo " <tr>\n";
-        if (function_exists('imagettftext')) {
-            echo '  <td align="right"><img src="tools/captchas/image.php" alt="captcha" id="captcha" /></td>' . "\n";
-        } else {
-            msg('061 : Librairie GD indisponible');
-            echo '  <td align="right">Code captcha manquant</td>' . "\n";
-        }
-        echo '  <td>Recopiez le code ci-contre : <br />';
-        echo '<input type="text" name="captcha" size="6" maxlength="5" value="" />' . "</td>\n";
-        echo " </tr>\n";
-    }
+    <?php if (AUTO_CAPTCHA && function_exists('imagettftext')) { ?>
+        <tr>
+            <td><img src="<?= $root; ?>/tools/captchas/image.php" alt="captcha" id="captcha"></td>
+            <td>
+                Recopiez le code ci-contre : <br>
+                <input type="text" name="captcha" size="6" maxlength="5" value="">
+            </td>
+        </tr>
+    <?php } ?>
 
-    if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
+<?php if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
         list($table, $ntype, $script) = set_table_type_script_acte($xty);
         $request = "SELECT VERIFIEU, RELEVEUR, ID FROM " . $table . " WHERE ID=" . $xid . ";";
         $result = EA_sql_query($request);
@@ -406,11 +397,7 @@ if (!$ok) {
         }
     }
 
-    echo " <tr>\n";
-    echo '  <td colspan="2">&nbsp;</td>' . "\n";
-    echo " </tr>\n";
-
-    echo " <tr><td align=\"right\">\n";
+    echo " <tr><td>\n";
     echo '  <input type="hidden" name="xid" value="' . $xid . '" />';
     echo '  <input type="hidden" name="xty" value="' . $xty . '" />';
     echo '  <input type="hidden" name="xct" value="' . $xct . '" />';
@@ -419,7 +406,7 @@ if (!$ok) {
     echo '  <input type="hidden" name="action" value="submitted" />';
 
     if (!$AVEC_INFOS_SUGGESTION) { // CONDITIONNEL AVANT SIGNAL_ERREUR
-        echo ' <a href="#" Onclick="javascript:window.close()">Fermer cette page</a></p>';
+        echo ' <a href="' . $root . '/"">Revenir à l\'accueil</a></p>';
     }
 
     echo ' &nbsp; <input type="reset" value=" Effacer " />' . "\n";
@@ -429,11 +416,7 @@ if (!$ok) {
     echo "</table>\n";
     echo "</form>\n";
 } else {
-    if (!$AVEC_INFOS_SUGGESTION) { // CONDITIONNEL AVANT SIGNAL_ERREUR
-        echo '<p align="center"><b>Merci de  votre aide.</b><br /><a href="#" Onclick="javascript:window.close()">Fermer cette page</a></p>';
-    } else {
-        echo '<p align="center"><b>Merci de  votre aide.</b><br />Vous pouvez maintenant fermer cet onglet.</a></p>';
-    }
+    echo '<p align="center"><b>Merci de  votre aide.</b><br><a href="' . $root . '/"">Revenir à l\'accueil</a></p>';
 }
 echo '</div>';
 include(__DIR__ . '/templates/front/_footer.php');

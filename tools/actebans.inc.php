@@ -1,32 +1,24 @@
 <?php
 
-$TIPlevel = 1;
-
-$root = "";
-$path = "";
-$sp = "&nbsp; &nbsp; ";
-$error = 0;
-$xcomm = $xpatr = $page = "";
-pathroot($root, $path, $xcomm, $xpatr, $page);
-
-$xid = $_REQUEST['xid'];
-$ctrlcod = $_REQUEST['xct'];
+$lvl = 4;
+if (ADM == 10) $lvl = 5;
 
 $userlogin = "";
-if (ADM == 10) {
-    $lvl = 5;
-} else {
-    $lvl = 4;
-}
 $userlevel = logonok($lvl);
 while ($userlevel < $lvl) {
     login($root);
 }
 
+$TIPlevel = 1;
+$sp = "&nbsp; &nbsp; ";
+$error = 0;
+$xcomm = $xpatr = $page = "";
+$xid = $_REQUEST['xid'];
+$ctrlcod = $_REQUEST['xct'];
+
+pathroot($root, $path, $xcomm, $xpatr, $page);
+
 $request = "SELECT * FROM " . EA_DB . "_div3 WHERE ID = " . $xid;
-
-optimize($request);
-
 if ($result = EA_sql_query($request) and EA_sql_num_rows($result) != 0) {
     $row = EA_sql_fetch_array($result);
 } else {

@@ -3,22 +3,19 @@ define('ADM', 0); // Compatibility only
 $admtxt = ''; // Compatibility only
 require(__DIR__ . '/next/bootstrap.php');
 require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
-
-include('tools/MakeRss/MakeRss.class.php');
+require(__DIR__ . '/tools/MakeRss/MakeRss.class.php');
 
 function antispam($email)
 {
     return str_replace(array("@"), array("@anti.spam.com@"), $email);
 }
 
-$root = "";
-$path = "";
-
 $max = 10;
-
 $xtyp = getparam('type');
 $xall = getparam('all');
 $xcomm = $xpatr = $page = "";
+
+
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
 $request = "";
@@ -41,12 +38,8 @@ $request = "SELECT TYPACT AS TYP, sum(NB_TOT) AS CPT, COMMUNE, DEPART, max(DTDEP
     . ' GROUP BY COMMUNE, DEPART, TYP  '
     . ' ORDER BY DTE desc, COMMUNE, DEPART '
     . $limit;
-//echo $request;
 
 $result = EA_sql_query($request);
-
-optimize($request);
-
 
 /* CHARGEMENT DU GENERATEUR */
 $rss = new GenRSS();

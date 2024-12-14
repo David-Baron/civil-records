@@ -1,13 +1,5 @@
 <?php
 
-// Utilitaires généraux aux programmes ExpoActes
-// Copyright (C) : André Delacharlerie, 2005-2006
-// Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les termes de la
-// Licence Publique Générale GNU, version 2 (GPLv2), publiée par la Free Software Foundation
-// Texte de la licence : https://www.gnu.org/licenses/old-licenses/gpl-2.0.fr.html
-
-//-------------------------------------------------------------------
-
 function pathroot(&$root, &$path, &$arg1, &$arg2, &$arg3)
 {
     // Recupère les arguments passés en mode chemin ou args suivant config
@@ -75,17 +67,7 @@ function pathroot(&$root, &$path, &$arg1, &$arg2, &$arg3)
     if ($arg2 == "") {
         $arg2 = $defarg2;
     }
-
-    /*
-      echo '<p>ROOT ='.$root;
-      echo "<p>PATH =".$path;
-      echo "<p>ARG1 =".$arg1;
-      echo "<p>ARG2 =".$arg2;
-      echo "<p>ARG3 =".$arg3;
-    */
 }
-
-//-------------------------------------------------------------------
 
 function encodemyslash($text)
 { // permet de passer des nom avec slash dans l'url (Alle s/Semois)
@@ -93,15 +75,11 @@ function encodemyslash($text)
     return str_replace('/', $newslash, $text);
 }
 
-//-------------------------------------------------------------------
-
 function decodemyslash($text)
 {
     $newslash = chr(190);  // 3/4
     return str_replace($newslash, '/', $text);
 }
-
-//-------------------------------------------------------------------
 
 function mkurl($script, $arg1, $arg2 = "", $args = "")
 { // Compose une URL avec les arguments passés en mode chemin ou non suivant config.
@@ -130,8 +108,6 @@ function mkurl($script, $arg1, $arg2 = "", $args = "")
     return $url;
 }
 
-//-------------------------------------------------------------------
-
 function mkSiteUrl() // Compose le nom du serveur http:// ou https:// etc....  On récupère l'URL (sans le / de fin)
 {
     // Utilisé dans :
@@ -152,20 +128,15 @@ function mkSiteUrl() // Compose le nom du serveur http:// ou https:// etc....  O
     return $url_du_site;
 }
 
-//-------------------------------------------------------------------
-
 function nogetargs($chaine)
 {
     $x = strpos($chaine, "?");
     if ($x > 0) {
-        $result = mb_substr($chaine, 0, $x);
-    } else {
-        $result = $chaine;
-    }
-    return $result;
+        return mb_substr($chaine, 0, $x);
+    } 
+    
+    return $chaine;
 }
-
-//-------------------------------------------------------------------
 
 function selected_option($valeur, $defaut)  // pour listbox
 {
@@ -173,55 +144,46 @@ function selected_option($valeur, $defaut)  // pour listbox
     $defaut = strval($defaut);
     if ($valeur == $defaut) {
         return 'value="' . $valeur . '" selected="selected"';
-    } else {
-        return 'value="' . $valeur . '"';
-    }
+    } 
+    
+    return 'value="' . $valeur . '"';
 }
-
-//-------------------------------------------------------------------
 
 function checked($valeur, $defaut = 1)  // retourne le mot checked si $valeur=1 pour CkeckBox ou radiobutton
 {
     if ($valeur == $defaut) {
         return ' checked="checked"';
-    } else {
-        return '';
-    }
+    } 
+    
+    return '';
 }
-
-//-------------------------------------------------------------------
 
 function ischecked($name)  // retourne 1 ou 0 suivant que le parmetres est checké ou pas
 {
     if (!isset($_REQUEST[$name])) {
         return 0;
-    } else {
-        return $_REQUEST[$name];
-    }
+    } 
+    
+    return $_REQUEST[$name];
 }
-//-------------------------------------------------------------------
 
 function strmin($str1, $str2)
 { // Retourne la chaine la plus en avant par ordre alphabétique
     if ($str1 > $str2) {
         return $str2;
-    } else {
-        return $str1;
-    }
+    } 
+    
+    return $str1;
 }
-
-//-------------------------------------------------------------------
 
 function strmax($str1, $str2)
 { // Retourne la chaine la plus en arriere par ordre alphabétique
     if ($str1 < $str2) {
         return $str2;
-    } else {
-        return $str1;
-    }
-}
+    } 
 
-//-------------------------------------------------------------------
+    return $str1;
+}
 
 function icone($action)
 {
@@ -240,10 +202,9 @@ function icone($action)
             $ima = "modifier.gif";
             break;
     }
-    return '<img width="11" hspace="7" height="13" border="0" title="' . $alt . '" alt="' . $alt . '" src="' . $root . '/img/' . $ima . '" />';
-}
 
-//-------------------------------------------------------------------
+    return '<img width="11" hspace="7" height="13" border="0" title="' . $alt . '" alt="' . $alt . '" src="' . $root . '/assets/img/' . $ima . '">';
+}
 
 function execute_script_sql($filename, $prefixe = "", $selecttxt = "")
 {
@@ -256,13 +217,10 @@ function execute_script_sql($filename, $prefixe = "", $selecttxt = "")
         $ok = false;
         die();
     }
+
     $listreq = explode(';', file_get_contents($filename));
-
-    //print '<pre>';  print_r($listreq); echo '</pre>';
-
     $ok = true;
     $i  = 0;
-    //echo count($listreq);
 
     while ($ok and $i < count($listreq)) {
         $reqmaj = $listreq[$i];
@@ -283,145 +241,3 @@ function execute_script_sql($filename, $prefixe = "", $selecttxt = "")
     }
     return $ok;
 }
-
-/**
- * @deprecated Expoactes system
- */
-function check_new_version($key, $urlsite, $type_site = '')
-{
-    //$MODE_check = '';
-    $MODE_check = 'JSON';
-
-    // Par défaut :
-    $lavaleur = EA_VERSION . '|l';
-    if (!isset($_COOKIE[$key])) {
-        $h = $_SERVER['HTTP_HOST'];
-        $r = $_SERVER['REQUEST_URI'];
-
-        if ($MODE_check === 'JSON') {
-            if (!isset($_REQUEST['EA_VERSION_LAST'])) {
-                $serveur_addrPhpSQL = '&addr=' . $_SERVER['SERVER_ADDR'] . '&PhpSQL=PHP-' . phpversion() . '_SQL-' . EA_sql_get_server_info() . '&V=' . EA_VERSION;
-                $X = '<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
-<script language="javascript">
-    $.extend( {
-        redirectPost: function (location, args) {
-            var form = $("<form>", { action: location, method: "post" });
-            $.each(args,
-                function (key, val) {
-                    $(form).append(
-                        $("<input>", { type: "hidden", name: key, value: val })
-                    );
-                });
-            $(form).appendTo("body").submit();
-        }
-    });
-    window.onload = function(e) {
-        var toLoad = "' . SITE_INVENTAIRE . 'versions.php?type=JSON&req=' . $h . $r . '&inv=' . $type_site . $serveur_addrPhpSQL . '";
-        var retourne = "";
-        $.ajax({ url: toLoad,
-            dataType: "json",
-            timeout: 3000, // sets timeout to 3 seconds (ok 30 génère  erreur)
-            success: function(REPONSE) {
-				retourner(JSON.stringify(REPONSE));
-			},
-            error: function (jqXHR, textStatus, errorThrown) {
-				retourner("erreur");
-			},
-        });
-        function retourner(retourne) {
-    		var myArray = {"EA_VERSION_LAST": retourne };
-    	    $.redirectPost("", myArray);
-        }
-    }
-</script>
-';
-                echo $X;
-                return $lavaleur;
-            } else {
-                $obj = json_decode($_REQUEST['EA_VERSION_LAST'], true);
-                if (!isset($obj['EXPOACTES'])) {
-                    $newvers = EA_VERSION;
-                    $status_inv = 'l';
-                    $lavaleur = EA_VERSION . '|l';
-                } else {
-                    $lavaleur = $obj['EXPOACTES'];
-                    $t = explode('|', $lavaleur . '|l');
-                    $newvers = $t[0];
-                    $status_inv = $t[1];
-                }
-            }
-        } else {
-            $lines = @file($urlsite . 'versions.php?req=' . $h . $r . '&inv=' . $type_site);
-            if ($lines) {
-                $lavaleur = "";
-                foreach ($lines as $line) {
-                    $laligne = explode(":", $line);
-                    if ($laligne[0] == $key) {
-                        $lavaleur = $laligne[1];
-                    }
-                }
-            }
-        }
-        // setcookie($key, $lavaleur);  // session uniquement
-    }
-    return $lavaleur;
-}
-
-//-----------------------------------------------------------------
-
-function check_version($currentversion, $requiredversion)
-// retourne VRAI si currentversion est superieur ou égal à requiredversion
-{
-    list($majorC, $minorC, $editC) = explode(".", $currentversion);
-    list($majorR, $minorR, $editR) = explode(".", $requiredversion);
-
-    $majorC = intval($majorC);
-    $majorR = intval($majorR);
-    $minorC = intval($minorC);
-    $minorR = intval($minorR);
-    $editC  = intval($editC);
-    $editR  = intval($editR);
-
-    if ($majorC > $majorR) {
-        return true;
-    }
-    if ($majorC < $majorR) {
-        return false;
-    }
-
-    if ($minorC > $minorR) {
-        return true;
-    }
-    if ($minorC < $minorR) {
-        return false;
-    }
-
-    if ($editC  >= $editR) {
-        return true;
-    }
-    if ($editC  >= $editR) {
-        return true;
-    }
-
-    return false;
-}
-
-//-------------------------------------------------------------------
-
-function edit_text($name, $size, $value, $caption)
-{
-    echo ' <tr class="row1">' . "\n";
-    echo "  <td align=right>" . $caption . " : </td>\n";
-    echo '  <td>';
-    if ($size <= 70) {
-        $value = str_replace('"', '&quot;', $value); //+ $value = htmlentities($value, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
-
-        echo '<input type="text" name="' . $name . '" size=' . $size . '" maxlength=' . $size . ' value="' . $value . '">';
-    } else {
-        echo '<textarea name="' . $name . '" cols=70 rows=' . (min(4, $size / 70)) . '>' . $value . '</textarea>';
-    }
-    echo '  </td>';
-    echo " </tr>\n";
-}
-
-//-------------------------------------------------------------------

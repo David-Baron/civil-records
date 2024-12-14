@@ -47,58 +47,52 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
         }
 
         if ($hf == "H") {  // recherche homme
-            //	  $request = "CREATE TEMPORARY TABLE IF NOT EXISTS ".EA_DB."_".$ip_adr_trait."_h  (`nomlev` varchar( 25 ) COLLATE latin1_general_ci NOT NULL ,`disth` int( 11 ) NOT NULL ,PRIMARY KEY ( `nomlev` )
-            //								) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;";
-            //	  $request = "CREATE TEMPORARY TABLE IF NOT EXISTS ".EA_DB."_".$ip_adr_trait."_h  (`nomlev` varchar( 25 ) COLLATE ".$COLLATION." NOT NULL ,`disth` int( 11 ) NOT NULL ,PRIMARY KEY ( `nomlev` )
-            //								) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=".$COLLATION.";";
-            $request = "CREATE TEMPORARY TABLE IF NOT EXISTS " . EA_DB . "_" . $ip_adr_trait . "_h  
-		(`disth` int( 11 ) NOT NULL DEFAULT 0, PRIMARY KEY ( `nomlev` ) )
-		AS  (SELECT   `NOM` AS `nomlev` FROM " . $table . " WHERE `ID` = '0');";
 
+            $request = "CREATE TEMPORARY TABLE IF NOT EXISTS " . EA_DB . "_" . $ip_adr_trait . "_h (`disth` int( 11 ) NOT NULL DEFAULT 0, PRIMARY KEY ( `nomlev` ) )
+		AS (SELECT `NOM` AS `nomlev` FROM " . $table . " WHERE `ID` = '0');";
 
-
-            $result = EA_sql_query($request) or die('Erreur SQL creation !' . $sql . '<br>' . EA_sql_error());
-            if ($table == EA_DB . "_div3") { // ##########################NOUVEAU###############################"
+            $result = EA_sql_query($request) or die('Erreur SQL creation !' . $request . '<br>' . EA_sql_error());
+            if ($table == EA_DB . "_div3") {
                 if ($commune1 == "U") {
                     if ($crit != '') {
-                        $request = "SELECT nom FROM " . $table . "  WHERE " . $crit . " AND  commune ='" . sql_quote($xcomm) . "' GROUP BY nom ORDER BY nom";
+                        $request = "SELECT nom FROM " . $table . " WHERE " . $crit . " AND commune='" . sql_quote($xcomm) . "' GROUP BY nom ORDER BY nom";
                     } else {
-                        $request = "SELECT nom FROM " . $table . "  WHERE   commune ='" . sql_quote($xcomm) . "' GROUP BY nom ORDER BY nom";
+                        $request = "SELECT nom FROM " . $table . " WHERE commune='" . sql_quote($xcomm) . "' GROUP BY nom ORDER BY nom";
                     }
                 } else {
                     if ($crit != '') {
-                        $request = "SELECT nom FROM " . $table . "   WHERE " . $crit . "  GROUP BY nom ORDER BY nom";
+                        $request = "SELECT nom FROM " . $table . " WHERE " . $crit . " GROUP BY nom ORDER BY nom";
                     } else {
-                        $request = "SELECT nom FROM " . $table . "    GROUP BY nom ORDER BY nom";
+                        $request = "SELECT nom FROM " . $table . " GROUP BY nom ORDER BY nom";
                     }
                 }
 
             } elseif ($table == EA_DB . "_mar3") {
                 if ($commune1 == "U") {
                     if ($crit != '') {
-                        $request = "SELECT nom FROM " . $table . "  WHERE " . $crit . " AND  commune ='" . sql_quote($xcomm) . "' GROUP BY nom ORDER BY nom";
+                        $request = "SELECT nom FROM " . $table . " WHERE " . $crit . " AND commune='" . sql_quote($xcomm) . "' GROUP BY nom ORDER BY nom";
                     } else {
-                        $request = "SELECT nom FROM " . $table . "  WHERE   commune ='" . sql_quote($xcomm) . "' GROUP BY nom ORDER BY nom";
+                        $request = "SELECT nom FROM " . $table . " WHERE   commune ='" . sql_quote($xcomm) . "' GROUP BY nom ORDER BY nom";
                     }
                 } else {
                     if ($crit != '') {
-                        $request = "SELECT nom FROM " . $table . "   WHERE " . $crit . "  GROUP BY nom ORDER BY nom";
+                        $request = "SELECT nom FROM " . $table . " WHERE " . $crit . " GROUP BY nom ORDER BY nom";
                     } else {
-                        $request = "SELECT nom FROM " . $table . "    GROUP BY nom ORDER BY nom";
+                        $request = "SELECT nom FROM " . $table . " GROUP BY nom ORDER BY nom";
                     }
                 }
             } else {
                 if ($commune1 == "U") {
                     if ($crit != '') {
-                        $request = "SELECT p_nom FROM " . $table . " WHERE  " . $crit . " AND  commune ='" . sql_quote($xcomm) . "'  GROUP BY p_nom ORDER BY p_nom";
+                        $request = "SELECT p_nom FROM " . $table . " WHERE " . $crit . " AND  commune ='" . sql_quote($xcomm) . "' GROUP BY p_nom ORDER BY p_nom";
                     } else {
-                        $request = "SELECT p_nom FROM " . $table . " WHERE    commune ='" . sql_quote($xcomm) . "'  GROUP BY p_nom ORDER BY p_nom";
+                        $request = "SELECT p_nom FROM " . $table . " WHERE commune ='" . sql_quote($xcomm) . "' GROUP BY p_nom ORDER BY p_nom";
                     }
                 } else {
                     if ($crit != '') {
-                        $request = "SELECT p_nom FROM " . $table . "  WHERE " . $crit . "  GROUP BY p_nom ORDER BY p_nom";
+                        $request = "SELECT p_nom FROM " . $table . " WHERE " . $crit . " GROUP BY p_nom ORDER BY p_nom";
                     } else {
-                        $request = "SELECT p_nom FROM " . $table . "  GROUP BY p_nom ORDER BY p_nom";
+                        $request = "SELECT p_nom FROM " . $table . " GROUP BY p_nom ORDER BY p_nom";
                     }
                 }
             }
@@ -117,43 +111,43 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
             if ($table == EA_DB . "_div3") {   // ##########################NOUVEAU###############################"
                 if ($commune1 == "U") {
                     if ($crit != '') {
-                        $request = "SELECT c_nom FROM " . $table . "  WHERE " . $crit . " AND  commune ='" . sql_quote($xcomm) . "' GROUP BY c_nom ORDER BY c_nom";
+                        $request = "SELECT c_nom FROM " . $table . " WHERE " . $crit . " AND  commune='" . sql_quote($xcomm) . "' GROUP BY c_nom ORDER BY c_nom";
                     } else {
-                        $request = "SELECT c_nom FROM " . $table . "  WHERE  commune ='" . sql_quote($xcomm) . "' GROUP BY c_nom ORDER BY c_nom";
+                        $request = "SELECT c_nom FROM " . $table . " WHERE  commune='" . sql_quote($xcomm) . "' GROUP BY c_nom ORDER BY c_nom";
                     }
                 } else {
                     if ($crit != '') {
-                        $request = "SELECT c_nom FROM " . $table . "  WHERE " . $crit . "   GROUP BY c_nom ORDER BY c_nom";
+                        $request = "SELECT c_nom FROM " . $table . " WHERE " . $crit . " GROUP BY c_nom ORDER BY c_nom";
                     } else {
-                        $request = "SELECT c_nom FROM " . $table . "   GROUP BY c_nom ORDER BY c_nom";
+                        $request = "SELECT c_nom FROM " . $table . " GROUP BY c_nom ORDER BY c_nom";
                     }
                 }
             } elseif ($table == EA_DB . "_mar3") {
                 if ($commune1 == "U") {
                     if ($crit != '') {
-                        $request = "SELECT c_nom FROM " . $table . "  WHERE " . $crit . " AND  commune ='" . sql_quote($xcomm) . "' GROUP BY c_nom ORDER BY c_nom";
+                        $request = "SELECT c_nom FROM " . $table . " WHERE " . $crit . " AND  commune='" . sql_quote($xcomm) . "' GROUP BY c_nom ORDER BY c_nom";
                     } else {
-                        $request = "SELECT c_nom FROM " . $table . "  WHERE  commune ='" . sql_quote($xcomm) . "' GROUP BY c_nom ORDER BY c_nom";
+                        $request = "SELECT c_nom FROM " . $table . " WHERE  commune ='" . sql_quote($xcomm) . "' GROUP BY c_nom ORDER BY c_nom";
                     }
                 } else {
                     if ($crit != '') {
-                        $request = "SELECT c_nom FROM " . $table . "  WHERE " . $crit . "   GROUP BY c_nom ORDER BY c_nom";
+                        $request = "SELECT c_nom FROM " . $table . " WHERE " . $crit . " GROUP BY c_nom ORDER BY c_nom";
                     } else {
-                        $request = "SELECT c_nom FROM " . $table . "   GROUP BY c_nom ORDER BY c_nom";
+                        $request = "SELECT c_nom FROM " . $table . " GROUP BY c_nom ORDER BY c_nom";
                     }
                 }
             } else {
                 if ($commune1 == "U") {
                     if ($crit != '') {
-                        $request = "SELECT m_nom FROM " . $table . " WHERE  " . $crit . " AND  commune ='" . sql_quote($xcomm) . "'  GROUP BY m_nom ORDER BY m_nom";
+                        $request = "SELECT m_nom FROM " . $table . " WHERE " . $crit . " AND  commune='" . sql_quote($xcomm) . "' GROUP BY m_nom ORDER BY m_nom";
                     } else {
-                        $request = "SELECT m_nom FROM " . $table . " WHERE  commune ='" . sql_quote($xcomm) . "'  GROUP BY m_nom ORDER BY m_nom";
+                        $request = "SELECT m_nom FROM " . $table . " WHERE commune='" . sql_quote($xcomm) . "' GROUP BY m_nom ORDER BY m_nom";
                     }
                 } else {
                     if ($crit != '') {
-                        $request = "SELECT m_nom FROM " . $table . "  WHERE " . $crit . "  GROUP BY m_nom ORDER BY m_nom";
+                        $request = "SELECT m_nom FROM " . $table . " WHERE " . $crit . " GROUP BY m_nom ORDER BY m_nom";
                     } else {
-                        $request = "SELECT m_nom FROM " . $table . "  GROUP BY m_nom ORDER BY m_nom";
+                        $request = "SELECT m_nom FROM " . $table . " GROUP BY m_nom ORDER BY m_nom";
                     }
                 }
             }
@@ -172,15 +166,15 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
             $result = EA_sql_query($request) or die('Erreur SQL creation !' . $sql . '<br>' . EA_sql_error());
             if ($commune1 == "U") {
                 if ($crit != '') {
-                    $request = "SELECT nom FROM " . $table . "  WHERE  " . $crit . " AND commune ='" . sql_quote($xcomm) . "' GROUP BY nom ORDER BY nom";
+                    $request = "SELECT nom FROM " . $table . " WHERE " . $crit . " AND commune='" . sql_quote($xcomm) . "' GROUP BY nom ORDER BY nom";
                 } else {
-                    $request = "SELECT nom FROM " . $table . "  WHERE  commune ='" . sql_quote($xcomm) . "' GROUP BY nom ORDER BY nom";
+                    $request = "SELECT nom FROM " . $table . " WHERE commune='" . sql_quote($xcomm) . "' GROUP BY nom ORDER BY nom";
                 }
             } else {
                 if ($crit != '') {
-                    $request = "SELECT nom FROM " . $table . "   WHERE " . $crit . "    GROUP BY nom ORDER BY nom";
+                    $request = "SELECT nom FROM " . $table . " WHERE " . $crit . " GROUP BY nom ORDER BY nom";
                 } else {
-                    $request = "SELECT nom FROM " . $table . "   GROUP BY nom ORDER BY nom";
+                    $request = "SELECT nom FROM " . $table . " GROUP BY nom ORDER BY nom";
                 }
             }
         }
@@ -197,15 +191,15 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
             $result = EA_sql_query($request) or die('Erreur SQL creation !' . $sql . '<br>' . EA_sql_error());
             if ($commune1 == "U") {
                 if ($crit != '') {
-                    $request = "SELECT nom FROM " . $table . "  WHERE  " . $crit . " AND  commune ='" . sql_quote($xcomm) . "' GROUP BY nom ORDER BY nom";
+                    $request = "SELECT nom FROM " . $table . " WHERE  " . $crit . " AND commune='" . sql_quote($xcomm) . "' GROUP BY nom ORDER BY nom";
                 } else {
-                    $request = "SELECT nom FROM " . $table . "  WHERE  commune ='" . sql_quote($xcomm) . "' GROUP BY nom ORDER BY nom";
+                    $request = "SELECT nom FROM " . $table . " WHERE  commune ='" . sql_quote($xcomm) . "' GROUP BY nom ORDER BY nom";
                 }
             } else {
                 if ($crit != '') {
-                    $request = "SELECT nom FROM " . $table . " WHERE " . $crit . "   GROUP BY nom ORDER BY nom";
+                    $request = "SELECT nom FROM " . $table . " WHERE " . $crit . " GROUP BY nom ORDER BY nom";
                 } else {
-                    $request = "SELECT nom FROM " . $table . "     GROUP BY nom ORDER BY nom";
+                    $request = "SELECT nom FROM " . $table . " GROUP BY nom ORDER BY nom";
                 }
             }
         }

@@ -1,5 +1,20 @@
 <?php
+// Lecture des paramètres de configuration
 
+// Pour déplacer dans load_params, il faut protéger par if (!defined)
+define("EA_VERSION_PRG", "3.2.4");
+//{ $GLOBALS['EAg_BETA']="-beta"; }
+//{ $GLOBALS['EAg_BETA']="-rc6"; }
+{
+    $GLOBALS['EAg_BETA'] = "-p406";
+}
+
+$lg = '';
+load_params();
+
+// Pour déplacer dans load_params, il faut protéger par if (!defined)
+define("EXT_BACKUP", ".bea");
+define("DIR_BACKUP", "_backup/");
 
 function load_params()
 {
@@ -125,36 +140,14 @@ function load_params()
 
 }
 
-//---------------------------------------------------------
-// Lecture des paramètres de configuration
-
-// Pour déplacer dans load_params, il faut protéger par if (!defined)
-define("EA_VERSION_PRG", "3.2.4");
-//{ $GLOBALS['EAg_BETA']="-beta"; }
-//{ $GLOBALS['EAg_BETA']="-rc6"; }
-{
-    $GLOBALS['EAg_BETA'] = "-p406";
-}
-
-$lg = '';
-load_params();
-
-// Pour déplacer dans load_params, il faut protéger par if (!defined)
-define("EXT_BACKUP", ".bea");
-define("DIR_BACKUP", "_backup/");
-//---------------------------------------------------------
-
 function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = null, $index = null, $rss = null)
 {
-
-    header('Content-Type: text/html; charset=UTF-8' . $carcode);
-
     global $path, $userlogin, $scriptname, $commune;
+
+    header('Content-Type: text/html; charset=UTF-8');
+
     $meta_description = "";
     $meta_keywords = "";
-    if ($scriptname == "") {
-        $scriptname = "index";
-    }
 
     if (defined("META_DESCRIPTION")) {
         $meta_description = META_DESCRIPTION;
@@ -163,72 +156,46 @@ function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = n
         $meta_keywords = META_KEYWORDS;
     }
 
-    echo '<!DOCTYPE html>' . "\n";
-    echo '<html lang="fr">' . "\n";
-    echo "<head>\n";
-    echo '<link rel="shortcut icon" href="' . $root . '/img/favicon.ico" type="image/x-icon" />' . "\n";
-    echo '<link rel="stylesheet" href="' . $root . '/tools/css/actes.css" type="text/css" />' . "\n";
-    //  if (file_exists($GLOBALS['EA_Appel_dOu'].'_config/actes.css'))
-    if (file_exists(dirname(dirname(__FILE__)) . '/_config/actes.css')) {
-        echo '<link rel="stylesheet" href="' . $root . '/_config/actes.css" type="text/css" />' . "\n";
-    }
-    echo '<link rel="stylesheet" href="' . $root . '/tools/css/actes_print.css" type="text/css"  media="print" />' . "\n";
+    echo '<!DOCTYPE html>';
+    echo '<html lang="fr">';
+    echo "<head>";
+    echo '<meta charset="UTF-8">';
+    echo '<meta name="expires" content="never">';
+    echo '<meta name="revisit-after" content="15 days">';
+    echo '<meta name="robots" content="index, nofollow">';
+    echo '<meta name="description" content="' . $meta_description . ' ' . $titre . '">';
+    echo '<meta name="keywords" content="' . $meta_keywords . ', ' . $titre . '">';
+    echo '<meta name="generator" content="Civil-Records">';
+    echo "<title>$titre</title>";
+    echo '<link rel="shortcut icon" href="' . $root . '/assets/img/favicon.ico" type="image/x-icon">';
+    echo '<link rel="stylesheet" href="' . $root . '/assets/css/actes.css" type="text/css">';
 
-    // Adapté de Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent
-    // ADLC - 9/8/2015
-    if (!defined("COOKIE_MESSAGE")) {
-        $cookie_message = "Acceptez-vous d'utiliser les Cookies ?";
-    } else {
-        $cookie_message = COOKIE_MESSAGE;
+    if (file_exists(__DIR__ . '/../_config/actes.css')) {
+        echo '<link rel="stylesheet" href="' . $root . '/_config/actes.css" type="text/css">';
     }
-    if (!defined("COOKIE_URL_INFO")) {
-        $cookie_url = "";
-    } else {
-        $cookie_url = COOKIE_URL_INFO;
-    }
-    $cookie_styles = array(1 => "dark-top", 2 => "light-top", 3 => "dark-bottom", 4 => "light-bottom", 5 => "dark-floating", 6 => "light-floating");
-    if (!defined("COOKIE_STYLE")) {
-        $cookie_style = $cookie_styles[1];
-    } else {
-        $cookie_style = $cookie_styles[COOKIE_STYLE];
-    }
-    echo '<script type="text/javascript">
-  		window.cookieconsent_options = {
-  			"message":"' . $cookie_message . '",
-  			"dismiss":"Accepter les cookies",
-  			"learnMore":"En savoir plus",
-  			"link":"' . $cookie_url . '",
-  			"theme":"' . $cookie_style . '"};</script>';
-    echo '<script type="text/javascript" src="' . $root . '/tools/js/cookieconsent.min.js"></script>';
-    // Cookie Consent plugin //
 
-    $t = dirname(dirname(__FILE__)) . '/_config/js_externe_header.inc.php';
-    if (file_exists($t)) {
-        include($t);
+    echo '<link rel="stylesheet" href="' . $root . '/assets/css/actes_print.css" type="text/css" media="print">';
+    
+    if (file_exists(__DIR__ . '/../_config/js_externe_header.inc.php')) {
+        include(__DIR__ . '/../_config/js_externe_header.inc.php');
     }
 
     if ($rss <> "") {
-        echo '<link rel="alternate" type="application/rss+xml" title="' . $titre . '" href="' . $root . '/' . $rss . '" />';
+        echo '<link rel="alternate" type="application/rss+xml" title="' . $titre . '" href="' . $root . '/' . $rss . '">';
     }
-    if (!($js == null)) {
-        echo '<script language="Javascript 1.2" type="text/javascript">' . "\n";
+
+    if ($js !== null) {
+        echo '<script type="text/javascript">';
         echo $js;
-        echo '</script>' . "\n";
+        echo '</script>';
     }
-    echo "<title>$titre</title>\n";
-    echo '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />' . "\n";
-    echo '<meta name="expires" content="never" />' . "\n";
-    echo '<meta name="revisit-after" content="15 days" />' . "\n";
-    echo '<meta name="robots" content="index, nofollow" />' . "\n";
-    echo '<meta name="description" content="' . $meta_description . ' ' . $titre . '" />' . "\n";
-    echo '<meta name="keywords" content="' . $meta_keywords . ', ' . $titre . '" />' . "\n";
-    echo '<meta name="generator" content="ExpoActes" />' . "\n";
-    echo INCLUDE_HEADER . "\n";
-    if (!($addhead == null)) {
-        echo $addhead . "\n";
+        
+    echo INCLUDE_HEADER;
+    if ($addhead !== null) {
+        echo $addhead;
     }
     echo "</head>\n";
-    echo '<body id="' . $scriptname . '" ' . " $addbody>\n";
+    echo '<body>';
 
     if (getparam(EL) == 'O') {
         echo $ExpoActes_Charset;
@@ -236,7 +203,7 @@ function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = n
 
     global $TIPmsg;  // message d'alerte pré-blocage IP
     if ($TIPmsg <> "" and (TIP_MODE_ALERT % 2) == 1) {
-        echo '<h2><font color="#FF0000">' . $TIPmsg . "</font></h2>\n";
+        echo '<h2><font color="#FF0000">' . $TIPmsg . "</font></h2>";
     }
     echo '<div id="top" class="entete">';
     if (EA_MAINTENANCE == 1) {
@@ -244,14 +211,9 @@ function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = n
     }
 
     include(__DIR__ . '/../templates/front/_bandeau.php');
-    echo "</div>\n";
+    echo "</div>";
 }
 
-//---------------------------------------------------------
-
-
-
-//---------------------------------------------------------
 
 function explode_date($datetxt)  // transforme en date en un tableau en coupant sur / . - ou blanc
 {
@@ -269,8 +231,6 @@ function explode_date($datetxt)  // transforme en date en un tableau en coupant 
     }
     return $elements;
 }
-
-//---------------------------------------------------------
 
 function ajuste_date($datetxt, &$datesql, &$badannee)  // remise en forme des dates incomplètes
 {
@@ -314,21 +274,13 @@ function ajuste_date($datetxt, &$datesql, &$badannee)  // remise en forme des da
     $datetxt = $tdate[3] . '/' . $tdate[2] . '/' . $tdate[1];
     $datesql = $tdate[1] . '-' . $tdate[2] . '-' . $tdate[3];
     $datesql = str_replace('-00', '-01', $datesql);
-    // DateTime::createFromFormat n'existe pas avant php 5.3
-    if (check_version(phpversion(), "5.3.0")) {
-        $d = DateTime::createFromFormat('Y-m-d', $datesql);
-    } else {
-        $d = new DateTime(date('Y-m-d', strtotime($datesql)), null);
-    }
+    $d = DateTime::createFromFormat('Y-m-d', $datesql);
     if (!($d && $d->format('Y-m-d') === $datesql)) {
         $datesql = '1001-01-01';
     }
     //echo " Bad?".$badannee." --> ".$datetxt." --> ".$datesql." --> ".showdate($datesql);
     return $datetxt;
 }
-
-
-//------------------------------------------------------------------------------
 
 function form_recherche()
 {
@@ -351,7 +303,7 @@ function form_recherche()
         }
         echo '<input type="hidden" name="direct" value="1" />' . "\n";
         echo '<input type="hidden" name="debug" value="' . getparam('debug') . '" />' . "\n";
-        echo '<div class="menuTexte" align="right"><dl><dd>';
+        echo '<div class="menuTexte"><dl><dd>';
         echo '<a href="' . $root . '/rechavancee.php">Recherche avancée</a>&nbsp; &nbsp;';
 
         if ((RECH_LEVENSHTEIN == 2) and (max($userlevel, PUBLIC_LEVEL) >= LEVEL_LEVENSHTEIN)) {
@@ -364,10 +316,7 @@ function form_recherche()
     }
 }
 
-
-//------------------------------------------------------------------------------
-
-/*** default_rech_code
+/**
  * retourne mode de recherche par défaut selon le parametre RECH_DEF_TYP sous forme de lettre
  */
 function default_rech_code()
@@ -376,9 +325,7 @@ function default_rech_code()
     return $typs[RECH_DEF_TYP];
 }
 
-//------------------------------------------------------------------------------
-
-/*** prechecked
+/**
  * Préselectionne le mode de recherche par défaut selon le parametre RECH_DEF_TYP
  */
 function prechecked($typrech)
@@ -390,8 +337,6 @@ function prechecked($typrech)
         return ' value="' . $typrech . '" ';
     }
 }
-
-//------------------------------------------------------------------------------
 
 function statistiques($vue = "T")
 {
@@ -483,8 +428,6 @@ function statistiques($vue = "T")
     return $menu_actes;
 }
 
-//------------------------------------------------------------------------------
-
 function menu_admin($root, $userlevel)
 {
     global $userlogin;
@@ -522,8 +465,6 @@ function menu_admin($root, $userlevel)
     echo '</div>' . "\n";
 }
 
-//----------------------------------------------------------------------------
-
 function menu_users($current)
 {
     global $udbname;
@@ -539,26 +480,6 @@ function menu_users($current)
     echo '</p>';
 }
 
-//----------------------------------------------------------------------------
-
-function menu_datas($current)
-{
-    global $userlevel;
-    echo '<p align="center"><strong>Administration des données : </strong>';
-    showmenu('Statistiques', 'maj_sums.php', 'S', $current, false);
-    if ($userlevel > 7) {
-        showmenu('Localités', 'listgeolocs.php', 'L', $current);
-    }
-    showmenu('Ajout d\'un acte', 'ajout_1acte.php', 'A', $current);
-    if ($userlevel > 7) {
-        showmenu('Corrections groupées', 'corr_grp_acte.php', 'G', $current);
-        showmenu('Backup', 'exporte.php?Destin=B', 'B', $current);
-        showmenu('Restauration', 'charge.php?Origine=B', 'R', $current);
-    }
-    echo '</p>';
-}
-
-//----------------------------------------------------------------------------
 
 function menu_software($current)
 {
@@ -573,8 +494,6 @@ function menu_software($current)
     echo '</p>';
 }
 
-//----------------------------------------------------------------------------
-
 function showmenu($texte, $proc, $id, $current, $barre = true)
 {
     if ($barre) {
@@ -586,8 +505,6 @@ function showmenu($texte, $proc, $id, $current, $barre = true)
         echo '<a href="' . $proc . '">' . $texte . '</a>';
     }
 }
-
-//------------------------------------------------------------------------------
 
 function menu_public()
 {
@@ -637,8 +554,6 @@ function menu_public()
     echo '</div>' . "\n";
 }
 
-//------------------------------------------------------------------------------
-
 function show_certifications()
 {
     global $root;
@@ -651,8 +566,6 @@ function show_certifications()
     echo '</a></div>' . "\n";
 }
 
-//------------------------------------------------------------------------------
-
 function show_pub_menu()
 {
     if (!defined('PUB_ZONE_MENU')) {
@@ -663,8 +576,6 @@ function show_pub_menu()
     echo PUB_ZONE_MENU;
     echo '</div>' . "\n";
 }
-
-//------------------------------------------------------------------------------
 
 function zone_menu($admin, $userlevel, $pp = array())
 {
@@ -693,8 +604,6 @@ function zone_menu($admin, $userlevel, $pp = array())
     echo '</div>' . "\n";
     return $menu_actes;
 }
-
-//------------------------------------------------------------------------------
 
 function navigation($root = "", $level = 1, $type = "", $commune = null, $patronyme = null, $prenom = null)
 {
@@ -768,8 +677,6 @@ function navigation($root = "", $level = 1, $type = "", $commune = null, $patron
     echo '</div>' . "\n";
 }
 
-//------------------------------------------------------------------------------
-
 function navadmin($root = "", $current = '')
 {
     echo '<div class="navigation">';
@@ -783,8 +690,6 @@ function navadmin($root = "", $current = '')
     }
     echo '</div>' . "\n";
 }
-
-//------------------------------------------------------------------------------
 
 function getCommunes($params)   // Utilisée pour remplir dynamiquement une listbox selon le type d'actes
 {
@@ -815,13 +720,11 @@ function getCommunes($params)   // Utilisée pour remplir dynamiquement une list
     return $options;
 }
 
-//------------------------------------------------------------------------------
-
 function form_typeactes_communes($mode = '', $alldiv = 1)
 {
     // Tableau avec choix du type + choix d'une commune existante
     echo " <tr>\n";
-    echo '  <td align="right">Type des actes : &nbsp;</td>' . "\n";
+    echo '  <td>Type des actes : &nbsp;</td>' . "\n";
     echo '  <td>';
     $ajaxcommune = ' onClick="' . "getCommunes(this.value, {'content_type': 'json', 'target': 'ComDep', 'preloader': 'prl'})" . '" ';
     echo '  			<input type="hidden" name="TypeActes" value="X" />';
@@ -834,7 +737,7 @@ function form_typeactes_communes($mode = '', $alldiv = 1)
     echo '  </td>';
     echo " </tr>\n";
     echo " <tr>\n";
-    echo '  <td align="right">Commune / Paroisse : &nbsp;</td>' . "\n";
+    echo '  <td>Commune / Paroisse : &nbsp;</td>' . "\n";
     echo '  <td>';
     echo '  <select id="ComDep" name="ComDep">';
     echo '    <option value="">Choisir d\'abord le type d\'acte</option> ';
@@ -842,8 +745,6 @@ function form_typeactes_communes($mode = '', $alldiv = 1)
     echo '  </td>';
     echo " </tr>\n";
 }
-
-//------------------------------------------------------------------------------
 
 function listbox_communes($fieldname, $default, $vide = 0)  // liste de toutes les communes ts actes confondus
 {
@@ -868,8 +769,6 @@ function listbox_communes($fieldname, $default, $vide = 0)  // liste de toutes l
     echo " </select>\n";
 }
 
-//------------------------------------------------------------------------------
-
 function decompose_comm_dep($comdep)
 { // DECOMPOSE EN UNE SEULE OPERATION list ($commune,$departement) = decompose_comm_dep($comdep);
     $croch = mb_strrpos($comdep, "[");
@@ -892,8 +791,6 @@ function departementde($comdep)
     list($comm, $dep) = decompose_comm_dep($comdep);
     return $dep;
 }
-
-//------------------------------------------------------------------------------
 
 function load_zlabels($table, $lg, $ordre = "CSV")
 {
@@ -928,8 +825,6 @@ function load_zlabels($table, $lg, $ordre = "CSV")
     return $mdb;
 }
 
-//------------------------------------------------------------------------------
-
 function metadata($zone, $voulu)  // valeur $zone du record $voulu
 {
     global $mdb; /// postule que $mdb a été convenablement initialisé
@@ -945,11 +840,9 @@ function metadata($zone, $voulu)  // valeur $zone du record $voulu
     }
 }
 
-//------------------------------------------------------------------------------
-
 function listbox_types($fieldname, $default, $vide = 0)
 {
-    $request = "SELECT DISTINCT TYPACT AS TYP"
+    $request = "SELECT DISTINCT TYPACT AS TYP "
         . " FROM " . EA_DB . "_sums "
         . " ORDER BY INSTR('NMDV',TYPACT)"     // cette ligne permet de trier dans l'ordre voulu
     ;
@@ -969,8 +862,6 @@ function listbox_types($fieldname, $default, $vide = 0)
     echo " </select>\n";
 }
 
-//------------------------------------------------------------------------------
-
 function listbox_divers($fieldname, $default, $tous = 0)
 {
     $request = "SELECT DISTINCT LIBELLE FROM " . EA_DB . "_sums WHERE length(LIBELLE)>0";
@@ -988,8 +879,6 @@ function listbox_divers($fieldname, $default, $tous = 0)
     }
     echo " </select>\n";
 }
-
-//------------------------------------------------------------------------------
 
 function listbox_users($fieldname, $default, $levelmin, $zero = 0, $txtzero = '')
 {
@@ -1009,8 +898,6 @@ function listbox_users($fieldname, $default, $levelmin, $zero = 0, $txtzero = ''
     }
     echo " </select>\n";
 }
-
-//------------------------------------------------------------------------------
 
 function show_simple_item($retrait, $format, $info, $label, $info2 = "", $url = "")
 // format : somme de 1= label gras, 2 label italique, 4 info gras, 8 info italique
@@ -1057,8 +944,6 @@ function show_simple_item($retrait, $format, $info, $label, $info2 = "", $url = 
     echo '</tr>' . "\n";
 }
 
-//------------------------------------------------------------------------------
-
 function grp_label($gp, $tb, $lg, $sigle = '')
 {
     $request = "SELECT GETIQ FROM " . EA_DB . "_mgrplg WHERE lg='" . $lg . "' AND dtable='" . $tb . "' AND grp='" . $gp . "' AND sigle=' '";
@@ -1075,8 +960,6 @@ function grp_label($gp, $tb, $lg, $sigle = '')
     }
     return $label;
 }
-
-//------------------------------------------------------------------------------
 
 function show_grouptitle3($row, $retrait, $format, $type, $group, $sigle = '')
 // format : somme de 1= label gras, 2 label italique, 4 info gras, 8 info italique
@@ -1109,8 +992,6 @@ function show_grouptitle3($row, $retrait, $format, $type, $group, $sigle = '')
     }
 }
 
-//------------------------------------------------------------------------------
-
 function show_item3($row, $retrait, $format, $zidinfo, $url = "", $zidinfo2 = "", $activelink = 0)
 // format : somme de 1= label gras, 2 label italique, 4 info gras, 8 info italique
 {
@@ -1118,18 +999,16 @@ function show_item3($row, $retrait, $format, $zidinfo, $url = "", $zidinfo2 = ""
     $req1 = "SELECT ZONE, GROUPE, TYP, TAILLE, OBLIG, AFFICH, ETIQ, AIDE FROM (" . EA_DB . "_metadb d JOIN " . EA_DB . "_metalg l)"
         . " WHERE ((d.ZID=l.ZID) AND (l.LG='" . $lg . "') AND d.ZID=" . $zidinfo . ")";
     $res1 = EA_sql_fetch_assoc(EA_sql_query($req1));
-    //echo $req1;
+
     $info  = $row[$res1["ZONE"]];
     $oblig = $res1["AFFICH"];  // F = Facultatif, O = Obligatoire, A=Adminstration seulmt
     $label = $res1["ETIQ"];
-
+    $info2 = "";
     if ($zidinfo2 != "") {
         $req2 = "SELECT ZONE, GROUPE, TYP, TAILLE, OBLIG, AFFICH, ETIQ, AIDE FROM (" . EA_DB . "_metadb d JOIN " . EA_DB . "_metalg l)"
             . " WHERE ((d.ZID=l.ZID) AND (l.LG='" . $lg . "') AND d.ZID=" . $zidinfo2 . ")";
         $res2 = EA_sql_fetch_assoc(EA_sql_query($req2));
         $info2 = $row[$res2["ZONE"]];
-    } else {
-        $info2 = "";
     }
 
     if ((trim($info) . trim($info2) != "" and $oblig == "F") or $oblig == 'O' or (ADM == 10 and $oblig == "A")) {
@@ -1207,8 +1086,6 @@ function show_deposant3($row, $retrait, $format, $zidinfo, $xid, $tact)
     }
 }
 
-//-----------------------------------------------------------------------------
-
 function sexe($code)
 {
     switch ($code) {
@@ -1221,11 +1098,8 @@ function sexe($code)
         case "?":
             return "Non précisé";
             break;
-            return $code;
     }
 }
-
-//-----------------------------------------------------------------------------
 
 function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = "", $note = "")
 // liste_patro_1("tabnaiss.php",$root,$xcomm,$xpatr,"Naissances / baptêmes",EA_DB."_nai");
@@ -1342,8 +1216,6 @@ function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = ""
         echo 'Aucun patronyme trouvé' . "\n";
     }
 }
-
-//------------------------------------------------------------------------
 
 function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = "", $gid = "", $note = "")
 // Liste des patronymes pour les actes à DEUX intervenants (mariages et divers)
@@ -1609,8 +1481,6 @@ function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = 
     }
 }
 
-//----------------------------------------------------------
-
 function fourchette_dates($d1min = 0, $d1max = 0, $d2min = 0, $d2max = 0)
 {
     $min = 0;
@@ -1640,8 +1510,6 @@ function fourchette_dates($d1min = 0, $d1max = 0, $d2min = 0, $d2max = 0)
     }
     return $res;
 }
-
-//------------------------------------------------------------------------
 
 function pagination($nbtot, &$page, $href, &$listpages, &$limit)
 {
@@ -1689,8 +1557,6 @@ function pagination($nbtot, &$page, $href, &$listpages, &$limit)
     }
 }
 
-//---------------------------------------------------------------------------
-
 function actions_deposant($userid, $depid, $actid, $typact)  // version graphique
 {
     global $path, $userlevel, $u_db;
@@ -1718,18 +1584,14 @@ function actions_deposant($userid, $depid, $actid, $typact)  // version graphiqu
     }
 }
 
-//----------------------------------------------------------------------------
-
 function show_depart($depart)
 {
     if ($depart <> "") {
         return " [" . $depart . ']';
-    } else {
-        return "";
-    }
+    } 
+    
+    return "";
 }
-
-//----------------------------------------------------------------------------
 
 function typact_txt($typact)
 {
@@ -1764,11 +1626,7 @@ function typact_txt($typact)
     return $typ;
 }
 
-//--------------------------------------------------------------------------
-
 // Vérification du solde des points et décompte de la consommation ($cout)
-//  modifié le 5-3-2007 pour gérer la consultation répétée du meme acte
-
 function solde_ok($cout = 0, $dep_id = "", $typact = "", $xid = "")
 {
     global $userlogin, $avertissement, $u_db;
@@ -1832,8 +1690,6 @@ function solde_ok($cout = 0, $dep_id = "", $typact = "", $xid = "")
     }
 }
 
-//------------------------------------------------------------------------
-
 function dt_expiration_defaut()
 {
     if (LIMITE_EXPIRATION == "") {
@@ -1853,8 +1709,6 @@ function dt_expiration_defaut()
     }
     return $dtexpir;
 }
-
-//------------------------------------------------------------------------
 
 function recharger_solde()
 {
@@ -1885,8 +1739,6 @@ function recharger_solde()
     }
 }
 
-//------------------------------------------------------------------------
-
 function current_user_solde()
 {
     if (GEST_POINTS == 0) {
@@ -1900,8 +1752,6 @@ function current_user_solde()
     }
 }
 
-//------------------------------------------------------------------------
-
 function show_signal_erreur($typ, $xid, $ctrlcod)
 {
     global $root;
@@ -1909,8 +1759,6 @@ function show_signal_erreur($typ, $xid, $ctrlcod)
         show_simple_item(0, 1, '<a href="' . $root . '/signal_erreur.php?xty=' . $typ . '&amp;xid=' . $xid . '&amp;xct=' . $ctrlcod . '" target="_blank">Cliquez ici pour la signaler</a>', 'Trouvé une erreur ?');
     }
 }
-
-//------------------------------------------------------------------------
 
 function show_solde()
 {
@@ -1925,8 +1773,6 @@ function show_solde()
     }
 }
 
-//----------------------------------------------------------------------------
-
 function annee_seulement($date_txt)  // affichage date simplifié à l'annee si droits limités
 {
     global $userid, $userlevel;
@@ -1940,8 +1786,6 @@ function annee_seulement($date_txt)  // affichage date simplifié à l'annee si 
         return $date_txt;
     } // date complète
 }
-
-//----------------------------------------------------------------------------
 
 function lb_droits_user($lelevel, $all = 0)  //
 {
@@ -1965,8 +1809,6 @@ function lb_droits_user($lelevel, $all = 0)  //
     echo "</select>\n";
 }
 
-//----------------------------------------------------------------------------
-
 function lb_statut_user($statut, $vide = 0)  //
 {
     echo '<select name="statut" size="1">';
@@ -1982,7 +1824,6 @@ function lb_statut_user($statut, $vide = 0)  //
     }
     echo "</select>\n";
 }
-//----------------------------------------------------------------------------
 
 function lb_regime_user($regime, $vide = 0)  //
 {
@@ -1995,8 +1836,6 @@ function lb_regime_user($regime, $vide = 0)  //
     echo '<option ' . selected_option(2, $regime) . '>2 : Recharge automatique</option>' . "\n";
     echo "</select>\n";
 }
-
-//----------------------------------------------------------------------------
 
 function def_mes_sendmail()
 {
@@ -2015,8 +1854,6 @@ function def_mes_sendmail()
     $message .= "Votre webmestre." . $lb;
     return $message;
 }
-
-//----------------------------------------------------------------------------
 
 function stats_1_comm($xtyp, $lacom)
 {
@@ -2084,8 +1921,6 @@ function stats_1_comm($xtyp, $lacom)
         }
     }
 }
-
-//----------------------------------------------------------------------------
 
 function maj_stats($xtyp, $T0, $path, $mode, $com = "", $dep = "")
 // mode : A = all, C=Commune unique, N=Next commune (qd All pas terminé)
@@ -2166,8 +2001,6 @@ function maj_stats($xtyp, $T0, $path, $mode, $com = "", $dep = "")
     }
 }
 
-//----------------------------------------------------------------------------
-
 function geocode_google($com, $dep)
 // Interroge google pour pour connaitre les coordonnées d'une commune
 {
@@ -2187,8 +2020,6 @@ function geocode_google($com, $dep)
     }
     return $coord;
 }
-
-//------------------------------------------------------------------------------
 
 function geoloc_1_com($com, $dep)
 {
@@ -2231,8 +2062,6 @@ function geoloc_1_com($com, $dep)
     }
 }
 
-//------------------------------------------------------------------------------
-
 function test_geocodage($show = false)
 {
     $coord = geocode_google("Paris", "France");
@@ -2250,8 +2079,6 @@ function test_geocodage($show = false)
     return $gok;
 }
 
-//------------------------------------------------------------------------------
-
 function geoUrl($gid)
 {
     global $root;
@@ -2263,7 +2090,6 @@ function geoUrl($gid)
     }
     return $geourl;
 }
-//----------------------------------------------------------------------------
 
 function geoNote($Commune, $Depart, $atyp)
 {
@@ -2283,7 +2109,7 @@ function geoNote($Commune, $Depart, $atyp)
     return $note;
 }
 
-/*** ctrlxid
+/**
  * retourne le code de contrôle relatif au couple nom et prenom
  */
 function ctrlxid($nom, $pre)
@@ -2301,8 +2127,6 @@ function ctrlxid($nom, $pre)
     return $c1 * $c2;
 }
 
-//------------------------------------------------------------------------------
-
 function get_last_backups()
 {
     // recupère la liste des dates des derniers backups
@@ -2313,7 +2137,6 @@ function get_last_backups()
     }
     return $list_backups;
 }
-//------------------------------------------------------------------------------
 
 function set_last_backups($list_backups)
 {
@@ -2327,8 +2150,6 @@ function set_last_backups($list_backups)
     return $result;
 }
 
-//------------------------------------------------------------------------------
-
 function show_last_backup($filtre = "NMDVUP")
 {
     $list_backups = get_last_backups();
@@ -2340,8 +2161,6 @@ function show_last_backup($filtre = "NMDVUP")
     }
     return $resu;
 }
-
-//------------------------------------------------------------------------------
 
 function set_cond_select_actes($params)
 { // ENTREE : array($xtdiv, $userlevel, $userid, $olddepos, $TypeActes, $AnneeDeb, $AnneeFin, $comdep)

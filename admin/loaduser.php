@@ -11,34 +11,21 @@ while ($userlevel < 9) {
     login($root);
 }
 
-$T0 = time();
-
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
+$T0 = time();
 $logOk      = ischecked('LogOk');
 $logKo      = ischecked('LogKo');
 $logRed     = ischecked('LogRed');
 $sendmail   = ischecked('SendMail');
 $xdroits    = getparam('lelevel');
-$xregime    = getparam('regime');
-if ($xregime == '') {
-    $xregime = 2;
-} // pas activé -> automatique
-
+$xregime    = getparam('regime', 2);// pas activé -> automatique
 $message    = getparam('Message');
 $xaction    = getparam('action');
 if ($xaction == 'submitted') {
     setcookie("chargeUSERparam", $sendmail . $xdroits . $xregime, time() + 60 * 60 * 24 * 60);  // 60 jours
     setcookie("chargeUSERlogs", $logOk . $logKo . $logRed, time() + 60 * 60 * 24 * 60);  // 60 jours
 }
-
-ob_start();
-open_page("Chargement des utilisateurs (CSV)", $root);
-navadmin($root, "Chargement des utilisateurs CSV");
-
-zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
-
-echo '<div id="col_main_adm">';
 $missingargs = true;
 $emailfound = false;
 $oktype = false;
@@ -47,13 +34,15 @@ $cptign = 0;
 $cptadd = 0;
 $cptdeja = 0;
 $avecidnim = false;
-
-menu_users('I');
-
-//{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; }
-
 $today = today();
 $userid = current_user("ID");
+
+ob_start();
+open_page("Chargement des utilisateurs (CSV)", $root);
+navadmin($root, "Chargement des utilisateurs CSV");
+zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+echo '<div id="col_main_adm">';
+menu_users('I');
 
 if ($xaction == 'submitted') {
     // Données postées

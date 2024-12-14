@@ -4,36 +4,31 @@ $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
-pathroot($root, $path, $xcomm, $xpatr, $page);
-
-$id  = getparam('id');
-$act = getparam('act');
-
 $userlogin = "";
 $userlevel = logonok(9);
 while ($userlevel < 9) {
     login($root);
 }
 
+pathroot($root, $path, $xcomm, $xpatr, $page);
+
+$id  = getparam('id');
+$act = getparam('act');
 $lon    = getparam('lon');
 $lat    = getparam('lat');
 $noteN  = getparam('noteN');
 $noteM  = getparam('noteM');
 $noteD  = getparam('noteD');
 $noteV  = getparam('noteV');
+$leid = getparam('id');
 
 $missingargs = true;
 $JSheader = "";
 
-$leid = getparam('id');
-
 if ($id > 0) {  // édition
-    //
     $action = 'Modification';
-    $request = "SELECT *"
-                . " FROM " . EA_DB . "_geoloc "
-                . " WHERE ID =" . $id;
-    //echo '<P>'.$request;
+    $request = "SELECT * FROM " . EA_DB . "_geoloc WHERE ID =" . $id;
+
     if ($result = EA_sql_query($request)) {
         $row = EA_sql_fetch_array($result);
         $commune   = $row["COMMUNE"];
@@ -64,8 +59,8 @@ if ($id > 0) {  // édition
         $zoom = 5;
     }
 
-    include_once("../tools/GoogleMap/OrienteMap.inc.php");
-    include_once("../tools/GoogleMap/Jsmin.php");
+    include_once(__DIR__ .'/../tools/GoogleMap/OrienteMap.inc.php');
+    include_once(__DIR__ .'/../tools/GoogleMap/Jsmin.php');
 
     $carto = new GoogleMapAPI();
     $carto->_minify_js = isset($_REQUEST["min"]) ? false : true;
@@ -92,14 +87,24 @@ $carto->printOnLoad();
 
 navadmin($root, "Gestion d'une localité");
 
-zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
 echo '<div id="col_main_adm">';
-menu_datas('L');
-
+echo '<p align="center"><strong>Administration des données : </strong>';
+showmenu('Statistiques', 'maj_sums.php', 'S', 'L', false);
+if ($userlevel > 7) {
+    showmenu('Localités', 'listgeolocs.php', 'L', 'L');
+}
+showmenu('Ajout d\'un acte', 'ajout_1acte.php', 'A', 'L');
+if ($userlevel > 7) {
+    showmenu('Corrections groupées', 'corr_grp_acte.php', 'G', 'L');
+    showmenu('Backup', 'exporte.php?Destin=B', 'B', 'L');
+    showmenu('Restauration', 'charge.php?Origine=B', 'R', 'L');
+}
+echo '</p>';
 
 if ($id > 0 and $act == "del") {
     $reqmaj = "DELETE FROM " . EA_DB . "_geoloc WHERE ID=" . $id . ";";
-    if  ($result = EA_sql_query($reqmaj, $a_db)) {
+    if ($result = EA_sql_query($reqmaj, $a_db)) {
         //writelog('Suppression localité #'.$id,$lelogin,1);
         echo '<p><b>FICHE SUPPRIMEE.</b></p>';
         $id = 0;
@@ -123,17 +128,17 @@ if (getparam('action') == 'submitted') {
         $missingargs = false;
         $reqmaj = "UPDATE " . EA_DB . "_geoloc SET ";
         $reqmaj = $reqmaj .
-                 "NOTE_N = '" . sql_quote(getparam('noteN')) . "', " .
-                 "NOTE_M = '" . sql_quote(getparam('noteM')) . "', " .
-                 "NOTE_D = '" . sql_quote(getparam('noteD')) . "', " .
-                 "NOTE_V = '" . sql_quote(getparam('noteV')) . "', " .
-                 "STATUT = '" . sql_quote($newstatut) . "', " .
-                 "LON    = '" . sql_quote(getparam('lon')) . "', " .
-                 "LAT    = '" . sql_quote(getparam('lat')) . "' " .
-             " WHERE ID=" . $id . ";";
+            "NOTE_N = '" . sql_quote(getparam('noteN')) . "', " .
+            "NOTE_M = '" . sql_quote(getparam('noteM')) . "', " .
+            "NOTE_D = '" . sql_quote(getparam('noteD')) . "', " .
+            "NOTE_V = '" . sql_quote(getparam('noteV')) . "', " .
+            "STATUT = '" . sql_quote($newstatut) . "', " .
+            "LON    = '" . sql_quote(getparam('lon')) . "', " .
+            "LAT    = '" . sql_quote(getparam('lat')) . "' " .
+            " WHERE ID=" . $id . ";";
 
         //echo "<p>".$reqmaj."</p>";
-        if  ($result = EA_sql_query($reqmaj)) {
+        if ($result = EA_sql_query($reqmaj)) {
             // echo '<p>'.EA_sql_error().'<br />'.$reqmaj.'</p>';
             echo '<p><b>Fiche enregistrée' . $mes . '.</b></p>';
             $id = 0;
@@ -145,7 +150,7 @@ if (getparam('action') == 'submitted') {
 }
 
 //Si pas tout les arguments nécessaire, on affiche le formulaire
-if($id <> 0 and $missingargs) {
+if ($id <> 0 and $missingargs) {
     echo '<h2>' . $action . " d'une fiche de localité</h2> \n";
     echo '<form method="post" id="fiche" name="eaform" action="gestgeoloc.php">' . "\n";
     echo '<table cellspacing="0" cellpadding="1" border="0" summary="Formulaire">' . "\n";
@@ -168,7 +173,7 @@ if($id <> 0 and $missingargs) {
     echo '  <td><input type="text" name="lat" id="lat" size="10" value="' . $row['LAT'] . '" />' . "</td>\n";
     echo " </tr>\n";
 
-    $ast = array("M" => "Manuelle", "N" => "Non définie","A" => "Automatique");
+    $ast = array("M" => "Manuelle", "N" => "Non définie", "A" => "Automatique");
     echo " <tr>\n";
     echo "  <td align='right'>Géolocalisation : </td>\n";
     echo '  <td>' . $ast[$statut] . "</td>\n";

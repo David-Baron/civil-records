@@ -4,22 +4,16 @@ $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
-$root = "";
-$path = "";
-$lg = $GLOBALS['lg'];
-
-//**************************** ADMIN **************************
-
-pathroot($root, $path, $xcomm, $xpatr, $page);
-
 $userlogin = "";
-
 $needlevel = 6;  // niveau d'accès (anciennement 5)
 $userlevel = logonok($needlevel);
 while ($userlevel < $needlevel) {
     login($root);
 }
 
+pathroot($root, $path, $xcomm, $xpatr, $page);
+
+$lg = $GLOBALS['lg'];
 $xid      = getparam('xid');
 $xtyp     = strtoupper(getparam('xtyp'));
 if ($xtyp == "") {
@@ -38,21 +32,17 @@ if ($xid < 0) {
     $title = "Edition d'un acte";
     $logtxt = "Edition";
 }
-
-ob_start();
-open_page($title, $root);
-navadmin($root, $title);
-
-zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
-
-echo '<div id="col_main_adm">';
-
 $ok = false;
 $missingargs = false;
 $oktype = false;
 $today = today();
 
-//{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; }
+ob_start();
+open_page($title, $root);
+navadmin($root, $title);
+zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+
+echo '<div id="col_main_adm">';
 
 if ($xid == '' or $xtyp == '' or $xtyp == 'X') {
     // Données postées
@@ -233,7 +223,18 @@ if (! $missingargs) {
                         $value = $acte[$mdb[$i]['ZONE']];
                     }
                 }
-                edit_text($mdb[$i]['ZONE'], $col[$mdb[$i]['ZONE']], $value, $mdb[$i]['ETIQ']);
+                echo ' <tr class="row1">';
+                echo "  <td align=right>" . $mdb[$i]['ETIQ'] . " : </td>";
+                echo '  <td>';
+                if ($col[$mdb[$i]['ZONE']] <= 70) {
+                    $value = str_replace('"', '&quot;', $value);
+            
+                    echo '<input type="text" name="' . $mdb[$i]['ZONE'] . '" size=' . $col[$mdb[$i]['ZONE']] . '" maxlength=' . $col[$mdb[$i]['ZONE']] . ' value="' . $value . '">';
+                } else {
+                    echo '<textarea name="' . $mdb[$i]['ZONE'] . '" cols=70 rows=' . (min(4, $col[$mdb[$i]['ZONE']] / 70)) . '>' . $value . '</textarea>';
+                }
+                echo '  </td>';
+                echo " </tr>";
             }
             echo ' <tr class="row0"><td>' . "\n";
             echo '<input type="hidden" name="xtyp" value="' . $xtyp . '" />' . "\n";

@@ -4,6 +4,12 @@ $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
+$userlogin = "";
+$userlevel = logonok(9);
+while ($userlevel < 9) {
+    login($root);
+}
+
 function init_page()
 {
     global $root,$userlevel,$htmlpage;
@@ -17,36 +23,19 @@ function init_page()
     $htmlpage = true;
 }
 
+include(__DIR__ ."/../install/instutils.php");
 
-
-
-include("../install/instutils.php");
-
-
-$root = "";
-$path = "";
 $enclosed = '"';  // ou '"'
 $separator = ';';
 $htmlpage = false;
-
-//**************************** ADMIN **************************
+$userid = current_user("ID");
+$missingargs = false;
+$oktype = false;
+$Destin = 'T'; // Toujours vers fichier (T) (sauf pour debug .. D )
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
-$userlogin = "";
-$userlevel = logonok(9);
-while ($userlevel < 9) {
-    login($root);
-}
-
-$userid = current_user("ID");
-
-$missingargs = false;
-$oktype = false;
-
-$Destin = 'T'; // Toujours vers fichier (T) (sauf pour debug .. D )
 my_ob_start_affichage_continu();
-//{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; }
 
 $filename = "ea_params_" . gmdate('Ymd') . '.xml';
 $mime_type = 'text/xml';

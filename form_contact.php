@@ -11,22 +11,20 @@ if (AUTO_CAPTCHA) {
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
-ob_start();
-open_page("Formulaire de contact", $root);
-navigation($root, 2, "", "Formulaire de contact");
-
-zone_menu(0, 0, array('f' => 'N'));//PUBLIC SANS FORM_RECHERCHE
-echo '<div id="col_main_adm">' . "\n";
-
 $missingargs = true;
 $nompre = getparam('nompre');
 $txtmsg = getparam('txtmsg');
 $email = getparam('email');
 $sweb  = htmlentities(getparam('sweb'), ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
 $objet = getparam('objet');
-
-//print '<pre>';  print_r($_REQUEST); echo '</pre>';
 $ok = false;
+
+ob_start();
+open_page("Formulaire de contact", $root);
+navigation($root, 2, "", "Formulaire de contact");
+zone_menu(0, 0, array('f' => 'N')); //PUBLIC SANS FORM_RECHERCHE
+
+echo '<div id="col_main">';
 
 // Données postées -> ajouter ou modifier
 if (getparam('action') == 'submitted') {
@@ -82,65 +80,55 @@ if (getparam('action') == 'submitted') {
 }
 
 //Si pas tout les arguments nécessaire, on affiche le formulaire
-if (!$ok) {
-    echo "<h2>Formulaire de contact</h2>" . "\n";
-    echo '<form method="post"  action="">' . "\n";
-    echo '<table cellspacing="0" cellpadding="1" border="0" summary="Formulaire">' . "\n";
-
-    echo " <tr>\n";
-    echo '  <td align="right">' . "Vos nom et prénom : </td>\n";
-    echo '  <td><input type="text" size="50" name="nompre" value="' . $nompre . '" />' . "</td>\n";
-    echo " </tr>\n";
-
-    echo " <tr>\n";
-    echo '  <td align="right">' . "Votre e-mail : </td>\n";
-    echo '  <td><input type="text" name="email" size="50" value="' . $email . '" />' . "</td>\n";
-    echo " </tr>\n";
-
-    echo " <tr>\n";
-    echo '  <td align="right">' . "Votre site web : </td>\n";
-    echo '  <td><input type="text" name="sweb" size="50" value="' . $sweb . '" />' . "</td>\n";
-    echo " </tr>\n";
-
-    echo " <tr>\n";
-    echo '  <td colspan="2">' . "Sujet : \n";
-    echo '  <input type="text" name="objet" size="80" value="' . $objet . '" />' . "</td>\n";
-    echo " </tr>\n";
-
-    echo " <tr>\n";
-    echo '  <td colspan="2">' . "Votre message : <br />\n";
-    echo '  <textarea name="txtmsg" cols="80" rows="12">' . $txtmsg . '</textarea>' . "</td>\n";
-    echo " </tr>\n";
-
-    if (AUTO_CAPTCHA) {
-        echo " <tr>\n";
-        if (function_exists('imagettftext')) {
-            echo '  <td align="right"><img src="tools/captchas/image.php" alt="captcha" id="captcha" /></td>' . "\n";
-        } else {
-            msg('061 : Librairie GD indisponible');
-            echo '  <td align="right">Code captcha manquant</td>' . "\n";
-        }
-        echo '  <td>Recopiez le code ci-contre : <br />';
-        echo '<input type="text" name="captcha" size="6" maxlength="5" value="" />' . "</td>\n";
-        echo " </tr>\n";
-    }
-
-    echo " <tr>\n";
-    echo '  <td colspan="2">&nbsp;</td>' . "\n";
-    echo " </tr>\n";
-
-    echo " <tr><td align=\"right\">\n";
-    echo '  <input type="hidden" name="action" value="submitted" />';
-    echo ' &nbsp; <input type="reset" value=" Effacer " />' . "\n";
-    echo " </td><td align=\"left\">\n";
-    echo ' &nbsp; <input type="submit" value=" >> Envoyer >> " />' . "\n";
-    echo " </td></tr>\n";
-    echo "</table>\n";
-    echo "</form>\n";
-} else {
-    echo '<p align="center"><b>Nous vous répondrons dès que possible.</b></p>';
-}
-echo '</div>';
-include(__DIR__ . '/templates/front/_footer.php');
+if (!$ok) { ?>
+    <h2>Formulaire de contact</h2>
+    <form method="post">
+        <table cellspacing="0" cellpadding="1" summary="Formulaire">
+            <tr>
+                <td>Vos nom et prénom : </td>
+                <td><input type="text" size="50" name="nompre" value="<?= $nompre; ?>"></td>
+            </tr>
+            <tr>
+                <td>Votre e-mail : </td>
+                <td><input type="text" name="email" size="50" value="<?= $email; ?>"></td>
+            </tr>
+            <tr>
+                <td>Votre site web : </td>
+                <td><input type="text" name="sweb" size="50" value="<?= $sweb; ?>"></td>
+            </tr>
+            <tr>
+                <td colspan="2">Sujet :
+                    <input type="text" name="objet" size="80" value="<?= $objet; ?>">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">Votre message : <br>
+                    <textarea name="txtmsg" cols="80" rows="12"><?= $txtmsg; ?></textarea>
+                </td>
+            </tr>
+            <?php if (AUTO_CAPTCHA && function_exists('imagettftext')) { ?>
+                <tr>
+                    <td><img src="<?= $root; ?>/tools/captchas/image.php" alt="captcha" id="captcha"></td>
+                    <td>
+                        Recopiez le code ci-contre : <br>
+                        <input type="text" name="captcha" size="6" maxlength="5" value="">
+                    </td>
+                </tr>
+            <?php } ?>
+            <tr>
+                <td></td>
+                <td>
+                    <button type="reset">Effacer</button>
+                    <button type="submit">Envoyer</button>
+                </td>
+            </tr>
+        </table>
+        <input type="hidden" name="action" value="submitted">
+    </form>
+<?php } else { ?>
+    <p><b>Nous vous répondrons dès que possible.</b></p>
+<?php } ?>
+</div>
+<?php include(__DIR__ . '/templates/front/_footer.php');
 $response->setContent(ob_get_clean());
 $response->send();

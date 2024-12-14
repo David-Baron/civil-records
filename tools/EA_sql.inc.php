@@ -1,37 +1,5 @@
 <?php
 
-//
-// Version du 09/12/2021
-// Utilitaire des requêtes Base de données pour ExpoActes
-// Auteur : Emmanuel Lethrosne
-//
-// ATTENTION : Ce script est écrit exclusivement pour ExpoActes version 3.2.x, certaines fonctions n'étant pas utilisées dans ExpoActes, le traitement est limité à celles utilisées.
-//
-// Inspiré de // https://github.com/dotpointer/mysql-shim/blob/master/mysql-shim.php
-// # PHP MySQL to MySQLi migration shim library
-//
-// MIT License
-//
-// Copyright (c) 2018 Robert Klebe, dotpointer
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-//
 // tableau des connexions aux bases de données. Sauf quand la base utilisateur est sur une autre base, il n'y en a toujours qu'une
 $BD_EA_link = array();
 
@@ -58,7 +26,7 @@ function EA_is_mysqli_or_resource($r)
 {
     # get the type of the variable
     switch (gettype($r)) {
-        # if it is a resource - could be mysql, file handle etc...
+            # if it is a resource - could be mysql, file handle etc...
         case 'resource':
             return true;
             # if it is an object - must be a mysqli object then
@@ -89,23 +57,17 @@ function BD_EA_link_add($ladbaddr, $ladbuser, $ladbpass, $new_link = false, $cli
             $last = end($GLOBALS['BD_EA_link']); // dernière connexion faite
             // si elle correspond à ladbaddr/ladbuser/ladbpass indiqué
             if (($ladbaddr . '|' . $ladbuser . '|' . $ladbpass === $last['BD_sup']) &&
-                (EA_is_mysqli_or_resource($last['link']))) {
+                (EA_is_mysqli_or_resource($last['link']))
+            ) {
                 // on la prend donc
                 return EA_sql_which_link(null);
             }
         }
     }
     // Ici nouvelle connexion au serveur, la tenter avec les données
-    if ($is_mysql) {
-        $link = @mysql_connect($ladbaddr, $ladbuser, $ladbpass, $new_link);
-        if (@mysql_errno()) {
-            return false;
-        }
-    } else {
-        $link = @mysqli_connect($ladbaddr, $ladbuser, $ladbpass, '');
-        if (@mysqli_connect_errno()) {
-            return false;
-        }
+    $link = @mysqli_connect($ladbaddr, $ladbuser, $ladbpass, '');
+    if (@mysqli_connect_errno()) {
+        return false;
     }
     // insère les infos de la connexion serveur dans la table et retourne la liaison
     $GLOBALS['BD_EA_link'][] = array(
@@ -124,11 +86,7 @@ function BD_EA_link_remove($LINK, $is_mysql = false)
     } else {
         $thread_id =  false;
     }
-    if ($is_mysql) {
-        $result = mysql_close($LINK);
-    } else {
-        $result = mysqli_close($LINK);
-    }
+    $result = mysqli_close($LINK);
     // la fermeture est OK et il y avait un ID de liaison BD
     if ($result && $thread_id) {
         // parcourir le tableau des liens pour supprimer celui traité
@@ -154,210 +112,105 @@ function BD_EA_link_remove($LINK, $is_mysql = false)
     return $result;
 }
 // == Fin des fonctions communes appelées dans les 2 cas mysql et mysqli
-
-$APPEL = 'mysqli_connect';
-if (!is_callable($APPEL)) {
-    // definition des EA_sql_* pour mysql si mysqli n'existe pas
-    function EA_sql_query($QUERY, $LINKS = null)
-    {
-        if ($LINKS !== null) {
-            return mysql_query($QUERY, $LINKS);
-        } else {
-            return mysql_query($QUERY);
-        }
+mysqli_report(MYSQLI_REPORT_OFF);
+function EA_sql_query($QUERY, $LINKS = null)
+{
+    $LINKS = EA_sql_which_link($LINKS);
+    try {
+        $link = @mysqli_query($LINKS, $QUERY);
+    } catch (Exception $e) {
+        $link = false;
     }
-    function EA_sql_fetch_array($RESULT)
-    {
-        $row = mysql_fetch_array($RESULT, MYSQL_BOTH);
-        if (!is_array($row)) {
-            return $row;
-        }
-        foreach ($row as $k => $v) {
-            if (is_null($v)) {
-                $row[ $k ] = '';
-            }
-        }
+    return  $link;
+}
+function EA_sql_fetch_array($RESULT)
+{
+    $row = mysqli_fetch_array($RESULT, MYSQLI_BOTH);
+    if (!is_array($row)) {
         return $row;
     }
-    function EA_sql_num_rows($RESULT)
-    {
-        return mysql_num_rows($RESULT);
+    foreach ($row as $k => $v) {
+        if (is_null($v)) {
+            $row[$k] = '';
+        }
     }
-    function EA_sql_fetch_assoc($RESULT)
-    {
-        $row = mysql_fetch_assoc($RESULT);
-        if (!is_array($row)) {
-            return $row;
-        }
-        foreach ($row as $k => $v) {
-            if (is_null($v)) {
-                $row[ $k ] = '';
-            }
-        }
+    return $row;
+}
+function EA_sql_num_rows($RESULT)
+{
+    return mysqli_num_rows($RESULT);
+}
+function EA_sql_fetch_assoc($RESULT)
+{
+    $row = mysqli_fetch_assoc($RESULT);
+    if (!is_array($row)) {
         return $row;
     }
-    function EA_sql_fetch_row($RESULT)
-    {
-        $row = mysql_fetch_row($RESULT);
-        if (!is_array($row)) {
-            return $row;
+    foreach ($row as $k => $v) {
+        if (is_null($v)) {
+            $row[$k] = '';
         }
-        foreach($row as $k => $v) {
-            if (is_null($v)) {
-                $row[ $k ] = '';
-            }
-        }
+    }
+    return $row;
+}
+function EA_sql_fetch_row($RESULT)
+{
+    $row = mysqli_fetch_row($RESULT);
+    if (!is_array($row)) {
         return $row;
     }
-    function EA_sql_get_server_info($dblink = null)
-    {
-        $dblink = EA_sql_which_link($dblink);
-        return mysql_get_server_info($dblink);
-    }
-    function EA_sql_affected_rows($dblink = null)
-    {
-        $dblink = EA_sql_which_link($dblink);
-        return mysql_affected_rows($dblink);
-    }
-    function EA_sql_stat($dblink = null)
-    {
-        $dblink = EA_sql_which_link($dblink);
-        return mysql_stat($dblink);
-    }
-    function EA_sql_error($dblink = null)
-    {
-        $dblink = EA_sql_which_link($dblink);
-        return mysql_error($dblink);
-    }
-    function EA_sql_num_fields($RESULT)
-    {
-        return mysql_num_fields($RESULT);
-    }
-    function EA_sql_free_result($RESULT)
-    {
-        return mysql_free_result($RESULT);
-    }
-    function EA_sql_real_escape_string($param)
-    {
-        return mysql_real_escape_string($param);
-    }
-    function EA_sql_connect($ladbaddr, $ladbuser, $ladbpass, $new_link = false, $client_flags = 0)
-    {
-        return BD_EA_link_add($ladbaddr, $ladbuser, $ladbpass, $new_link, $client_flags, true);
-    }
-    function EA_sql_select_db($ladbname, $dblink)
-    {
-        return mysql_select_db($ladbname, $dblink);
-    }
-    function EA_sql_close($LINK)
-    {
-        return BD_EA_link_remove($LINK, true);
-    }
-} else {
-    // definition des EA_sql_* pour mysqli procédural
-    {
-        mysqli_report(MYSQLI_REPORT_OFF);
-        function EA_sql_query($QUERY, $LINKS = null)
-        {
-            $LINKS = EA_sql_which_link($LINKS);
-            try {
-                $link = @mysqli_query($LINKS, $QUERY);
-            }
-            catch (Exception $e) {
-                $link = false;
-            }
-            return  $link;
-        }
-        function EA_sql_fetch_array($RESULT)
-        {
-            $row = mysqli_fetch_array($RESULT, MYSQLI_BOTH);
-            if (!is_array($row)) {
-                return $row;
-            }
-            foreach($row as $k => $v) {
-                if (is_null($v)) {
-                    $row[ $k ] = '';
-                }
-            }
-            return $row;
-        }
-        function EA_sql_num_rows($RESULT)
-        {
-            return mysqli_num_rows($RESULT);
-        }
-        function EA_sql_fetch_assoc($RESULT)
-        {
-            $row = mysqli_fetch_assoc($RESULT);
-            if (!is_array($row)) {
-                return $row;
-            }
-            foreach($row as $k => $v) {
-                if (is_null($v)) {
-                    $row[ $k ] = '';
-                }
-            }
-            return $row;
-        }
-        function EA_sql_fetch_row($RESULT)
-        {
-            $row = mysqli_fetch_row($RESULT);
-            if (!is_array($row)) {
-                return $row;
-            }
-            foreach($row as $k => $v) {
-                if (is_null($v)) {
-                    $row[ $k ] = '';
-                }
-            }
-            return $row;
-        }
-        function EA_sql_get_server_info($dblink = null)
-        {
-            $dblink = EA_sql_which_link($dblink);
-            return mysqli_get_server_info($dblink);
-        }
-        function EA_sql_affected_rows($dblink = null)
-        {
-            $dblink = EA_sql_which_link($dblink);
-            return mysqli_affected_rows($dblink);
-        }
-        function EA_sql_stat($dblink = null)
-        {
-            $dblink = EA_sql_which_link($dblink);
-            return mysqli_stat($dblink);
-        }
-        function EA_sql_error($dblink = null)
-        {
-            $dblink = EA_sql_which_link($dblink);
-            if ($dblink !== null) {
-                return mysqli_error($dblink);
-            }
-        }
-        function EA_sql_num_fields($RESULT)
-        {
-            return  mysqli_num_fields($RESULT);
-        }
-        function EA_sql_free_result($RESULT)
-        {
-            return mysqli_free_result($RESULT);
-        }
-        function EA_sql_real_escape_string($param)
-        {
-            $dblink = EA_sql_which_link(null);
-            return mysqli_real_escape_string($dblink, $param);
-        }
-        function EA_sql_connect($ladbaddr, $ladbuser, $ladbpass, $new_link = false, $client_flags = 0)
-        {
-            return BD_EA_link_add($ladbaddr, $ladbuser, $ladbpass, $new_link, $client_flags, false);
-        }
-        function EA_sql_select_db($ladbname, $dblink)
-        {
-            $dblink = EA_sql_which_link($dblink);
-            return mysqli_select_db($dblink, $ladbname);
-        }
-        function EA_sql_close($LINK)
-        {
-            return BD_EA_link_remove($LINK, false);
+    foreach ($row as $k => $v) {
+        if (is_null($v)) {
+            $row[$k] = '';
         }
     }
+    return $row;
+}
+function EA_sql_get_server_info($dblink = null)
+{
+    $dblink = EA_sql_which_link($dblink);
+    return mysqli_get_server_info($dblink);
+}
+function EA_sql_affected_rows($dblink = null)
+{
+    $dblink = EA_sql_which_link($dblink);
+    return mysqli_affected_rows($dblink);
+}
+function EA_sql_stat($dblink = null)
+{
+    $dblink = EA_sql_which_link($dblink);
+    return mysqli_stat($dblink);
+}
+function EA_sql_error($dblink = null)
+{
+    $dblink = EA_sql_which_link($dblink);
+    if ($dblink !== null) {
+        return mysqli_error($dblink);
+    }
+}
+function EA_sql_num_fields($RESULT)
+{
+    return  mysqli_num_fields($RESULT);
+}
+function EA_sql_free_result($RESULT)
+{
+    return mysqli_free_result($RESULT);
+}
+function EA_sql_real_escape_string($param)
+{
+    $dblink = EA_sql_which_link(null);
+    return mysqli_real_escape_string($dblink, $param);
+}
+function EA_sql_connect($ladbaddr, $ladbuser, $ladbpass, $new_link = false, $client_flags = 0)
+{
+    return BD_EA_link_add($ladbaddr, $ladbuser, $ladbpass, $new_link, $client_flags, false);
+}
+function EA_sql_select_db($ladbname, $dblink)
+{
+    $dblink = EA_sql_which_link($dblink);
+    return mysqli_select_db($dblink, $ladbname);
+}
+function EA_sql_close($LINK)
+{
+    return BD_EA_link_remove($LINK, false);
 }

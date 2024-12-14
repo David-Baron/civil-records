@@ -23,8 +23,8 @@ if ($userlevel == 0) {
 }
 
 if ($act == "logout") {
-    /* setcookie('userid', "", 0, $root);
-    setcookie('md5', "", 0, $root); */
+    setcookie('userid', "", 0, $root);
+    setcookie('md5', "", 0, $root);
     header("Location: " . $root . "/index.php");
     exit();
 }
@@ -81,7 +81,7 @@ ob_start();
 open_page(SITENAME . " : Dépouillement d'actes de l'état-civil et des registres paroissiaux", $root, null, null, $JSheader, '../index.htm', 'rss.php');
 navigation($root, 1);
 
-$menu_actes = zone_menu(0, 0, array('s' => $vue, 'c' => 'O'));//PUBLIC STAT(retour menu_actes) & CERT
+$menu_actes = zone_menu(0, 0, array('s' => $vue, 'c' => 'O'));// PUBLIC STAT(retour menu_actes) & CERT
 
 echo '<div id="col_main">';
 

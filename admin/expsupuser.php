@@ -4,6 +4,12 @@ $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
+$userlogin = "";
+$userlevel = logonok(9);
+while ($userlevel < 9) {
+    login($root);
+}
+
 function init_page()
 {
     global $root,$userlevel,$htmlpage;
@@ -19,29 +25,14 @@ function init_page()
 
 my_ob_start_affichage_continu();
 
-include("../tools/traitements.inc.php");
+include(__DIR__ . '/../tools/traitements.inc.php');
 
-$root = "";
-$path = "";
 $enclosed = '"';  // ou '"'
 $separator = ';';
 $htmlpage = false;
-
-//**************************** ADMIN **************************
-
-pathroot($root, $path, $xcomm, $xpatr, $page);
-
-$userlogin = "";
-$userlevel = logonok(9);
-while ($userlevel < 9) {
-    login($root);
-}
-
 $userid = current_user("ID");
-
 $missingargs = false;
 $oktype = false;
-
 $regime   = getparam('regime');
 $lelevel  = getparam('lelevel');
 $rem      = getparam('rem');
@@ -53,14 +44,13 @@ $dtexpir   = getparam('dtexpir');
 $conditexp = getparam('conditexp');
 $conditpts = getparam('conditpts');
 $ptscons 	= getparam('ptscons');
-
 $Destin = 'T'; // Toujours vers fichier (sauf pour debug)
 //$Destin = 'P'; // pour debug
 if ($regime == "") {
     $regime = -1;
 }
 
-//{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; }
+pathroot($root, $path, $xcomm, $xpatr, $page);
 
 if ($xaction == 'submitted') {
     // Données postées

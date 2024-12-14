@@ -117,11 +117,11 @@ foreach ($arr as $ztyp) {
                 }
                 echo '<td> (' . $ligne['R_AN_MIN'] . '-' . $ligne['R_AN_MAX'] . ') </td>';
             }
-            echo '<td align="right"> ' . entier($ligne['S_NB_TOT']) . '</td>';
+            echo '<td> ' . entier($ligne['S_NB_TOT']) . '</td>';
             if ($AffichageAdmin) {
-                echo '<td align="right"> ' . entier($ligne['S_NB_N_NUL']) . '</td>';
+                echo '<td> ' . entier($ligne['S_NB_N_NUL']) . '</td>';
             }
-            echo '<td align="right"> ' . entier($ligne['S_NB_FIL']) . '</td>';
+            echo '<td> ' . entier($ligne['S_NB_FIL']) . '</td>';
             echo '</tr>';
             $cptact = $cptact + $ligne['S_NB_TOT'];
             $cptnnul = $cptnnul + $ligne['S_NB_N_NUL'];
@@ -131,14 +131,14 @@ foreach ($arr as $ztyp) {
     }
 }
 echo '<tr class="rowheader">';
-echo '<td align="right"><b>Totaux :</b></td>';
+echo '<td><b>Totaux :</b></td>';
 if ($AffichageAdmin or SHOW_DATES == 1) {
     echo '<td colspan="' . $cols . '">  </td>';
 }
-echo '<td align="right"> ' . entier($cptact) . '</td>';
+echo '<td> ' . entier($cptact) . '</td>';
 if ($AffichageAdmin) {
-    echo '<td align="right"> ' . entier($cptnnul) . '</td>';
+    echo '<td> ' . entier($cptnnul) . '</td>';
 }
-echo '<td align="right"> ' . entier($cptfil) . '</td>';
+echo '<td> ' . entier($cptfil) . '</td>';
 echo '</tr>';
 echo '</table>';

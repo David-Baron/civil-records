@@ -4,17 +4,16 @@ $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
-pathroot($root, $path, $xcomm, $xpatr, $page);
-
-$id  = getparam('id', -1);
-$act = getparam('act');
-
 $userlogin = "";
 $userlevel = logonok(9);
 while ($userlevel < 9) {
     login($root);
 }
 
+pathroot($root, $path, $xcomm, $xpatr, $page);
+
+$id  = getparam('id', -1);
+$act = getparam('act');
 $sendmail   = ischecked('SendMail');
 $autopw     = ischecked('autopw');
 $xdroits    = getparam('lelevel');
@@ -23,23 +22,21 @@ $message    = getparam('Message');
 $nom        = getparam('nom');
 $email      = getparam('email');
 $dtexpir    = getparam('dtexpir');
+$missingargs = true;
+$lelogin = getparam('lelogin');
+$lepassw = getparam('lepassw');
+$leid = getparam('id');
 
 if (getparam('action') == 'submitted') {
     setcookie("chargeUSERparam", $sendmail . $xdroits . $xregime, time() + 60 * 60 * 24 * 60);  // 60 jours
     // setcookie("chargeUSERmessage", $message, time()+60*60*24*180);  // 180 jours
 }
 
-$script = file_get_contents("../tools/js/sha1.js");
-
 ob_start();
-open_page("Gestion des utilisateurs", $root, $script);
-
+open_page("Gestion des utilisateurs", $root);
 navadmin($root, "Gestion des utilisateurs");
-
 zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
-
 echo '<div id="col_main_adm">';
-
 if ($id == -1) {
     menu_users('A');
 } else {
@@ -49,15 +46,6 @@ if ($id == -1) {
 if (isset($udbname)) {
     msg('ATTENTION : Données ajoutées/modifiées dans ' . $udbaddr . "/" . $udbuser . "/" . $udbname . "/" . EA_UDB . "</p>", 'info');
 }
-
-
-$missingargs = true;
-
-//print '<pre>';  print_r($_REQUEST); echo '</pre>';
-
-$lelogin = getparam('lelogin');
-$lepassw = getparam('lepassw');
-$leid = getparam('id');
 
 // Données postées -> ajouter ou modifier
 if (getparam('action') == 'submitted') {

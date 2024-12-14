@@ -3,14 +3,14 @@ define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
+require(__DIR__ . '/../tools/traitements.inc.php');
+require(__DIR__ . '/../tools/adodb-time.inc.php');
 
-my_ob_start_affichage_continu();
-
-include("../tools/traitements.inc.php");
-include("../tools/adodb-time.inc.php");
-
-
-//------------------------------------------------------------------------------
+$userlogin = "";
+$userlevel = logonok(6);
+while ($userlevel < 6) {
+    login($root);
+}
 
 function nomcolonne($i)  // noms des colonnes à la Excel
 {
@@ -22,8 +22,6 @@ function nomcolonne($i)  // noms des colonnes à la Excel
         return chr($un) . chr($de);
     }
 }
-
-//------------------------------------------------------------------------------
 
 function listbox_cols($fieldname, $default)
 {
@@ -46,25 +44,9 @@ function listbox_cols($fieldname, $default)
     echo " </select>\n";
 }
 
-//------------------------------------------------------------------------------
-
-$root = "";
-$path = "";
-$userlogin = "";
-//$T0 = time();
 $Max_time = min(ini_get("max_execution_time") - 3, MAX_EXEC_TIME);
 
-//**************************** ADMIN **************************
-
 pathroot($root, $path, $xcomm, $xpatr, $page);
-
-//{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; }
-
-$userlogin = "";
-$userlevel = logonok(6);
-while ($userlevel < 6) {
-    login($root);
-}
 
 $AnneeVide  = ischecked('AnneeVide');
 $SuprRedon  = ischecked('SuprRedon');
@@ -158,12 +140,6 @@ if (isset($_REQUEST['action'])) {
     }
 }
 
-open_page("Chargement des actes (CSV)", $root);
-navadmin($root, "Chargement des actes CSV");
-
-zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
-
-echo '<div id="col_main_adm">';
 $emailfound = false;
 $oktype = false;
 $cptign = 0;
@@ -176,6 +152,12 @@ $today = today();
 $userid = current_user("ID");
 $missingargs = true;
 
+my_ob_start_affichage_continu();
+open_page("Chargement des actes (CSV)", $root);
+navadmin($root, "Chargement des actes CSV");
+zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
+
+echo '<div id="col_main_adm">';
 
 if (isset($_REQUEST['action'])) {
     // Données postées

@@ -4,9 +4,7 @@ $admtxt = ''; // Compatibility only
 require(__DIR__ . '/next/bootstrap.php');
 require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
-pathroot($root, $path, $xcomm, $xpatr, $page);
 
-$id  = getparam('id');
 
 $userlogin = "";
 $userlevel = logonok(1);
@@ -14,14 +12,14 @@ while ($userlevel < 1) {
     login($root);
 }
 
+pathroot($root, $path, $xcomm, $xpatr, $page);
+
+$id  = getparam('id');
 $ok = true;
 $JSheader = "";
-//print '<pre>';  print_r($_REQUEST); echo '</pre>';
 
 if ($id > 0) { // édition
-    $request = "SELECT *"
-        . " FROM " . EA_DB . "_geoloc "
-        . " WHERE ID =" . $id;
+    $request = "SELECT * FROM " . EA_DB . "_geoloc WHERE ID =" . $id;
     if ($result = EA_sql_query($request)) {
         $row = EA_sql_fetch_array($result);
         $commune   = $row["COMMUNE"];
@@ -69,8 +67,8 @@ if ($id > 0) { // édition
         $ok = false;
     }
 
-    include_once("tools/GoogleMap/OrienteMap.inc.php");
-    include_once("tools/GoogleMap/Jsmin.php");
+    include_once(__DIR__ . '/tools/GoogleMap/OrienteMap.inc.php');
+    include_once(__DIR__ . '/tools/GoogleMap/Jsmin.php');
 
     $carto = new GoogleMapAPI();
     $carto->_minify_js = isset($_REQUEST["min"]) ? false : true;
@@ -80,11 +78,11 @@ if ($id > 0) { // édition
     $carto->setWidth(600);
     global $root;
     $fullpath = EA_URL_SITE . $root;
-    $image = $fullpath . '/img/pin_eye.png';
+    $image = $fullpath . '/assets/img/pin_eye.png';
     $Xanchor = 10;
     $Yanchor = 35;
     global $imagePin;
-    $imagePin = $fullpath . '/img/pin_';
+    $imagePin = $fullpath . '/assets/img/pin_';
     $carto->setMarkerIcon($image, '', $Xanchor, $Yanchor); // défini le décalage du pied de la punaise
     $carto->addIcon($imagePin . "M.png", '', $Xanchor, $Yanchor);
     $carto->addIcon($imagePin . "D.png", '', $Xanchor, $Yanchor);
@@ -154,9 +152,9 @@ if ($noteV <> '' or $cptV > 0) {
         $txthtml = "<p>";
     }
     echo $txthtml . $noteV . "</p>";
-}
+} ?>
 
-echo '</div>';
-include(__DIR__ . '/templates/front/_footer.php');
+</div>
+<?php include(__DIR__ . '/templates/front/_footer.php');
 $response->setContent(ob_get_clean());
 $response->send();

@@ -3,18 +3,7 @@ define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
-
-
-include("../tools/traitements.inc.php");
-
-$root = "";
-$path = "";
-$userlogin = "";
-$T0 = time();
-
-//**************************** ADMIN **************************
-
-pathroot($root, $path, $xcomm, $xpatr, $page);
+require(__DIR__ . '/../tools/traitements.inc.php');
 
 $userlogin = "";
 $userlevel = logonok(9);
@@ -22,6 +11,9 @@ while ($userlevel < 9) {
     login($root);
 }
 
+pathroot($root, $path, $xcomm, $xpatr, $page);
+
+$T0 = time();
 $sujet    = getparam('sujet');
 $message  = getparam('message');
 $xdroits  = getparam('lelevel');
@@ -29,38 +21,36 @@ $regime   = getparam('regime');
 $rem      = getparam('rem');
 $condit   = getparam('condit');
 $xaction  = getparam('action');
-
-ob_start();
-open_page("Envoi d'un mail circulaire", $root);
-navadmin($root, "Envoi d'un mail circulaire");
-
-zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
-
-echo '<div id="col_main_adm">';
 $missingargs = true;
 $emailfound = false;
 $cptok = 0;
 $cptko = 0;
-
-menu_users('M');
-
 $today = today();
 $condrem = "";
 $condlevel = "";
-if ($xdroits <> "10") {
-    $condlevel = " and level =" . $xdroits;
-}
-if ($condit <> "0") {
-    $condrem = " and " . comparerSQL('REM', $rem, $condit);
-}
-$condreg = "";
-if ($regime >= 0) {
-    $condreg = " and regime =" . $regime;
-}
+
+ob_start();
+open_page("Envoi d'un mail circulaire", $root);
+navadmin($root, "Envoi d'un mail circulaire");
+zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
+
+echo '<div id="col_main_adm">';
+menu_users('M');
+
 if ($xaction == 'submitted') {
+    if ($xdroits <> "10") {
+        $condlevel = " AND level=" . $xdroits;
+    }
+    if ($condit <> "0") {
+        $condrem = " AND " . comparerSQL('REM', $rem, $condit);
+    }
+    $condreg = "";
+    if ($regime >= 0) {
+        $condreg = " AND regime =" . $regime;
+    }
     $request = "SELECT nom, prenom, email, level, statut"
-                . " FROM " . EA_UDB . "_user3 "
-                . " WHERE (1=1) " . $condlevel . $condreg . $condrem . " ;";
+        . " FROM " . EA_UDB . "_user3 "
+        . " WHERE (1=1) " . $condlevel . $condreg . $condrem . " ;";
     //echo $request1;
     $sites = EA_sql_query($request, $u_db);
     $nbsites = EA_sql_num_rows($sites);
@@ -93,7 +83,7 @@ if ($xaction == 'submitted') {
 } // fichier d'actes
 
 //Si pas tout les arguments nécessaire, on affiche le formulaire
-if($missingargs) {
+if ($missingargs) {
     if ($xaction == '') {  // parametres par défaut
         if (isset($_COOKIE['chargeUSERlogs'])) {
             $logOk = $_COOKIE['chargeUSERlogs'][0];

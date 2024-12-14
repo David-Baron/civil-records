@@ -4,35 +4,51 @@ $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
-
-$root = "";
-$path = "";
-
-//**************************** ADMIN **************************
-
-pathroot($root, $path, $xcomm, $xpatr, $page);
-
 $userlogin = "";
 $userlevel = logonok(8);
 while ($userlevel < 8) {
     login($root);
 }
+
+pathroot($root, $path, $xcomm, $xpatr, $page);
+
 $title = "Corrections groupées d'actes";
 
 ob_start();
 open_page($title, $root);
 
-include("../tools/PHPLiveX/PHPLiveX.php");
+include(__DIR__ . '/../tools/PHPLiveX/PHPLiveX.php');
 $ajax = new PHPLiveX(array("getCommunes"));
 $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
 
 navadmin($root, $title);
-
-zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
 
 echo '<div id="col_main_adm">';
-menu_datas('G');
-
+echo '<p align="center"><strong>Administration des données : </strong>';
+showmenu('Statistiques', 'maj_sums.php', 'S', 'G', false);
+if ($userlevel > 7) {
+    showmenu('Localités', 'listgeolocs.php', 'L', 'G');
+}
+showmenu('Ajout d\'un acte', 'ajout_1acte.php', 'A', 'G');
+if ($userlevel > 7) {
+    showmenu('Corrections groupées', 'corr_grp_acte.php', 'G', 'G');
+    showmenu('Backup', 'exporte.php?Destin=B', 'B', 'G');
+    showmenu('Restauration', 'charge.php?Origine=B', 'R', 'G');
+}
+echo '</p>';
+echo '<p align="center"><strong>Administration des données : </strong>';
+showmenu('Statistiques', 'maj_sums.php', 'S', 'G', false);
+if ($userlevel > 7) {
+    showmenu('Localités', 'listgeolocs.php', 'L', 'G');
+}
+showmenu('Ajout d\'un acte', 'ajout_1acte.php', 'A', 'G');
+if ($userlevel > 7) {
+    showmenu('Corrections groupées', 'corr_grp_acte.php', 'G', 'G');
+    showmenu('Backup', 'exporte.php?Destin=B', 'B', 'G');
+    showmenu('Restauration', 'charge.php?Origine=B', 'R', 'G');
+}
+echo '</p>';
 $ok = false;
 $missingargs = false;
 $oktype = false;
@@ -66,19 +82,18 @@ $mdb = load_zlabels('N', $lg);
 
 if ($xaction == 'submitted' or $xaction == 'validated') {
     // Données postées
-    if((empty($xtyp) or ($xtyp == 'X'))) {
+    if ((empty($xtyp) or ($xtyp == 'X'))) {
         msg('Vous devez préciser le type des actes.');
         $missingargs = true;
     }
-    if(strlen($newcom . $newdep . $newcodcom . $newcoddep . $newphoto . $newtrans . $newverif . $newsigle . $newlibel) + $newdepos == 0) {
+    if (strlen($newcom . $newdep . $newcodcom . $newcoddep . $newphoto . $newtrans . $newverif . $newsigle . $newlibel) + $newdepos == 0) {
         msg('Vous devez préciser au moins une correction à faire.');
         $missingargs = true;
     }
-    if(strlen($newsigle . $newlibel) > 0 and $xtyp <> "V") {
+    if (strlen($newsigle . $newlibel) > 0 and $xtyp <> "V") {
         msg('Vous ne pouvez pas modifier le sigle ou le libellé sur ce type d\'acte.');
         $missingargs = true;
     }
-
 } else {
     $missingargs = true;  // par défaut
 }
@@ -103,7 +118,7 @@ if (! $missingargs) {
 
     if ($xaction <> 'validated') {
         $request = "SELECT count(*) FROM " . $table .
-                             " WHERE " . $condcom . $conddep . $condtdiv . $condad . $condaf . " ;";
+            " WHERE " . $condcom . $conddep . $condtdiv . $condad . $condaf . " ;";
         //echo $request;
         $result = EA_sql_query($request);
         $ligne = EA_sql_fetch_row($result);
@@ -161,8 +176,8 @@ if (! $missingargs) {
         unset($t);
 
         $request = "UPDATE " . $table
-                   . " SET " . $listmodif
-                             . " WHERE " . $condcom . $conddep . $condtdiv . $condad . $condaf . " ;";
+            . " SET " . $listmodif
+            . " WHERE " . $condcom . $conddep . $condtdiv . $condad . $condaf . " ;";
         $result = EA_sql_query($request);
         // echo $request;
         $nb = EA_sql_affected_rows();

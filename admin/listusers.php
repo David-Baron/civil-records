@@ -4,27 +4,20 @@ $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
-$root = "";
-$path = "";
-$xcomm = "";
-$xpatr = "";
-$page = 1;
-
-pathroot($root, $path, $xcomm, $xpatr, $page);
-
-$xord  = getparam('xord');
-if ($xord == "") {
-    $xord = "N";
-}   // N = Nom
-$page  = getparam('pg');
-$init  = getparam('init');
-
-
 $userlogin = "";
 $userlevel = logonok(9);
 while ($userlevel < 9) {
     login($root);
 }
+
+pathroot($root, $path, $xcomm, $xpatr, $page);
+
+$xcomm = "";
+$xpatr = "";
+$page = 1;
+$xord  = getparam('xord', 'N');// N = Nom
+$page  = getparam('pg');
+$init  = getparam('init');
 
 ob_start();
 open_page(SITENAME . " : Liste des utilisateurs enregistrés", $root);

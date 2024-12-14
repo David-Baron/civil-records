@@ -75,7 +75,7 @@ try {
     $mail->send();
     $retour_mail_externe = true;
     return $retour_mail_externe; // Le return est nécessaire pour stopper le script mais le contenu n'est pas utilisé
-} catch (Exception $e) {
+} catch (\Exception $e) {
     msg('Problème lors du dialogue avec le serveur mail: " : ' . $e->getMessage());
     writelog($e->getMessage(), $mail->ErrorInfo, 0);
     return $retour_mail_externe; // Le return est nécessaire pour stopper le script mais le contenu n'est pas utilisé

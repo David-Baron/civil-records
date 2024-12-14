@@ -216,7 +216,7 @@ $next_indice = getparam('start', 0);
 if ($next_indice < 0) $next_indice = 0;
 
 $installation_a_jour = ( (EA_VERSION >= EA_VERSION_PRG) and (! isset($_REQUEST['force'])) ); // force= pour forcer la MAJ quand elle est déjà faire DEBUG
-$installation_impossible = (!check_version(EA_VERSION, '3.2.2'));
+$installation_impossible = (version_compare(EA_VERSION, '3.2.2', '<'));
 $installation_stop = ( ($installation_a_jour ) or ($installation_impossible ) );
 $installation_erreur = false;
 // TRAITEMENT DU REFRESH
