@@ -1,13 +1,8 @@
 <?php
-
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
-
-//---------------------------------------------------------
+define('ADM', 0); // Compatibility only
+$admtxt = ''; // Compatibility only
+require(__DIR__ . '/next/bootstrap.php');
+require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
 function sqlcomp($lazone, $valeur)
 {
@@ -302,6 +297,7 @@ while ($userlevel < 3) {
 }
 
 $userid = current_user('ID');
+ob_start();
 open_page("Recherches dans les tables", $root);
 if (current_user_solde() > 0 or RECH_ZERO_PTS == 1) {
     $nav = "";
@@ -561,4 +557,6 @@ if (current_user_solde() > 0 or RECH_ZERO_PTS == 1) {
     msg('Recherche non autorisée car votre solde de points est épuisé !');
 }
 echo '</div>' . "\n";
-close_page();
+include(__DIR__ . '/templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

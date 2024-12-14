@@ -1,0 +1,136 @@
+function echoln($texte) // echo + passage à la ligne
+{
+    echo $texte . "\n";
+}
+
+function getparam($name, $default = "", $allow_sql = 0) // initialise proprement une variable avec le contenu d'un paramètre facultatif et filtrage anti injection de code
+{
+    if (isset($_REQUEST[$name])) {
+        $param = $_REQUEST[$name];
+        if (!is_utf8($param)) {
+            $param = iconv('iso-8859-15', 'UTF-8', $param);
+        } // Conversion des paramètres en UTF8
+        $paramMaj = strtoupper($param);
+        $interdits = array("SELECT", "INSERT", "DELETE", "UPDATE", "DROP", "TRUNCATE", "SHOW", "PASSWORD", "SLEEP", "FROM", "UNION");
+        if (isset($GLOBALS['userlevel']) and $GLOBALS['userlevel'] >= 6) { // Retire UNION de la liste des mots à risque d'injection quand on a des droits suffisants
+            $bidon = array_pop($interdits);
+        }
+        if (!$allow_sql) {
+            $ok = true;
+            foreach ($interdits as $interdit) {
+                if (preg_match("`([[:space:]]|\)|'|\`)" . $interdit . "([[:space:]]|\(|'|\`)`i", $paramMaj)) {
+                    // précédé et suivi de blanc, parenthèse, ou apostrophes
+                    //if (isin($paramMaj,";")>0)  // rejet si mot interdit et ;
+                    $ok = false;
+                }
+            }
+            if (!$ok) {
+                msg("Expression rejetee : $param");
+                writelog("SQL-INJ : " . EA_sql_real_escape_string($param));
+                $param = "";
+            }
+        }
+        return $param;
+    } 
+
+    return $default;
+}
+
+function navigation($root = "", $level = 1, $type = "", $commune = null, $patronyme = null, $prenom = null)
+{
+    $signe = "";
+    $s2 = "";
+    $s4 = "";
+    switch ($type) {
+        case "N":
+            $s2 = "tab_naiss.php";
+            $s4 = "acte_naiss.php";
+            $signe = "o";
+            break;
+        case "D":
+            $s2 = "tab_deces.php";
+            $s4 = "acte_deces.php";
+            $signe = "+";
+            break;
+        case "M":
+            $s2 = "tab_mari.php";
+            $s4 = "acte_mari.php";
+            $signe = "X";
+            break;
+        case "V":
+            $s2 = "tab_bans.php";
+            $s4 = "acte_bans.php";
+            $signe = "Divers";
+            break;
+        case "A":
+            $signe = "Distribution selon les années";
+            break;
+        case "R":  // recherche
+            $signe = "";
+            break;
+    }
+    if ($signe <> "") {
+        $signe = " (" . $signe . ")";
+    }
+    echo '<div class="navigation">';
+    echo 'Navigation';
+    if ($level > 1) {
+        if ($level > 10) {
+            echo ' :: <a href="' . $root . '/index.php">Accueil</a>' . "\n";
+            echo ' &gt; <a href="' . $root . '/admin/index.php">Administration</a>' . "\n";
+            $path = $root . '/admin';
+            $level = $level - 10;
+        } else {
+            if (SHOW_ALLTYPES == 0) {
+                echo ' :: <a href="' . mkurl($root . '/' . "index.php", $type) . '">Communes et paroisses</a>' . "\n";
+            } else {
+                echo ' :: <a href="' . $root . '/index.php">Communes et paroisses</a>' . "\n";
+            }
+            $path = $root;
+        }
+    } else {
+        if ($level == 1) {
+            echo ' :: Communes et paroisses' . "\n";
+        }
+    }
+    if ($level > 2) {
+        echo ' &gt; <a href="' . mkurl($path . '/' . $s2, $commune) . '">' . $commune . $signe . '</a>';
+    } else {
+        if ($level == 2) {
+            echo ' &gt; ' . $commune . $signe . "\n";
+        }
+    }
+    if ($level > 3) {
+        echo ' &gt; <a href="' . mkurl($path . '/' . $s2, $commune, $patronyme) . '">' . $patronyme . '</a>';
+    } else {
+        if ($level == 3) {
+            echo ' &gt; ' . $patronyme . "\n";
+        }
+    }
+    if ($level == 4) {
+        echo ' &gt; ' . $prenom . "\n";
+    }
+    echo '</div>' . "\n";
+}
+
+function close_page($complet = 0, $root = null)
+{
+    global $TIPmsg;  // message d'alerte pré-blocage IP
+    echo '<div id="pied_page2" class="pied_page2">';
+    echo '<div id="totop2" class="totop2"><p class="totop2"><strong><a href="#top">Top</a></strong> &nbsp; </p></div>';
+    echo '<div id="texte_pied2" class="texte_pied2"><p class="texte_pied2">' . PIED_PAGE . '</p></div>';
+    echo '<div id="copyright2" class="copyright2"><p class="copyright2"><em><a href="http://expocartes.monrezo.be/">ExpoActes</a></em> version ' . EA_VERSION . $GLOBALS['EAg_BETA'] . ' (&copy;<em> 2005-' . date("Y") . ', ADSoft)</em></p></div>';
+    echo '</div>';
+
+    if (file_exists(__DIR__ . '/../_config/js_externe_footer.inc.php')) {
+        include(__DIR__ . '/../_config/js_externe_footer.inc.php');
+    }
+
+    if ($TIPmsg <> "" && TIP_MODE_ALERT >= 2) {
+        echo "<script language=javascript>";
+        echo 'alert("' . $TIPmsg . '")';
+        echo '</script>';
+    }
+    echo "</body>\n";
+    echo "</html>\n";
+}

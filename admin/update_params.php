@@ -1,19 +1,11 @@
 <?php
-
-// NB : programme distinct de update_params situé dans install !!
-//error_reporting(E_ALL);
-
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
-my_ob_start_affichage_continu();
+define('ADM', 10); // Compatibility only
+$admtxt = 'Gestion '; // Compatibility only
+require(__DIR__ . '/../next/bootstrap.php');
+require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
 include("../install/instutils.php");
 
-$root = "";
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
 $userlogin = "";
@@ -22,25 +14,22 @@ if ($userlevel == 0) {
     login($root);
 }
 
+$missingargs = true;
+//$message    = getparam('Message');
+$xaction    = getparam('action');
+
+ob_start();
 open_page("Mise à jour des paramètres", $root);
 navadmin($root, "Mise à jour des paramètres");
-
 zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
-
 echo '<div id="col_main_adm">';
 menu_software('P');
 echo '<h2>Backup / Restauration</h2>';
-
 echo '<p align="center"><strong>Actions sur les paramètres : </strong>';
 echo ' <a href="expparams.php"><b>Sauvegarder</b></a>';
 echo ' | Restaurer';
 echo ' || <a href="gest_params.php">Retour</a>';
 echo '</p>';
-
-$missingargs = true;
-
-//$message    = getparam('Message');
-$xaction    = getparam('action');
 
 if ($xaction == 'submitted') {
     if(!empty($_FILES['params']['tmp_name'])) { // fichier de paramètres
@@ -106,7 +95,6 @@ if($missingargs) {
     echo "</form>\n";
 }
 echo '</div>';
-
-close_page(1, $root);
-//ob_flush();
-//close_page(0);
+include(__DIR__ . '/../templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

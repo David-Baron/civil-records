@@ -1,11 +1,8 @@
 <?php
-
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 0); // Compatibility only
+$admtxt = ''; // Compatibility only
+require(__DIR__ . '/next/bootstrap.php');
+require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
 global $loc_mail;
 if (AUTO_CAPTCHA) {
@@ -14,17 +11,20 @@ if (AUTO_CAPTCHA) {
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
+ob_start();
 open_page("Créer mon compte utilisateur", $root);
 navigation($root, 2, "", "Création de mon compte");
 
-zone_menu(0, 0, array('f' => 'N'));//PUBLIC SANS FORM_RECHERCHE
+zone_menu(0, 0, array('f' => 'N')); //PUBLIC SANS FORM_RECHERCHE
 echo '<div id="col_main_adm">' . "\n";
 
 if (USER_AUTO_DEF == 0) {
     echo "<p><b>Désolé : Cette action n'est pas autorisée sur ce site</b></p>";
     echo "<p>Vous devez contacter le gestionnaire du site pour demander un compte utilisateur</p>";
     echo '</div>';
-    close_page(1);
+    include(__DIR__ . '/templates/front/_footer.php');
+    $response->setContent(ob_get_clean());
+    $response->send();
     die();
 }
 
@@ -261,4 +261,6 @@ if (!$ok) {
     echo '<p align="center"><a href="index.php">Retour à la page d\'accueil</a></p>';
 }
 echo '</div>';
-close_page(1);
+include(__DIR__ . '/templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

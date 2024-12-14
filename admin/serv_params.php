@@ -1,12 +1,8 @@
 <?php
-
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
-my_ob_start_affichage_continu();
+define('ADM', 10); // Compatibility only
+$admtxt = 'Gestion '; // Compatibility only
+require(__DIR__ . '/../next/bootstrap.php');
+require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
 function paspoint($string)
 {
@@ -18,11 +14,6 @@ function paspoint($string)
     }
 }
 
-$root = "";
-$path = "";
-
-//**************************** ADMIN **************************
-
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
 $userlogin = "";
@@ -30,9 +21,6 @@ $userlevel = logonok(9);
 while ($userlevel < 9) {
     login($root);
 }
-
-open_page("Paramètres serveur", $root);
-navadmin($root, "Paramètres serveur");
 
 $action = getparam('maint');
 if ($action <> "") {
@@ -45,10 +33,12 @@ if ($action <> "") {
         $result = EA_sql_query($request);
     }
 }
+
+ob_start();
+open_page("Paramètres serveur", $root);
+navadmin($root, "Paramètres serveur");
 zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
-
 echo '<div id="col_main_adm">';
-
 menu_software('E');
 
 $request = "SELECT valeur FROM " . EA_DB . "_params WHERE param = 'EA_MAINTENANCE'";
@@ -79,16 +69,6 @@ $status = explode('  ', EA_sql_stat($db));
 echo '<h3>Etat du serveur</h3>';
 echo "<p>Serveur MySQL en fonctionnement depuis : " . heureminsec(paspoint($status[0])) . "</p>";
 echo "<p>Nombre moyen de requêtes par sec (tous clients confondus) :" . paspoint($status[7]) . "</p>";
-
-/*
-$result = EA_sql_query('SHOW status');
-  echo '<pre>';
-while ($row = EA_sql_fetch_assoc($result))
-    {
-  echo $row['Variable_name'] . ' = ' . $row['Value'] . "\n";
-  }
-  echo '</pre>';
-  */
 echo '<h3>Paramètres du serveur</h3>';
 echo "<p>Temps limite pour l'exécution des requêtes (sec) : " . val_var_mysql('wait_timeout') . "</p>";
 echo "<p>Temps limite pour les lectures (sec) : " . val_var_mysql('net_read_timeout') . "</p>";
@@ -100,16 +80,6 @@ if ($maxcon == 0) {
 echo "<p>Nombre maximal de connexions simultannées globalement : " . val_var_mysql('max_connections') . "</p>";
 echo "<p>Nombre maximal de connexions simultannées pour vous : " . $maxcon . "</p>";
 
-/*
-$result = EA_sql_query('SHOW VARIABLES');
-echo '<pre>';
-  while ($row = EA_sql_fetch_assoc($result))
-      {
-    echo $row['Variable_name'] . ' = ' . $row['Value'] . "\n";
-    }
-echo '</pre>';
-  */
-
 if (file_exists('serv_params_accents.inc.php')) {
     include('serv_params_accents.inc.php');
 }
@@ -118,4 +88,6 @@ echo '<h2>Informations sur le géocodage (via Google Maps)</h2>';
 test_geocodage(true);
 
 echo '</div>';
-close_page(1, $root);
+include(__DIR__ . '/../templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

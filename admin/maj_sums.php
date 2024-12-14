@@ -1,24 +1,8 @@
 <?php
-
-// Mise a jour des sommes
-// Copyright (C) : André Delacharlerie, 2005-2006
-// Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les termes de la
-// Licence Publique Générale GNU, version 2 (GPLv2), publiée par la Free Software Foundation
-// Texte de la licence : https://www.gnu.org/licenses/old-licenses/gpl-2.0.fr.html
-//-------------------------------------------------------------------
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
-my_ob_start_affichage_continu();
-
-$root = "";
-$path = "";
-
-//**************************** ADMIN **************************
-//{ print '<pre>';  print_r($_POST); echo '</pre>'; }
+define('ADM', 10); // Compatibility only
+$admtxt = 'Gestion '; // Compatibility only
+require(__DIR__ . '/../next/bootstrap.php');
+require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
 $xtyp = "";
 pathroot($root, $path, $xtyp, $xpatr, $page);
@@ -33,16 +17,11 @@ while ($userlevel < $needlevel) {
 $xtyp = strtoupper(getparam('xtyp'));
 $mode = strtoupper(getparam('mode'));
 $com  = urldecode(getparam('com'));
-
-open_page("Mise à jour des statistiques", $root);
 $missingargs = true;
 $emailfound = false;
 $oktype = false;
 $cptact = 0;
 $cptfil = 0;
-navadmin($root, "Mise à jour des statistiques");
-
-zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
 
 $menu_actes = "";
 $menu_actes .= '<a href="' . $root . '/admin/' . "maj_sums.php" . '?xtyp=N&amp;mode=A&amp;com=">' . "Naissances" . "</a> | ";
@@ -50,18 +29,17 @@ $menu_actes .= '<a href="' . $root . '/admin/' . "maj_sums.php" . '?xtyp=M&amp;m
 $menu_actes .= '<a href="' . $root . '/admin/' . "maj_sums.php" . '?xtyp=D&amp;mode=A&amp;com=">' . "Décès" . "</a> | ";
 $menu_actes .= '<a href="' . $root . '/admin/' . "maj_sums.php" . '?xtyp=V&amp;mode=A&amp;com=">' . "Divers" . '</a>';
 
+ob_start();
+open_page("Mise à jour des statistiques", $root);
+navadmin($root, "Mise à jour des statistiques");
+zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
 echo '<div id="col_main">';
-
 menu_datas('S');
-
 echo '<h2 align="center">Mise à jour des statistiques</h2>';
-
 echo '<p><b>' . $menu_actes . '</b></p>';
 
-my_flush(); // On affiche un minimum
-
 if ($xtyp == "") {
-    $request = "SELECT TYPACT, max(DER_MAJ) AS DERMAJ, count(COMMUNE) AS CPTCOM"
+    $request = "SELECT TYPACT, max(DER_MAJ) AS DERMAJ, count(COMMUNE) AS CPTCOM "
                     . " FROM " . EA_DB . "_sums"
                     . " GROUP BY TYPACT"
                     . " ORDER BY INSTR('NMDV',TYPACT)"     // cette ligne permet de trier dans l'ordre voulu
@@ -79,5 +57,6 @@ if ($xtyp == "") {
 }
 
 echo '</div>';
-
-close_page(1, $root);
+include(__DIR__ . '/../templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

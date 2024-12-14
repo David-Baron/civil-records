@@ -34,6 +34,8 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
     while ($userlevel < 2) {
         login($root);
     }
+
+    ob_start();
     open_page($xcomm . " : " . $admtxt . "Décès/Sépultures", $root);
     navigation($root, ADM + 2, 'D', $xcomm);
     zone_menu(ADM, $userlevel);
@@ -45,6 +47,8 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
         login($root);
     }
     $userid = current_user("ID");
+
+    ob_start();
     open_page($xcomm . " : " . $admtxt . "Table des décès/sépultures", $root);
     navigation($root, ADM + 3, 'D', $xcomm, $xpatr);
     zone_menu(ADM, $userlevel);
@@ -151,4 +155,6 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
 }
 
 echo '</div>';
-close_page();
+include(__DIR__ . '/../templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

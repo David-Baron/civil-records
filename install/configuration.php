@@ -1,9 +1,4 @@
 <?php
-// Copyright (C) : Emmanuel Lethrosne 2022
-// 03/01/2022 : V1.2 pour ExpoActes
-// Toute utilisation ou inspiration est soumise à l'autorisation de son auteur : demulau@gmail.com
-//-------------------------------------------------------------------
-// Fonctionnement inspiré de "MyOOS-dumper", une partie du code a été reprise à l'identique.
 
 if (defined('EA_VERSION_PRG'))
     define('EACONF_VERSION', EA_VERSION_PRG);

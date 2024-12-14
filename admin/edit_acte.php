@@ -1,11 +1,8 @@
 <?php
-
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 10); // Compatibility only
+$admtxt = 'Gestion '; // Compatibility only
+require(__DIR__ . '/../next/bootstrap.php');
+require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
 $root = "";
 $path = "";
@@ -42,6 +39,7 @@ if ($xid < 0) {
     $logtxt = "Edition";
 }
 
+ob_start();
 open_page($title, $root);
 navadmin($root, $title);
 
@@ -257,4 +255,6 @@ if (! $missingargs) {
     } // confirmed ??
 }
 echo '</div>';
-close_page(1, $root);
+include(__DIR__ . '/../templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

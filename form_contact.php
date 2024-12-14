@@ -1,11 +1,8 @@
 <?php
-
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 0); // Compatibility only
+$admtxt = ''; // Compatibility only
+require(__DIR__ . '/next/bootstrap.php');
+require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
 //global $loc_mail;
 if (AUTO_CAPTCHA) {
@@ -14,6 +11,7 @@ if (AUTO_CAPTCHA) {
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
+ob_start();
 open_page("Formulaire de contact", $root);
 navigation($root, 2, "", "Formulaire de contact");
 
@@ -143,4 +141,6 @@ if (!$ok) {
     echo '<p align="center"><b>Nous vous répondrons dès que possible.</b></p>';
 }
 echo '</div>';
-close_page(1);
+include(__DIR__ . '/templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

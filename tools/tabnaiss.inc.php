@@ -35,6 +35,7 @@ if (($xpatr == "" or mb_substr($xpatr, 0, 1) == "_")) {
     while ($userlevel < 2) {
         login($root);
     }
+    ob_start();
     open_page($xcomm . " : " . $admtxt . "Naissances/Baptêmes", $root);
     navigation($root, ADM + 2, 'N', $xcomm);
     zone_menu(ADM, $userlevel);
@@ -47,13 +48,14 @@ if (($xpatr == "" or mb_substr($xpatr, 0, 1) == "_")) {
         login($root);
     }
     $userid = current_user("ID");
+
+    ob_start();
     open_page($xcomm . " : " . $admtxt . "Table des naissances/baptêmes", $root);
     navigation($root, ADM + 3, 'N', $xcomm, $xpatr);
     zone_menu(ADM, $userlevel);
 
     echo '<div id="col_main">' . "\n";
     echo '<h2>Actes de naissance/baptême</h2>';
-
     echo '<p>';
 
     echo 'Commune/Paroisse : <a href="' . mkurl($path . '/' . $program, $xcomm) . '"><b>' . $xcomm . '</b></a>' . geoUrl($gid) . '<br />';
@@ -133,7 +135,7 @@ if (($xpatr == "" or mb_substr($xpatr, 0, 1) == "_")) {
         echo '</tr>';
 
         while ($ligne = EA_sql_fetch_row($result)) {
-            echoln('<tr class="row' . (fmod($i, 2)) . '">');
+            echo '<tr class="row' . (fmod($i, 2)) . '">';
             echo '<td>' . $i . '. </td>';
             echo '<td>&nbsp;' . annee_seulement($ligne[2]) . '&nbsp;</td>';
             echo '<td>&nbsp;<a href="' . $path . '/acte_naiss.php?xid=' . $ligne[3] . '&amp;xct=' . ctrlxid($ligne[0], $ligne[1]) . '">' . $ligne[0] . ' ' . $ligne[1] . '</a></td>';
@@ -153,4 +155,6 @@ if (($xpatr == "" or mb_substr($xpatr, 0, 1) == "_")) {
     }
 }
 echo '</div>';
-close_page();
+include(__DIR__ . '/../templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

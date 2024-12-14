@@ -1,90 +1,36 @@
 <?php
+define('ADM', 0); // Compatibility only
+$admtxt = ''; // Compatibility only
+require(__DIR__ . '/next/bootstrap.php');
+require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
-// Page d'accueil publique du programmes ExpoActes
-// Copyright (C) : André Delacharlerie, 2005-2006
-// Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les termes de la
-// Licence Publique Générale GNU, version 2 (GPLv2), publiée par la Free Software Foundation
-// Texte de la licence : https://www.gnu.org/licenses/old-licenses/gpl-2.0.fr.html
-//-------------------------------------------------------------------
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
-
-if ((!defined('GEO_MODE_PUBLIC')) or (!file_exists("_config/connect.inc.php"))) {
-    echo '<p class="erreur">Lancer le script d\'installation pour avoir acc&egrave;s &agrave; l\'application<br />';
-    echo 'Pour des raisons de s&eacute;curit&eacute; il n\'a pas &eacute;t&eacute; fait de lien direct.<br /></p>';
-    exit;
-}
-
-$xtyp = getparam('xtyp');
+$xtyp = getparam('xtyp', 'N');
 $act = getparam('act');
 $init = getparam('init');
-$vue = getparam('vue'); // T = Tableau / C = Carte
-if ($vue == "" and GEO_MODE_PUBLIC % 2 == 1) {
-    $vue = "C";
-}
-if (($vue == "" and GEO_MODE_PUBLIC % 2 == 0) or $init <> "") {
-    $vue = "T";
-}
-
-$root = "";
+$vue = getparam('vue', 'T'); // T = Tableau / C = Carte
 $xpatr = "";
 $page = "";
-pathroot($root, $path, $xtyp, $xpatr, $page);
+$JSheader = "";
 
-
-if ($act == "logout") {
-    setcookie('userid', "", 0, $root);
-    setcookie('md5', "", 0, $root);
-    header("Location: " . $root . "/index.php");
-    die();
+if (SHOW_ALLTYPES != 1) {
+    $xtyp = 'N';
 }
 
-$dbok = false;
 $userlogin = "";
-
-$request = "SHOW TABLES LIKE '" . EA_DB . "_%'";
-$result = EA_sql_query($request);
-$dbok = (EA_sql_num_rows($result) >= 7);
-if (!$dbok) {
-    header("Location: " . $root . "/install/install.php");
-    die();
-}
-if (!check_version(EA_VERSION, '3.2.2')) { // si version mémorisée < 3.2.2
-    echo '<p class="erreur">Vous utilisez ExpoActes.<br /></p>';
-    echo '<p class="erreur">La mont&eacute;e de version d\'ExpoActes n\'est possible que depuis la version 3.2.2.<br /></p>';
-    echo 'Installer la version 3.2.2 pour pouvoir faire cette mise &agrave; jour.<br /></p>';
-    exit;
-}
-if (!check_version(EA_VERSION, EA_VERSION_PRG)) { // si version mémorisée < version du programme
-    header("Location: " . $root . "/install/update.php");
-    die();
-}
-//{ print '<pre>INDEX:';  print_r($_SERVER); echo '</pre>'; }
-//{ print '<pre>INDEX:';  print_r($_REQUEST); echo '</pre>'; }
-global $u_db;
-
 $userlevel = logonok(1);
 if ($userlevel == 0) {
     login($root);
 }
 
-if ($xtyp == "") {
-    $xtyp  = getparam('xtyp');
+if ($act == "logout") {
+    /* setcookie('userid', "", 0, $root);
+    setcookie('md5', "", 0, $root); */
+    header("Location: " . $root . "/index.php");
+    exit();
 }
 
-if ($xtyp == "" or $xtyp == 'A') {
-    if (SHOW_ALLTYPES == 1) {
-        $xtyp = 'A';
-    } else {
-        $xtyp = 'N';
-    }
-}
+pathroot($root, $path, $xtyp, $xpatr, $page);
 
-$chemin = "/";
 if (GEO_MODE_PUBLIC == 5 or $vue == "C") { // si pas localité isolée et avec carte
     include_once("tools/GoogleMap/OrienteMap.inc.php");
     include_once("tools/GoogleMap/Jsmin.php");
@@ -129,10 +75,9 @@ if (GEO_MODE_PUBLIC == 5 or $vue == "C") { // si pas localité isolée et avec c
 
     $JSheader = $carto->getHeaderJS();
     $JSheader .= $carto->getMapJS();
-} else {
-    $JSheader = "";
 }
 
+ob_start();
 open_page(SITENAME . " : Dépouillement d'actes de l'état-civil et des registres paroissiaux", $root, null, null, $JSheader, '../index.htm', 'rss.php');
 navigation($root, 1);
 
@@ -147,25 +92,27 @@ if (strlen(trim(AVERTISMT)) > 0) {
         echo '<p>' . AVERTISMT . '</p>';
     }
 }
+
 echo '<h2>Communes et paroisses';
 if (GEO_MODE_PUBLIC >= 3 and GEO_MODE_PUBLIC < 5) {
+    $argtyp = "";
     echo " : ";
-    if ($xtyp == "") {
-        $argtyp = "";
-    } else {
+
+    if ($xtyp != "") {
         $argtyp = "&amp;xtyp=" . $xtyp;
     }
-    $href = '<a href="' . $root . $chemin . 'index.php';
+    
+    $href = '<a href="' . $root . '/index.php';
     if ($vue == "C") {
         echo "Carte";
     } else {
-        echo '<a href="' . $root . $chemin . 'index.php?vue=C' . $argtyp . '">Carte</a>';
+        echo '<a href="' . $root . '/index.php?vue=C' . $argtyp . '">Carte</a>';
     }
     echo " | ";
     if ($vue == "T") {
         echo "Tableau";
     } else {
-        echo '<a href="' . $root . $chemin . 'index.php?vue=T' . $argtyp . '">Tableau</a>';
+        echo '<a href="' . $root . '/index.php?vue=T' . $argtyp . '">Tableau</a>';
     }
 }
 echo '</h2>';
@@ -184,8 +131,10 @@ if (GEO_MODE_PUBLIC == 5 or $vue == "T") { // si pas localité isolée et avec c
     echo '<p><b>' . $menu_actes . '</b></p>';
     include("tools/tableau_index.php");
 }
-echo '<p>&nbsp;</p>';
-include("_config/commentaire.htm");
+
+include(__DIR__ . "/templates/front/_commentaire.php");
 
 echo '</div>';
-close_page(1, $root);
+include(__DIR__ . '/templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

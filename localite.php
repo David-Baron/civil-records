@@ -1,11 +1,8 @@
 <?php
-
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 0); // Compatibility only
+$admtxt = ''; // Compatibility only
+require(__DIR__ . '/next/bootstrap.php');
+require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
@@ -37,7 +34,7 @@ if ($id > 0) { // édition
         $noteD     = $row["NOTE_D"];
         $noteV     = $row["NOTE_V"];
 
-        $request = "SELECT TYPACT, LIBELLE, sum(NB_TOT) AS NB_TOT, COMMUNE, DEPART, max(DTDEPOT) AS DTDEPOT, min(AN_MIN) AS AN_MIN, max(AN_MAX) AS AN_MAX"
+        $request = "SELECT TYPACT, LIBELLE, sum(NB_TOT) AS NB_TOT, COMMUNE, DEPART, max(DTDEPOT) AS DTDEPOT, min(AN_MIN) AS AN_MIN, max(AN_MAX) AS AN_MAX "
             . " FROM " . EA_DB . "_sums WHERE COMMUNE = '" . sql_quote($commune) . "' AND DEPART = '" . sql_quote($depart) . "'"
                 . ' GROUP BY DEPART, COMMUNE, TYPACT, LIBELLE  '
             . " ORDER BY INSTR('NMDV',TYPACT),LIBELLE; ";
@@ -109,6 +106,8 @@ if ($id > 0) { // édition
 
 $localite = $commune . " [" . $depart . "]";
 $userid = current_user("ID");
+
+ob_start();
 open_page($localite, $root, null, null, $JSheader);
 navigation($root, 2, "A", "Localisation d'une commune ou paroisse");
 $carto->printOnLoad();
@@ -158,4 +157,6 @@ if ($noteV <> '' or $cptV > 0) {
 }
 
 echo '</div>';
-close_page(1);
+include(__DIR__ . '/templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

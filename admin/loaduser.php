@@ -1,27 +1,19 @@
 <?php
+define('ADM', 10); // Compatibility only
+$admtxt = 'Gestion '; // Compatibility only
+require(__DIR__ . '/../next/bootstrap.php');
+require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
-my_ob_start_affichage_continu();
-
-$root = "";
-$path = "";
 $userlogin = "";
-$T0 = time();
-
-//**************************** ADMIN **************************
-
-pathroot($root, $path, $xcomm, $xpatr, $page);
-
 $userlogin = "";
 $userlevel = logonok(9);
 while ($userlevel < 9) {
     login($root);
 }
+
+$T0 = time();
+
+pathroot($root, $path, $xcomm, $xpatr, $page);
 
 $logOk      = ischecked('LogOk');
 $logKo      = ischecked('LogKo');
@@ -40,7 +32,7 @@ if ($xaction == 'submitted') {
     setcookie("chargeUSERlogs", $logOk . $logKo . $logRed, time() + 60 * 60 * 24 * 60);  // 60 jours
 }
 
-
+ob_start();
 open_page("Chargement des utilisateurs (CSV)", $root);
 navadmin($root, "Chargement des utilisateurs CSV");
 
@@ -426,4 +418,6 @@ if($missingargs) {
     echo '</p>';
 }
 echo '</div>';
-close_page(1, $root);
+include(__DIR__ . '/../templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

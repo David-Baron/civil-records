@@ -1,16 +1,8 @@
 <?php
-// Copyright (C) : André Delacharlerie, 2005-2006
-// Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les termes de la
-// Licence Publique Générale GNU, version 2 (GPLv2), publiée par la Free Software Foundation
-// Texte de la licence : https://www.gnu.org/licenses/old-licenses/gpl-2.0.fr.html
-//-------------------------------------------------------------------
-$bypassTIP = 1;
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 0); // Compatibility only
+$admtxt = ''; // Compatibility only
+require(__DIR__ . '/next/bootstrap.php');
+require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
 $root = "";
 $path = "";
@@ -25,6 +17,8 @@ if ($uri == "") {
 }
 
 $script = file_get_contents("tools/js/sha1.js");
+
+ob_start();
 open_page("ExpoActes : Login", $root, $script, null, null, '../index.htm');
 navigation($root, 2, 'A', "Connexion");
 ?>
@@ -98,17 +92,19 @@ echo '<input type="hidden" name="codedpass" value="" />';
 echo '<input type="hidden" name="iscoded" value="N" />';
 echo '</form>' . "\n";
 
-echoln('<p><a href="' . $root . '/acces.php">Voir les conditions d\'accès à la partie privée du site</a></p>' . "\n");
-echoln('<p><a href="' . $root . '/renvoilogin.php">Login ou mot de passe perdu ?</a></p>' . "\n");
+echo '<p><a href="' . $root . '/acces.php">Voir les conditions d\'accès à la partie privée du site</a></p>' . "\n";
+echo '<p><a href="' . $root . '/renvoilogin.php">Login ou mot de passe perdu ?</a></p>' . "\n";
 if (USER_AUTO_DEF > 0) {
     if (USER_AUTO_DEF == 1) {
         $mescpte = "Demander ici la création d'un compte d'utilisateur";
     } else {
         $mescpte = "Créer ici votre compte d'utilisateur";
     }
-    echoln('<p><a href="' . $root . '/cree_compte.php"><b>Pas encore inscrit ? ' . $mescpte . '</b></a></p>' . "\n");
+    echo '<p><a href="' . $root . '/cree_compte.php"><b>Pas encore inscrit ? ' . $mescpte . '</b></a></p>' . "\n";
 }
-echoln('<p>&nbsp;</p>' . "\n");
+echo '<p>&nbsp;</p>' . "\n";
 
 echo '</div>' . "\n";
-close_page(1, $root);
+include(__DIR__ . '/templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

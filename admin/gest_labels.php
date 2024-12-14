@@ -1,10 +1,8 @@
 <?php
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 10); // Compatibility only
+$admtxt = 'Gestion '; // Compatibility only
+require(__DIR__ . '/../next/bootstrap.php');
+require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
 //define('EA_MASTER',"Y"); // pour editer les zones "Techniques"
 
@@ -50,6 +48,7 @@ while ($userlevel < 9) {
     login($root);
 }
 
+ob_start();
 open_page("Paramétrage des étiquettes", $root);
 navadmin($root, "Paramétrage des étiquettes");
 ?>
@@ -336,4 +335,6 @@ if (($xfile !== 'X') or ($lesigle != $code_liste)) {
 echo "</tr></table>\n";
 echo "</form>\n";
 echo '</div>';
-close_page(1, $root);
+include(__DIR__ . '/../templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

@@ -1,11 +1,6 @@
 <?php
-
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-	$EA_Appel_dOu = '';
-} else {
-	$EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
-
-// --- module principal
+define('ADM', 10); // Compatibility only
+$admtxt = 'Gestion '; // Compatibility only
+require(__DIR__ . '/../next/bootstrap.php');
+require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 include("../tools/actemari.inc.php");

@@ -1,11 +1,8 @@
 <?php
-
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 10); // Compatibility only
+$admtxt = 'Gestion '; // Compatibility only
+require(__DIR__ . '/../next/bootstrap.php');
+require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
 function show_grp($grp, $current, $barre)
 {
@@ -56,19 +53,13 @@ while ($userlevel < 9) {
     login($root);
 }
 
+ob_start();
 open_page("Paramétrage du logiciel", $root, $js_show_help);
 navadmin($root, "Paramétrage du logiciel");
-
-//{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; }
-
 zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
-
 echo '<div id="col_main_adm">';
-
 menu_software('P');
-
 echo '<h2>Paramétrage du site "' . SITENAME . '"</h2>';
-
 
 $ok = false;
 $missingargs = false;
@@ -94,8 +85,6 @@ while ($row = EA_sql_fetch_array($result)) {
 }
 echo ' || <a href="update_params.php">Backup</a>';
 echo '</p>';
-
-//{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; }
 
 if (!$missingargs) {
     $oktype = true;
@@ -204,4 +193,6 @@ echo '<td><input type="submit" value="ENREGISTRER" /></td>' . "\n";
 echo "</tr></table>\n";
 echo "</form>\n";
 echo '</div>';
-close_page(1, $root);
+include(__DIR__ . '/../templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

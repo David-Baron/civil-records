@@ -1,11 +1,9 @@
 <?php
+define('ADM', 10); // Compatibility only
+$admtxt = 'Gestion '; // Compatibility only
+require(__DIR__ . '/../next/bootstrap.php');
+require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
 my_ob_start_affichage_continu();
 
 include("../tools/traitements.inc.php");
@@ -81,12 +79,12 @@ $communecsv = ischecked('CommuneCsv');
 $departcsv  = ischecked('DepartCsv');
 $typedoc    = getparam('typedoc');
 $deposant   = getparam('deposant');
-$Filtre    	= getparam('Filtre');
-$Condition 	= getparam('Condition');
-$Compare   	= getparam('Compare');
-$photo   		= getparam('photo');
-$trans   		= getparam('trans');
-$verif   		= getparam('verif');
+$Filtre        = getparam('Filtre');
+$Condition     = getparam('Condition');
+$Compare       = getparam('Compare');
+$photo           = getparam('photo');
+$trans           = getparam('trans');
+$verif           = getparam('verif');
 $photocsv   = ischecked('photocsv');
 $transcsv   = ischecked('transcsv');
 $verifcsv   = ischecked('verifcsv');
@@ -163,7 +161,7 @@ if (isset($_REQUEST['action'])) {
 open_page("Chargement des actes (CSV)", $root);
 navadmin($root, "Chargement des actes CSV");
 
-zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
 
 echo '<div id="col_main_adm">';
 $emailfound = false;
@@ -183,34 +181,34 @@ if (isset($_REQUEST['action'])) {
     // Données postées
     $missingargs = false;
     if ($submit == 'D') {  // upload du fichier CSV
-        if(empty($_FILES['Actes']['tmp_name'])) {
+        if (empty($_FILES['Actes']['tmp_name'])) {
             msg('Pas trouvé le fichier spécifié.');
             $missingargs = true;
         }
-        if(!is_uploaded_file($_FILES['Actes']['tmp_name'])) {
+        if (!is_uploaded_file($_FILES['Actes']['tmp_name'])) {
             msg('Méthode de téléchargement non valide.');
             writelog('Possible tentative de téléchargement CSV frauduleux');
         }
-        if(strtolower(mb_substr($_FILES['Actes']['name'], -4)) <> ".csv") { //Vérifie que l'extension est bien '.CSV'
+        if (strtolower(mb_substr($_FILES['Actes']['name'], -4)) <> ".csv") { //Vérifie que l'extension est bien '.CSV'
             msg('Les fichier doit être de type .CSV.');
             $missingargs = true;
         }
     }
     if ($submit <> 'D') {
-        if(empty($_REQUEST['fileuploaded'])) {
+        if (empty($_REQUEST['fileuploaded'])) {
             msg('Pas de fichier spécifié.');
             $missingargs = true;
         }
     }
-    if(empty($TypeActes)) {
+    if (empty($TypeActes)) {
         msg('Vous devez préciser le type des actes.');
         $missingargs = true;
     }
-    if(empty($commune) and !$communecsv) {
+    if (empty($commune) and !$communecsv) {
         msg('Vous devez préciser le nom de la commune ou de la paroisse ou indiquer qu\'il sera lu dans le fichier.');
         $missingargs = true;
     }
-    if(empty($depart) and !$departcsv) {
+    if (empty($depart) and !$departcsv) {
         msg('Vous devez préciser le nom du département ou de la province ou indiquer qu\'il sera lu dans le fichier.');
         $missingargs = true;
     }
@@ -218,7 +216,7 @@ if (isset($_REQUEST['action'])) {
 
 $zonelibelle = "ZoneX";
 if ($TypeActes == 'V') {
-    for ($i = 1;$i < 9;$i++) {  // tjrs entre 1 et 9
+    for ($i = 1; $i < 9; $i++) {  // tjrs entre 1 et 9
         if (array_key_exists('ZID' . $i, $_REQUEST) and $_REQUEST['ZID' . $i] == '4012') {  // LIBELLE de Divers
             $zonelibelle = "Zone" . $i;
         }
@@ -228,7 +226,7 @@ if ($TypeActes == 'V') {
 $meserrdivers1 = "Vous devez préciser le type de document dont il s'agit soit globalement, soit par chargement d'une zone";
 $meserrdivers2 = "Vous ne pouvez pas spécifier simultanément un type de document global et une zone fournissant le type de document";
 
-if(!$missingargs) { // fichier d'actes
+if (!$missingargs) { // fichier d'actes
     //	if ($TypeFich == "L")
     //		{ // Format LIBRE
     $resume = false;
@@ -243,13 +241,13 @@ if(!$missingargs) { // fichier d'actes
         $csv_modele = file(getparam('ModeleL'), FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         foreach ($csv_modele as $v) {
             $t = explode(' -||- ', $v);
-            $_REQUEST[ $t[0] ] = $t[1];
+            $_REQUEST[$t[0]] = $t[1];
         }
-        $Filtre = $_REQUEST[ 'Filtre' ];
-        $Condition = $_REQUEST[ 'Condition' ];
-        $Compare = $_REQUEST[ 'Compare' ];
+        $Filtre = $_REQUEST['Filtre'];
+        $Condition = $_REQUEST['Condition'];
+        $Compare = $_REQUEST['Compare'];
     }
-    if($submit == 'D') {  // upload du fichier CSV
+    if ($submit == 'D') {  // upload du fichier CSV
         // Stockage du fichier chargé
         $uploadfile = UPLOAD_DIR . '/' . $userlogin . '.csv';
         if (!move_uploaded_file($_FILES['Actes']['tmp_name'], $uploadfile)) {
@@ -288,7 +286,7 @@ if(!$missingargs) { // fichier d'actes
                         $cptfiltre++;
                     } else { // Ok Filtre
                         $i = 0;
-                        foreach($mdb as $zone) {
+                        foreach ($mdb as $zone) {
                             if (array_key_exists('ZID' . $i, $_REQUEST) and $zone['ZID'] == $_REQUEST['ZID' . $i]) { // traiter ce champ
                                 if ($_REQUEST['Zone' . $i] > 0) {  // la zone à été notée à charger
                                     $listzone[$zone['BLOC']] .= $zone['ZONE'] . ",";  // liste des champs
@@ -301,7 +299,7 @@ if(!$missingargs) { // fichier d'actes
                                     if (($zone['ZONE'] == "NOM" or ($zone['ZONE'] == "C_NOM" and $TypeActes == 'M')) and $info == "") {
                                         $info = "N";
                                     }
-                                    $listdata[$zone['BLOC']] .= "'" . sql_quote($info) . "',"; 	// Bloc 0 =communs, 1= 1er intervenant, 2 = 2d interv.
+                                    $listdata[$zone['BLOC']] .= "'" . sql_quote($info) . "',";     // Bloc 0 =communs, 1= 1er intervenant, 2 = 2d interv.
 
                                 }
                                 $i++; // suivant
@@ -420,7 +418,7 @@ if(!$missingargs) { // fichier d'actes
                                     $condit .= " AND LIBELLE='" . sql_quote($typedoc) . "'";
                                 }
                                 $request = "SELECT ID FROM " . $table .
-                                                             " WHERE COMMUNE='" . sql_quote($commune) . "' AND DEPART='" . sql_quote($depart) . "' AND " . $condit . ";";
+                                    " WHERE COMMUNE='" . sql_quote($commune) . "' AND DEPART='" . sql_quote($depart) . "' AND " . $condit . ";";
 
                                 //echo '<p>'.$request;
                                 $result = EA_sql_query($request);
@@ -444,7 +442,7 @@ if(!$missingargs) { // fichier d'actes
                                     $condit .= " AND LIBELLE='" . sql_quote($typedoc) . "'";
                                 }
                                 $request = "SELECT ID FROM " . $table .
-                                        " WHERE COMMUNE='" . sql_quote($commune) . "' AND DEPART='" . sql_quote($depart) . "' AND " . $condit . ";";
+                                    " WHERE COMMUNE='" . sql_quote($commune) . "' AND DEPART='" . sql_quote($depart) . "' AND " . $condit . ";";
                                 $result = EA_sql_query($request);
                                 //echo '<p>'.$request;
                                 $nb = EA_sql_num_rows($result);
@@ -482,14 +480,14 @@ if(!$missingargs) { // fichier d'actes
                             } else { // ADD
                                 $action = "AJOUT";
                                 $reqmaj = "INSERT INTO " . $table
-                                                    . " (BIDON,TYPACT," . $listzone[1] . $listzone[2] . $listzone[0]
-                                                    . "LADATE,DEPOSANT,DTDEPOT,DTMODIF)"
-                                                    . " VALUES('CSV','" . $TypeActes . "'," . $listdata[1] . $listdata[2] . $listdata[0]
-                                                    . "'" . $ladate . "'," . $deposant . ",'" . $today . "','" . $today . "');";
+                                    . " (BIDON,TYPACT," . $listzone[1] . $listzone[2] . $listzone[0]
+                                    . "LADATE,DEPOSANT,DTDEPOT,DTMODIF)"
+                                    . " VALUES('CSV','" . $TypeActes . "'," . $listdata[1] . $listdata[2] . $listdata[0]
+                                    . "'" . $ladate . "'," . $deposant . ",'" . $today . "','" . $today . "');";
                             } // ADD
                             //echo "<p>".$reqmaj;
                             if ($reqmaj <> '') {
-                                if  ($result = EA_sql_query($reqmaj)) {
+                                if ($result = EA_sql_query($reqmaj)) {
                                     if ($logOk == 1) {
                                         echo $log . $action . ' -> Ok.';
                                     }
@@ -504,11 +502,10 @@ if(!$missingargs) { // fichier d'actes
                                 }
                                 $cptdeja++;
                             }
-
                         } // Ok Filtre
                     }  // complet
                 } // ligne à traiter
-            }	// par ligne
+            }    // par ligne
             if ($curr_line < count($csv) - 1) {  // Si interruption
                 msg("Temps maximum d'exécution écoulé");
                 echo '<p>' . ($curr_line + 1) . ' lignes déjà traitées;</p>';
@@ -545,7 +542,7 @@ if(!$missingargs) { // fichier d'actes
         $presetslist = explode("+", $cookparam);
         $presets = array();
         $p = 0;
-        foreach($presetslist as $une) {
+        foreach ($presetslist as $une) {
             if (isin($une, "-") >= 0) {
                 $elem = explode("-", $une);
                 $presets[$elem[0]][0] = $elem[1];  // source
@@ -593,7 +590,7 @@ if(!$missingargs) { // fichier d'actes
         echo '<td colspan="2"><input type="text" name="passlign" value="' . $passlign . '" size="5" /> (au chargement effectif)</td>';
         echo '</tr>';
         if ($TypeActes == "V") {
-            if  ($submit <> 'C') {
+            if ($submit <> 'C') {
                 echo '<tr>';
                 echo '<td align="right"><strong>Type de document :</strong></td>';
                 echo '<td colspan="2"><input type="text" name="typedoc" value="' . $typedoc . '" size="30" /></td>';
@@ -616,7 +613,7 @@ if(!$missingargs) { // fichier d'actes
         }
         $i = 0;
         //{ print '<pre>';  print_r($mdb); echo '</pre>'; }
-        foreach($mdb as $zone) {
+        foreach ($mdb as $zone) {
             /*
             [0] => Array
                     (
@@ -632,13 +629,14 @@ if(!$missingargs) { // fichier d'actes
         )
             */
             if (($zone['ZONE'] == 'CODCOM'   and !($communecsv and isin('OFA', metadata('AFFICH', 'CODCOM')) >= 0))
-              or ($zone['ZONE'] == 'COMMUNE'  and !($communecsv))
-              or ($zone['ZONE'] == 'CODDEP'   and !($departcsv and isin('OFA', metadata('AFFICH', 'CODDEP')) >= 0))
-              or ($zone['ZONE'] == 'DEPART'   and !($departcsv))
-              or ($zone['ZONE'] == 'PHOTOGRA' and !($photocsv))
-              or ($zone['ZONE'] == 'RELEVEUR' and !($transcsv))
-              or ($zone['ZONE'] == 'VERIFIEU' and !($verifcsv))
-              or ($zone['ZONE'] == 'DEPOSANT')) {
+                or ($zone['ZONE'] == 'COMMUNE'  and !($communecsv))
+                or ($zone['ZONE'] == 'CODDEP'   and !($departcsv and isin('OFA', metadata('AFFICH', 'CODDEP')) >= 0))
+                or ($zone['ZONE'] == 'DEPART'   and !($departcsv))
+                or ($zone['ZONE'] == 'PHOTOGRA' and !($photocsv))
+                or ($zone['ZONE'] == 'RELEVEUR' and !($transcsv))
+                or ($zone['ZONE'] == 'VERIFIEU' and !($verifcsv))
+                or ($zone['ZONE'] == 'DEPOSANT')
+            ) {
                 // ne rien lire car déjà lu ou automatique
                 // echo "<p>Code ".$zone['ZONE']."déja vu ";
             } else {
@@ -706,9 +704,9 @@ if(!$missingargs) { // fichier d'actes
         if (($submit == 'S') and (getparam('ModeleS') !== '')) { // Sauvegarde modèle
             $Contenu_a_sauver = 'TypeActes' . ' -||- ' . $TypeActes;
             file_put_contents(UPLOAD_DIR . '/' . $TypeActes . '-' . getparam('ModeleS') . '.m_csv', $Contenu_a_sauver . "\r\n");
-            foreach($_REQUEST as $k => $v) {
+            foreach ($_REQUEST as $k => $v) {
                 $Contenu_a_sauver = $k . ' -||- ' . $v;
-                if (in_array(substr($k, 0, 3), array('ZID','Tra','Zon')) or (in_array($k, array('Filtre', 'Condition','Compare' )))) {
+                if (in_array(substr($k, 0, 3), array('ZID', 'Tra', 'Zon')) or (in_array($k, array('Filtre', 'Condition', 'Compare')))) {
                     file_put_contents(UPLOAD_DIR . '/' . $TypeActes . '-' . getparam('ModeleS') . '.m_csv', $Contenu_a_sauver . "\r\n", FILE_APPEND);
                 }
             }
@@ -753,7 +751,7 @@ if(!$missingargs) { // fichier d'actes
             $i = 0;
             $j = 0;
             $data = array();
-            foreach($mdb as $zone) {
+            foreach ($mdb as $zone) {
                 // extraction des données à afficher pour l'exemple en suivant les consignes du modèle de chargement
                 if (array_key_exists('ZID' . $i, $_REQUEST) and $zone['ZID'] == $_REQUEST['ZID' . $i]) { // traiter ce champ
                     //echo "<p> vu ".$i."->".$zone['ZID']." ".$zone['ZONE'];
@@ -775,7 +773,6 @@ if(!$missingargs) { // fichier d'actes
                         $data[$zone['ZONE']] = $info;
                         echo '<td> &nbsp;' . $info . '</td>';
                         echo '</tr>';
-
                     }
                     $i++; // suivant
                 }
@@ -826,13 +823,12 @@ if(!$missingargs) { // fichier d'actes
         echo " </td></tr>\n";
         echo "</table>\n";
         echo "</form>\n";
-
     } // 1er chargement
 
 } // fichier d'actes
 
 //Si pas tout les arguments nécessaire, on affiche le formulaire
-if($missingargs) {
+if ($missingargs) {
     if (getparam('action') == '') {  // parametres par défaut
         if (isset($_COOKIE['chargeCSV'])) {
             $chargeCSV  = $_COOKIE['chargeCSV'] . str_repeat(" ", 10);
@@ -974,5 +970,6 @@ if($missingargs) {
     }
 }
 echo '</div>';
-
-close_page(1, $root);
+include(__DIR__ . '/../templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

@@ -1,17 +1,8 @@
 <?php
-
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
-my_ob_start_affichage_continu();
-
-$root = "";
-$path = "";
-// SUPPRESSION D'UN SEUL ACTE ***
-//**************************** ADMIN **************************
+define('ADM', 10); // Compatibility only
+$admtxt = 'Gestion '; // Compatibility only
+require(__DIR__ . '/../next/bootstrap.php');
+require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
@@ -22,21 +13,17 @@ while ($userlevel < $needlevel) {
     login($root);
 }
 
-open_page("Suppression d'un acte", $root);
-navadmin($root, "Suppression d'un acte");
-
-zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
-
-echo '<div id="col_main_adm">';
-
 $missingargs = false;
 $oktype = false;
-
 $xid  = getparam('xid');
 $xtyp = getparam('xtyp');
 $xconfirm = getparam('xconfirm');
 
-//{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; }
+ob_start();
+open_page("Suppression d'un acte", $root);
+navadmin($root, "Suppression d'un acte");
+zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+echo '<div id="col_main_adm">';
 
 if ($xid == '' or $xtyp == '') {
     // Données postées
@@ -122,4 +109,6 @@ if (! $missingargs) {
     } // confirmed ??
 }
 echo '</div>';
-close_page(1, $root);
+include(__DIR__ . '/../templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

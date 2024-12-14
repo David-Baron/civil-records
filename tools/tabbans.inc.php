@@ -49,6 +49,8 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
     while ($userlevel < 2) {
         login($root);
     }
+
+    ob_start();
     open_page($xcomm . " : " . $admtxt . "Divers" . $stitre, $root);
     navigation($root, ADM + 2, 'V', $xcomm);
     zone_menu(ADM, $userlevel);
@@ -61,6 +63,8 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
         login($root);
     }
     $userid = current_user("ID");
+
+    ob_start();
     open_page($xcomm . " : " . $admtxt . "Divers" . $stitre, $root);
     navigation($root, ADM + 3, 'V', $xcomm, $xpatr);
     zone_menu(ADM, $userlevel);
@@ -115,10 +119,10 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
     }
 
     $request = "SELECT act.NOM, act.PRE, C_NOM, C_PRE, DATETXT, act.ID, act.LIBELLE, act.DEPOSANT"
-                . " FROM " . EA_DB . "_div3 AS act"
-                . " WHERE COMMUNE = '" . sql_quote($Commune) . "'" . $condDep
-                . " " . $soustype . $condit
-                . " ORDER BY " . $order;
+        . " FROM " . EA_DB . "_div3 AS act"
+        . " WHERE COMMUNE = '" . sql_quote($Commune) . "'" . $condDep
+        . " " . $soustype . $condit
+        . " ORDER BY " . $order;
 
     //echo $request;
     optimize($request);
@@ -188,4 +192,6 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
     }
 }
 echo '</div>';
-close_page();
+include(__DIR__ . '/../templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

@@ -1,12 +1,10 @@
 <?php
+define('ADM', 10); // Compatibility only
+$admtxt = 'Gestion '; // Compatibility only
+require(__DIR__ . '/../next/bootstrap.php');
+require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
-my_ob_start_affichage_continu();
+
 include("../tools/traitements.inc.php");
 
 $root = "";
@@ -17,8 +15,6 @@ $T0 = time();
 //**************************** ADMIN **************************
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
-
-//print '<pre>';  print_r($_REQUEST); echo '</pre>';
 
 $userlogin = "";
 $userlevel = logonok(9);
@@ -34,7 +30,7 @@ $rem      = getparam('rem');
 $condit   = getparam('condit');
 $xaction  = getparam('action');
 
-
+ob_start();
 open_page("Envoi d'un mail circulaire", $root);
 navadmin($root, "Envoi d'un mail circulaire");
 
@@ -179,4 +175,6 @@ if($missingargs) {
     echo '</p>';
 }
 echo '</div>';
-close_page(1, $root);
+include(__DIR__ . '/../templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

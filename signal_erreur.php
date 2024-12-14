@@ -1,15 +1,8 @@
 <?php
-
-// Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les termes de la
-// Licence Publique Générale GNU, version 2 (GPLv2), publiée par la Free Software Foundation
-// Texte de la licence : https://www.gnu.org/licenses/old-licenses/gpl-2.0.fr.html
-//-------------------------------------------------------------------
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 0); // Compatibility only
+$admtxt = ''; // Compatibility only
+require(__DIR__ . '/next/bootstrap.php');
+require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
 global $crlf;
 $crlf = chr(10) . chr(13);
@@ -220,6 +213,7 @@ if (AUTO_CAPTCHA) {
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
+ob_start();
 open_page("Signaler une erreur dans un acte", $root);
 navigation($root, 2, "", "Signaler une erreur dans un acte");
 
@@ -442,4 +436,6 @@ if (!$ok) {
     }
 }
 echo '</div>';
-close_page(1);
+include(__DIR__ . '/templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

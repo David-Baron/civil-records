@@ -1,13 +1,9 @@
 <?php
+define('ADM', 10); // Compatibility only
+$admtxt = 'Gestion '; // Compatibility only
+require(__DIR__ . '/../next/bootstrap.php');
+require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
-error_reporting(E_ALL);
-
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
 my_ob_start_affichage_continu();
 
 global $dbaddr, $dbuser, $dbpass, $dbname;
@@ -65,5 +61,5 @@ if(ini_get('safe_mode') or (strpos(ini_get('disable_functions'), "system") !== f
     }
 }
 
-close_page(0);
+include(__DIR__ . '/../templates/front/_footer.php');
 my_flush();

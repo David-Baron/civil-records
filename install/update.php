@@ -601,4 +601,4 @@ BasDePage:
 	echo '<a href="../admin/index.php">Gestion des actes</a></p>';
 
 load_params();  // pour rafraichir le pied de page
-close_page(0);
+include(__DIR__ . '/../templates/front/_footer.php');

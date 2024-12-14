@@ -1,16 +1,8 @@
 <?php
-
-// Copyright (C) : André Delacharlerie, 2005-20010
-// Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les termes de la
-// Licence Publique Générale GNU, version 2 (GPLv2), publiée par la Free Software Foundation
-// Texte de la licence : https://www.gnu.org/licenses/old-licenses/gpl-2.0.fr.html
-//-------------------------------------------------------------------
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 0); // Compatibility only
+$admtxt = ''; // Compatibility only
+require(__DIR__ . '/next/bootstrap.php');
+require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
 if (!defined("ECLAIR_LOG")) {
     define("ECLAIR_LOG", 0);
@@ -33,7 +25,7 @@ pathroot($root, $path, $xcomm, $xpatr, $page);
 $carcode = 'UTF-8';
 //$carcode = 'ISO-8859-1';
 header('Content-Type: text/html; charset=' . $carcode);
-
+ob_start();
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
 echo '<html xmlns="http://www.w3.org/1999/xhtml">';
 echo '<head>';
@@ -218,3 +210,6 @@ if (ECLAIR_LOG > 0) {
     @fwrite($hf, now() . ";" . $Vip . ";" . $xtyp . ";" . $xcom . ";" . $xdep . ";" . $xini . ";" . $cptrec . ";" . $dur . ";" . $Vua . chr(10));
     @fclose($hf);
 }
+
+$response->setContent(ob_get_clean());
+$response->send();

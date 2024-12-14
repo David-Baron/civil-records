@@ -42,6 +42,7 @@ $avertissement = "";
 if ($error == 0) {
     $xcomm = $row['COMMUNE'] . ' [' . $row['DEPART'] . ']';
     if (solde_ok(1, $row["DEPOSANT"], 'D', $xid) > 0) {
+        ob_start();
         open_page($title, $root);
         navigation($root, ADM + 4, 'D', $xcomm, $row["NOM"], $row["PRE"]);
         zone_menu(ADM, $userlevel);
@@ -116,13 +117,17 @@ if ($error == 0) {
             echo '<p><b>' . $avertissement . '</b></p>' . "\n";
         }
     } else {
+        ob_start();
         open_page($title, $root);
         msg($avertissement);
     }
 } else {
+    ob_start();
     open_page($title, $root);
     msg('Identifiant incorrect');
 }
 
 echo '</div>';
-close_page();
+include(__DIR__ . '/../templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

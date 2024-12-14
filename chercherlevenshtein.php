@@ -1,14 +1,8 @@
 <?php
-
-// Module de recherche "levenshtein" du programmes ExpoActes
-// Copyright (C) : André Delacharlerie + Jean Louis Cazor, 2006
-
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 0); // Compatibility only
+$admtxt = ''; // Compatibility only
+require(__DIR__ . '/next/bootstrap.php');
+require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 include("tools/cree_table_levenshtein.php");
 include("tools/traite_tables_levenshtein.php");
 
@@ -38,35 +32,6 @@ function makecritjlc($xmin, $xmax, $xcomm, $xdepa, $pre, $c_pre, $xpre, $xc_pre)
 
     return $crit;
 }
-/*
-function makecritjlcOLD($xmin,$xmax,$xcomm,$xdepa,$pre,$c_pre,$xpre,$xc_pre) //
-{
-$crit ="";
-    if ($xmin!="")
-        {
-        $crit = " (year(LADATE)>= " . $xmin.")";
-        }
-    if ($xmax!="")
-        {
-        $critx = " (year(LADATE)<= " . $xmax.")";
-        $crit = sql_and($crit).$critx;
-        }
-    if (mb_substr($xcomm,0,2)!="**")
-        {
-        $critx = " (COMMUNE = '" . sql_quote($xcomm)."' and DEPART= '" . sql_quote($xdepa)."')";
-        $crit = sql_and($crit).$critx;
-        }
-       $critx = "(" . $pre. "  LIKE '" . $xpre."%')  ";
-       $crit = sql_and($crit).$critx;
-   if ($c_pre!="") {
-        $critx = "(" . $c_pre. "  LIKE '" . $xc_pre."%')  ";
-        $crit = sql_and($crit).$critx;
-    }
-
-    return $crit;
-}
-*/
-//---------------------------------------------------------
 
 function cree_table_temp_sup($nom, $original)
 {
@@ -152,6 +117,8 @@ if (!defined("RECH_MIN")) {
 } else {
     $rech_min = RECH_MIN;
 }
+
+ob_start();
 open_page("Recherches dans les tables", $root);
 if (current_user_solde() > 0 or RECH_ZERO_PTS == 1) {
 
@@ -502,4 +469,6 @@ if (current_user_solde() > 0 or RECH_ZERO_PTS == 1) {
 } else {
     msg('Recherche non autorisée car votre solde de points est épuisé !');
 }
-close_page();
+include(__DIR__ . '/templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

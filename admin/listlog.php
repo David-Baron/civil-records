@@ -1,11 +1,8 @@
 <?php
-
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 10); // Compatibility only
+$admtxt = 'Gestion '; // Compatibility only
+require(__DIR__ . '/../next/bootstrap.php');
+require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
 //define ("OPTIMIZE",1);
 $MT0 = microtime_float();
@@ -31,13 +28,10 @@ while ($userlevel < 9) {
     login($root);
 }
 
+ob_start();
 open_page(SITENAME . " : Activité du site", $root);
-//{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; }
-
 navadmin($root, "Activité du site");
-
 zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
-
 echo '<div id="col_main_adm">';
 menu_software('J');
 
@@ -146,4 +140,6 @@ if ($nb > 0) {
 
 echo '</div>';
 echo '<p>Durée du traitement  : ' . round(microtime_float() - $MT0, 3) . ' sec.</p>' . "\n";
-close_page(1);
+include(__DIR__ . '/../templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

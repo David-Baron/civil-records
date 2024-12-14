@@ -36,6 +36,7 @@ pathroot($root,$path,$xcomm,$xpatr,$page);
 
 $serveur = $_SERVER['SERVER_NAME'].' ['.$_SERVER['SERVER_ADDR'].']';
 
+ob_start();
 open_page("Installation ExpoActes sur ".$serveur,$root);
 $missingargs=true;
 echo "<h1>Installation de ExpoActes sur ".$serveur."</h1> \n";
@@ -270,4 +271,6 @@ if($missingargs)
 	}
 
 load_params();  // pour rafraichir le pied de page 
-close_page(0);
+include(__DIR__ . '/../templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

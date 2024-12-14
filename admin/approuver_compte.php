@@ -1,11 +1,8 @@
 <?php
-
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 10); // Compatibility only
+$admtxt = 'Gestion '; // Compatibility only
+require(__DIR__ . '/../next/bootstrap.php');
+require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
@@ -14,48 +11,53 @@ $userlevel = logonok(9);
 while ($userlevel < 9) {
     login($root);
 }
-$xaction = getparam('action');
 
+$xaction = getparam('action');
+$missingargs = true;
+
+ob_start();
 open_page("Approbation d'un compte utilisateur", $root);
 navadmin($root, "Approbation d'un compte utilisateur");
 
-zone_menu(ADM, $userlevel, array('f' => 'N'));//ADMIN SANS FORM_RECHERCHE
+zone_menu(ADM, $userlevel, array('f' => 'N')); //ADMIN SANS FORM_RECHERCHE
 echo '<div id="col_main_adm">' . "\n";
 
 if (USER_AUTO_DEF <> 1) {
     echo "<p><b>Désolé : Cette action n'a pas de sens dans la configuration actuelle du logiciel</b></p>";
     echo '</div>';
-    close_page(1);
-    die();
+    include(__DIR__ . '/../templates/front/_footer.php');
+    $response->setContent(ob_get_clean());
+    $response->send();
+    exit();
 }
 
 if (!isset($_REQUEST['id'])) {
     echo "<p><b>Cette procédure ne peut être appelée directement.</b></p>";
     echo '</div>';
-    close_page(1);
+    include(__DIR__ . '/../templates/front/_footer.php');
+    $response->setContent(ob_get_clean());
+    $response->send();
     die();
 }
 
-$missingargs = true;
-
-//print '<pre>';  print_r($_REQUEST); echo '</pre>';
-
 // Données postées -> ajouter ou modifier
 $ok = true;
-if(!isset($_REQUEST['complet'])) {
+if (!isset($_REQUEST['complet'])) {
     $ok = false;
 }
-if(!isset($_REQUEST['action'])) {
+if (!isset($_REQUEST['action'])) {
     msg('Vous devez sélectionner l\'action à poser');
     $ok = false;
 }
 $res = EA_sql_query("SELECT * FROM " . EA_UDB . "_user3 WHERE id='" . sql_quote(getparam('id'))
-                                                                                                    . "' and  (statut='W' or statut='A')", $u_db);
+    . "' and  (statut='W' or statut='A')", $u_db);
 if (EA_sql_num_rows($res) != 1) {
     echo "<p><b>Pas de compte à approuver avec cette identification.</b></p>";
     echo '</div>';
-    close_page(1);
-    die();
+    include(__DIR__ . '/../templates/front/_footer.php');
+    $response->setContent(ob_get_clean());
+    $response->send();
+    exit();
 } else {
     $row = EA_sql_fetch_array($res);
     $nomprenom = $row['prenom'] . ' ' . $row['nom'];
@@ -75,23 +77,23 @@ if ($ok) {
         $mes = "refusé";
     }
     $reqmaj = "UPDATE " . EA_UDB . "_user3 SET "
-                                . " statut = '" . $statut . "',"
-                                . " rem = ' '"
-                                . " WHERE id=" . $id . ";";
+        . " statut = '" . $statut . "',"
+        . " rem = ' '"
+        . " WHERE id=" . $id . ";";
 
     //echo "<p>".$reqmaj."</p>";
-    if  ($result = EA_sql_query($reqmaj, $u_db)) {
+    if ($result = EA_sql_query($reqmaj, $u_db)) {
         $crlf = chr(10) . chr(13);
         $log = "Cpte " . $mes;
         $message = getparam('messageplus');
 
         $sql = "SELECT NOM, PRENOM, LOGIN"
-                        . " FROM " . EA_UDB . "_user3 WHERE id=" . $id . ";";
+            . " FROM " . EA_UDB . "_user3 WHERE id=" . $id . ";";
         $res = EA_sql_query($sql, $u_db);
         $ligne = EA_sql_fetch_array($res);
 
         $urlsite = EA_URL_SITE . $root . "/index.php";
-        $codes = array("#NOMSITE#","#URLSITE#","#LOGIN#","#NOM#","#PRENOM#");
+        $codes = array("#NOMSITE#", "#URLSITE#", "#LOGIN#", "#NOM#", "#PRENOM#");
         $decodes = array(SITENAME, $urlsite, $ligne['LOGIN'], $ligne['NOM'], $ligne['PRENOM']);
         $bon_message = str_replace($codes, $decodes, $message);
 
@@ -112,7 +114,7 @@ if ($ok) {
 
 
 //Si pas tout les arguments nécessaire, on affiche le formulaire
-if(!$ok) {
+if (!$ok) {
     if ($xaction == 'KO') {
         $messageplus = MAIL_REFUS;
     } else {
@@ -167,4 +169,6 @@ if(!$ok) {
     echo '&nbsp;|&nbsp; <a href="gestuser.php?id=' . $id . '">la fiche de ' . $nomprenom . '</a></p>';
 }
 echo '</div>';
-close_page(1);
+include(__DIR__ . '/../templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

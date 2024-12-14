@@ -1,10 +1,5 @@
 <?php
 
-// Utilitaires spécifiques aux programmes ExpoActes
-// Copyright (C) : André Delacharlerie, 2005-2008
-// Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les termes de la
-// Licence Publique Générale GNU, version 2 (GPLv2), publiée par la Free Software Foundation
-// Texte de la licence : https://www.gnu.org/licenses/old-licenses/gpl-2.0.fr.html
 
 function load_params()
 {
@@ -16,7 +11,7 @@ function load_params()
     if (!defined("EA_UDB")) {
         define("EA_UDB", EA_DB);
     } //préfixe de la table utilisateurs
-    if(function_exists("date_default_timezone_set")) {
+    if (function_exists("date_default_timezone_set")) {
         date_default_timezone_set('Europe/Paris');
     }
     $GLOBALS['T0'] = time();
@@ -137,7 +132,9 @@ function load_params()
 define("EA_VERSION_PRG", "3.2.4");
 //{ $GLOBALS['EAg_BETA']="-beta"; }
 //{ $GLOBALS['EAg_BETA']="-rc6"; }
-{ $GLOBALS['EAg_BETA'] = "-p406"; }
+{
+    $GLOBALS['EAg_BETA'] = "-p406";
+}
 
 $lg = '';
 load_params();
@@ -149,30 +146,25 @@ define("DIR_BACKUP", "_backup/");
 
 function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = null, $index = null, $rss = null)
 {
-    $carcode = 'UTF-8';
-    //$carcode = 'ISO-8859-1';
-    header('Content-Type: text/html; charset=' . $carcode);
-    if (file_exists(dirname(__FILE__) . '/trt_charset.inc.php')) {
-        include(dirname(__FILE__) . '/trt_charset.inc.php');
-    }
+
+    header('Content-Type: text/html; charset=UTF-8' . $carcode);
+
     global $path, $userlogin, $scriptname, $commune;
+    $meta_description = "";
+    $meta_keywords = "";
     if ($scriptname == "") {
         $scriptname = "index";
     }
 
-    if (!defined("META_DESCRIPTION")) {
-        $meta_description = "";
-    } else {
+    if (defined("META_DESCRIPTION")) {
         $meta_description = META_DESCRIPTION;
     }
-    if (!defined("META_KEYWORDS")) {
-        $meta_keywords = "";
-    } else {
+    if (defined("META_KEYWORDS")) {
         $meta_keywords = META_KEYWORDS;
     }
 
-    echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">' . "\n";
-    echo '<html xmlns="http://www.w3.org/1999/xhtml">' . "\n";
+    echo '<!DOCTYPE html>' . "\n";
+    echo '<html lang="fr">' . "\n";
     echo "<head>\n";
     echo '<link rel="shortcut icon" href="' . $root . '/img/favicon.ico" type="image/x-icon" />' . "\n";
     echo '<link rel="stylesheet" href="' . $root . '/tools/css/actes.css" type="text/css" />' . "\n";
@@ -224,7 +216,7 @@ function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = n
         echo '</script>' . "\n";
     }
     echo "<title>$titre</title>\n";
-    echo '<meta http-equiv="Content-Type" content="text/html; charset=' . $carcode . '" />' . "\n";
+    echo '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />' . "\n";
     echo '<meta name="expires" content="never" />' . "\n";
     echo '<meta name="revisit-after" content="15 days" />' . "\n";
     echo '<meta name="robots" content="index, nofollow" />' . "\n";
@@ -251,39 +243,13 @@ function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = n
         echo '<font color="#FF0000"><b>!! MAINTENANCE !!</b></font>';
     }
 
-    $bandeau = "_config/bandeau.htm";
-    if ($root != $path) {
-        $bandeau = "../" . $bandeau;
-    }
-    include($bandeau);
+    include(__DIR__ . '/../templates/front/_bandeau.php');
     echo "</div>\n";
 }
 
 //---------------------------------------------------------
 
-function close_page($complet = 0, $root = null)
-{
-    echo '<div id="pied_page2" class="pied_page2">';
-    echo '<div id="totop2" class="totop2"><p class="totop2"><strong><a href="#top">Top</a></strong> &nbsp; </p></div>';
-    echo '<div id="texte_pied2" class="texte_pied2"><p class="texte_pied2">' . PIED_PAGE . '</p></div>';
-    echo '<div id="copyright2" class="copyright2"><p class="copyright2"><em><a href="http://expocartes.monrezo.be/">ExpoActes</a></em> version ' . EA_VERSION . $GLOBALS['EAg_BETA'] . ' (&copy;<em> 2005-' . date("Y") . ', ADSoft)</em></p></div>';
-    // echo '<div id="copyright2" class="copyright2"><p class="copyright2"><em><a href="http://expocartes.monrezo.be/">ExpoActes</a></em> version '.EA_VERSION.' (&copy;<em> 2005-2015, ADSoft)</em></p></div>';
-    echo '</div>';
 
-    $t = dirname(dirname(__FILE__)) . '/_config/js_externe_footer.inc.php';
-    if (file_exists($t)) {
-        include($t);
-    }
-
-    global $TIPmsg;  // message d'alerte pré-blocage IP
-    if ($TIPmsg <> "" and TIP_MODE_ALERT >= 2) {
-        echo "<SCRIPT language=javascript>";
-        echo 'alert("' . $TIPmsg . '")';
-        echo '</SCRIPT>';
-    }
-    echo "</body>\n";
-    echo "</html>\n";
-}
 
 //---------------------------------------------------------
 
@@ -402,8 +368,8 @@ function form_recherche()
 //------------------------------------------------------------------------------
 
 /*** default_rech_code
-* retourne mode de recherche par défaut selon le parametre RECH_DEF_TYP sous forme de lettre
-*/
+ * retourne mode de recherche par défaut selon le parametre RECH_DEF_TYP sous forme de lettre
+ */
 function default_rech_code()
 {
     $typs = array(1 => "E", "D", "F", "C", "S");
@@ -413,8 +379,8 @@ function default_rech_code()
 //------------------------------------------------------------------------------
 
 /*** prechecked
-* Préselectionne le mode de recherche par défaut selon le parametre RECH_DEF_TYP
-*/
+ * Préselectionne le mode de recherche par défaut selon le parametre RECH_DEF_TYP
+ */
 function prechecked($typrech)
 {
     $deftyp = default_rech_code();
@@ -449,7 +415,7 @@ function statistiques($vue = "T")
     if (!$result) {
         $message  = '<p>Requête invalide : ' . EA_sql_error() . "\n";
         $message  .= '<br>Requête : ' . $request . "\n";
-        echo($message);
+        echo ($message);
     }
 
     $tot = 0;
@@ -706,7 +672,7 @@ function zone_menu($admin, $userlevel, $pp = array())
     global $root;
     $menu_actes = '';
     echo '<div id="col_menu">' . "\n";
-    if (!isset($pp['f']) or ($pp['f'] != 'N') ) {
+    if (!isset($pp['f']) or ($pp['f'] != 'N')) {
         form_recherche($root);
     }
     if (isset($pp['s'])) {
@@ -715,9 +681,12 @@ function zone_menu($admin, $userlevel, $pp = array())
     if ($admin <> 10) {
         menu_public();
         show_pub_menu();
-        if (isset($pp['c']) and ($pp['c'] == 'O') ) {
-            show_certifications();
-        }
+        /** 
+         * @deprecated 
+         * if (isset($pp['c']) and ($pp['c'] == 'O') ) {
+         *  show_certifications();
+         * } 
+         */
     } else {
         menu_admin($root, $userlevel);
     }
@@ -731,26 +700,21 @@ function navigation($root = "", $level = 1, $type = "", $commune = null, $patron
 {
     $signe = "";
     $s2 = "";
-    $s4 = "";
     switch ($type) {
         case "N":
             $s2 = "tab_naiss.php";
-            $s4 = "acte_naiss.php";
             $signe = "o";
             break;
         case "D":
             $s2 = "tab_deces.php";
-            $s4 = "acte_deces.php";
             $signe = "+";
             break;
         case "M":
             $s2 = "tab_mari.php";
-            $s4 = "acte_mari.php";
             $signe = "X";
             break;
         case "V":
             $s2 = "tab_bans.php";
-            $s4 = "acte_bans.php";
             $signe = "Divers";
             break;
         case "A":
@@ -767,28 +731,28 @@ function navigation($root = "", $level = 1, $type = "", $commune = null, $patron
     echo 'Navigation';
     if ($level > 1) {
         if ($level > 10) {
-            echo ' :: <a href="' . $root . '/index.php">Accueil</a>' . "\n";
-            echo ' &gt; <a href="' . $root . '/admin/index.php">Administration</a>' . "\n";
+            echo ' :: <a href="' . $root . '/index.php">Accueil</a>';
+            echo ' &gt; <a href="' . $root . '/admin/index.php">Administration</a>';
             $path = $root . '/admin';
             $level = $level - 10;
         } else {
             if (SHOW_ALLTYPES == 0) {
-                echo ' :: <a href="' . mkurl($root . '/' . "index.php", $type) . '">Communes et paroisses</a>' . "\n";
+                echo ' :: <a href="' . mkurl($root . '/' . "index.php", $type) . '">Communes et paroisses</a>';
             } else {
-                echo ' :: <a href="' . $root . '/index.php">Communes et paroisses</a>' . "\n";
+                echo ' :: <a href="' . $root . '/index.php">Communes et paroisses</a>';
             }
             $path = $root;
         }
     } else {
         if ($level == 1) {
-            echo ' :: Communes et paroisses' . "\n";
+            echo ' :: Communes et paroisses';
         }
     }
     if ($level > 2) {
         echo ' &gt; <a href="' . mkurl($path . '/' . $s2, $commune) . '">' . $commune . $signe . '</a>';
     } else {
         if ($level == 2) {
-            echo ' &gt; ' . $commune . $signe . "\n";
+            echo ' &gt; ' . $commune . $signe;
         }
     }
     if ($level > 3) {
@@ -907,7 +871,7 @@ function listbox_communes($fieldname, $default, $vide = 0)  // liste de toutes l
 //------------------------------------------------------------------------------
 
 function decompose_comm_dep($comdep)
-{// DECOMPOSE EN UNE SEULE OPERATION list ($commune,$departement) = decompose_comm_dep($comdep);
+{ // DECOMPOSE EN UNE SEULE OPERATION list ($commune,$departement) = decompose_comm_dep($comdep);
     $croch = mb_strrpos($comdep, "[");
     if ($croch > 0) {
         $comm = mb_substr($comdep, 0, $croch - 1);
@@ -918,13 +882,13 @@ function decompose_comm_dep($comdep)
 }
 
 function communede($comdep)
-{// Compatibilité anciens appels
+{ // Compatibilité anciens appels
     list($comm, $dep) = decompose_comm_dep($comdep);
     return $comm;
 }
 
 function departementde($comdep)
-{// Compatibilité anciens appels
+{ // Compatibilité anciens appels
     list($comm, $dep) = decompose_comm_dep($comdep);
     return $dep;
 }
@@ -2320,8 +2284,8 @@ function geoNote($Commune, $Depart, $atyp)
 }
 
 /*** ctrlxid
-* retourne le code de contrôle relatif au couple nom et prenom
-*/
+ * retourne le code de contrôle relatif au couple nom et prenom
+ */
 function ctrlxid($nom, $pre)
 {
     if (!empty($nom)) {

@@ -1,32 +1,25 @@
 <?php
 
-// VERSION DU 26/09/2014
-// Tableau en version texte pour la page d'accueil
-
-if ($xtyp == "" or $xtyp == "A") {
-    $condit1 = "";
-} else {
-    // André DELACHARLERIE $condit1 = " WHERE TYPACT='".$xtyp."'";
+$condit1 = '';
+$initiale = '';
+    $condit2 = '';
+if ($xtyp != '' || $xtyp != 'A') {
     $condit1 = " WHERE TYPACT='" . sql_quote($xtyp) . "'";
-
 }
 
-if ($init == "") {
-    $initiale = '';
-    $condit2 = '';
-} else {
+if ($init != '') {
     $initiale = '&amp;init=' . $init;
     $leninit = mb_strlen($init);
-    // André DELACHARLERIE $condit2 = " and upper(left(COMMUNE,".$leninit."))='".$init."'";
-    $condit2 = " and upper(left(COMMUNE," . $leninit . "))='" . sql_quote($init) . "'";
+    $condit2 = " AND upper(left(COMMUNE," . $leninit . "))='" . sql_quote($init) . "'";
 }
 
-$AffichageAdmin = (ADM <> 0);// EN THEORIE ADM == 10
+$AffichageAdmin = (ADM <> 0); // EN THEORIE ADM == 10
 
 $baselink = $root . $chemin . 'index.php';
-$request = "SELECT DISTINCT upper(left(COMMUNE,1)) AS init FROM " . EA_DB . "_sums " . $condit1 . " ORDER BY init";
+// $request = "SELECT DISTINCT upper(left(COMMUNE,1)) AS init FROM " . EA_DB . "_sums " . $condit1 . " ORDER BY init";
 // Sélectionner et grouper sur initiale de commune et ascii(initiale), ordonner code ascii ascendant pour avoir + grand code (accentué) en dernier
-$request = "SELECT  alphabet.init  FROM ( SELECT upper(left(COMMUNE,1)) AS init,ascii(upper(left(COMMUNE,1)))  AS oo FROM " . EA_DB . "_sums " . $condit1 . " GROUP BY init,oo  ORDER BY init , oo ASC) AS alphabet GROUP BY init";
+$request = "SELECT alphabet.init FROM ( SELECT upper(left(COMMUNE,1)) AS init,ascii(upper(left(COMMUNE,1))) AS oo 
+    FROM " . EA_DB . "_sums " . $condit1 . " GROUP BY init,oo  ORDER BY init , oo ASC) AS alphabet GROUP BY init";
 optimize($request);
 $result = EA_sql_query($request);
 $alphabet = "";
@@ -38,11 +31,8 @@ while ($row = EA_sql_fetch_row($result)) {
     }
 }
 echo '<p align="center">' . $alphabet . '</p>';
-
-echo '<!-- Distribution 23/07/2024 -->';
 echo '<table summary="Liste des communes avec décompte des actes">';
-
-echoln('<tr class="rowheader">');
+echo '<tr class="rowheader">';
 echo '<th>Localité</th>';
 $nbcol = 3;
 $cols = 1;  // pour graphique de répartition
@@ -59,7 +49,7 @@ if ($AffichageAdmin) {
     $nbcol++;
 }
 echo '<th>Filiatifs</th>';
-echoln('</tr>');
+echo '</tr>';
 
 if ($xtyp == 'A') {
     $arr = array('N','M','D','V');
@@ -110,11 +100,11 @@ foreach ($arr as $ztyp) {
                         $prog = "tab_deces.php";
                         break;
                 }
-                echoln('<tr class="rowheader">');
+                echo '<tr class="rowheader">';
                 echo '<th colspan="' . $nbcol . '">' . $typel . '</th>';
-                echoln('</tr>');
+                echo '</tr>';
             }
-            echoln('<tr class="row' . (fmod($i, 2)) . '">');
+            echo '<tr class="row' . (fmod($i, 2)) . '">';
             echo '<td><a href="' . mkurl($root . $chemin . $prog, $ligne['COMMUNE'] . ' [' . $ligne['DEPART'] . ']' . $linkdiv) . '">' . $ligne['COMMUNE'] . '</a>';
             if ($ligne['DEPART'] <> "") {
                 echo ' [' . $ligne['DEPART'] . ']';
@@ -132,7 +122,7 @@ foreach ($arr as $ztyp) {
                 echo '<td align="right"> ' . entier($ligne['S_NB_N_NUL']) . '</td>';
             }
             echo '<td align="right"> ' . entier($ligne['S_NB_FIL']) . '</td>';
-            echoln('</tr>');
+            echo '</tr>';
             $cptact = $cptact + $ligne['S_NB_TOT'];
             $cptnnul = $cptnnul + $ligne['S_NB_N_NUL'];
             $cptfil = $cptfil + $ligne['S_NB_FIL'];
@@ -140,7 +130,7 @@ foreach ($arr as $ztyp) {
         }
     }
 }
-echoln('<tr class="rowheader">');
+echo '<tr class="rowheader">';
 echo '<td align="right"><b>Totaux :</b></td>';
 if ($AffichageAdmin or SHOW_DATES == 1) {
     echo '<td colspan="' . $cols . '">  </td>';
@@ -150,5 +140,5 @@ if ($AffichageAdmin) {
     echo '<td align="right"> ' . entier($cptnnul) . '</td>';
 }
 echo '<td align="right"> ' . entier($cptfil) . '</td>';
-echoln('</tr>');
-echoln('</table>');
+echo '</tr>';
+echo '</table>';

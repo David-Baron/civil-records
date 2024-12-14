@@ -1,4 +1,8 @@
 <?php
+define('ADM', 10); // Compatibility only
+$admtxt = 'Gestion '; // Compatibility only
+require(__DIR__ . '/../next/bootstrap.php');
+require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
 function init_page()
 {
@@ -13,15 +17,8 @@ function init_page()
     $htmlpage = true;
 }
 
-//-----------------------------------------
 
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
-my_ob_start_affichage_continu();
+
 
 include("../install/instutils.php");
 
@@ -48,7 +45,7 @@ $missingargs = false;
 $oktype = false;
 
 $Destin = 'T'; // Toujours vers fichier (T) (sauf pour debug .. D )
-
+my_ob_start_affichage_continu();
 //{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; }
 
 $filename = "ea_params_" . gmdate('Ymd') . '.xml';
@@ -108,5 +105,5 @@ writelog('Backup des paramètres', "PARAMS", $nb);
 
 if ($htmlpage) {
     echo '</div>';
-    close_page(1, $root);
+    include(__DIR__ . '/../templates/front/_footer.php');
 }

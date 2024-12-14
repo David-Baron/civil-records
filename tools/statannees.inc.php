@@ -97,6 +97,7 @@ if (! $missingargs) {
 
     $title = $Commune . " : Répartition des actes de " . $ntype . $soustype;
 
+    ob_start();
     open_page($title, $root);
     if (ADM < 10) {
         navigation($root, ADM + 2, 'A', $Commune);
@@ -169,4 +170,6 @@ if (! $missingargs) {
 
 }
 echo '</div>';
-close_page(1, $root);
+include(__DIR__ . '/../templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

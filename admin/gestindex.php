@@ -1,18 +1,12 @@
 <?php
+define('ADM', 10); // Compatibility only
+$admtxt = 'Gestion '; // Compatibility only
+require(__DIR__ . '/../next/bootstrap.php');
+require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
-my_ob_start_affichage_continu();
-include("../tools/defindex.inc.php");
 
-$root = "";
-$path = "";
+include(__DIR__ . "/../tools/defindex.inc.php");
 
-//**************************** ADMIN **************************
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
@@ -22,13 +16,11 @@ while ($userlevel < 9) {
     login($root);
 }
 
+ob_start();
 open_page("Gestion des index", $root);
 navadmin($root, "Gestion des index");
-
 zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
-
 echo '<div id="col_main_adm">';
-
 menu_software('I');
 
 $action = getparam('act');
@@ -110,11 +102,11 @@ if ($action == "ADD") {
     echo '<h2>Index de la base MySQL</h2>';
 
     echo '<table summary="Liste des index actifs ou à créer">';
-    echoln('<tr class="rowheader">');
+    echo '<tr class="rowheader">';
     echo '<th>Zone clé</th>';
     echo '<th>Cardinalité</th>';
     echo '<th>Action possible</th>';
-    echoln('</tr>');
+    echo '</tr>';
 
     $i = -1;
     $table = "XX";
@@ -122,13 +114,13 @@ if ($action == "ADD") {
         $i++;
         if ($table <> $index[0]) {
             $table = $index[0];
-            echoln('<tr class="rowheader">');
+            echo '<tr class="rowheader">';
             $res = EA_sql_query("SELECT count(*) AS NBRE FROM " . EA_DB . '_' . $table . "; ");
             $row = EA_sql_fetch_array($res);
             $totfiches = $row[0];
             echo '<td colspan="3"><b>Table des ' . typact_txt($table) . ' (' . EA_DB . '_' . $table . " : " . entier($totfiches) . " lignes)</b>";
             echo ' <a href="?act=ANA&amp;tbl=' . $table . '"><b>Analyser</b></a>';
-            echoln('</td></tr>');
+            echo '</td></tr>';
             $res = EA_sql_query("SHOW INDEX FROM " . EA_DB . '_' . $table . "; ");
             $nbr = EA_sql_num_rows($res);
             $realindex = array();
@@ -139,7 +131,7 @@ if ($action == "ADD") {
             }
             // print_r($realindex);
         }
-        echoln('<tr class="row' . (fmod($i, 2)) . '">');
+        echo '<tr class="row' . (fmod($i, 2)) . '">';
         echo "<td>" . $index[6] . "</td>";
         if (array_key_exists($index[1], $realindex)) {
             echo '<td align="right">' . entier($realindex[$index[1]]) . "</td>";
@@ -148,10 +140,12 @@ if ($action == "ADD") {
             echo '<td align="right"> Absent </td>';
             echo '<td align="center">' . '<a href="?act=ADD&amp;ti=' . $i . '"><b>Ajouter</b></a>' . "</td>";
         }
-        echoln('</tr>');
+        echo '</tr>';
     }
-    echoln('</table>');
+    echo '</table>';
 }
 
 echo '</div>';
-close_page(1, $root);
+include(__DIR__ . '/../templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

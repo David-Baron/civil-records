@@ -1,18 +1,8 @@
 <?php
-
-// Module de recherche "levenshtein" du programmes ExpoActes
-// Copyright (C) : André Delacharlerie + Jean Louis Cazor, 2006
-// Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les termes de la
-// Licence Publique Générale GNU, version 2 (GPLv2), publiée par la Free Software Foundation
-// Texte de la licence : https://www.gnu.org/licenses/old-licenses/gpl-2.0.fr.html
-
-//-------------------------------------------------------------------
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 0); // Compatibility only
+$admtxt = ''; // Compatibility only
+require(__DIR__ . '/next/bootstrap.php');
+require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 include("tools/cree_table_levenshtein.php");
 
 $root = "";
@@ -27,6 +17,7 @@ while ($userlevel < LEVEL_LEVENSHTEIN) {
     login($root);
 }
 
+ob_start();
 open_page(SITENAME . " : Dépouillement d'actes de l'état-civil et des registres paroissiaux", $root, null, null, null, '../index.htm', 'rss.php');
 navigation($root, 2, 'A', "Recherche  Levenshtein");
 
@@ -117,4 +108,6 @@ echo '</div>';
 echo '<p>&nbsp;</p>';
 
 echo '</div>';
-close_page(1, $root);
+include(__DIR__ . '/templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

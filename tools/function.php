@@ -125,53 +125,16 @@ function isin($grand, $petit, $debut = 0) // retourne la position de $petit dans
     }
 }
 
-//---------------------------------------------------------
-// André DELACHARLERIE
-/*
-function getparam($name) // initialise proprement une variable avec le contenu d'un paramètre facultatif
-  {
-  if (isset($_REQUEST[$name]))
-    return $_REQUEST[$name];
-   else
-    return "";
-  }
-*/
-function getparam($name, $default = "", $allow_sql = 0) // initialise proprement une variable avec le contenu d'un paramètre facultatif et filtrage anti injection de code
+
+function getparam($name, $default = "")
 {
     if (isset($_REQUEST[$name])) {
-        $param = $_REQUEST[$name];
-        if (!is_utf8($param)) {
-            $param = iconv('iso-8859-15', 'UTF-8', $param);
-        } // Conversion des paramètres en UTF8
-        $paramMaj = strtoupper($param);
-        $interdits = array("SELECT", "INSERT", "DELETE", "UPDATE", "DROP", "TRUNCATE", "SHOW", "PASSWORD", "SLEEP", "FROM", "UNION");
-        if (isset($GLOBALS['userlevel']) and $GLOBALS['userlevel'] >= 6) { // Retire UNION de la liste des mots à risque d'injection quand on a des droits suffisants
-            $bidon = array_pop($interdits);
-        }
-        if (!$allow_sql) {
-            $ok = true;
-            foreach ($interdits as $interdit) {
-                if (preg_match("`([[:space:]]|\)|'|\`)" . $interdit .
-                    "([[:space:]]|\(|'|\`)`i", $paramMaj)) {
-                    // précédé et suivi de blanc,parenthèse,ou apostrophes
+        return $_REQUEST[$name];
+    } 
 
-                    //if (isin($paramMaj,";")>0)  // rejet si mot interdit et ;
-                    $ok = false;
-                }
-            }
-            if (!$ok) {
-                msg(_gt_("Expression rejetee : ") . $param);
-                writelog("SQL-INJ : " . EA_sql_real_escape_string($param));
-                $param = "";
-            }
-        }
-        return $param;
-    } else {
-        return $default;
-    }
+    return $default;
 }
-// André DELACHARLERIE
-//---------------------------------------------------------
+
 
 function mydir($dir, $ext) // retourne la liste des fichiers d'un répertoire
 // (et remplace la fonction glob qui n'est pas supportée sur tous les hébergements)
@@ -198,19 +161,11 @@ function iif($bool, $vrai, $faux) // is bool alors vrai sinon faux
 {
     if ($bool) {
         return $vrai;
-    } else {
-        return $faux;
-    }
+    } 
+    
+    return $faux;
 }
 
-//---------------------------------------------------------
-
-function echoln($texte) // echo + passage à la ligne
-{
-    echo $texte . "\n";
-}
-
-//---------------------------------------------------------
 
 function div($nbre, $diviseur) // division entière
 {
@@ -223,9 +178,9 @@ function entier($nbre) // pour mettre au format entier avec séparateur
 {
     if ($nbre == '') {
         return '';
-    } else {
-        return number_format(intval($nbre), 0, ',', '.');
-    }
+    } 
+    
+    return number_format(intval($nbre), 0, ',', '.');
 }
 
 //---------------------------------------------------------

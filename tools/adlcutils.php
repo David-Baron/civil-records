@@ -284,8 +284,9 @@ function execute_script_sql($filename, $prefixe = "", $selecttxt = "")
     return $ok;
 }
 
-//-----------------------------------------------------------------
-
+/**
+ * @deprecated Expoactes system
+ */
 function check_new_version($key, $urlsite, $type_site = '')
 {
     //$MODE_check = '';
@@ -361,7 +362,7 @@ function check_new_version($key, $urlsite, $type_site = '')
                 }
             }
         }
-        setcookie($key, $lavaleur);  // session uniquement
+        // setcookie($key, $lavaleur);  // session uniquement
     }
     return $lavaleur;
 }

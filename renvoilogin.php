@@ -1,17 +1,8 @@
 <?php
-
-// Page d'accueil publique du programmes ExpoActes
-// Copyright (C) : André Delacharlerie, 2005-2006
-// Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les termes de la
-// Licence Publique Générale GNU, version 2 (GPLv2), publiée par la Free Software Foundation
-// Texte de la licence : https://www.gnu.org/licenses/old-licenses/gpl-2.0.fr.html
-//-------------------------------------------------------------------
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 0); // Compatibility only
+$admtxt = ''; // Compatibility only
+require(__DIR__ . '/next/bootstrap.php');
+require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
 $root = "";
 $path = "";
@@ -25,6 +16,7 @@ if ($uri == "") {
 }
 $ok = false;
 
+ob_start();
 open_page("ExpoActes : Renvoi codes d'accès", $root, null, null, null, '../index.htm');
 navigation($root, 2, "R", "Renvoi des codes d'accès");
 
@@ -113,9 +105,11 @@ if (!$ok) {
     echo '</table>' . "\n";
     echo '</form>' . "\n";
 
-    echoln('<p><a href="' . $root . '/acces.php">Voir les conditions d\'accès à la partie privée du site</a></p>' . "\n");
+    echo '<p><a href="' . $root . '/acces.php">Voir les conditions d\'accès à la partie privée du site</a></p>' . "\n";
 
-    echoln('<p>&nbsp;</p>' . "\n");
+    echo '<p>&nbsp;</p>' . "\n";
 }
 echo '</div>' . "\n";
-close_page(1, $root);
+include(__DIR__ . '/templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

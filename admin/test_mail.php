@@ -1,16 +1,9 @@
 <?php
+define('ADM', 10); // Compatibility only
+$admtxt = 'Gestion '; // Compatibility only
+require(__DIR__ . '/../next/bootstrap.php');
+require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
-error_reporting(E_ALL);
-
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
-
-$root = "";
-$path = "";
 $xcomm = $xpatr = $page = "";
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
@@ -20,14 +13,13 @@ while ($userlevel < 8) {
     login($root);
 }
 
+$missingargs = true;
+
+ob_start();
 open_page("Test e-mail", $root);
 navadmin($root, "Test du mail");
-
 zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
-
 echo '<div id="col_main_adm">';
-
-$missingargs = true;
 echo "<h1>Test de l'envoi d'un mail</h1> \n";
 
 if (getparam('action') == 'submitted') {
@@ -68,5 +60,6 @@ if($missingargs) {
     echo "</form>\n";
 }
 echo '</div>';
-
-close_page(0);
+include(__DIR__ . '/../templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

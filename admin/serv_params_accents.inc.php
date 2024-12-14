@@ -18,7 +18,7 @@ function init_page_EL_GENERALE($head = "", $ajax = "", $affiche = '') // SOURCE 
 */
     navadmin($root, $titre);
 
-    zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+    zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
 
     echo '<div id="col_main_adm">';
     $htmlpage = true;
@@ -204,8 +204,20 @@ $champ_control = 'ip';
 $mes_variables_divers = array();
 
 $tables = array(
-    $GLOBALS['Type_Table']['V'], $GLOBALS['Type_Table']['M'], $GLOBALS['Type_Table']['D'], $GLOBALS['Type_Table']['N'],
-    EA_DB . '_geoloc', EA_DB . '_log', EA_DB . '_metadb', EA_DB . '_metalg', EA_DB . '_mgrplg', EA_DB . '_prenom', EA_DB . '_sums', EA_DB . '_params', EA_DB . '_traceip', EA_UDB . '_user3',
+    $GLOBALS['Type_Table']['V'],
+    $GLOBALS['Type_Table']['M'],
+    $GLOBALS['Type_Table']['D'],
+    $GLOBALS['Type_Table']['N'],
+    EA_DB . '_geoloc',
+    EA_DB . '_log',
+    EA_DB . '_metadb',
+    EA_DB . '_metalg',
+    EA_DB . '_mgrplg',
+    EA_DB . '_prenom',
+    EA_DB . '_sums',
+    EA_DB . '_params',
+    EA_DB . '_traceip',
+    EA_UDB . '_user3',
     $table_control,
 );
 

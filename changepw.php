@@ -1,10 +1,8 @@
 <?php
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
+define('ADM', 0); // Compatibility only
+$admtxt = ''; // Compatibility only
+require(__DIR__ . '/next/bootstrap.php');
+require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
@@ -20,58 +18,64 @@ while ($userlevel < CHANGE_PW) {
 }
 
 $script = file_get_contents("tools/js/sha1.js");
+
+ob_start();
 open_page("Changement de mot de passe", $root, $script);
 navigation($root, 2, 'A', "Changement de mot de passe");
 
 ?>
 <script type="text/javascript">
-//<![CDATA[
-function pwProtect() {
-    form = document.forms["eaform"];
-    if (form.oldpassw.value == "") {
-        alert("Erreur : L'ancien mot de passe est vide !");
-        return false;
+    //<![CDATA[
+    function pwProtect() {
+        form = document.forms["eaform"];
+        if (form.oldpassw.value == "") {
+            alert("Erreur : L'ancien mot de passe est vide !");
+            return false;
+        }
+        if (form.passw.value == "") {
+            alert("Erreur : Le nouveau mot de passe est vide !");
+            return false;
+        }
+        if (form.passw.value.length < 6) {
+            alert("Erreur : Le nouveau mot de passe est trop court (min 6 caractères) !");
+            return false;
+        }
+        if (!(form.passw.value == form.passwverif.value)) {
+            alert("Erreur : Les nouveaux mots de passes ne sont pas identiques !");
+            return false;
+        }
+        if (sha1_vm_test()) { // si le codage marche alors on l'utilise
+            form.codedpass.value = hex_sha1(form.passw.value);
+            form.codedoldpass.value = hex_sha1(form.oldpassw.value);
+            form.passw.value = "";
+            form.oldpassw.value = "";
+            form.passwverif.value = "";
+            form.iscoded.value = "Y";
+        }
+        return true;
     }
-    if (form.passw.value == "") {
-        alert("Erreur : Le nouveau mot de passe est vide !");
-        return false;
+
+    function seetext(x) {
+        x.type = 'text';
     }
-    if (form.passw.value.length < 6) {
-        alert("Erreur : Le nouveau mot de passe est trop court (min 6 caractères) !");
-        return false;
+
+    function seeasterisk(x) {
+        x.type = 'password';
     }
-    if (!(form.passw.value == form.passwverif.value)) {
-        alert("Erreur : Les nouveaux mots de passes ne sont pas identiques !");
-        return false;
-    }
-    if (sha1_vm_test()) { // si le codage marche alors on l'utilise
-        form.codedpass.value = hex_sha1(form.passw.value);
-        form.codedoldpass.value = hex_sha1(form.oldpassw.value);
-        form.passw.value = "";
-        form.oldpassw.value = "";
-        form.passwverif.value = "";
-        form.iscoded.value = "Y";
-    }
-    return true;
-}
-function seetext(x) {
-    x.type = 'text';
-}
-function seeasterisk(x) {
-    x.type = 'password';
-}
-//]]>
+    //]]>
 </script>
 <?php
 
-zone_menu(0, 0, array('s' => '', 'c' => 'O'));//PUBLIC STAT & CERT
+zone_menu(0, 0, array('s' => '', 'c' => 'O')); //PUBLIC STAT & CERT
 
 echo '<div id="col_main_adm">';
 
 if ($act == "relogin") {
     echo '<p align="center"><a href="index.php">Retour à la page d\'accueil</a></p>';
     echo '</div>';
-    close_page(1);
+    include(__DIR__ . '/templates/front/_footer.php');
+    $response->setContent(ob_get_clean());
+    $response->send();
     exit;
 }
 
@@ -183,4 +187,6 @@ AAA;
     echo '<p align="center"><a href="login.php?cas=4">' . $mes . '</a></p>';
 }
 echo '</div>';
-close_page(1);
+include(__DIR__ . '/templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

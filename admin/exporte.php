@@ -1,4 +1,8 @@
 <?php
+define('ADM', 10); // Compatibility only
+$admtxt = 'Gestion '; // Compatibility only
+require(__DIR__ . '/../next/bootstrap.php');
+require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
 function init_page($head = "")
 {
@@ -20,16 +24,6 @@ function init_page($head = "")
     my_flush(); // On affiche un minimum
 }
 
-//-----------------------------------------
-
-$bypassTIP = 1; // pas de tracing ici
-
-if (file_exists('tools/_COMMUN_env.inc.php')) {
-    $EA_Appel_dOu = '';
-} else {
-    $EA_Appel_dOu = '../';
-}
-include($EA_Appel_dOu . 'tools/_COMMUN_env.inc.php');
 my_ob_start_affichage_continu();
 
 $tpsreserve = 3;
@@ -499,5 +493,5 @@ if (! $missingargs) {
 }
 if ($htmlpage) {
     echo '</div>';
-    close_page(1, $root);
+    include(__DIR__ . '/../templates/front/_footer.php');
 }
