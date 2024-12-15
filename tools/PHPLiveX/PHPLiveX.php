@@ -9,30 +9,6 @@
 # Release Date: 27.09.2008			#
 #####################################
 
-// mofif pour les version PHP < � 5.2 qui n'ont pas JSON en natif
-
-if ( !function_exists('json_decode') ){
-    function json_decode($content, $assoc=false){
-      require_once (str_replace('//','/',dirname(__FILE__).'/') ."../JSON/JSON.php"); // indispensable car chemin d�pend de l'appel
-                if ( $assoc ){
-                    $json = new Services_JSON(SERVICES_JSON_LOOSE_TYPE);
-        } else {
-                    $json = new Services_JSON;
-                }
-        return $json->decode($content);
-    }
-}
-
-if ( !function_exists('json_encode') ){
-    function json_encode($content){
-      require_once (str_replace('//','/',dirname(__FILE__).'/') ."../JSON/JSON.php"); // indispensable car chemin d�pend de l'appel
-                $json = new Services_JSON;
-               
-        return $json->encode($content);
-    }
-}
-
-
 class PHPLiveX {
 
 	/**

@@ -35,7 +35,7 @@ if (getparam('action') == 'submitted') {
 ob_start();
 open_page("Gestion des utilisateurs", $root);
 navadmin($root, "Gestion des utilisateurs");
-zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
 echo '<div id="col_main_adm">';
 if ($id == -1) {
     menu_users('A');
@@ -50,30 +50,30 @@ if (isset($udbname)) {
 // Données postées -> ajouter ou modifier
 if (getparam('action') == 'submitted') {
     $ok = true;
-    if(strlen($nom) < 3) {
+    if (strlen($nom) < 3) {
         msg('Vous devez préciser le nom de la personne');
         $ok = false;
     }
-    if(!valid_mail_adrs($email)) {
+    if (!valid_mail_adrs($email)) {
         msg("Vous devez préciser une adresse email valide pour la personne");
         $ok = false;
     }
-    if(strlen($lelogin) < 3 or strlen($lelogin) > 15) {
+    if (strlen($lelogin) < 3 or strlen($lelogin) > 15) {
         msg('Vous devez donner un LOGIN d\'au moins 3 et au plus 15 caractères');
         $ok = false;
     }
-    if(!(sans_quote($lelogin) and sans_quote($lepassw))) {
+    if (!(sans_quote($lelogin) and sans_quote($lepassw))) {
         msg('Vous ne pouvez pas mettre d\'apostrophe dans le LOGIN ou le MOT DE PASSE');
         $ok = false;
     }
     if ($autopw) {
         $pw = MakeRandomPassword(8);
     } elseif ($id == -1 or !empty($lepassw)) {
-        if(strlen($lepassw) < 6 or strlen($lepassw) > 15) {
+        if (strlen($lepassw) < 6 or strlen($lepassw) > 15) {
             msg('Vous devez donner un MOT DE PASSE d\'au moins 6 et au plus 15 caractères');
             $ok = false;
         }
-        if($lepassw <> getparam('passwverif')) {
+        if ($lepassw <> getparam('passwverif')) {
             msg('Les deux copies du MOT DE PASSE ne sont pas identiques');
             $ok = false;
         }
@@ -103,22 +103,22 @@ if (getparam('action') == 'submitted') {
         if ($id <= 0) {
             $maj_solde = date("Y-m-d");
             $reqmaj = "INSERT INTO " . EA_UDB . "_user3 "
-               . "(nom, prenom, email, level, login, hashpass, regime, solde, maj_solde, statut, dtcreation, dtexpiration, rem, libre)"
-               . " VALUES ('"
-               . sql_quote(getparam('nom')) . "','"
-               . sql_quote(getparam('prenom')) . "','"
-               . sql_quote(getparam('email')) . "','"
-               . sql_quote($xdroits) . "','"
-               . sql_quote($lelogin) . "','"
-               . sql_quote(sha1($pw)) . "','"
-               . sql_quote(getparam('regime')) . "','"
-               . sql_quote(getparam('solde')) . "','"
-               . sql_quote($maj_solde) . "','"
-               . sql_quote(getparam('statut')) . "','"
-               . sql_quote($maj_solde) . "','"
-               . sql_quote(date_sql($dtexpir)) . "','"
-               . sql_quote(getparam('rem')) . "','"
-               . sql_quote(getparam('libre')) . "')";
+                . "(nom, prenom, email, level, login, hashpass, regime, solde, maj_solde, statut, dtcreation, dtexpiration, rem, libre)"
+                . " VALUES ('"
+                . sql_quote(getparam('nom')) . "','"
+                . sql_quote(getparam('prenom')) . "','"
+                . sql_quote(getparam('email')) . "','"
+                . sql_quote($xdroits) . "','"
+                . sql_quote($lelogin) . "','"
+                . sql_quote(sha1($pw)) . "','"
+                . sql_quote(getparam('regime')) . "','"
+                . sql_quote(getparam('solde')) . "','"
+                . sql_quote($maj_solde) . "','"
+                . sql_quote(getparam('statut')) . "','"
+                . sql_quote($maj_solde) . "','"
+                . sql_quote(date_sql($dtexpir)) . "','"
+                . sql_quote(getparam('rem')) . "','"
+                . sql_quote(getparam('libre')) . "')";
         } else {
             $missingargs = false;
             if (getparam('solde') != getparam('soldepre')) {
@@ -129,33 +129,33 @@ if (getparam('action') == 'submitted') {
 
             $reqmaj = "UPDATE " . EA_UDB . "_user3 SET ";
             $reqmaj = $reqmaj .
-                       "NOM        = '" . sql_quote(getparam('nom')) . "', " .
-                       "PRENOM     = '" . sql_quote(getparam('prenom')) . "', " .
-                       "EMAIL      = '" . sql_quote(getparam('email')) . "', " .
-                       "LEVEL      = '" . sql_quote($xdroits) . "', " .
-                       "LOGIN      = '" . sql_quote($lelogin) . "', ";
+                "NOM        = '" . sql_quote(getparam('nom')) . "', " .
+                "PRENOM     = '" . sql_quote(getparam('prenom')) . "', " .
+                "EMAIL      = '" . sql_quote(getparam('email')) . "', " .
+                "LEVEL      = '" . sql_quote($xdroits) . "', " .
+                "LOGIN      = '" . sql_quote($lelogin) . "', ";
             if ($pw <> "") {
                 $reqmaj = $reqmaj . "HASHPASS   = '" . sql_quote(sha1($pw)) . "', ";
             }
             $reqmaj = $reqmaj .
-                       "REGIME     = '" . sql_quote(getparam('regime')) . "', " .
-                       "SOLDE      = '" . sql_quote(getparam('solde')) . "', " .
-                       "MAJ_SOLDE  = '" . sql_quote($maj_solde) . "', " .
-                       "DTEXPIRATION= '" . sql_quote(date_sql($dtexpir)) . "', " .
-                       "STATUT     = '" . sql_quote(getparam('statut')) . "', " .
-                       "LIBRE      = '" . sql_quote(getparam('libre')) . "', " .
-                       "REM        = '" . sql_quote(getparam('rem')) . "' " .
-                   " WHERE ID=" . $id . ";";
+                "REGIME     = '" . sql_quote(getparam('regime')) . "', " .
+                "SOLDE      = '" . sql_quote(getparam('solde')) . "', " .
+                "MAJ_SOLDE  = '" . sql_quote($maj_solde) . "', " .
+                "DTEXPIRATION= '" . sql_quote(date_sql($dtexpir)) . "', " .
+                "STATUT     = '" . sql_quote(getparam('statut')) . "', " .
+                "LIBRE      = '" . sql_quote(getparam('libre')) . "', " .
+                "REM        = '" . sql_quote(getparam('rem')) . "' " .
+                " WHERE ID=" . $id . ";";
         }
         //echo "<p>".$reqmaj."</p>";
 
-        if  ($result = EA_sql_query($reqmaj, $u_db)) {
+        if ($result = EA_sql_query($reqmaj, $u_db)) {
             // echo '<p>'.EA_sql_error().'<br />'.$reqmaj.'</p>';
             if ($id <= 0) {
                 $log = "Ajout utilisateur";
                 if ($sendmail == 1) {
                     $urlsite = EA_URL_SITE . $root . "/index.php";
-                    $codes = array("#NOMSITE#","#URLSITE#", "#LOGIN#", "#PASSW#", "#NOM#", "#PRENOM#");
+                    $codes = array("#NOMSITE#", "#URLSITE#", "#LOGIN#", "#PASSW#", "#NOM#", "#PRENOM#");
                     $decodes = array(SITENAME, $urlsite, $lelogin, $pw, getparam('nom'), getparam('prenom'));
                     $bon_message = str_replace($codes, $decodes, $message);
                     $sujet = "Votre compte " . SITENAME;
@@ -186,7 +186,7 @@ if (getparam('action') == 'submitted') {
 
 if ($id > 0 and $act == "del") {
     $reqmaj = "DELETE FROM " . EA_UDB . "_user3 WHERE ID=" . $id . ";";
-    if  ($result = EA_sql_query($reqmaj, $u_db)) {
+    if ($result = EA_sql_query($reqmaj, $u_db)) {
         writelog('Suppression utilisateur #' . $id, $lelogin, 1);
         echo '<p><b>FICHE SUPPRIMEE.</b></p>';
         $id = 0;
@@ -233,8 +233,8 @@ if ($id == -1) {  // Initialisation
 if ($id > 0) {  //
     $action = 'Modification';
     $request = "SELECT NOM, PRENOM, EMAIL, LEVEL, LOGIN, REGIME, SOLDE, MAJ_SOLDE, STATUT, DTCREATION, DTEXPIRATION, PT_CONSO, REM, LIBRE"
-                . " FROM " . EA_UDB . "_user3 "
-                . " WHERE ID =" . $id;
+        . " FROM " . EA_UDB . "_user3 "
+        . " WHERE ID =" . $id;
     //echo '<P>'.$request;
     if ($result = EA_sql_query($request, $u_db)) {
         $row = EA_sql_fetch_array($result);
@@ -259,190 +259,162 @@ if ($id > 0) {  //
 
 
 //Si pas tout les arguments nécessaire, on affiche le formulaire
-if($id <> 0 and $missingargs) {
-    echo '<h2>' . $action . " d'une fiche d'utilisateur</h2> \n";
-    //  echo '<form method="post" id="fiche" name="eaform" action="gestuser.php" onsubmit="return  pwProtect();">'."\n";
-    echo '<form method="post" id="fiche" name="eaform" action="gestuser.php">' . "\n";
-    echo '<table cellspacing="0" cellpadding="1" border="0" summary="Formulaire">' . "\n";
-
-    echo " <tr>\n";
-    echo "  <td align='right'>Nom : </td>\n";
-    echo '  <td><input type="text" size="30" name="nom" value="' . $nom . '" />' . "</td>\n";
-    echo " </tr>\n";
-
-    echo " <tr>\n";
-    echo "  <td align='right'>Prénom : </td>\n";
-    echo '  <td><input type="text" name="prenom" size="30" value="' . $prenom . '" />' . "</td>\n";
-    echo " </tr>\n";
-
-    echo " <tr>\n";
-    echo "  <td align='right'>E-mail : </td>\n";
-    echo '  <td><input type="text" name="email" size="50" value="' . $email . '" />' . "</td>\n";
-    echo " </tr>\n";
-
-    $zonelibre = USER_ZONE_LIBRE;
-    if (empty($zonelibre)) {
-        $zonelibre = "Zone libre (à définir)";
-    }
-    echo " <tr>\n";
-    echo "  <td align='right'>" . $zonelibre . " : </td>\n";
-    echo '  <td><input type="text" name="libre" size="50" value="' . $libre . '" />' . "</td>\n";
-    echo " </tr>\n";
-
-    echo " <tr><td colspan=2>&nbsp;</td></tr>\n";
-
-    echo " <tr>\n";
-    echo "  <td align='right'>Login : </td>\n";
-    echo '  <td><input type="text" name="lelogin" size="15" maxlength="15" value="' . $lelogin . '" />' . "</td>\n";
-    echo " </tr>\n";
-
-    if ($id == -1) {
-        $lecture = "text";
-    } else {
-        $lecture = "password";
-    }
-    echo " <tr>\n";
-    echo "  <td align='right'>Mot de passe : </td>\n";
-    echo '  <td><input type="' . $lecture . '" name="lepassw" size="15" maxlength="15" />';
-    if ($id == -1) {
-        echo ' &nbsp; <input type="checkbox" name="autopw" value="1" /> Mot de passe automatique&nbsp; ';
-    }
-    echo "</td>\n";
-    echo " </tr>\n";
-    echo " <tr>\n";
-    echo "  <td align='right'>Mot de passe (vérif.) : </td>\n";
-    echo '  <td><input type="' . $lecture . '" name="passwverif" size="15" maxlength="15" />' . "</td>\n";
-    echo " </tr>\n";
-
-    echo " <tr><td colspan=2>&nbsp;</td></tr>\n";
-
-    echo " <tr>\n";
-    echo "  <td align='right'>Statut : </td>\n";
-    echo '  <td>';
-    lb_statut_user($statut);
-    if (USER_AUTO_DEF == 1 and ($statut == "A" or $statut == "W")) {
-        $urlapp = "approuver_compte.php?id=" . $id . "&action=";
-        echo ' --> <a href="' . $urlapp . 'OK">Approuver</a> ou ';
-        echo ' <a href="' . $urlapp . 'KO">Refuser</a> ';
-    }
-    echo '  </td>';
-    echo " </tr>\n";
-
-    echo " <tr>\n";
-    echo "  <td align='right'>Date entrée : </td>\n";
-    echo '  <td>';
-    if ($dtcreation != null) {
-        echo showdate($dtcreation, 'S');
-    } else {
-        echo '- Inconnue -';
-    }
-    echo "</td>\n";
-    echo " </tr>\n";
-
-    echo " <tr>\n";
-    echo "  <td align='right'>Date expiration : </td>\n";
-    if ($dtexpir < today()) {
-        $expiralert = '&nbsp; <b><span style="color:red">EXPIREE</span></b>';
-    } else {
-        $expiralert = "";
-    }
-    $dtexpir = showdate($dtexpir, 'S');
-    echo '  <td><input type="text" name="dtexpir" size="10" value="' . $dtexpir . '" />' . $expiralert . "</td>\n";
-    echo " </tr>\n";
-
-    echo " <tr>\n";
-    echo "  <td align='right'>Droits d'accès : </td>\n";
-    echo '  <td>';
-    lb_droits_user($level);
-    echo '  </td>';
-    echo " </tr>\n";
-
-    if (GEST_POINTS > 0) {
-        echo " <tr><td colspan=2>&nbsp;</td></tr>\n";
-        echo " <tr>\n";
-        echo "  <td align='right'>Régime (points) : </td>\n";
-        echo '  <td>';
-        lb_regime_user($regime);
-        echo '  </td>';
-        echo " </tr>\n";
-
-        echo " <tr>\n";
-        echo "  <td align='right'>Solde de points : </td>\n";
-        echo '  <td><input type="text" name="solde" size="5" value="' . $solde . '" />';
-        echo '<input type="hidden" name="soldepre" value="' . $solde . '" />';  // pour test si maj
-        echo "</td>\n";
-        echo " </tr>\n";
-
-        echo " <tr>\n";
-        echo "  <td align='right'>Dernière recharge : </td>\n";
-        echo '  <td>' . date("d-m-Y", strtotime($maj_solde)) . "</td>\n";
-        echo " </tr>\n";
-        echo " <tr><td colspan=2>&nbsp;</td></tr>\n";
-
-        echo " <tr>\n";
-        echo "  <td align='right'>Points consommés : </td>\n";
-        echo '  <td>' . $pt_conso . "</td>\n";
-        echo " </tr>\n";
-        echo " <tr><td colspan=2>&nbsp;</td></tr>\n";
-    } else {
-        echo ' <tr><td colspan="2">';
-        echo '<input type="hidden" name="regime" value="' . $regime . '" />';
-        echo '<input type="hidden" name="solde" value="' . $solde . '" />';
-        echo '<input type="hidden" name="soldepre" value="' . $solde . '" />';
-        echo "</td></tr>\n";
-    }
-
-    echo " <tr>\n";
-    echo "  <td align='right'>Commentaire : </td>\n";
-    echo '  <td><input type="text" name="rem" size="50" value="' . $rem . '" />';
-    echo '<input type="hidden" name="maj_solde" value="' . $maj_solde . '" />';
-    echo "</td>\n";
-    echo " </tr>\n";
-
-    if ($id == -1) {
-        echo " <tr>\n";
-        echo '  <td align="right">Envoi des codes d\'accès : </td>' . "\n";
-        echo '  <td>';
-        echo '    <input type="checkbox" name="SendMail" value="1"' . checked($sendmail) . ' />Envoi automatique du mail ci-dessous&nbsp; ';
-        echo '  </td>';
-        echo " </tr>\n";
-
-        echo ' <tr>' . "\n";
-        echo "  <td align='right'>Texte du mail : </td>\n";
-        echo '  <td>';
-        echo '<textarea name="Message" cols=50 rows=6>' . $message . '</textarea>';
-        echo '  </td>';
-        echo " </tr>\n";
-    }
-
-    echo " <tr>\n";
-    echo '  <td colspan="2">&nbsp;</td>' . "\n";
-    echo " </tr>\n";
-
-    echo " <tr><td align=\"right\">\n";
-    echo '  <input type="hidden" name="id" value="' . $id . '" />';
-    echo '  <input type="hidden" name="action" value="submitted" />';
-    echo '  <a href="aide/gestuser.html" target="_blank">Aide</a>&nbsp;';
-    echo '  <input type="reset" value=" Effacer " />' . "\n";
-    echo " </td><td align=\"left\">\n";
-    echo ' &nbsp; <input type="submit" value=" *** ENREGISTRER *** " />' . "\n";
-    if ($id > 0 and $level < 9) {
-        echo ' &nbsp; &nbsp; &nbsp; <a href="gestuser.php?id=' . $id . '&amp;act=del">Supprimer cet utilisateur</a>' . "\n";
-    }
-    echo " </td></tr>\n";
-    echo "</table>\n";
-    echo "</form>\n";
-} else {
-    echo '<p align="center"><a href="listusers.php">Retour à la liste des utilisateurs</a>';
-    if ($leid > 0 and $act != "del") {
-        echo '&nbsp;|&nbsp; <a href="gestuser.php?id=' . $leid . '">Retour à la fiche de ' . getparam('prenom') . " " . getparam('nom') . '</a>';
-    }
-    if ($leid == -1 and $act != "del") {
-        echo '&nbsp;|&nbsp; <a href="gestuser.php?id=-1">Ajout d\'une autre fiche' . '</a>';
-    }
-    echo '</p>';
-}
-echo '</div>';
-include(__DIR__ . '/../templates/front/_footer.php');
+if ($id <> 0 && $missingargs) { ?>
+    <h2><?= $action; ?> d'une fiche d'utilisateur</h2>
+    <form method="post" id="fiche" name="eaform">
+        <table cellspacing="0" cellpadding="1" summary="Formulaire">
+            <tr>
+                <td>Nom : </td>
+                <td><input type="text" size="30" name="nom" value="<?= $nom; ?>"></td>
+            </tr>
+            <tr>
+                <td>Prénom : </td>
+                <td><input type="text" name="prenom" size="30" value="<?= $prenom; ?>"></td>
+            </tr>
+            <tr>
+                <td>E-mail : </td>
+                <td><input type="text" name="email" size="50" value="<?= $email; ?>"></td>
+            </tr>
+            <?php $zonelibre = USER_ZONE_LIBRE;
+            if (empty($zonelibre)) {
+                $zonelibre = "Zone libre (à définir)";
+            } ?>
+            <tr>
+                <td><?= $zonelibre; ?> : </td>
+                <td><input type="text" name="libre" size="50" value="<?= $libre; ?>"></td>
+            </tr>
+            <tr><td colspan="2">&emsp;</td></tr>
+            <tr>
+                <td>Login : </td>
+                <td><input type="text" name="lelogin" size="15" maxlength="15" value="<?= $lelogin; ?>"></td>
+            </tr>
+            <tr>
+                <td>Mot de passe : </td>
+                <td><input type="password" name="lepassw" size="15" maxlength="15">
+                    <?php if ($id == -1) { ?>
+                        <input type="checkbox" name="autopw" value="1"> Mot de passe automatique
+                    <?php } ?>
+                </td>
+            </tr>
+            <tr>
+                <td>Mot de passe (vérif.) : </td>
+                <td><input type="password" name="passwverif" size="15" maxlength="15"></td>
+            </tr>
+            <tr><td colspan="2">&emsp;</td></tr>
+            <tr>
+                <td>Statut : </td>
+                <td>
+                    <?php lb_statut_user($statut); ?>
+                    <?php if (USER_AUTO_DEF == 1 && ($statut == "A" || $statut == "W")) { ?>
+                        <a href="<?= $root; ?>/approuver_compte.php?id=<?= $id; ?>&action=OK">Approuver</a>
+                        ou <a href="<?= $root; ?>/approuver_compte.php?id=<?= $id; ?>&action=KO">Refuser</a>
+                    <?php } ?>
+                </td>
+            </tr>
+            <tr>
+                <td>Date entrée : </td>
+                <td>
+                    <?php if ($dtcreation != null) {
+                        echo showdate($dtcreation, 'S');
+                    } else {
+                        echo '- Inconnue -';
+                    } ?>
+                </td>
+            </tr>
+            <tr>
+                <td>Date expiration : </td>
+                <?php
+                $expiralert = "";
+                if ($dtexpir < today()) {
+                    $expiralert = '<b><span style="color:red">EXPIREE</span></b>';
+                }
+                $dtexpir = showdate($dtexpir, 'S');
+                ?>
+                <td><input type="text" name="dtexpir" size="10" value="<?= $dtexpir; ?>"><?= $expiralert; ?></td>
+            </tr>
+            <tr>
+                <td>Droits d'accès : </td>
+                <td>
+                    <?php lb_droits_user($level); ?>
+                </td>
+            </tr>
+            <?php if (GEST_POINTS > 0) { ?>
+                <tr><td colspan="2">&emsp;</td></tr>
+                <tr>
+                    <td>Régime (points) : </td>
+                    <td><?php lb_regime_user($regime); ?></td>
+                </tr>
+                <tr>
+                    <td>Solde de points : </td>
+                    <td>
+                        <input type="text" name="solde" size="5" value="<?= $solde; ?>">
+                        <input type="hidden" name="soldepre" value="<?= $solde; ?>">
+                    </td>
+                </tr>
+                <tr>
+                    <td>Dernière recharge : </td>
+                    <td><?= date("d-m-Y", strtotime($maj_solde)); ?></td>
+                </tr>
+                <tr><td colspan="2">&emsp;</td></tr>
+                <tr>
+                    <td>Points consommés : </td>
+                    <td><?= $pt_conso; ?></td>
+                </tr>
+                <tr><td colspan="2">&emsp;</td></tr>
+            <?php } else { ?>
+                <tr>
+                    <td colspan="2">
+                        <input type="hidden" name="regime" value="<?= $regime; ?>">
+                        <input type="hidden" name="solde" value="<?= $solde; ?>">
+                        <input type="hidden" name="soldepre" value="<?= $solde; ?>">
+                    </td>
+                </tr>
+            <?php } ?>
+            <tr><td colspan="2">&emsp;</td></tr>
+            <tr>
+                <td>Commentaire : </td>
+                <td>
+                    <input type="text" name="rem" size="50" value="<?= $rem; ?>">
+                    <input type="hidden" name="maj_solde" value="<?= $maj_solde; ?>">
+                </td>
+            </tr>
+            <?php if ($id == -1) { ?>
+                <tr>
+                    <td>Envoi des codes d'accès : </td>
+                    <td><input type="checkbox" name="SendMail" value="1" <?= checked($sendmail); ?>>Envoi automatique du mail ci-dessous</td>
+                </tr>
+                <tr>
+                    <td>Texte du mail : </td>
+                    <td><textarea name="Message" cols=50 rows=6><?= $message; ?></textarea></td>
+                </tr>
+            <?php } ?>
+            <tr><td colspan="2">&emsp;</td></tr>
+            <tr>
+                <td></td>
+                <td>
+                    <a href="<?= $root; ?>/admin/aide/gestuser.html" target="_blank">Aide</a>
+                    <button type="reset">Effacer</button>
+                    <button type="submit">Enregistrer</button>
+                    <?php if ($id > 0 && $level < 9) { ?>
+                        <a href="<?= $root; ?>/admin/gestuser.php?id=<?= $id; ?>&amp;act=del">Supprimer cet utilisateur</a>
+                    <?php } ?>
+                </td>
+            </tr>
+        </table>
+        <input type="hidden" name="id" value="<?= $id; ?>">
+        <input type="hidden" name="action" value="submitted">
+    </form>
+<?php } else { ?>
+    <p><a href="<?= $root; ?>/admin/listusers.php">Retour à la liste des utilisateurs</a>
+        <?php if ($leid > 0 && $act != "del") { ?>
+            | <a href="<?= $root; ?>/admin/gestuser.php?id=<?= $leid; ?>">Retour à la fiche de <?= getparam('prenom'); ?> <?= getparam('nom'); ?></a>
+        <?php }
+        if ($leid == -1 && $act != "del") { ?>
+            | <a href="<?= $root; ?>/admin/gestuser.php?id=-1">Ajout d'une autre fiche</a>
+        <?php } ?>
+    </p>
+<?php } ?>
+</div>
+<?php include(__DIR__ . '/../templates/front/_footer.php');
 $response->setContent(ob_get_clean());
 $response->send();

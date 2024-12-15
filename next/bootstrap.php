@@ -2,6 +2,14 @@
 
 error_reporting(E_ALL);
 
+function dd(mixed $data)
+{
+    echo '<pre>';
+    var_dump($data);
+    echo '</pre>';
+    exit();
+}
+
 require __DIR__ . '/../vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;

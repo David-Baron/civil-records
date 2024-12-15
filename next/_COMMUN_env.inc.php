@@ -6,8 +6,8 @@ if (strtoupper(substr($Ref_Serveur, 0, 4)) == 'WWW-') {
 }
 
 if (!file_exists(__DIR__ . '/../_config/connect.inc.php')) {
-    echo '<p class="erreur">Lancer le script d\'installation pour avoir acc&egrave;s &agrave; l\'application<br />';
-    echo 'Pour des raisons de s&eacute;curit&eacute; il n\'a pas &eacute;t&eacute; fait de lien direct.<br /></p>';
+    echo '<p class="erreur">Lancer le script d\'installation pour avoir acc&egrave;s &agrave; l\'application<br>';
+    echo 'Pour des raisons de s&eacute;curit&eacute; il n\'a pas &eacute;t&eacute; fait de lien direct.<br></p>';
     exit;
 }
 

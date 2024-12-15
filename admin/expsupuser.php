@@ -12,12 +12,12 @@ while ($userlevel < 9) {
 
 function init_page()
 {
-    global $root,$userlevel,$htmlpage;
+    global $root, $userlevel, $htmlpage;
 
     open_page("Export d'une série d'utilisateur", $root);
     navadmin($root, "Export d'utilisateurs");
 
-    zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+    zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
 
     echo '<div id="col_main_adm">';
     $htmlpage = true;
@@ -27,13 +27,8 @@ my_ob_start_affichage_continu();
 
 include(__DIR__ . '/../tools/traitements.inc.php');
 
-$enclosed = '"';  // ou '"'
-$separator = ';';
-$htmlpage = false;
 $userid = current_user("ID");
-$missingargs = false;
-$oktype = false;
-$regime   = getparam('regime');
+$regime   = getparam('regime', -1);
 $lelevel  = getparam('lelevel');
 $rem      = getparam('rem');
 $suppr    = getparam('suppr');
@@ -43,18 +38,19 @@ $xaction  = getparam('action');
 $dtexpir   = getparam('dtexpir');
 $conditexp = getparam('conditexp');
 $conditpts = getparam('conditpts');
-$ptscons 	= getparam('ptscons');
-$Destin = 'T'; // Toujours vers fichier (sauf pour debug)
-//$Destin = 'P'; // pour debug
-if ($regime == "") {
-    $regime = -1;
-}
+$ptscons     = getparam('ptscons');
+$Destin = 'T'; // T = vers fichier, P = pour debug
+
+$enclosed = '"';  // ou '"'
+$htmlpage = false;
+$missingargs = false;
+$oktype = false;
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
 if ($xaction == 'submitted') {
     // Données postées
-    if($lelevel >= 9 and $suppr == 'Y') {
+    if ($lelevel >= 9 && $suppr == 'Y') {
         init_page();
         menu_users('E');
         msg('Interdit de supprimer les administrateurs !');
@@ -66,11 +62,9 @@ if ($xaction == 'submitted') {
     menu_users('E');
 }
 if (! $missingargs) {
-    $condlevel = "";
+    $condlevel = "level>=0";
     if ($lelevel < 10) {
         $condlevel = "level=" . $lelevel;
-    } else {
-        $condlevel = "level>=0";
     }
     $condrem = "";
     if ($condit <> "0") {
@@ -100,10 +94,11 @@ if (! $missingargs) {
         $condpts = " AND " . comparerSQL('pt_conso', $ptscons, $conditpts);
     }
 
+    /**
+     * @deprecated Only the user himself can delete their account! Except and TODO: send an email to the user for the deleted account within 30 days if he does not log back in.
+     */
     if ($suppr == 'Y') {
-        $request = "SELECT count(*) FROM " . EA_UDB . "_user3"
-                             . " WHERE " . $condlevel . $condreg . $condrem . $condsta . $condexp . $condpts . " ;";
-        //echo $request;
+        $request = "SELECT count(*) FROM " . EA_UDB . "_user3 WHERE " . $condlevel . $condreg . $condrem . $condsta . $condexp . $condpts . " ;";
         $result = EA_sql_query($request, $u_db);
         $ligne = EA_sql_fetch_row($result);
         $nbrec = $ligne[0];
@@ -112,37 +107,37 @@ if (! $missingargs) {
         } else {
             init_page();
             menu_users('E');
-            echo '<form method="post" action="">' . "\n";
-            echo '<h2 align="center">Confirmation de la suppression</h2>';
-            echo '<p class="message">Vous allez supprimer ' . $nbrec . ' utilisateurs !</p>';
-            echo '<p class="message">';
-            echo '<input type="hidden" name="action" value="submitted" />';
-            echo '<input type="hidden" name="regime" value="' . $regime . '" />';
-            echo '<input type="hidden" name="lelevel"  value="' . $lelevel . '" />';
-            echo '<input type="hidden" name="rem"    value="' . $rem . '" />';
-            echo '<input type="hidden" name="condit" value="' . $condit . '" />';
-            echo '<input type="hidden" name="statut" value="' . $statut . '" />';
-            echo '<input type="hidden" name="conditexp" value="' . $conditexp . '" />';
-            echo '<input type="hidden" name="dtexpir" value="' . $dtexpir . '" />';
-            echo '<input type="hidden" name="conditpts" value="' . $conditpts . '" />';
-            echo '<input type="hidden" name="ptscons" value="' . $ptscons . '" />';
-            echo '<input type="hidden" name="suppr"  value="Oui" />';
-            echo '<input type="submit" value=" >> CONFIRMER EXPORT + SUPPRESSION >> " />' . "\n";
-            echo '&nbsp; &nbsp; &nbsp; <a href="index.php">Annuler</a></p>';
-            echo "</form>\n";
-        }
+?>
+            <form method="post">
+                <h2>Confirmation de la suppression</h2>
+                <p class="message">Vous allez supprimer <?= $nbrec; ?> utilisateurs !</p>
+                <p class="message">
+                    <input type="hidden" name="action" value="submitted">
+                    <input type="hidden" name="regime" value="<?= $regime; ?>">
+                    <input type="hidden" name="lelevel" value="<?= $lelevel; ?>'">
+                    <input type="hidden" name="rem" value="<?= $rem; ?>">
+                    <input type="hidden" name="condit" value="<?= $condit; ?>">
+                    <input type="hidden" name="statut" value="<?= $statut; ?>">
+                    <input type="hidden" name="conditexp" value="<?= $conditexp; ?>">
+                    <input type="hidden" name="dtexpir" value="<?= $dtexpir; ?>">
+                    <input type="hidden" name="conditpts" value="<?= $conditpts; ?>">
+                    <input type="hidden" name="ptscons" value="<?= $ptscons; ?>">
+                    <input type="hidden" name="suppr" value="Oui">
+                    <a href="<?= $root; ?>/admin/index.php">Annuler</a>
+                    <button type="submit">Confirmer export et suppression</button>
+                </p>
+            </form>
+    <?php }
     }
-    if ($xaction == 'submitted' and $suppr <> "Y") {
-        $request = "SELECT * FROM " . EA_UDB . "_user3"
-                             . " WHERE " . $condlevel . $condreg . $condrem . $condsta . $condexp . $condpts . " ;";
-        //echo $request;
+    if ($xaction == 'submitted' && $suppr <> "Y") {
+        $request = "SELECT * FROM " . EA_UDB . "_user3 WHERE " . $condlevel . $condreg . $condrem . $condsta . $condexp . $condpts . " ;";
         $result = EA_sql_query($request, $u_db);
         $nbdocs = EA_sql_num_rows($result);
         $fields_cnt = EA_sql_num_fields($result);
         if ($nbdocs == 0) {
             init_page();
             msg("Il n'y a aucun utilisateur avec ce critère !");
-            echo '<p><a href="expsupuser.php">Retour</a></p>';
+            echo '<p><a href="'.$root.'/admin/expsupuser.php">Retour</a></p>';
         } else {
             if ($lelevel < 10) {
                 $texlevel = $lelevel;
@@ -183,13 +178,13 @@ if (! $missingargs) {
             } // end download
 
             $nb = 0;
-            $zones = array('nom','prenom','email','login','hashpass','level','regime','solde','REM','dtexpiration','libre','ID','statut','dtcreation','pt_conso','maj_solde');
+            $zones = array('nom', 'prenom', 'email', 'login', 'hashpass', 'level', 'regime', 'solde', 'REM', 'dtexpiration', 'libre', 'ID', 'statut', 'dtcreation', 'pt_conso', 'maj_solde');
             while ($row = EA_sql_fetch_array($result)) {
                 $data = "";
                 $j = 0;
-                foreach ($zones as $zone) { // ($j = 1; $j < $fields_cnt-$supp_fields; $j++)
+                foreach ($zones as $zone) {
                     if ($j > 0) {
-                        $data .= $separator;
+                        $data .= ';';
                     }
                     $j++;
                     if (!isset($row[$zone])) {
@@ -223,10 +218,8 @@ if (! $missingargs) {
             }
             writelog($actie . ' de fiches utilisateur', "USERS", $nb);
             if ($suppr == "Oui") {
-                $request = "DELETE FROM " . EA_UDB . "_user3"
-                                    . " WHERE level=" . $lelevel . $condreg . $condrem . $condsta . $condexp . $condpts . " ;";
+                $request = "DELETE FROM " . EA_UDB . "_user3 WHERE level=" . $lelevel . $condreg . $condrem . $condsta . $condexp . $condpts . " ;";
                 $result = EA_sql_query($request, $u_db);
-                //echo $request;
                 $nb = EA_sql_affected_rows($u_db);
                 if ($nb > 0) {
                     writelog('Suppression d\'utilisateurs', "USERS", $nb);
@@ -234,87 +227,100 @@ if (! $missingargs) {
             } // supprimer pour de bon
         } // nbdocs
     } // submitted ??
-} else { // missingargs
-    //Si pas tout les arguments nécessaire, on affiche le formulaire
-    echo '<form method="post" enctype="multipart/form-data" action="">' . "\n";
-    echo '<h2 align="center">' . "Export/Suppression d'utilisateurs" . '</h2>';
-    echo '<table cellspacing="0" cellpadding="0" border="0" align="center" summary="Formulaire">' . "\n";
-    echo '<tr><td align="right">Dernier backup : &nbsp;</td><td>';
-    echo show_last_backup("U");
-    echo "</td></tr>";
-    echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";
-    echo " <tr>\n";
-    echo "  <td align=right>Droits d'accès : &nbsp;</td>\n";
-    echo '  <td>';
-    lb_droits_user($lelevel, 1); // avec All
-    echo '  </td>';
-    echo " </tr>\n";
-    if (GEST_POINTS > 0) {
-        echo " <tr><td align=right>ET</td><td>&nbsp;</td></tr>\n";
-        echo " <tr>\n";
-        echo "  <td align=right>Régime (points) : &nbsp;</td>\n";
-        echo '  <td>';
-        lb_regime_user($regime, 1);
-        echo '  </td>';
-        echo " </tr>\n";
-    } else {
-        echo ' <tr><td colspan="2">';
-        echo '<input type="hidden" name="regime" value="-1" />';
-        echo "</td></tr>\n";
-    }
-
-    echo " <tr><td align=right>ET</td><td>&nbsp;</td></tr>\n";
-    echo " <tr>\n";
-    echo "  <td align=right>Commentaire : &nbsp;</td>\n";
-    echo '  <td>';
-    listbox_trait('condit', "TST", $condit);
-
-    echo ' <input type="text" name="rem" size="50" value="' . $rem . '" />';
-    echo "</td>\n";
-    echo " </tr>\n";
-
-    echo " <tr><td align=right>ET</td><td>&nbsp;</td></tr>\n";
-    echo " <tr>\n";
-    echo '  <td align="right">Statut : &nbsp;</td>' . "\n";
-    echo '  <td>';
-    lb_statut_user($statut, 3);
-    echo '  </td>';
-    echo " </tr>\n";
-
-    echo " <tr><td align=right>ET</td><td>&nbsp;</td></tr>\n";
-    echo " <tr>\n";
-    echo "  <td align='right'>Date expiration : &nbsp;</td>\n";
-    echo '  <td>';
-    listbox_trait('conditexp', "NTS", $conditexp);
-    echo '<input type="text" name="dtexpir" size="10" value="' . $dtexpir . '" />' . "</td>\n";
-    echo " </tr>\n";
-
-    echo " <tr><td align=right>ET</td><td>&nbsp;</td></tr>\n";
-    echo " <tr>\n";
-    echo "  <td align='right'>Points consommés : &nbsp;</td>\n";
-    echo '  <td>';
-    listbox_trait('conditpts', "NTS", $conditpts);
-    echo '<input type="text" name="ptscons" size="5" value="' . $ptscons . '" />' . "</td>\n";
-    echo " </tr>\n";
-
-    echo " <tr>\n";
-    echo '  <td align="right">Suppression : &nbsp;</td>' . "\n";
-    echo '  <td>';
-    echo '        <br />';
-    echo '        <input type="radio" name="suppr" value="N" checked="checked" />Non<br />';
-    echo '        <input type="radio" name="suppr" value="Y" />Supprimer les utilisateurs exportés<br />';
-    echo '        <br />';
-    echo '  </td>';
-    echo " </tr>\n";
-    // echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";
-    echo " <tr><td colspan=\"2\" align=\"center\">\n<br />";
-    echo '  <input type="hidden" name="action" value="submitted" />';
-    echo '  <input type="reset" value="Annuler" />' . "\n";
-    echo '  <input type="submit" value=" >> SUITE >> " />' . "\n";
-    echo " </td></tr>\n";
-    echo "</table>\n";
-    echo "</form>\n";
-}
+} else { ?>
+    <form method="post" enctype="multipart/form-data">
+        <h2>Export/Suppression d'utilisateurs</h2>
+        <table cellspacing="0" cellpadding="0" summary="Formulaire">
+            <tr>
+                <td>Dernier backup : </td>
+                <td><?= show_last_backup("U"); ?></td>
+            </tr>
+            <tr>
+                <td colspan="2">&nbsp;</td>
+            </tr>
+            <tr>
+                <td>Droits d'accès : </td>
+                <td><?= lb_droits_user($lelevel, 1); ?></td>
+            </tr>
+            <?php if (GEST_POINTS > 0) { ?>
+                <tr>
+                    <td>ET</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Régime (points) : </td>
+                    <td><?= lb_regime_user($regime, 1); ?></td>
+                </tr>
+            <?php } else { ?>
+                <tr>
+                    <td colspan="2"> <input type="hidden" name="regime" value="-1"></td>
+                </tr>
+            <?php } ?>
+            <tr>
+                <td>ET</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Commentaire : </td>
+                <td>
+                    <?= listbox_trait('condit', "TST", $condit); ?>
+                    <input type="text" name="rem" size="50" value="<?= $rem; ?>">
+                </td>
+            </tr>
+            <tr>
+                <td>ET</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Statut : </td>
+                <td><?= lb_statut_user($statut, 3); ?></td>
+            </tr>
+            <tr>
+                <td>ET</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Date expiration : </td>
+                <td>
+                    <?= listbox_trait('conditexp', "NTS", $conditexp); ?>
+                    <input type="text" name="dtexpir" size="10" value="<?= $dtexpir; ?>">
+                </td>
+            </tr>
+            <tr>
+                <td>ET</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Points consommés : </td>
+                <td>
+                    <?php listbox_trait('conditpts', "NTS", $conditpts); ?>
+                    <input type="text" name="ptscons" size="5" value="<?= $ptscons; ?>">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">&nbsp;</td>
+            </tr>
+            <tr>
+                <td>Suppression :</td>
+                <td>
+                    <input type="radio" name="suppr" value="N" checked="checked">Non
+                    <input type="radio" name="suppr" value="Y">Supprimer les utilisateurs exportés
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">&nbsp;</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <button type="reset">Annuler</button>
+                    <button type="submit">Suite</button>
+                </td>
+            </tr>
+        </table>
+        <input type="hidden" name="action" value="submitted">
+    </form>
+<?php }
 if ($htmlpage) {
     echo '</div>';
     include(__DIR__ . '/../templates/front/_footer.php');

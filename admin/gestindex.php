@@ -21,7 +21,7 @@ $tablename = getparam('tbl');
 ob_start();
 open_page("Gestion des index", $root);
 navadmin($root, "Gestion des index");
-zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
 echo '<div id="col_main_adm">';
 menu_software('I');
 
@@ -82,65 +82,64 @@ if ($action == "ADD") {
             echo ' - <a href="?act=SHO"><b>Annuler</b></a></p>';
             }
         else
-    */
-    {
+    */ {
         $reqmaj = "ANALYZE TABLE " . EA_DB . '_' . $tablename . ';';
         echo '<p>Analyse de la table ' . EA_DB . '_' . $tablename . '... </p>';
         $res = EA_sql_query($reqmaj);
-        //echo '<p>'.$reqmaj;
         $tabres = EA_sql_fetch_array($res);
         echo $tabres[2] . " : " . $tabres[3];
         writelog("Analyse de " . EA_DB . '_' . $tablename . ":" . $tabres[2]);
         echo '<p><a href="?act=SHO"><b>Retour à la liste des index</b></a></p>';
     }
-} else {
-    echo '<h2>Index de la base MySQL</h2>';
+} else { ?>
+    <h2>Index de la base MySQL</h2>
+    <table summary="Liste des index actifs ou à créer">
+        <tr class="rowheader">
+            <th>Zone clé</th>
+            <th>Cardinalité</th>
+            <th>Action possible</th>
+        </tr>
 
-    echo '<table summary="Liste des index actifs ou à créer">';
-    echo '<tr class="rowheader">';
-    echo '<th>Zone clé</th>';
-    echo '<th>Cardinalité</th>';
-    echo '<th>Action possible</th>';
-    echo '</tr>';
-
-    $i = -1;
-    $table = "XX";
-    foreach($idx as $index) {
-        $i++;
-        if ($table <> $index[0]) {
-            $table = $index[0];
-            echo '<tr class="rowheader">';
-            $res = EA_sql_query("SELECT count(*) AS NBRE FROM " . EA_DB . '_' . $table . "; ");
-            $row = EA_sql_fetch_array($res);
-            $totfiches = $row[0];
-            echo '<td colspan="3"><b>Table des ' . typact_txt($table) . ' (' . EA_DB . '_' . $table . " : " . entier($totfiches) . " lignes)</b>";
-            echo ' <a href="?act=ANA&amp;tbl=' . $table . '"><b>Analyser</b></a>';
-            echo '</td></tr>';
-            $res = EA_sql_query("SHOW INDEX FROM " . EA_DB . '_' . $table . "; ");
-            $nbr = EA_sql_num_rows($res);
-            $realindex = array();
-            for ($j = 1;$j <= $nbr;$j++) {
+        <?php
+        $i = -1;
+        $table = "XX";
+        foreach ($idx as $index) {
+            $i++;
+            if ($table <> $index[0]) {
+                $table = $index[0];
+                $res = EA_sql_query("SELECT count(*) AS NBRE FROM " . EA_DB . '_' . $table . "; ");
                 $row = EA_sql_fetch_array($res);
-                $ligne = array($row[2] => $row[6]);
-                $realindex = $realindex + $ligne;
-            }
-            // print_r($realindex);
-        }
-        echo '<tr class="row' . (fmod($i, 2)) . '">';
-        echo "<td>" . $index[6] . "</td>";
-        if (array_key_exists($index[1], $realindex)) {
-            echo '<td align="right">' . entier($realindex[$index[1]]) . "</td>";
-            echo '<td align="center">' . '<a href="?act=DEL&amp;ti=' . $i . '">Supprimer</a>' . "</td>";
-        } else {
-            echo '<td align="right"> Absent </td>';
-            echo '<td align="center">' . '<a href="?act=ADD&amp;ti=' . $i . '"><b>Ajouter</b></a>' . "</td>";
-        }
-        echo '</tr>';
-    }
-    echo '</table>';
-}
-
-echo '</div>';
-include(__DIR__ . '/../templates/front/_footer.php');
+                $totfiches = $row[0];
+                ?>
+                <tr class="rowheader">
+                <td colspan="3"><b>Table des <?= typact_txt($table); ?> (<?= EA_DB . '_' . $table; ?> : <?= entier($totfiches); ?> lignes)</b>
+                 <a href="<?= $root; ?>/admin/gestindex.php?act=ANA&amp;tbl=<?= $table; ?>"><b>Analyser</b></a>
+                </td>
+            </tr>
+                <?php
+                $res = EA_sql_query("SHOW INDEX FROM " . EA_DB . '_' . $table . "; ");
+                $nbr = EA_sql_num_rows($res);
+                $realindex = array();
+                for ($j = 1; $j <= $nbr; $j++) {
+                    $row = EA_sql_fetch_array($res);
+                    $ligne = array($row[2] => $row[6]);
+                    $realindex = $realindex + $ligne;
+                }
+            } ?>
+            <tr class="row<?= fmod($i, 2); ?>">
+                <td><?= $index[6]; ?></td>
+                <?php if (array_key_exists($index[1], $realindex)) { ?>
+                    <td><?= entier($realindex[$index[1]]); ?></td>
+                    <td><a href="<?= $root; ?>/admin/gestindex.php?act=DEL&amp;ti=<?= $i; ?>">Supprimer</a></td>
+                <?php } else { ?>
+                    <td>Absent</td>
+                    <td><a href="<?= $root; ?>/admin/gestindex.php?act=ADD&amp;ti=<?= $i; ?>"><b>Ajouter</b></a></td>
+                <?php } ?>
+            </tr>
+        <?php } ?>
+    </table>
+<?php } ?>
+</div>
+<?php include(__DIR__ . '/../templates/front/_footer.php');
 $response->setContent(ob_get_clean());
 $response->send();

@@ -5,7 +5,7 @@
  ***
  ***  VERSION MODIFIEE POUR EXPOACTES (Delacharlerie, 2011)
  ***  - Ajout de l'inclusion de la librairie JSON.php si indisponible (PHP < 5.2)
- ***  - Ajout des éléments permettant de récupérer les coordonnées d'un marker "draggable"
+ ***  - Ajout des ï¿½lï¿½ments permettant de rï¿½cupï¿½rer les coordonnï¿½es d'un marker "draggable"
  ***
  * 
  * This library is free software; you can redistribute it and/or
@@ -54,32 +54,6 @@ CREATE TABLE GEOCODES (
 );
 
 */
-
-/**
- * PHP Google Maps API class
- * @package GoogleMapAPI
- * @version 3.0beta
- */
-if ( !function_exists('json_decode') ){
-    function json_decode($content, $assoc=false){
-      require_once (str_replace('//','/',dirname(__FILE__).'/') ."../JSON/JSON.php"); // indispensable car chemin dépend de l'appel
-      if ( $assoc ){
-					$json = new Services_JSON(SERVICES_JSON_LOOSE_TYPE);
-        } else {
-          $json = new Services_JSON;
-          }
-      return $json->decode($content);
-    }
-}
-
-if ( !function_exists('json_encode') ){
-    function json_encode($content){
-      require_once (str_replace('//','/',dirname(__FILE__).'/') ."../JSON/JSON.php");
-      $json = new Services_JSON;
-               
-      return $json->encode($content);
-    }
-}
  
 class GoogleMapAPI {
 
