@@ -14,8 +14,11 @@ if ($init != '') {
 }
 
 $AffichageAdmin = (ADM <> 0); // EN THEORIE ADM == 10
-
-$baselink = $root . $chemin . 'index.php';
+$interface_path = '';
+if ($AffichageAdmin) {
+    $interface_path = '/admin';
+}
+$baselink = $root . $interface_path . '/index.php';
 // $request = "SELECT DISTINCT upper(left(COMMUNE,1)) AS init FROM " . EA_DB . "_sums " . $condit1 . " ORDER BY init";
 // Sélectionner et grouper sur initiale de commune et ascii(initiale), ordonner code ascii ascendant pour avoir + grand code (accentué) en dernier
 $request = "SELECT alphabet.init FROM ( SELECT upper(left(COMMUNE,1)) AS init,ascii(upper(left(COMMUNE,1))) AS oo 
@@ -84,20 +87,20 @@ foreach ($arr as $ztyp) {
                 switch ($ztyp) {
                     case "N":
                         $typel = "Naissances &amp; Baptêmes";
-                        $prog = "tab_naiss.php";
+                        $prog = "/tab_naiss.php";
                         break;
                     case "V":
                         $typel = "Divers : " . $ligne['LIBELLE'];
-                        $prog = "tab_bans.php";
+                        $prog = "/tab_bans.php";
                         $linkdiv = ';' . $ligne['LIBELLE'];
                         break;
                     case "M":
                         $typel = "Mariages";
-                        $prog = "tab_mari.php";
+                        $prog = "/tab_mari.php";
                         break;
                     case "D":
                         $typel = "Décès &amp; Sépultures";
-                        $prog = "tab_deces.php";
+                        $prog = "/tab_deces.php";
                         break;
                 }
                 echo '<tr class="rowheader">';
@@ -105,7 +108,7 @@ foreach ($arr as $ztyp) {
                 echo '</tr>';
             }
             echo '<tr class="row' . (fmod($i, 2)) . '">';
-            echo '<td><a href="' . mkurl($root . $chemin . $prog, $ligne['COMMUNE'] . ' [' . $ligne['DEPART'] . ']' . $linkdiv) . '">' . $ligne['COMMUNE'] . '</a>';
+            echo '<td><a href="' . mkurl($root . $interface_path . $prog, $ligne['COMMUNE'] . ' [' . $ligne['DEPART'] . ']' . $linkdiv) . '">' . $ligne['COMMUNE'] . '</a>';
             if ($ligne['DEPART'] <> "") {
                 echo ' [' . $ligne['DEPART'] . ']';
             }
@@ -113,7 +116,7 @@ foreach ($arr as $ztyp) {
             $imgtxt = "Distribution par années";
             if ($AffichageAdmin or SHOW_DATES == 1) {
                 if ($AffichageAdmin or SHOW_DISTRIBUTION == 1) {
-                    echo '<td><a href="' . $root . $chemin . 'stat_annees.php?comdep=' . urlencode($ligne['COMMUNE'] . ' [' . $ligne['DEPART'] . ']' . $linkdiv) . '&amp;xtyp=' . $ztyp . '"><img src="' . $root . '/img/histo.gif" border="0" alt="' . $imgtxt . '" title="' . $imgtxt . '"></a></td>';
+                    echo '<td><a href="' . $root . $interface_path . '/stat_annees.php?comdep=' . urlencode($ligne['COMMUNE'] . ' [' . $ligne['DEPART'] . ']' . $linkdiv) . '&amp;xtyp=' . $ztyp . '"><img src="' . $root . '/img/histo.gif" border="0" alt="' . $imgtxt . '" title="' . $imgtxt . '"></a></td>';
                 }
                 echo '<td> (' . $ligne['R_AN_MIN'] . '-' . $ligne['R_AN_MAX'] . ') </td>';
             }

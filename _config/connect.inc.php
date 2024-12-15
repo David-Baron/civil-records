@@ -1,5 +1,5 @@
 <?php
-$dbaddr = "localhost:3306"; // Adresse du serveur LOCAL
-$dbname = "civilrecords"; // Nom de la base
-$dbuser = "root"; // Login MySQL-EasyPHP
-$dbpass = "secret"; // Mot de passe
+$dbaddr = $_ENV['DB_HOST']; // Adresse du serveur LOCAL
+$dbname = $_ENV['DB_NAME']; // Nom de la base
+$dbuser = $_ENV['DB_USER'];; // Login MySQL-EasyPHP
+$dbpass = $_ENV['DB_PASS'];; // Mot de passe

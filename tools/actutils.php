@@ -18,17 +18,10 @@ define("DIR_BACKUP", "_backup/");
 
 function load_params()
 {
-    // De ce script DEPLACES n'aparaissant pas dans la table des paramètres (avant load_params)
+    if (!defined("EA_DB")) define("EA_DB", "cr"); // Préfixe des noms de tables
+    if (!defined("EA_UDB")) define("EA_UDB", EA_DB); //préfixe de la table utilisateurs
+    if (function_exists("date_default_timezone_set")) date_default_timezone_set('Europe/Paris');
 
-    if (!defined("EA_DB")) {
-        define("EA_DB", "act");
-    } // Préfixe des noms de tables
-    if (!defined("EA_UDB")) {
-        define("EA_UDB", EA_DB);
-    } //préfixe de la table utilisateurs
-    if (function_exists("date_default_timezone_set")) {
-        date_default_timezone_set('Europe/Paris');
-    }
     $GLOBALS['T0'] = time();
 
     $db  = con_db();
@@ -43,101 +36,35 @@ function load_params()
             if (!defined($row["param"])) {
                 define($row["param"], html_entity_decode($row["valeur"], ENTITY_REPLACE_FLAGS, ENTITY_CHARSET));
             }
-            //echo "<br>".$row["param"]." = ".constant($row["param"]);
         }
     }
 
     // De ce script DEPLACES n'aparaissant pas dans la table des paramètres (après load_params)
     $GLOBALS['TIPmsg'] = "";
-    if (!defined("EA_ERROR")) { /// en principe est lu dans les paramètres
-        define("EA_ERROR", 0);
-    }  // Pas d'affichage d'erreur en production
-    $ea_error = 0;
-    switch (EA_ERROR) {
-        case 0:
-            $ea_error = 0;
-            break;
-        case 1:
-            $ea_error = E_ERROR; // Erreurs uniquements
-            break;
-        case 2:
-            $ea_error = E_ERROR | E_WARNING;
-            break;
-        case 3:
-            $ea_error = E_ALL | E_STRICT;
-            break;
-        case 4:
-            $ea_error = E_ALL;
-            define("OPTIMIZE", "YES");
-            break;
-    }
-    error_reporting($ea_error);  // définition du niveau d'erreur
-    if (defined('EA_LANG')) {
-        $GLOBALS['lg'] = EA_LANG;
-    } else {
-        $GLOBALS['lg'] = 'fr';
-    }
-
+    $GLOBALS['lg'] = 'fr';
+    if (!defined("EA_ERROR")) define("EA_ERROR", 0);  // Pas d'affichage d'erreur en production   
+    if (defined('EA_LANG')) $GLOBALS['lg'] = EA_LANG;
     // Autres lus dans les paramètres mais contrôles dispersés dans les scripts, en particulier nécessaires lors d'une installation
-    if (!defined("EA_VERSION")) {
-        define("EA_VERSION", EA_VERSION_PRG);
-    }
-    if (!defined("EA_MAINTENANCE")) {
-        define("EA_MAINTENANCE", 0);
-    }
-    if (!defined("EXTERN_MAIL")) {
-        define("EXTERN_MAIL", 0);
-    }
+    if (!defined("EA_VERSION")) define("EA_VERSION", EA_VERSION_PRG);
+    if (!defined("EA_MAINTENANCE")) define("EA_MAINTENANCE", 0);
+    if (!defined("EXTERN_MAIL")) define("EXTERN_MAIL", 0);
     //define('LOC_MAIL',$xemail); // Mail du 1er utilisateur (uniquement lors d'une installation)
-    if (!defined('CHERCH_TS_TYP')) {
-        define('CHERCH_TS_TYP', 0);
-    }
-    if (!defined("ECLAIR_LOG")) {
-        define("ECLAIR_LOG", 0);
-    }
-    if (!defined("TIP_FILTRER")) {
-        define("TIP_FILTRER", "0");
-    }
-    if (!defined("TIP_AUTOFREE")) {
-        define("TIP_AUTOFREE", "0");
-    }
-    if (!defined("TIP_DUREE")) {
-        define("TIP_DUREE", "1");
-    }
-
-    if (!defined("UPLOAD_DIR")) {
-        define("UPLOAD_DIR", "_upload");
-    }
-    if (!defined("INCLUDE_HEADER")) {
-        define("INCLUDE_HEADER", "");
-    }
-    if (!defined("PIED_PAGE")) {
-        define("PIED_PAGE", "");
-    }
-    if (!defined("PUB_ZONE_MENU")) {
-        define('PUB_ZONE_MENU', "Zone info libre");
-    }
-    if (!defined("SITENAME")) {
-        define("SITENAME", "Expoactes");
-    }
-    // Nouveautés v3.2.3
-    if (!defined('SITE_URL')) {
-        define('SITE_URL', '');
-    }
-    if (!defined("SITE_INVENTAIRE")) {
-        define("SITE_INVENTAIRE", "https://expoactes.monrezo.be/");
-    }
+    if (!defined('CHERCH_TS_TYP')) define('CHERCH_TS_TYP', 0);
+    if (!defined("ECLAIR_LOG")) define("ECLAIR_LOG", 0);
+    if (!defined("TIP_FILTRER")) define("TIP_FILTRER", "0");
+    if (!defined("TIP_AUTOFREE")) define("TIP_AUTOFREE", "0");
+    if (!defined("TIP_DUREE")) define("TIP_DUREE", "1");
+    if (!defined("UPLOAD_DIR")) define("UPLOAD_DIR", "_upload");
+    if (!defined("INCLUDE_HEADER")) define("INCLUDE_HEADER", "");
+    if (!defined("PIED_PAGE")) define("PIED_PAGE", "");
+    if (!defined("PUB_ZONE_MENU")) define('PUB_ZONE_MENU', "Zone info libre");
+    if (!defined("SITENAME")) define("SITENAME", "Civil-Records");
+    if (!defined('SITE_URL')) define('SITE_URL', '');
+    if (!defined("SITE_INVENTAIRE")) define("SITE_INVENTAIRE", "");
     // On peut a) mettre dans "config" : define('EA_URL_CE_SERVEUR', 'http://127.0.0.1'); b) ajouter dans act_params "EA_URL_CE_SERVEUR"
-    if (!defined('EA_URL_CE_SERVEUR')) {
-        define('EA_URL_CE_SERVEUR', mkSiteUrl());
-    } // "actutils.php" soit toujours référencé après "adlcutils.php" définissant mkSiteUrl
-    if (!defined('EA_URL_SITE')) {
-        define('EA_URL_SITE', EA_URL_CE_SERVEUR);
-    } // dans l'immédiat on ne change pas les anciennes REFs
-    if (!defined('TOUJOURS')) {
-        define('TOUJOURS', '2033-12-31');
-    }  // limite des comptes illimités
-
+    if (!defined('EA_URL_CE_SERVEUR')) define('EA_URL_CE_SERVEUR', mkSiteUrl()); // "actutils.php" soit toujours référencé après "adlcutils.php" définissant mkSiteUrl
+    if (!defined('EA_URL_SITE')) define('EA_URL_SITE', EA_URL_CE_SERVEUR); // dans l'immédiat on ne change pas les anciennes REFs
+    if (!defined('TOUJOURS')) define('TOUJOURS', '2033-12-31'); // limite des comptes illimités
 }
 
 function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = null, $index = null, $rss = null)

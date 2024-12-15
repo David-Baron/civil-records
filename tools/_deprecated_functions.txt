@@ -474,3 +474,74 @@ function menu_datas($current)
     }
     echo '</p>';
 }
+
+function con_une_db($ladbaddr, $ladbuser, $ladbpass, $ladbname, $show = false, $new_link = false) // fonction de connexion à une DB
+{
+    global $dbok;
+
+    if (file_exists('tools/function.php')) {
+        $EA_Appel_dOu = '';
+        $EA_Script_Courant = basename($_SERVER['PHP_SELF']);
+    } else {
+        $EA_Appel_dOu = '../';
+        $EA_Script_Courant = basename(dirname($_SERVER['PHP_SELF'])) . '/' . basename($_SERVER['PHP_SELF']); // Ne pas utiliser DIRECTORY_SEPARATOR
+    }
+
+    if ($ladbaddr == '@@serveur_BD@@') {
+        $dblink = false;
+    } elseif (function_exists('EA_sql_connect')) {
+        $dblink = @EA_sql_connect("$ladbaddr", "$ladbuser", "$ladbpass", $new_link);
+    } else {
+        $dblink = @mysqli_connect("$ladbaddr", "$ladbuser", "$ladbpass", "$ladbname");
+    }
+    if ($dblink) {
+        if ($show) {
+            echo '<p>Connexion au serveur MySQL :<b> OK</b></p>';
+        }
+        $dbok = EA_sql_select_db("$ladbname", $dblink);
+        if ($dbok) {
+            EA_sql_query('SET NAMES utf8', $dblink);  // oblige MySQL à répondre en UTF-8  (ISO-8859-1 par défaut)
+            if ($show) {
+                echo '<p>Connexion &agrave; la base de donn&eacute;es : <b> OK</b></p>';
+            }
+        } else {
+            if (in_array($EA_Script_Courant, array('admin/index.php', 'install/install.php', 'install/update.php'))) {
+                echo '<a href="' . $EA_Appel_dOu . 'install/configuration.php">Configurer la base de donn&eacute;es</a>';
+            } else {
+                msg("012 : La base sp&eacute;cifi&eacute;e n'est pas accessible sur le serveur MySQL : " . EA_sql_error());
+            }
+            exit(0);
+        }
+        return $dblink;
+    } else {
+        if (in_array($EA_Script_Courant, array('admin/index.php', 'install/install.php', 'install/update.php', 'index.php'))) {
+            echo '<a href="' . $EA_Appel_dOu . 'install/configuration.php">Configurer la base de donn&eacute;es</a>';
+        } else {
+            msg("011: Impossible d'ouvrir la connexion au serveur MySQL avec l'utilisateur pr&eacute;sent&eacute; : " . EA_sql_error());
+        }
+        exit(0);
+    }
+}
+
+function con_db($show = false) // fonction de connexion des DB
+{
+    global $dbaddr, $dbuser, $dbpass, $dbname, $a_db, $dbok;
+    global $udbaddr, $udbuser, $udbpass, $udbname, $u_db;
+
+    if (isset($udbaddr, $udbuser, $udbpass, $udbname)) {
+        if ($show) {
+            echo '<p><b>Base des utilisateurs :</b></p>';
+        }
+        $u_db = con_une_db($udbaddr, $udbuser, $udbpass, $udbname, $show);
+        if ($show) {
+            echo '<p><b>Base des actes :</b></p>';
+        }
+        $a_db = con_une_db($dbaddr, $dbuser, $dbpass, $dbname, $show, true);
+    } else {
+        if ($show) {
+            echo '<p><b>Base des actes et des utilisateurs :</b></p>';
+        }
+        $u_db = $a_db = con_une_db($dbaddr, $dbuser, $dbpass, $dbname, $show);
+    }
+    return $a_db;
+}

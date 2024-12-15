@@ -1,13 +1,6 @@
 <?php
 
-if (file_exists(dirname(__FILE__) . '/EA_sql.inc.php')) {
-    include_once(dirname(__FILE__) . '/EA_sql.inc.php');
-} else {
-    // Spécial pour EA 322 détourner les appels mysql  (BG: TODO cette branche else est-elle vraiment nécessaire ?)
-    if (!function_exists('mysql_query') and ((!extension_loaded('mysql') or (substr(phpversion(), 0, 1) >= '7')))) {
-        include_once(dirname(__FILE__) . '/mysql2i.class.php');
-    }
-}
+include_once(__DIR__ . '/EA_sql.inc.php');
 
 define('INTERNAL_CHARSET', 'UTF-8');
 define('MAIL_CHARSET', INTERNAL_CHARSET); // Charset pour les mails

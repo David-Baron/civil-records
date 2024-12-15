@@ -15,9 +15,9 @@ function paspoint($string)
     $x = strpos($string, ":");
     if ($x > 0) {
         return mb_substr($string, $x + 1);
-    } else {
-        return "";
-    }
+    } 
+    
+    return "";
 }
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
@@ -68,7 +68,10 @@ $status = explode('  ', EA_sql_stat($db));
 
 echo '<h3>Etat du serveur</h3>';
 echo "<p>Serveur MySQL en fonctionnement depuis : " . heureminsec(paspoint($status[0])) . "</p>";
-echo "<p>Nombre moyen de requêtes par sec (tous clients confondus) :" . paspoint($status[7]) . "</p>";
+if (isset($status[7])) {
+    echo "<p>Nombre moyen de requêtes par sec (tous clients confondus) :" . paspoint($status[7]) . "</p>";
+}
+
 echo '<h3>Paramètres du serveur</h3>';
 echo "<p>Temps limite pour l'exécution des requêtes (sec) : " . val_var_mysql('wait_timeout') . "</p>";
 echo "<p>Temps limite pour les lectures (sec) : " . val_var_mysql('net_read_timeout') . "</p>";

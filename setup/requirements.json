@@ -1,0 +1,12 @@
+{
+    "civil-records": "0.0.0",
+    "php": {
+        "min_version": 8.2,
+        "extensions": [
+            "mysqli",
+            "PDO",
+            "gd"
+        ]
+    },
+    "expoactes_compatibility": "3.2.4"
+}

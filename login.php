@@ -13,7 +13,7 @@ $motif = getparam('cas');
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
 ob_start();
-open_page("ExpoActes : Login", $root, $script, null, null, '../index.htm');
+open_page("ExpoActes : Login", $root, null, null, null, '../index.htm');
 navigation($root, 2, 'A', "Connexion");
 zone_menu(0, 0);
 ?>
@@ -48,7 +48,7 @@ if ($motif == 7) {
     <table>
         <tr>
             <td>Login</td>
-            <td><input name="login" size="18" maxlength="15"></td>
+            <td><input type="text" name="login" size="18" maxlength="15"></td>
         </tr>
         <tr>
             <td>Mot de passe</td>

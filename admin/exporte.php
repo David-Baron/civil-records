@@ -4,6 +4,9 @@ $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
+$Destin   = getparam('Destin'); // TODO: will be from last url
+$needlevel = 6;
+if ($Destin == "B") $needlevel = 8;
 $userlogin = "";
 $userlevel = logonok($needlevel);
 while ($userlevel < $needlevel) {
@@ -36,19 +39,16 @@ $htmlpage = false;
 $Max_exe_time = ini_get("max_execution_time");
 $Max_time = min($Max_exe_time - $tpsreserve, MAX_EXEC_TIME);
 $Max_size = return_bytes(ini_get("upload_max_filesize"));
-$Destin   = getparam('Destin');
 $Format   = getparam('Format');
 $TypeActes = getparam('TypeActes', 'N');
 
 if ($Destin == "B") {  // Backup
-    $needlevel = 8;  // niveau d'accès
     $listcom = 2;  // liste de commune avec *** Backup complet
     $titre = "Backup des actes";
     $supp_fields = 0; // exporter tout
     $enclosed = '"';
     $enteteligne = "EA32;";   // EA3 ansi / EA32 utf-8
 } else {
-    $needlevel = 6; // anciennement 5
     $listcom = 0;
     $titre = "Export d'une série d'actes";
     $supp_fields = 5; // Champs à ne pas exporter vers nimegue

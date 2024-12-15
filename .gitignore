@@ -1,2 +1,5 @@
 /vendor
 /admin/_upload
+/setup/steps/install_x.php
+/setup/translations
+/.env.local.php
