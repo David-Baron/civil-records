@@ -48,20 +48,25 @@ if ($motif == 7) {
     <table>
         <tr>
             <td>Login</td>
-            <td><input type="text" name="login" size="18" maxlength="15"></td>
+            <td><input type="text" name="login" maxlength="15"></td>
+            <td></td>
         </tr>
         <tr>
             <td>Mot de passe</td>
-            <td><input id="EApwd" type="password" name="passwd" size="15" maxlength="15">
+            <td>
+                <input type="password" name="passwd" id="EApwd" maxlength="15">
+            </td>
+            <td>
                 <img onmouseover="seetext(EApwd)" onmouseout="seeasterisk(EApwd)" src="<?= $root; ?>/assets/img/eye-16-16.png" alt="Voir mot de passe" width="16" height="16">
             </td>
         </tr>
         <tr>
-            <td colspan="2">
+            <td colspan="3">
                 <input type="checkbox" name="saved" value="yes">Mémoriser le mot de passe quelques jours.
             </td>
         </tr>
         <tr>
+            <td></td>
             <td colspan="2">
                 <button type="submit">Me connecter</button>
             </td>
@@ -84,6 +89,14 @@ if ($motif == 7) {
     </p>
 <?php } ?>
 </div>
+<script type="text/javascript">
+	function seetext(x) {
+		x.type = 'text';
+	}
+	function seeasterisk(x) {
+		x.type = 'password';
+	}
+</script>
 <?php include(__DIR__ . '/templates/front/_footer.php');
 $response->setContent(ob_get_clean());
 $response->send();
