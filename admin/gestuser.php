@@ -14,8 +14,8 @@ pathroot($root, $path, $xcomm, $xpatr, $page);
 
 $id  = getparam('id', -1);
 $act = getparam('act');
-$sendmail   = ischecked('SendMail');
-$autopw     = ischecked('autopw');
+$sendmail   = getparam('SendMail', 0);
+$autopw     = getparam('autopw', 0);
 $xdroits    = getparam('lelevel');
 $xregime    = getparam('regime');
 $message    = getparam('Message');
@@ -26,6 +26,7 @@ $missingargs = true;
 $lelogin = getparam('lelogin');
 $lepassw = getparam('lepassw');
 $leid = getparam('id');
+$menu_user_active = 'A';
 
 if (getparam('action') == 'submitted') {
     setcookie("chargeUSERparam", $sendmail . $xdroits . $xregime, time() + 60 * 60 * 24 * 60);  // 60 jours
@@ -37,11 +38,8 @@ open_page("Gestion des utilisateurs", $root);
 navadmin($root, "Gestion des utilisateurs");
 zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
 echo '<div id="col_main_adm">';
-if ($id == -1) {
-    menu_users('A');
-} else {
-    menu_users('1');
-} // ce qui affiche le lien vers ajouter !
+
+require(__DIR__ . '/../templates/admin/_menu-user.php');
 
 if (isset($udbname)) {
     msg('ATTENTION : Données ajoutées/modifiées dans ' . $udbaddr . "/" . $udbuser . "/" . $udbname . "/" . EA_UDB . "</p>", 'info');
@@ -381,7 +379,7 @@ if ($id <> 0 && $missingargs) { ?>
             <?php if ($id == -1) { ?>
                 <tr>
                     <td>Envoi des codes d'accès : </td>
-                    <td><input type="checkbox" name="SendMail" value="1" <?= checked($sendmail); ?>>Envoi automatique du mail ci-dessous</td>
+                    <td><input type="checkbox" name="SendMail" value="1" <?= ($sendmail == 1 ? ' checked' : ''); ?>>Envoi automatique du mail ci-dessous</td>
                 </tr>
                 <tr>
                     <td>Texte du mail : </td>

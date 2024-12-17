@@ -132,8 +132,8 @@ if (($xpatr == "" or mb_substr($xpatr, 0, 1) == "_")) {
         while ($ligne = EA_sql_fetch_row($result)) {
             echo '<tr class="row' . (fmod($i, 2)) . '">';
             echo '<td>' . $i . '. </td>';
-            echo '<td>&nbsp;' . annee_seulement($ligne[2]) . '&nbsp;</td>';
-            echo '<td>&nbsp;<a href="' . $path . '/acte_naiss.php?xid=' . $ligne[3] . '&amp;xct=' . ctrlxid($ligne[0], $ligne[1]) . '">' . $ligne[0] . ' ' . $ligne[1] . '</a></td>';
+            echo '<td>' . annee_seulement($ligne[2]) . '</td>';
+            echo '<td><a href="' . $path . '/acte_naiss.php?xid=' . $ligne[3] . '&amp;xct=' . ctrlxid($ligne[0], $ligne[1]) . '">' . $ligne[0] . ' ' . $ligne[1] . '</a></td>';
             if (ADM == 10) {
                 actions_deposant($userid, $ligne[4], $ligne[3], 'N');
             }

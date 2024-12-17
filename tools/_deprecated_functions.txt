@@ -545,3 +545,157 @@ function con_db($show = false) // fonction de connexion des DB
     }
     return $a_db;
 }
+
+function icone($action)
+{
+    global $root;
+    switch ($action) {
+        case "P":
+            $alt = "Permuter";
+            $ima = "permuter.gif";
+            break;
+        case "S":
+            $alt = "Supprimer";
+            $ima = "supprimer.gif";
+            break;
+        case "M":
+            $alt = "Modifier";
+            $ima = "modifier.gif";
+            break;
+    }
+
+    return '<img width="11" hspace="7" height="13" title="' . $alt . '" alt="' . $alt . '" src="' . $root . '/assets/img/' . $ima . '">';
+}
+
+function checked($valeur, $defaut = 1)  // retourne le mot checked si $valeur=1 pour CkeckBox ou radiobutton
+{
+    if ($valeur == $defaut) {
+        return ' checked="checked"';
+    } 
+    
+    return '';
+}
+
+function listbox_cols($fieldname, $default)
+{
+    global $acte;
+    $i = 1;
+    $len = 15;
+    echo '<select name="' . $fieldname . '" size="1">' . "\n";
+    echo '<option ' . selected_option(0, $default) . '> -- </option>' . "\n";
+    foreach ($acte as $zone) {
+        $zone = trim($zone);
+        if (strlen($zone) > $len - 2) {
+            $exemple = mb_substr($zone, 0, $len - 2) . "..";
+        } else {
+            $exemple = mb_substr($zone, 0, $len);
+        }
+
+        echo '<option ' . selected_option($i, $default) . '>Col. ' . nomcolonne($i) . '-' . $i . ' (' . $exemple . ')</option>' . "\n";
+        $i++;
+    }
+    echo " </select>\n";
+}
+
+function ischecked($name)  // retourne 1 ou 0 suivant que le parmetres est checké ou pas
+{
+    if (!isset($_REQUEST[$name])) {
+        return 0;
+    }
+
+    return $_REQUEST[$name];
+}
+
+function listbox_users($fieldname, $default, $levelmin, $zero = 0, $txtzero = '')
+{
+    global $u_db;
+    $request = "SELECT ID, NOM, PRENOM FROM " . EA_UDB . "_user3 WHERE LEVEL >= " . $levelmin . " ORDER BY NOM,PRENOM";
+    //optimize($request,$u_db);
+    if ($result = EA_sql_query($request, $u_db)) {
+        $i = 1;
+        echo '<select name="' . $fieldname . '">' . "\n";
+        if ($zero == 1) {
+            echo '<option ' . selected_option(0, $default) . '>' . $txtzero . '</option>' . "\n";
+        }
+        while ($row = EA_sql_fetch_array($result)) {
+            echo '<option ' . selected_option($row["ID"], $default) . '>' . $row["NOM"] . " " . $row["PRENOM"] . '</option>' . "\n";
+            $i++;
+        }
+    }
+    echo " </select>\n";
+}
+
+function menu_software($current)
+{
+    global $root;
+    echo '<p align="center"><strong>Administration du logiciel : </strong>';
+    echo '<a href="' . $root . '/admin/gest_params.php" ' . ('P' == $current ? 'class="bolder"' : '') . '>Paramétrage</a>';
+    echo ' | <a href="' . $root . '/admin/gest_labels.php" ' . ('Q' == $current ? 'class="bolder"' : '') . '>Etiquettes</a>';
+    echo ' | <a href="' . $root . '/admin/serv_params.php" ' . ('E' == $current ? 'class="bolder"' : '') . '>Etat serveur</a>';
+    echo ' | <a href="' . $root . '/admin/gesttraceip.php" ' . ('F' == $current ? 'class="bolder"' : '') . '>Fitrage IP</a>';
+    echo ' | <a href="' . $root . '/admin/gestindex.php" ' . ('I' == $current ? 'class="bolder"' : '') . '>Index</a>';
+    echo ' | <a href="' . $root . '/admin/listlog.php" ' . ('J' == $current ? 'class="bolder"' : '') . '>Journal</a>';
+    echo '</p>';
+}
+
+function menu_users($current)
+{
+    global $udbname;
+    echo '<p align="center"><strong>Administration utilisateurs : </strong>';
+    echo '<a href="' . $root . '/admin/listusers.php" ' . ('L' == $current ? 'class="bolder"' : '') . '>Lister</a>';
+    echo ' | <a href="' . $root . '/admin/gestuser.php?id=-1" ' . ('A' == $current ? 'class="bolder"' : '') . '>Ajouter</a>';
+    echo ' | <a href="' . $root . '/admin/loaduser.php" ' . ('I' == $current ? 'class="bolder"' : '') . '>Importer</a>';
+    echo ' | <a href="' . $root . '/admin/expsupuser.php" ' . ('E' == $current ? 'class="bolder"' : '') . '>Exporter/Supprimer</a>';
+    echo ' | <a href="' . $root . '/admin/envoimail.php" ' . ('M' == $current ? 'class="bolder"' : '') . '>Informer</a>';
+    echo ' | <a href="' . $root . '/admin/gestpoints.php" ' . ('S' == $current ? 'class="bolder"' : '') . '>Modifications groupées</a>';
+    echo '</p>';
+}
+
+function show_certifications()
+{
+    global $root;
+    // Validation XHTML
+    $host = $_SERVER['HTTP_HOST'];
+    $uri  = rtrim($_SERVER['PHP_SELF'], "/\\");
+    echo '<div class="certificats">' . "\n";
+    echo '<a href="http://validator.w3.org/check?uri=http://' . $host . $uri . '">';
+    echo '<img src="' . $root . '/img/valid-xhtml-10.gif" alt="Site Valide XHTML 1.0" border="0" />';
+    echo '</a></div>' . "\n";
+}
+
+function menu_admin($root, $userlevel)
+{
+    global $userlogin;
+    $login = '&nbsp; &nbsp;' . $userlogin . '';
+
+    echo '<div class="menu_zone">' . "\n";
+    echo '<div class="menu_titre">Administration &lt;' . $userlogin . '&gt;</div>' . "\n";
+    echo '<div class="menuCorps"><dl>' . "\n";
+    if ($userlevel >= 5) {
+        echo '<dt><a href="' . $root . '/admin/index.php">Inventaire des actes</a></dt>' . "\n";
+    }
+    if ($userlevel >= CHANGE_PW) {
+        echo '<dt><a href="' . $root . '/changepw.php">Changer le mot de passe</a></dt>' . "\n";
+    }
+    if ($userlevel >= 5) {
+        echo '<dt><a href="' . $root . '/admin/charge.php">Charger des actes NIMEGUE</a></dt>' . "\n";
+    }
+    if ($userlevel >= 6) {
+        echo '<dt><a href="' . $root . '/admin/chargecsv.php">Charger des actes CSV</a></dt>' . "\n";
+    }
+    if ($userlevel >= 5) {
+        echo '<dt><a href="' . $root . '/admin/supprime.php">Supprimer des actes</a></dt>' . "\n";
+        echo '<dt><a href="' . $root . '/admin/exporte.php">Réexporter des actes</a></dt>' . "\n";
+    }
+    if ($userlevel >= 7) {
+        echo '<dt><a href="' . $root . '/admin/maj_sums.php">Administrer les données</a></dt>' . "\n";
+    }
+    if ($userlevel >= 9) {
+        echo '<dt><a href="' . $root . '/admin/listusers.php">Administrer les utilisateurs</a></dt>' . "\n";
+        echo '<dt><a href="' . $root . '/admin/gest_params.php">Administrer le logiciel</a></dt>' . "\n";
+    }
+    echo '<dt><a href="' . $root . '/admin/aide/aide.html">Aide</a></dt>' . "\n";
+    echo '<dt><a href="' . $root . '/index.php?act=logout">Déconnexion</a></dt>' . "\n";
+    echo '</dl></div>' . "\n";
+    echo '</div>' . "\n";
+}

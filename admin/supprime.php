@@ -3,6 +3,7 @@ define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
+require(__DIR__ . '/../next/Model/UserModel.php');
 
 $userlogin = "";
 $needlevel = 6;  // niveau d'accès (anciennement 5)
@@ -36,16 +37,16 @@ $ajax = new PHPLiveX(array("getCommunes"));
 $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
 
 navadmin($root, "Suppression d'actes");
-zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
 echo '<div id="col_main_adm">';
 
 if ($xaction == 'submitted' or $xaction == 'validated') {
     // Données postées
-    if((empty($TypeActes) or ($TypeActes == 'X'))) {
+    if ((empty($TypeActes) or ($TypeActes == 'X'))) {
         msg('Vous devez préciser le type des actes.');
         $missingargs = true;
     }
-    if(empty($Commune)) {
+    if (empty($Commune)) {
         msg('Vous devez préciser une commune.');
         $missingargs = true;
     }
@@ -69,7 +70,7 @@ if (! $missingargs) {
 
     if ($xaction <> 'validated') {
         $request = "SELECT count(*) FROM " . $table .
-                             " WHERE " . $condcom . $condad . $condaf . $conddep . $condtdiv . " ;";
+            " WHERE " . $condcom . $condad . $condaf . $conddep . $condtdiv . " ;";
 
         // echo $request;
         optimize($request);
@@ -97,7 +98,7 @@ if (! $missingargs) {
         }
     } else {
         $request = "DELETE FROM " . $table .
-                             " WHERE " . $condcom . $condad . $condaf . $conddep . $condtdiv . " ;";
+            " WHERE " . $condcom . $condad . $condaf . $conddep . $condtdiv . " ;";
         // echo $request;
         $result = EA_sql_query($request);
         optimize($request);
@@ -120,33 +121,38 @@ if (! $missingargs) {
     echo '<table cellspacing="0" cellpadding="0" border="0" align="center" summary="Formulaire">' . "\n";
 
     form_typeactes_communes();
+    echo '<tr><td colspan="2">&nbsp;</td></tr>';
     echo " <tr>\n";
     echo '  <td align="right">Déposant : </td>' . "\n";
     echo '  <td>';
     if ($userlevel < 8) {
         echo '<input type="hidden" name="olddepos" value="0" />';
     } else {
-        listbox_users("olddepos", 0, DEPOSANT_LEVEL, 1, ' *** Tous *** ');
-    }
-    echo '  </td>';
-    echo " </tr>\n";
-    echo " <tr>\n";
-    echo '  <td align="right">Années : </td>' . "\n";
-    echo '  <td>&nbsp;';
-    echo '        de <input type="text" name="AnneeDeb" size="4" maxlength="4" /> ';
-    echo '        à  <input type="text" name="AnneeFin" size="4" maxlength="4" /> (ces années comprises)';
-    echo '  </td>';
-    echo " </tr>\n";
-    // echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";
-    echo " <tr><td colspan=\"2\" align=\"center\">\n<br />";
-    echo '  <input type="hidden" name="action" value="submitted" />';
-    echo '  <input type="reset" value="Annuler" />' . "\n";
-    echo '  <input type="submit" value=" >> SUPPRIMER >> " />' . "\n";
-    echo " </td></tr>\n";
-    echo "</table>\n";
-    echo "</form>\n";
-}
-echo '</div>';
-include(__DIR__ . '/../templates/front/_footer.php');
+        listbox_users("olddepos", 0, DEPOSANT_LEVEL, ' *** Tous *** ');
+    } ?>
+    </td>
+    </tr>
+    <tr><td colspan="2">&nbsp;</td></tr>
+    <tr>
+        <td>Années : </td>
+        <td>
+            de <input type="text" name="AnneeDeb" size="4" maxlength="4">
+            à <input type="text" name="AnneeFin" size="4" maxlength="4"> (ces années comprises)
+        </td>
+    </tr>
+    <tr><td colspan="2">&nbsp;</td></tr>
+    <tr>
+        <td></td>
+        <td>
+            <button type="reset">Annuler</button>
+            <button type="submit">Supprimer</button>
+        </td>
+    </tr>
+    </table>
+    <input type="hidden" name="action" value="submitted">
+    </form>
+<?php } ?>
+</div>
+<?php include(__DIR__ . '/../templates/front/_footer.php');
 $response->setContent(ob_get_clean());
 $response->send();

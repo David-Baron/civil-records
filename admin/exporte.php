@@ -3,6 +3,7 @@ define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
+require(__DIR__ . '/../next/Model/UserModel.php');
 
 $Destin   = getparam('Destin'); // TODO: will be from last url
 $needlevel = 6;
@@ -17,6 +18,7 @@ function init_page($head = "")
 {
     global $root,$userlevel,$htmlpage,$titre;
 
+    $menu_data_active = 'B';
     open_page($titre, $root, null, null, $head);
 
     // Ajaxify Your PHP Functions
@@ -90,22 +92,14 @@ $Maxbytes = (float) $maxmega * 1024 * 1024;
 $autokey = getparam('autokey');
 $continue = 1;
 $xaction = getparam('action');
+
+$menu_data_active = 'B';
+
 if ($xaction == 'go') {
     // Données postées
-    if((empty($TypeActes) or ($TypeActes == 'X'))  or empty($Destin) or (empty($Commune))) {
+    if((empty($TypeActes) || ($TypeActes == 'X')) || empty($Destin) || (empty($Commune))) {
         init_page();
-        echo '<p align="center"><strong>Administration des données : </strong>';
-    showmenu('Statistiques', 'maj_sums.php', 'S', 'B', false);
-    if ($userlevel > 7) {
-        showmenu('Localités', 'listgeolocs.php', 'L', 'B');
-    }
-    showmenu('Ajout d\'un acte', 'ajout_1acte.php', 'A', 'B');
-    if ($userlevel > 7) {
-        showmenu('Corrections groupées', 'corr_grp_acte.php', 'G', 'B');
-        showmenu('Backup', 'exporte.php?Destin=B', 'B', 'B');
-        showmenu('Restauration', 'charge.php?Origine=B', 'R', 'B');
-    }
-    echo '</p>';
+        require(__DIR__ . '/../templates/admin/_menu_data.php');
         if(empty($TypeActes) or ($TypeActes == 'X')) {
             msg('Vous devez préciser le type des actes');
         }
@@ -147,18 +141,7 @@ if ($xaction == 'go') {
     $missingargs = true;  // par défaut
     init_page();
     if ($Destin == "B") {  // Backup
-        echo '<p align="center"><strong>Administration des données : </strong>';
-        showmenu('Statistiques', 'maj_sums.php', 'S', 'B', false);
-        if ($userlevel > 7) {
-            showmenu('Localités', 'listgeolocs.php', 'L', 'B');
-        }
-        showmenu('Ajout d\'un acte', 'ajout_1acte.php', 'A', 'B');
-        if ($userlevel > 7) {
-            showmenu('Corrections groupées', 'corr_grp_acte.php', 'G', 'B');
-            showmenu('Backup', 'exporte.php?Destin=B', 'B', 'B');
-            showmenu('Restauration', 'charge.php?Origine=B', 'R', 'B');
-        }
-        echo '</p>';
+        require(__DIR__ . '/../templates/admin/_menu_data.php');
     }
 }
 if (! $missingargs) {
@@ -170,18 +153,7 @@ if (! $missingargs) {
 
     if ($continue == 0) { // fin d'une chaine automatique
         init_page();
-        echo '<p align="center"><strong>Administration des données : </strong>';
-        showmenu('Statistiques', 'maj_sums.php', 'S', 'B', false);
-        if ($userlevel > 7) {
-            showmenu('Localités', 'listgeolocs.php', 'L', 'B');
-        }
-        showmenu('Ajout d\'un acte', 'ajout_1acte.php', 'A', 'B');
-        if ($userlevel > 7) {
-            showmenu('Corrections groupées', 'corr_grp_acte.php', 'G', 'B');
-            showmenu('Backup', 'exporte.php?Destin=B', 'B', 'B');
-            showmenu('Restauration', 'charge.php?Origine=B', 'R', 'B');
-        }
-        echo '</p>';
+        require(__DIR__ . '/../templates/admin/_menu_data.php');
         echo '<p>Le backup est terminé, il a sauvegardé ' . entier($skip) . ' ' . typact_txt($TypeActes) . '.</p>';
         echo '<p><b>' . $file . ' fichier(s) peut/peuvent à présent être récupéré(s) via FTP dans le répertoire "_backup".</b></p>';
     } else {
@@ -229,11 +201,11 @@ if (! $missingargs) {
             if (($Destin <> "B") and ($nbdocs > $max_select_rec)) {
                 init_page();
                 msg(sprintf('Traitement impossible, trop d\'actes (%1$s), exporter en plusieurs périodes', $nbdocs), "erreur");
-                echo '<p><a href="exporte.php?Destin=' . $Destin . '">Retour</a></p>'; //exit;
+                echo '<p><a href="' . $root . '/admin/exporte.php?Destin=' . $Destin . '">Retour</a></p>'; //exit;
             } elseif ($nbdocs == 0) {
                 init_page();
                 msg("Il n'y a aucun acte de " . $ntype . $soustype . " à " . $comdep . " (dont vous êtes le déposant) !", "erreur");
-                echo '<p><a href="exporte.php">Retour</a></p>';
+                echo '<p><a href="' . $root . '/admin/exporte.php">Retour</a></p>';
             } else {
                 switch ($Destin) {
                     case 'T':
@@ -257,25 +229,14 @@ if (! $missingargs) {
                     case 'E':
                         // HTML
                         init_page();
-                        echo '<pre>' . "\n";
+                        echo '<pre>';
                         break;
                     case 'B':
                         // Backup
                         //$prc = intval($skip/$nbdocs*100);
                         //$titre = $prc." % ".$titre;
                         init_page($metahead);
-                        echo '<p align="center"><strong>Administration des données : </strong>';
-                        showmenu('Statistiques', 'maj_sums.php', 'S', 'B', false);
-                        if ($userlevel > 7) {
-                            showmenu('Localités', 'listgeolocs.php', 'L', 'B');
-                        }
-                        showmenu('Ajout d\'un acte', 'ajout_1acte.php', 'A', 'B');
-                        if ($userlevel > 7) {
-                            showmenu('Corrections groupées', 'corr_grp_acte.php', 'G', 'B');
-                            showmenu('Backup', 'exporte.php?Destin=B', 'B', 'B');
-                            showmenu('Restauration', 'charge.php?Origine=B', 'R', 'B');
-                        }
-                        echo '</p>';
+                        require(__DIR__ . '/../templates/admin/_menu_data.php');
                         if (mb_substr($comdep, 0, 6) == "BACKUP") {
                             $com_name = "FULL";
                         } else {
@@ -480,7 +441,7 @@ if (! $missingargs) {
         if ($userlevel < 8) {
             echo '<input type="hidden" name="olddepos" value="0" />';
         } else {
-            listbox_users("olddepos", 0, DEPOSANT_LEVEL, 1, ' *** Tous *** ');
+            listbox_users("olddepos", 0, DEPOSANT_LEVEL, ' *** Tous *** ');
         }
         echo '  </td>';
         echo " </tr>\n";

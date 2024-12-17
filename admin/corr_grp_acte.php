@@ -3,6 +3,7 @@ define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
+require(__DIR__ . '/../next/Model/UserModel.php');
 
 $userlogin = "";
 $userlevel = logonok(8);
@@ -13,50 +14,10 @@ while ($userlevel < 8) {
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
 $title = "Corrections groupées d'actes";
-
-ob_start();
-open_page($title, $root);
-
-include(__DIR__ . '/../tools/PHPLiveX/PHPLiveX.php');
-$ajax = new PHPLiveX(array("getCommunes"));
-$ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
-
-navadmin($root, $title);
-zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
-
-echo '<div id="col_main_adm">';
-echo '<p align="center"><strong>Administration des données : </strong>';
-showmenu('Statistiques', 'maj_sums.php', 'S', 'G', false);
-if ($userlevel > 7) {
-    showmenu('Localités', 'listgeolocs.php', 'L', 'G');
-}
-showmenu('Ajout d\'un acte', 'ajout_1acte.php', 'A', 'G');
-if ($userlevel > 7) {
-    showmenu('Corrections groupées', 'corr_grp_acte.php', 'G', 'G');
-    showmenu('Backup', 'exporte.php?Destin=B', 'B', 'G');
-    showmenu('Restauration', 'charge.php?Origine=B', 'R', 'G');
-}
-echo '</p>';
-echo '<p align="center"><strong>Administration des données : </strong>';
-showmenu('Statistiques', 'maj_sums.php', 'S', 'G', false);
-if ($userlevel > 7) {
-    showmenu('Localités', 'listgeolocs.php', 'L', 'G');
-}
-showmenu('Ajout d\'un acte', 'ajout_1acte.php', 'A', 'G');
-if ($userlevel > 7) {
-    showmenu('Corrections groupées', 'corr_grp_acte.php', 'G', 'G');
-    showmenu('Backup', 'exporte.php?Destin=B', 'B', 'G');
-    showmenu('Restauration', 'charge.php?Origine=B', 'R', 'G');
-}
-echo '</p>';
 $ok = false;
 $missingargs = false;
 $oktype = false;
 $today = today();
-
-$comdep  = html_entity_decode(getparam('ComDep'), ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
-$oldcom = communede($comdep);
-$olddep  = departementde($comdep);
 $olddepos = getparam('olddepos', 0);
 $xaction = getparam('action');
 $xtyp      = strtoupper(getparam('TypeActes'));
@@ -75,8 +36,24 @@ $newverif  = getparam('newverif');
 $newsigle  = getparam('newsigle');
 $newlibel  = getparam('newlibel');
 
-//{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; }
+$menu_data_active = 'G';
 
+ob_start();
+open_page($title, $root);
+
+include(__DIR__ . '/../tools/PHPLiveX/PHPLiveX.php');
+$ajax = new PHPLiveX(array("getCommunes"));
+$ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
+
+navadmin($root, $title);
+zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
+
+echo '<div id="col_main_adm">';
+require(__DIR__ . '/../templates/admin/_menu_data.php');
+
+$comdep  = html_entity_decode(getparam('ComDep'), ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
+$oldcom = communede($comdep);
+$olddep  = departementde($comdep);
 $mdb = load_zlabels('N', $lg);
 
 
@@ -205,7 +182,7 @@ else {
     echo " <tr>\n";
     echo '  <td align="right">Déposant : </td>' . "\n";
     echo '  <td>';
-    listbox_users("olddepos", 0, DEPOSANT_LEVEL, 1, ' *** Tous *** ');
+    listbox_users("olddepos", 0, DEPOSANT_LEVEL, ' *** Tous *** ');
     echo '  </td>';
     echo " </tr>\n";
     //			echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";
@@ -238,7 +215,7 @@ else {
     echo " <tr>\n";
     echo '  <td align="right">Déposant : </td>' . "\n";
     echo '  <td>';
-    listbox_users("newdepos", 0, DEPOSANT_LEVEL, 1, ' -- Inchangé(s) --');
+    listbox_users("newdepos", 0, DEPOSANT_LEVEL, ' -- Inchangé(s) --');
     echo '  </td>';
     echo " </tr>\n";
     if (isin('OFA', metadata('AFFICH', 'PHOTOGRA')) >= 0) {

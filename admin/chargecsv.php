@@ -3,6 +3,7 @@ define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
+require(__DIR__ . '/../next/Model/UserModel.php');
 require(__DIR__ . '/../tools/traitements.inc.php');
 require(__DIR__ . '/../tools/adodb-time.inc.php');
 
@@ -27,18 +28,10 @@ function listbox_cols($fieldname, $default)
 {
     global $acte;
     $i = 1;
-    $len = 15;
     echo '<select name="' . $fieldname . '" size="1">' . "\n";
     echo '<option ' . selected_option(0, $default) . '> -- </option>' . "\n";
     foreach ($acte as $zone) {
-        $zone = trim($zone);
-        if (strlen($zone) > $len - 2) {
-            $exemple = mb_substr($zone, 0, $len - 2) . "..";
-        } else {
-            $exemple = mb_substr($zone, 0, $len);
-        }
-
-        echo '<option ' . selected_option($i, $default) . '>Col. ' . nomcolonne($i) . '-' . $i . ' (' . $exemple . ')</option>' . "\n";
+        echo '<option ' . selected_option($i, $default) . '>Col. ' . nomcolonne($i) . '-' . $i . ' (' . $zone . ')</option>' . "\n";
         $i++;
     }
     echo " </select>\n";
@@ -48,17 +41,17 @@ $Max_time = min(ini_get("max_execution_time") - 3, MAX_EXEC_TIME);
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
-$AnneeVide  = ischecked('AnneeVide');
-$SuprRedon  = ischecked('SuprRedon');
-$SuprPatVid = ischecked('SuprPatVid');
-$logOk      = ischecked('LogOk');
-$logKo      = ischecked('LogKo');
-$logRed     = ischecked('LogRed');
+$AnneeVide  = getparam('AnneeVide', 0); // for checked
+$SuprRedon  = getparam('SuprRedon', 0); // for checked
+$SuprPatVid = getparam('SuprPatVid', 0); // for checked
+$logOk      = getparam('LogOk', 0); // for checked
+$logKo      = getparam('LogKo', 0); // for checked
+$logRed     = getparam('LogRed', 0); // for checked
 $TypeActes  = getparam('TypeActes');
 $commune    = html_entity_decode(getparam('Commune'), ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
 $depart     = html_entity_decode(getparam('Depart'), ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
-$communecsv = ischecked('CommuneCsv');
-$departcsv  = ischecked('DepartCsv');
+$communecsv = getparam('CommuneCsv', 0); // for checked
+$departcsv  = getparam('DepartCsv', 0); // for checked
 $typedoc    = getparam('typedoc');
 $deposant   = getparam('deposant');
 $Filtre        = getparam('Filtre');
@@ -67,9 +60,9 @@ $Compare       = getparam('Compare');
 $photo           = getparam('photo');
 $trans           = getparam('trans');
 $verif           = getparam('verif');
-$photocsv   = ischecked('photocsv');
-$transcsv   = ischecked('transcsv');
-$verifcsv   = ischecked('verifcsv');
+$photocsv   = getparam('photocsv', 0); // for checked
+$transcsv   = getparam('transcsv', 0); // for checked
+$verifcsv   = getparam('verifcsv', 0); // for checked
 $isUTF8     = false;
 
 if (isset($_REQUEST['submitD'])) {  // définir les mapping
@@ -543,12 +536,12 @@ if (!$missingargs) { // fichier d'actes
         echo '<input type="hidden" name="Depart" value="' . htmlentities($depart, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET) . '" />' . "\n";
         echo '<input type="hidden" name="DepartCsv" value="' . $departcsv . '" />';
         echo '<input type="hidden" name="deposant" value="' . $deposant . '" />' . "\n";
-        echo '<input type="hidden" name="AnneeVide" value="' . ischecked('AnneeVide') . '" />' . "\n";
-        echo '<input type="hidden" name="SuprRedon" value="' . ischecked('SuprRedon') . '" />' . "\n";
-        echo '<input type="hidden" name="SuprPatVid" value="' . ischecked('SuprPatVid') . '" />' . "\n";
-        echo '<input type="hidden" name="LogOk"  value="' . ischecked('LogOk') . '" />' . "\n";
-        echo '<input type="hidden" name="LogKo"  value="' . ischecked('LogKo') . '" />' . "\n";
-        echo '<input type="hidden" name="LogRed" value="' . ischecked('LogRed') . '" />' . "\n";
+        echo '<input type="hidden" name="AnneeVide" value="' . getparam('AnneeVide', 0) . '" />' . "\n";
+        echo '<input type="hidden" name="SuprRedon" value="' . getparam('SuprRedon', 0) . '" />' . "\n";
+        echo '<input type="hidden" name="SuprPatVid" value="' . getparam('SuprPatVid', 0) . '" />' . "\n";
+        echo '<input type="hidden" name="LogOk"  value="' . getparam('LogOk', 0) . '" />' . "\n";
+        echo '<input type="hidden" name="LogKo"  value="' . getparam('LogKo', 0) . '" />' . "\n";
+        echo '<input type="hidden" name="LogRed" value="' . getparam('LogRed', 0) . '" />' . "\n";
 
         echo '<table cellspacing="2" cellpadding="0" border="0" align="center" summary="Formulaire">' . "\n";
         echo '<tr>';
@@ -840,26 +833,26 @@ if ($missingargs) {
     echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";
     echo " <tr>\n";
     echo '  <td align="right">Fichier CSV : </td>' . "\n";
-    echo '  <td><input type="file" size="62" name="Actes" />' . "</td>\n";
+    echo '  <td><input type="file" size="62" name="Actes" />' . "</td>";
     echo " </tr>\n";
     echo " <tr>\n";
-    echo '  <td align="right">' . metadata('ETIQ', 'COMMUNE') . ' : </td>' . "\n";
-    echo '  <td><input type="text" size="40" name="Commune" value="' . $commune . '" />';
-    echo '   ou <input type="checkbox" name="CommuneCsv" value="1" ' . checked($communecsv) . '/> Lu dans le CSV ';
+    echo '  <td align="right">' . metadata('ETIQ', 'COMMUNE') . ' : </td>';
+    echo '  <td><input type="text" size="40" name="Commune" value="' . $commune . '">';
+    echo '   ou <input type="checkbox" name="CommuneCsv" value="1" ' . ($communecsv == 1 ? ' checked' : '') . '> Lu dans le CSV ';
     echo "  </td>\n";
     echo " </tr>\n";
     echo " <tr>\n";
-    echo '  <td align="right">' . metadata('ETIQ', 'DEPART') . ' : </td>' . "\n";
-    echo '  <td><input type="text" size="40" name="Depart" value="' . $depart . '" />';
-    echo '   ou <input type="checkbox" name="DepartCsv" value="1" ' . checked($departcsv) . '/> Lu dans le CSV ';
+    echo '  <td align="right">' . metadata('ETIQ', 'DEPART') . ' : </td>';
+    echo '  <td><input type="text" size="40" name="Depart" value="' . $depart . '">';
+    echo '   ou <input type="checkbox" name="DepartCsv" value="1" ' . ($departcsv == 1 ? ' checked' : '') . '> Lu dans le CSV ';
     echo "  </td>\n";
     echo " </tr>\n";
 
     if (isin('OFA', metadata('AFFICH', 'PHOTOGRA')) >= 0) {
         echo " <tr>\n";
-        echo '  <td align="right">' . metadata('ETIQ', 'PHOTOGRA') . ' : </td>' . "\n";
-        echo '  <td><input type="text" size="40" name="photo" value="' . $photo . '" />';
-        echo '   ou <input type="checkbox" name="photocsv" value="1" ' . checked($photocsv) . '/> Lu dans le CSV ';
+        echo '  <td align="right">' . metadata('ETIQ', 'PHOTOGRA') . ' : </td>';
+        echo '  <td><input type="text" size="40" name="photo" value="' . $photo . '">';
+        echo '   ou <input type="checkbox" name="photocsv" value="1" ' . ($photocsv == 1 ? ' checked' : '') . '> Lu dans le CSV ';
         echo "  </td>\n";
         echo " </tr>\n";
         echo " <tr>\n";
@@ -868,7 +861,7 @@ if ($missingargs) {
         echo " <tr>\n";
         echo '  <td align="right">' . metadata('ETIQ', 'RELEVEUR') . ' : </td>' . "\n";
         echo '  <td><input type="text" size="40" name="trans" value="' . $trans . '" />';
-        echo '   ou <input type="checkbox" name="transcsv" value="1" ' . checked($transcsv) . '/> Lu dans le CSV ';
+        echo '   ou <input type="checkbox" name="transcsv" value="1" ' . ($transcsv == 1 ? ' checked' : '') . '> Lu dans le CSV ';
         echo "  </td>\n";
         echo " </tr>\n";
         echo " <tr>\n";
@@ -876,8 +869,8 @@ if ($missingargs) {
     if (isin('OFA', metadata('AFFICH', 'VERIFIEU')) >= 0) {
         echo " <tr>\n";
         echo '  <td align="right">' . metadata('ETIQ', 'VERIFIEU') . ' : </td>' . "\n";
-        echo '  <td><input type="text" size="40" name="verif" value="' . $verif . '" />';
-        echo '   ou <input type="checkbox" name="verifcsv" value="1" ' . checked($verifcsv) . '/> Lu dans le CSV ';
+        echo '  <td><input type="text" size="40" name="verif" value="' . $verif . '">';
+        echo '   ou <input type="checkbox" name="verifcsv" value="1" ' . ($verifcsv == 1 ? ' checked' : '') . '/> Lu dans le CSV ';
         echo "  </td>\n";
         echo " </tr>\n";
         echo " <tr>\n";
@@ -886,18 +879,18 @@ if ($missingargs) {
     echo " <tr>\n";
     echo '  <td align="right">Filtrage des données : </td>' . "\n";
     echo '  <td>';
-    echo '        <input type="checkbox" name="AnneeVide" value="1"' . checked($AnneeVide) . ' />Eliminer les actes dont l\'année est incomplète (ex. 17??)<br />';
-    echo '        <input type="checkbox" name="SuprRedon" value="1"' . checked($SuprRedon) . ' />Eliminer les actes ayant mêmes noms et prénoms<br />';
-    echo '        <input type="checkbox" name="SuprPatVid" value="1"' . checked($SuprPatVid) . ' />Eliminer les actes dont le patronyme est vide<br />';
+    echo '        <input type="checkbox" name="AnneeVide" value="1"' . ($AnneeVide == 1 ? ' checked' : '') . ' />Eliminer les actes dont l\'année est incomplète (ex. 17??)<br />';
+    echo '        <input type="checkbox" name="SuprRedon" value="1"' . ($SuprRedon == 1 ? ' checked' : '') . ' />Eliminer les actes ayant mêmes noms et prénoms<br />';
+    echo '        <input type="checkbox" name="SuprPatVid" value="1"' . ($SuprPatVid == 1 ? ' checked' : '') . ' />Eliminer les actes dont le patronyme est vide<br />';
     echo '  </td>';
     echo " </tr>\n";
     echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";
     echo " <tr>\n";
     echo '  <td align="right">Contrôle des résultats : </td>' . "\n";
     echo '  <td>';
-    echo '    <input type="checkbox" name="LogOk" value="1"' . checked($logOk) . ' />Actes chargés &nbsp; ';
-    echo '    <input type="checkbox" name="LogKo" value="1"' . checked($logKo) . ' />Actes erronés &nbsp; ';
-    echo '    <input type="checkbox" name="LogRed" value="1"' . checked($logRed) . ' />Actes redondants<br />';
+    echo '    <input type="checkbox" name="LogOk" value="1"' . ($logOk == 1 ? ' checked' : '') . ' />Actes chargés &nbsp; ';
+    echo '    <input type="checkbox" name="LogKo" value="1"' . ($logKo == 1 ? ' checked' : '') . ' />Actes erronés &nbsp; ';
+    echo '    <input type="checkbox" name="LogRed" value="1"' . ($logRed == 1 ? ' checked' : '') . ' />Actes redondants<br />';
     echo '  </td>';
     echo " </tr>\n";
 

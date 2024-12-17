@@ -4,6 +4,35 @@ require(__DIR__ . '/../Engine/DatabaseConnection.php');
 
 class UserModel extends DatabaseConnection
 {
+    public function findAllByCriteria(array $criteria)
+    {
+        $params = '';
+        $i = 0;
+        foreach ($criteria as $key => $value) {
+            if ($i === 0) {
+                $params .= "$key=:$key";
+            } else {
+                $params .= " AND $key=:$key";
+            }
+        }
+
+        $sql = "SELECT * FROM " . EA_UDB . "_user3 WHERE $params ORDER BY NOM,PRENOM";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($criteria);
+        return $stmt->fetchAll();
+    }
+
+    public function findAllWithMinLevel(int $minUserlevel)
+    {
+        $sql = "SELECT * FROM " . $this->table_prefix . "_user3 WHERE LEVEL>=:minUserlevel ORDER BY NOM,PRENOM";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            'minUserlevel' => $minUserlevel
+        ]);
+
+        return $stmt->fetchAll();
+    }
+
     public function insert(array $user)
     {
         $date = (new DateTime())->format('Y-m-d');

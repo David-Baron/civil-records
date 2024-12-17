@@ -17,12 +17,15 @@ $missingargs = true;
 //$message    = getparam('Message');
 $xaction    = getparam('action');
 
+$menu_software_active = 'P';
+
 ob_start();
 open_page("Mise à jour des paramètres", $root);
 navadmin($root, "Mise à jour des paramètres");
 zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
 echo '<div id="col_main_adm">';
-menu_software('P');
+require(__DIR__ . '/../templates/admin/_menu-software.php');
+
 echo '<h2>Backup / Restauration</h2>';
 echo '<p align="center"><strong>Actions sur les paramètres : </strong>';
 echo ' <a href="expparams.php"><b>Sauvegarder</b></a>';

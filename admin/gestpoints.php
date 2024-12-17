@@ -32,13 +32,14 @@ $cptko = 0;
 $ok = true;
 $today = today();
 $condrem = "";
+$menu_user_active = 'S';
 
 ob_start();
 open_page($ptitle, $root);
 navadmin($root, $ptitle);
 zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
 echo '<div id="col_main_adm">';
-menu_users('S');
+require(__DIR__ . '/../templates/admin/_menu-user.php');
 
 if (getparam('action') == 'submitted') {
     if ($oper == "") {

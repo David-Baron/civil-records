@@ -19,24 +19,15 @@ $xord  = getparam('xord', 'N');// N = Nom
 $page  = getparam('pg');
 $init  = getparam('init');
 
+$menu_data_active = 'L';
+
 ob_start();
 open_page(SITENAME . " : Liste des localités (communes et paroisses)", $root);
 navadmin($root, "Liste des localités");
 zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
 echo '<div id="col_main_adm">';
-// Lister les actes
-echo '<p align="center"><strong>Administration des données : </strong>';
-showmenu('Statistiques', 'maj_sums.php', 'S', 'L', false);
-if ($userlevel > 7) {
-    showmenu('Localités', 'listgeolocs.php', 'L', 'L');
-}
-showmenu('Ajout d\'un acte', 'ajout_1acte.php', 'A', 'L');
-if ($userlevel > 7) {
-    showmenu('Corrections groupées', 'corr_grp_acte.php', 'G', 'L');
-    showmenu('Backup', 'exporte.php?Destin=B', 'B', 'L');
-    showmenu('Restauration', 'charge.php?Origine=B', 'R', 'L');
-}
-echo '</p>';
+require(__DIR__ . '/../templates/admin/_menu-data.php');
+
 echo '<h2>Localités connues du site ' . SITENAME . '</h2>';
 
 $baselink = $root . '/admin/listgeolocs.php';

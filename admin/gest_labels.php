@@ -56,6 +56,8 @@ $barre = false;
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
+$menu_software_active = 'Q';
+
 ob_start();
 open_page("Paramétrage des étiquettes", $root);
 navadmin($root, "Paramétrage des étiquettes");
@@ -71,17 +73,8 @@ navadmin($root, "Paramétrage des étiquettes");
 <?php
 zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
 ?>
-<div id="col_main_adm">
-    <p><strong>Administration du logiciel : </strong>
-        <?php
-        showmenu('Paramétrage', 'gest_params.php', 'P', 'Q', false);
-        showmenu('Etiquettes', 'gest_labels.php', 'Q', 'Q');
-        showmenu('Etat serveur', 'serv_params.php', 'E', 'Q');
-        showmenu('Fitrage IP', 'gesttraceip.php', 'F', 'Q');
-        showmenu('Index', 'gestindex.php', 'I', 'Q');
-        showmenu('Journal', 'listlog.php', 'J', 'Q');
-        ?>
-    </p>
+<div id="col_main">
+    <?php require(__DIR__ . '/../templates/admin/_menu-software.php'); ?>
     <h2>Gestions des étiquettes des données</h2>
     <p><strong>Bases : </strong>
         <?php foreach ($files as $file) {

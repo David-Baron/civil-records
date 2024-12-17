@@ -19,12 +19,14 @@ $emailfound = false;
 $cptok = 0;
 $cptko = 0;
 
+$menu_software_active = 'F';
+
 ob_start();
 open_page("Gestion du filtrage IP", $root);
 navadmin($root, "Gestion du filtrage IP");
 zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
 echo '<div id="col_main_adm">';
-menu_software('F');
+require(__DIR__ . '/../templates/admin/_menu-software.php');
 admin_traceip();
 echo '</div>';
 include(__DIR__ . '/../templates/front/_footer.php');

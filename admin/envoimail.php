@@ -29,13 +29,15 @@ $today = today();
 $condrem = "";
 $condlevel = "";
 
+$menu_user_active = 'M';
+
 ob_start();
 open_page("Envoi d'un mail circulaire", $root);
 navadmin($root, "Envoi d'un mail circulaire");
 zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
 
 echo '<div id="col_main_adm">';
-menu_users('M');
+require(__DIR__ . '/../templates/admin/_menu-user.php');
 
 if ($xaction == 'submitted') {
     if ($xdroits <> "10") {

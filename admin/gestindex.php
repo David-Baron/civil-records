@@ -18,12 +18,14 @@ $aindex = getparam('ti');
 $confirm = getparam('confirm');
 $tablename = getparam('tbl');
 
+$menu_software_active = 'I';
+
 ob_start();
 open_page("Gestion des index", $root);
 navadmin($root, "Gestion des index");
 zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
 echo '<div id="col_main_adm">';
-menu_software('I');
+require(__DIR__ . '/../templates/admin/_menu-software.php');
 
 if ($action == "ADD") {
     echo '<h2>Ajout d\'un index</h2>';

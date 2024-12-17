@@ -1,10 +1,16 @@
 <?php
 
-$condit1 = '';
 $initiale = '';
-    $condit2 = '';
+$condit1 = '';
+$condit2 = '';
 if ($xtyp != '' || $xtyp != 'A') {
     $condit1 = " WHERE TYPACT='" . sql_quote($xtyp) . "'";
+}
+
+if ($xtyp == 'A') {
+    $needed_types = array('N', 'M', 'D', 'V');
+} else {
+    $needed_types = array($xtyp);
 }
 
 if ($init != '') {
@@ -18,12 +24,13 @@ $interface_path = '';
 if ($AffichageAdmin) {
     $interface_path = '/admin';
 }
+
 $baselink = $root . $interface_path . '/index.php';
 // $request = "SELECT DISTINCT upper(left(COMMUNE,1)) AS init FROM " . EA_DB . "_sums " . $condit1 . " ORDER BY init";
 // Sélectionner et grouper sur initiale de commune et ascii(initiale), ordonner code ascii ascendant pour avoir + grand code (accentué) en dernier
 $request = "SELECT alphabet.init FROM ( SELECT upper(left(COMMUNE,1)) AS init,ascii(upper(left(COMMUNE,1))) AS oo 
     FROM " . EA_DB . "_sums " . $condit1 . " GROUP BY init,oo  ORDER BY init , oo ASC) AS alphabet GROUP BY init";
-optimize($request);
+
 $result = EA_sql_query($request);
 $alphabet = "";
 while ($row = EA_sql_fetch_row($result)) {
@@ -54,11 +61,6 @@ if ($AffichageAdmin) {
 echo '<th>Filiatifs</th>';
 echo '</tr>';
 
-if ($xtyp == 'A') {
-    $arr = array('N','M','D','V');
-} else {
-    $arr = array($xtyp);
-}
 
 $nbcol += $cols;
 $cptact = 0;
@@ -68,15 +70,11 @@ $cptfil = 0;
 $liste_champs_select = " TYPACT, LIBELLE,COMMUNE,DEPART, min(AN_MIN) R_AN_MIN, max(AN_MAX) R_AN_MAX, sum(NB_FIL) S_NB_FIL, sum(NB_TOT) S_NB_TOT, sum(NB_N_NUL) S_NB_N_NUL ";
 $groupby = " GROUP BY TYPACT,LIBELLE,COMMUNE,DEPART ";
 
-foreach ($arr as $ztyp) {
-    //André DELACHARLERIE 					." WHERE typact = '".$ztyp."'".$condit2
+foreach ($needed_types as $needed_type) {
     $request = "SELECT " . $liste_champs_select
-                    . " FROM " . EA_DB . "_sums "
-                    . " WHERE typact = '" . sql_quote($ztyp) . "'" . $condit2 . $groupby
-                    . " ORDER BY LIBELLE,COMMUNE,DEPART; ";
-
-    optimize($request);
-    //echo '<p>'.$request;
+        . " FROM " . EA_DB . "_sums "
+        . " WHERE typact = '" . sql_quote($needed_type) . "'" . $condit2 . $groupby
+        . " ORDER BY LIBELLE,COMMUNE,DEPART; ";
     $pre_libelle = "XXX";
     if ($result = EA_sql_query($request)) {
         $i = 1;
@@ -84,7 +82,7 @@ foreach ($arr as $ztyp) {
             if ($ligne['TYPACT'] . $ligne['LIBELLE'] <> $pre_libelle) {
                 $pre_libelle = $ligne['TYPACT'] . $ligne['LIBELLE'];
                 $linkdiv = "";
-                switch ($ztyp) {
+                switch ($needed_type) {
                     case "N":
                         $typel = "Naissances &amp; Baptêmes";
                         $prog = "/tab_naiss.php";
@@ -116,7 +114,7 @@ foreach ($arr as $ztyp) {
             $imgtxt = "Distribution par années";
             if ($AffichageAdmin or SHOW_DATES == 1) {
                 if ($AffichageAdmin or SHOW_DISTRIBUTION == 1) {
-                    echo '<td><a href="' . $root . $interface_path . '/stat_annees.php?comdep=' . urlencode($ligne['COMMUNE'] . ' [' . $ligne['DEPART'] . ']' . $linkdiv) . '&amp;xtyp=' . $ztyp . '"><img src="' . $root . '/img/histo.gif" border="0" alt="' . $imgtxt . '" title="' . $imgtxt . '"></a></td>';
+                    echo '<td><a href="' . $root . $interface_path . '/stat_annees.php?comdep=' . urlencode($ligne['COMMUNE'] . ' [' . $ligne['DEPART'] . ']' . $linkdiv) . '&amp;xtyp=' . $needed_type . '"><img src="' . $root . '/img/histo.gif" border="0" alt="' . $imgtxt . '" title="' . $imgtxt . '"></a></td>';
                 }
                 echo '<td> (' . $ligne['R_AN_MIN'] . '-' . $ligne['R_AN_MAX'] . ') </td>';
             }
@@ -135,7 +133,7 @@ foreach ($arr as $ztyp) {
 }
 echo '<tr class="rowheader">';
 echo '<td><b>Totaux :</b></td>';
-if ($AffichageAdmin or SHOW_DATES == 1) {
+if ($AffichageAdmin || SHOW_DATES == 1) {
     echo '<td colspan="' . $cols . '">  </td>';
 }
 echo '<td> ' . entier($cptact) . '</td>';

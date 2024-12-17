@@ -20,7 +20,7 @@ open_page("Approbation d'un compte utilisateur", $root);
 navadmin($root, "Approbation d'un compte utilisateur");
 
 zone_menu(ADM, $userlevel, array('f' => 'N')); //ADMIN SANS FORM_RECHERCHE
-echo '<div id="col_main_adm">' . "\n";
+echo '<div id="col_main">';
 
 if (USER_AUTO_DEF <> 1) {
     echo "<p><b>Désolé : Cette action n'a pas de sens dans la configuration actuelle du logiciel</b></p>";
@@ -138,8 +138,8 @@ if (!$ok) {
     echo " <tr>\n";
     echo '  <td align="right">' . "Action : </td>\n";
     echo '  <td>';
-    echo '        <input type="radio" name="action" value="OK" ' . checked("OK", $_REQUEST['action']) . ' /> = Approuver';
-    echo '        <input type="radio" name="action" value="KO" ' . checked("KO", $_REQUEST['action']) . ' /> = REFUSER';
+    echo '        <input type="radio" name="action" value="OK" ' . ("OK" === $_REQUEST['action'] ? ' checked' : '') . '> = Approuver';
+    echo '        <input type="radio" name="action" value="KO" ' . ("KO" === $_REQUEST['action'] ? ' checked' : '') . '> = REFUSER';
     echo '        cet utilisateur';
     echo '  </td>';
     echo " </tr>\n";

@@ -18,21 +18,20 @@ $page = 1;
 $xord  = getparam('xord', 'N');// N = Nom
 $page  = getparam('pg');
 $init  = getparam('init');
+$menu_user_active = 'L';
 
 ob_start();
 open_page(SITENAME . " : Liste des utilisateurs enregistrés", $root);
 navadmin($root, "Liste des utilisateurs");
 zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
 echo '<div id="col_main_adm">';
-// Lister les actes
-menu_users('L');
+require(__DIR__ . '/../templates/admin/_menu-user.php');
 echo '<h2>Utilisateurs enregistrés du site ' . SITENAME . '</h2>';
 
 if (isset($udbname)) {
     msg('ATTENTION : Base des utilisateurs déportée sur ' . $udbaddr . "/" . $udbuser . "/" . $udbname . "/" . EA_UDB . "</p>", 'info');
 }
 
-$baselink = $root . '/admin/listusers.php';
 //$request = "SELECT DISTINCT upper(left(NOM,1)) AS init FROM ".EA_UDB."_user3 ORDER BY init";
 // Sélectionner et grouper sur initiale utilisateur et ascii(initiale), ordonner code ascii ascendant pour avoir + grand code (accentué) en dernier
 $request = "SELECT  alphabet.init  FROM ( SELECT upper(left(NOM,1)) AS init,ascii(upper(left(NOM,1)))  AS oo FROM " . EA_UDB . "_user3 GROUP BY init,oo  ORDER BY init , oo ASC) AS alphabet GROUP BY init";
@@ -43,7 +42,7 @@ while ($row = EA_sql_fetch_row($result)) {
     if ($row[0] == $init) {
         $alphabet .= '<b>' . $row[0] . '</b> ';
     } else {
-        $alphabet .= '<a href="' . $baselink . '?xord=' . $xord . '&amp;init=' . $row[0] . '">' . $row[0] . '</a> ';
+        $alphabet .= '<a href="' . $root . '/admin/listusers.php?xord=' . $xord . '&amp;init=' . $row[0] . '">' . $row[0] . '</a> ';
     }
 }
 echo '<p align="center">' . $alphabet . '</p>';
@@ -54,15 +53,15 @@ if ($init == "") {
     $initiale = '&amp;init=' . $init;
 }
 
-$hlogin = '<a href="' . $baselink . '?xord=L' . $initiale . '">Login</a>';
-$hnoms  = '<a href="' . $baselink . '?xord=N' . $initiale . '">Nom</a>';
-$hid    = '<a href="' . $baselink . '?xord=I' . $initiale . '">ID</a>';
-$hacces = '<a href="' . $baselink . '?xord=A' . $initiale . '">Niveau d\'accès</a>';
-$hstatu = '<a href="' . $baselink . '?xord=S' . $initiale . '">Statut</a>';
-$hsolde = '<a href="' . $baselink . '?xord=D' . $initiale . '">Solde</a>';
-$hrecha = '<a href="' . $baselink . '?xord=R' . $initiale . '">Rechargé</a>';
-$hconso = '<a href="' . $baselink . '?xord=C' . $initiale . '">Consommés</a>';
-$baselink = $baselink . '?xord=' . $xord . $initiale;
+$hlogin = '<a href="' . $root . '/admin/listusers.php?xord=L' . $initiale . '">Login</a>';
+$hnoms  = '<a href="' . $root . '/admin/listusers.php?xord=N' . $initiale . '">Nom</a>';
+$hid    = '<a href="' . $root . '/admin/listusers.php?xord=I' . $initiale . '">ID</a>';
+$hacces = '<a href="' . $root . '/admin/listusers.php?xord=A' . $initiale . '">Niveau d\'accès</a>';
+$hstatu = '<a href="' . $root . '/admin/listusers.php?xord=S' . $initiale . '">Statut</a>';
+$hsolde = '<a href="' . $root . '/admin/listusers.php?xord=D' . $initiale . '">Solde</a>';
+$hrecha = '<a href="' . $root . '/admin/listusers.php?xord=R' . $initiale . '">Rechargé</a>';
+$hconso = '<a href="' . $root . '/admin/listusers.php?xord=C' . $initiale . '">Consommés</a>';
+$baselink = $root . '/admin/listusers.php?xord=' . $xord . $initiale;
 
 switch ($xord) {
     case "L":

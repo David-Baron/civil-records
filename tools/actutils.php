@@ -102,7 +102,7 @@ function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = n
     }
 
     echo '<link rel="stylesheet" href="' . $root . '/assets/css/actes_print.css" type="text/css" media="print">';
-    
+
     if (file_exists(__DIR__ . '/../_config/js_externe_header.inc.php')) {
         include(__DIR__ . '/../_config/js_externe_header.inc.php');
     }
@@ -116,7 +116,7 @@ function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = n
         echo $js;
         echo '</script>';
     }
-        
+
     echo INCLUDE_HEADER;
     if ($addhead !== null) {
         echo $addhead;
@@ -355,71 +355,6 @@ function statistiques($vue = "T")
     return $menu_actes;
 }
 
-function menu_admin($root, $userlevel)
-{
-    global $userlogin;
-    $login = '&nbsp; &nbsp;&lt;' . $userlogin . '&gt;';
-
-    echo '<div class="menu_zone">' . "\n";
-    echo '<div class="menu_titre">Administration' . $login . '</div>' . "\n";
-    echo '<div class="menuCorps"><dl>' . "\n";
-    if ($userlevel >= 5) {
-        echo '<dt><a href="' . $root . '/admin/index.php">Inventaire des actes</a></dt>' . "\n";
-    }
-    if ($userlevel >= CHANGE_PW) {
-        echo '<dt><a href="' . $root . '/changepw.php">Changer le mot de passe</a></dt>' . "\n";
-    }
-    if ($userlevel >= 5) {
-        echo '<dt><a href="' . $root . '/admin/charge.php">Charger des actes NIMEGUE</a></dt>' . "\n";
-    }
-    if ($userlevel >= 6) {
-        echo '<dt><a href="' . $root . '/admin/chargecsv.php">Charger des actes CSV</a></dt>' . "\n";
-    }
-    if ($userlevel >= 5) {
-        echo '<dt><a href="' . $root . '/admin/supprime.php">Supprimer des actes</a></dt>' . "\n";
-        echo '<dt><a href="' . $root . '/admin/exporte.php">Réexporter des actes</a></dt>' . "\n";
-    }
-    if ($userlevel >= 7) {
-        echo '<dt><a href="' . $root . '/admin/maj_sums.php">Administrer les données</a></dt>' . "\n";
-    }
-    if ($userlevel >= 9) {
-        echo '<dt><a href="' . $root . '/admin/listusers.php">Administrer les utilisateurs</a></dt>' . "\n";
-        echo '<dt><a href="' . $root . '/admin/gest_params.php">Administrer le logiciel</a></dt>' . "\n";
-    }
-    echo '<dt><a href="' . $root . '/admin/aide/aide.html">Aide</a></dt>' . "\n";
-    echo '<dt><a href="' . $root . '/index.php?act=logout">Déconnexion</a></dt>' . "\n";
-    echo '</dl></div>' . "\n";
-    echo '</div>' . "\n";
-}
-
-function menu_users($current)
-{
-    global $udbname;
-    echo '<p align="center"><strong>Administration utilisateurs : </strong>';
-    showmenu('Lister', 'listusers.php', 'L', $current, false);
-    showmenu('Ajouter', 'gestuser.php?id=-1', 'A', $current);
-    if (!isset($udbname)) { // réservé à la base principale
-        showmenu('Importer', 'loaduser.php', 'I', $current);
-        showmenu('Exporter/Supprimer', 'expsupuser.php', 'E', $current);
-        showmenu('Informer', 'envoimail.php', 'M', $current);
-        showmenu('Modifications groupées', 'gestpoints.php', 'S', $current);
-    }
-    echo '</p>';
-}
-
-
-function menu_software($current)
-{
-    global $userlevel;
-    echo '<p align="center"><strong>Administration du logiciel : </strong>';
-    showmenu('Paramétrage', 'gest_params.php', 'P', $current, false);
-    showmenu('Etiquettes', 'gest_labels.php', 'Q', $current);
-    showmenu('Etat serveur', 'serv_params.php', 'E', $current);
-    showmenu('Fitrage IP', 'gesttraceip.php', 'F', $current);
-    showmenu('Index', 'gestindex.php', 'I', $current);
-    showmenu('Journal', 'listlog.php', 'J', $current);
-    echo '</p>';
-}
 
 function showmenu($texte, $proc, $id, $current, $barre = true)
 {
@@ -427,7 +362,7 @@ function showmenu($texte, $proc, $id, $current, $barre = true)
         echo ' | ';
     }
     if ($id == $current) {
-        echo '<strong><a href="' . $proc . '">' . $texte . '</a></strong>';
+        echo '<a href="' . $proc . '" class="bolder">' . $texte . '</a>';
     } else {
         echo '<a href="' . $proc . '">' . $texte . '</a>';
     }
@@ -481,17 +416,6 @@ function menu_public()
     echo '</div>' . "\n";
 }
 
-function show_certifications()
-{
-    global $root;
-    // Validation XHTML
-    $host = $_SERVER['HTTP_HOST'];
-    $uri  = rtrim($_SERVER['PHP_SELF'], "/\\");
-    echo '<div class="certificats">' . "\n";
-    echo '<a href="http://validator.w3.org/check?uri=http://' . $host . $uri . '">';
-    echo '<img src="' . $root . '/img/valid-xhtml-10.gif" alt="Site Valide XHTML 1.0" border="0" />';
-    echo '</a></div>' . "\n";
-}
 
 function show_pub_menu()
 {
@@ -504,12 +428,12 @@ function show_pub_menu()
     echo '</div>' . "\n";
 }
 
-function zone_menu($admin, $userlevel, $pp = array())
+function zone_menu($admin, int $userlevel, $pp = array())
 {
     //affice les menus standardises
     global $root;
     $menu_actes = '';
-    echo '<div id="col_menu">' . "\n";
+    echo '<div id="col_menu">';
     if (!isset($pp['f']) or ($pp['f'] != 'N')) {
         form_recherche($root);
     }
@@ -526,9 +450,9 @@ function zone_menu($admin, $userlevel, $pp = array())
          * } 
          */
     } else {
-        menu_admin($root, $userlevel);
+        require(__DIR__ . '/../templates/admin/_menu-admin.php');
     }
-    echo '</div>' . "\n";
+    echo '</div>';
     return $menu_actes;
 }
 
@@ -604,18 +528,16 @@ function navigation($root = "", $level = 1, $type = "", $commune = null, $patron
     echo '</div>' . "\n";
 }
 
-function navadmin($root = "", $current = '')
+function navadmin($root = '', $current = '')
 {
     echo '<div class="navigation">';
-    echo 'Navigation';
-    echo ' :: <a href="' . $root . '/index.php">Accueil</a>' . "\n";
+    echo '<strong>Civil-Records</strong> | <a href="' . $root . '/admin/index.php">Administration</a>';
     if ($current == '') {
-        echo ' &gt; Administration' . "\n";
+        echo ' &gt; Tableau de bord';
     } else {
-        echo ' &gt; <a href="' . $root . '/admin/index.php">Administration</a>' . "\n";
-        echo ' &gt; ' . $current . "\n";
+        echo ' &gt; ' . $current;
     }
-    echo '</div>' . "\n";
+    echo '</div>';
 }
 
 function getCommunes($params)   // Utilisée pour remplir dynamiquement une listbox selon le type d'actes
@@ -807,23 +729,18 @@ function listbox_divers($fieldname, $default, $tous = 0)
     echo " </select>\n";
 }
 
-function listbox_users($fieldname, $default, $levelmin, $zero = 0, $txtzero = '')
+function listbox_users($fieldname, $default, int $minUserlevel, $txtzero = '')
 {
-    global $u_db;
-    $request = "SELECT ID, NOM, PRENOM FROM " . EA_UDB . "_user3 WHERE LEVEL >= " . $levelmin . " ORDER BY NOM,PRENOM";
-    //optimize($request,$u_db);
-    if ($result = EA_sql_query($request, $u_db)) {
-        $i = 1;
-        echo '<select name="' . $fieldname . '">' . "\n";
-        if ($zero == 1) {
-            echo '<option ' . selected_option(0, $default) . '>' . $txtzero . '</option>' . "\n";
-        }
-        while ($row = EA_sql_fetch_array($result)) {
-            echo '<option ' . selected_option($row["ID"], $default) . '>' . $row["NOM"] . " " . $row["PRENOM"] . '</option>' . "\n";
-            $i++;
-        }
+    $userModel = new UserModel();
+    $users = $userModel->findAllWithMinLevel($minUserlevel);
+    echo '<select name="' . $fieldname . '">';
+    if ($default == 0 && $txtzero != '') {
+        echo '<option value="0" selected>' . $txtzero . '</option>';
     }
-    echo " </select>\n";
+    foreach ($users as $user) {
+        echo '<option value="' . $user["ID"] . '"' . ($user["ID"] == $default ? ' selected' : '') . '>' . $user["nom"] . " " . $user["prenom"] . '</option>';
+    }
+    echo " </select>";
 }
 
 function show_simple_item($retrait, $format, $info, $label, $info2 = "", $url = "")
@@ -1486,7 +1403,7 @@ function pagination($nbtot, &$page, $href, &$listpages, &$limit)
 
 function actions_deposant($userid, $depid, $actid, $typact)  // version graphique
 {
-    global $path, $userlevel, $u_db;
+    global $root, $path, $userlevel, $u_db;
     $req = "SELECT NOM,PRENOM FROM " . EA_UDB . "_user3 WHERE (ID=" . $depid . ")";
     $curs = EA_sql_query($req, $u_db);
     if (EA_sql_num_rows($curs) == 1) {
@@ -1499,10 +1416,10 @@ function actions_deposant($userid, $depid, $actid, $typact)  // version graphiqu
         echo '<td align="center">&nbsp;' . "\n";
         echo $depinfo . ' ';
         if ($typact == 'M' or $typact == 'V') {
-            echo '<a href="' . $path . '/permute.php?xid=' . $actid . '&amp;xtyp=' . $typact . '">' . icone("P") . '</a> - ';
+            echo '<a href="' . $path . '/permute.php?xid=' . $actid . '&amp;xtyp=' . $typact . '"><img width="11" hspace="7" height="13" title="Permuter" alt="Permuter" src="' . $root . '/assets/img/permuter.gif"></a> - ';
         }
-        echo '<a href="' . $path . '/edit_acte.php?xid=' . $actid . '&amp;xtyp=' . $typact . '">' . icone("M") . '</a>';
-        echo ' - <a href="' . $path . '/suppr_acte.php?xid=' . $actid . '&amp;xtyp=' . $typact . '">' . icone("S") . '</a>';
+        echo '<a href="' . $path . '/edit_acte.php?xid=' . $actid . '&amp;xtyp=' . $typact . '"><img width="11" hspace="7" height="13" title="Modifier" alt="Modifier" src="' . $root . '/assets/img/modifier.gif"></a>';
+        echo ' - <a href="' . $path . '/suppr_acte.php?xid=' . $actid . '&amp;xtyp=' . $typact . '"><img width="11" hspace="7" height="13" title="Supprimer" alt="Supprimer" src="' . $root . '/assets/img/supprimer.gif"></a>';
         echo '&nbsp;</td>' . "\n";
     } else {
         echo '<td align="center">&nbsp;';
@@ -1515,8 +1432,8 @@ function show_depart($depart)
 {
     if ($depart <> "") {
         return " [" . $depart . ']';
-    } 
-    
+    }
+
     return "";
 }
 

@@ -472,3 +472,7 @@ th {
 }
 
 .bandeau {}
+
+.bolder {
+    font-weight: bolder;
+}

@@ -3,7 +3,7 @@ define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
-
+require(__DIR__ . '/../next/Model/UserModel.php');
 
 my_ob_start_affichage_continu();
 
@@ -71,6 +71,7 @@ function init_page($head = "")
             $js = "function updatemessage() { document.getElementById('topmsg').innerHTML = document.getElementById('finalmsg').innerHTML ; }";
             $bodyaction = " onload='updatemessage()'";
         }
+        $menu_data_active = 'R';
         open_page($titre, $root, $js, $bodyaction, $head);
 ?>
         <script type="text/javascript">
@@ -81,26 +82,15 @@ function init_page($head = "")
 <?php
 
         // Ajaxify Your PHP Functions
-        include("../tools/PHPLiveX/PHPLiveX.php");
+        include(__DIR__ ."/../tools/PHPLiveX/PHPLiveX.php");
         $ajax = new PHPLiveX(array("getBkFiles"));
         $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
 
         navadmin($root, $titre);
         zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
-        echo '<div id="col_main_adm">';
+        echo '<div id="col_main">';
         if ($moderestore) {
-            echo '<p align="center"><strong>Administration des données : </strong>';
-            showmenu('Statistiques', 'maj_sums.php', 'S', 'R', false);
-            if ($userlevel > 7) {
-                showmenu('Localités', 'listgeolocs.php', 'L', 'R');
-            }
-            showmenu('Ajout d\'un acte', 'ajout_1acte.php', 'A', 'R');
-            if ($userlevel > 7) {
-                showmenu('Corrections groupées', 'corr_grp_acte.php', 'G', 'R');
-                showmenu('Backup', 'exporte.php?Destin=B', 'B', 'R');
-                showmenu('Restauration', 'charge.php?Origine=B', 'R', 'R');
-            }
-            echo '</p>';
+            require(__DIR__ . '/../templates/admin/_menu_data.php');
         }
         $pageinited = true;
     }
@@ -280,12 +270,12 @@ $mdb = load_zlabels($TypeActes, $lg);
 
 $Dedoublon  = getparam('Dedoublon');
 
-$Filiation  = ischecked('Filiation');
-$AnneeVide  = ischecked('AnneeVide');
-$AVerifier  = ischecked('AVerifier');
-$logOk      = ischecked('LogOk');
-$logKo      = ischecked('LogKo');
-$logRed     = ischecked('LogRed');
+$Filiation  = getparam('Filiation', 0); // for checked
+$AnneeVide  = getparam('AnneeVide', 0); // for checked
+$AVerifier  = getparam('AVerifier', 0); // for checked
+$logOk      = getparam('LogOk', 0); // for checked
+$logKo      = getparam('LogKo', 0); // for checked
+$logRed     = getparam('LogRed', 0); // for checked
 $deposant   = getparam('deposant');
 $passlign   = getparam('passlign');
 if ($passlign == '') {
@@ -296,7 +286,7 @@ $trans           = getparam('trans');
 $verif           = getparam('verif');
 $commune = '';
 $depart = '';
-$NewId      = ischecked('NewId');
+$NewId      = getparam('NewId', 0); // for checked
 $url_de_base = basename($_SERVER['PHP_SELF']) . '?action=go&amp;Origine=' . $Origine;
 $multiples_communes = 0;
 
@@ -995,10 +985,10 @@ if ($missingargs) {
     echo " <tr>\n";
     echo '  <td align="right">Type des actes : </td>' . "\n";
     echo '  <td>';
-    echo '        <input type="radio" name="TypeActes" value="N"' . checked($TypeActes, 'N') . $ajaxbackup . ' />Naissances<br />';
-    echo '        <input type="radio" name="TypeActes" value="M"' . checked($TypeActes, 'M') . $ajaxbackup . ' />Mariages<br />';
-    echo '        <input type="radio" name="TypeActes" value="D"' . checked($TypeActes, 'D') . $ajaxbackup . ' />Décès<br />';
-    echo '        <input type="radio" name="TypeActes" value="V"' . checked($TypeActes, 'V') . $ajaxbackup . ' />Actes divers<br />';
+    echo '        <input type="radio" name="TypeActes" value="N"' . ($TypeActes === 'N' ? ' checked' : '') . $ajaxbackup . '>Naissances<br>';
+    echo '        <input type="radio" name="TypeActes" value="M"' . ($TypeActes === 'M' ? ' checked' : '') . $ajaxbackup . '>Mariages<br>';
+    echo '        <input type="radio" name="TypeActes" value="D"' . ($TypeActes === 'D' ? ' checked' : '') . $ajaxbackup . '>Décès<br>';
+    echo '        <input type="radio" name="TypeActes" value="V"' . ($TypeActes === 'V' ? ' checked' : '') . $ajaxbackup . '>Actes divers<br>';
     echo '        <br />';
     echo '  </td>';
     echo " </tr>\n";
@@ -1057,28 +1047,28 @@ if ($missingargs) {
         echo " <tr>\n";
         echo '  <td align="right">Dédoublonnage : </td>' . "\n";
         echo '  <td>';
-        echo '        <input type="radio" name="Dedoublon" value="N"' . checked($Dedoublon, 'N') . ' />Sur la combinaison date+nom+prenom<br />';
-        echo '        <input type="radio" name="Dedoublon" value="I"' . checked($Dedoublon, 'I') . ' />Sur le n° ID de NIMEGUE (Ignorer si existe déjà)<br />';
-        echo '        <input type="radio" name="Dedoublon" value="M"' . checked($Dedoublon, 'M') . ' />Sur le n° ID de NIMEGUE (Mettre à jour si existe déjà)<br />';
-        echo '        <input type="radio" name="Dedoublon" value="A"' . checked($Dedoublon, 'A') . ' />Aucune vérification<br />';
+        echo '        <input type="radio" name="Dedoublon" value="N"' . ($Dedoublon === 'N' ? ' checked' : '') . '>Sur la combinaison date+nom+prenom<br>';
+        echo '        <input type="radio" name="Dedoublon" value="I"' . ($Dedoublon === 'I' ? ' checked' : '') . '>Sur le n° ID de NIMEGUE (Ignorer si existe déjà)<br>';
+        echo '        <input type="radio" name="Dedoublon" value="M"' . ($Dedoublon === 'M' ? ' checked' : '') . '>Sur le n° ID de NIMEGUE (Mettre à jour si existe déjà)<br>';
+        echo '        <input type="radio" name="Dedoublon" value="A"' . ($Dedoublon === 'A' ? ' checked' : '') . '>Aucune vérification<br/>';
         echo '        <br />';
         echo '  </td>';
         echo " </tr>\n";
         echo " <tr>\n";
         echo '  <td align="right">Filtrage des données : </td>' . "\n";
         echo '  <td>';
-        echo '        <input type="checkbox" name="Filiation" value="1"' . checked($Filiation) . ' />Eliminer les actes sans filiation <br />';
-        echo '        <input type="checkbox" name="AnneeVide" value="1"' . checked($AnneeVide) . ' />Eliminer les actes dont l\'année est incomplète (ex. 17??)<br />';
-        echo '        <input type="checkbox" name="AVerifier" value="1"' . checked($AVerifier) . ' />Eliminer les actes "A VERIFIER" ("VERIF" dans zone Cote) <br />';
+        echo '        <input type="checkbox" name="Filiation" value="1"' . ($Filiation == 1 ? ' checked' : '') . '>Eliminer les actes sans filiation <br>';
+        echo '        <input type="checkbox" name="AnneeVide" value="1"' . ($AnneeVide == 1 ? ' checked' : '') . '>Eliminer les actes dont l\'année est incomplète (ex. 17??)<br>';
+        echo '        <input type="checkbox" name="AVerifier" value="1"' . ($AVerifier == 1 ? ' checked' : '') . '>Eliminer les actes "A VERIFIER" ("VERIF" dans zone Cote) <br>';
         echo '  </td>';
         echo " </tr>\n";
         echo " <tr>\n";
         echo '  <td align="right"> <br />Contrôle des résultats : </td>' . "\n";
         echo '  <td>';
 
-        echo '    <br /><input type="checkbox" name="LogOk" value="1"' . checked($logOk) . ' />Actes chargés &nbsp; ';
-        echo '        <input type="checkbox" name="LogKo" value="1"' . checked($logKo) . ' />Actes erronés &nbsp; ';
-        echo '        <input type="checkbox" name="LogRed" value="1"' . checked($logRed) . ' />Actes redondants<br />';
+        echo '    <br><input type="checkbox" name="LogOk" value="1"' . ($logOk == 1 ? ' checked' : '') . '>Actes chargés ';
+        echo '        <input type="checkbox" name="LogKo" value="1"' . ($logKo == 1 ? ' checked' : '') . '>Actes erronés ';
+        echo '        <input type="checkbox" name="LogRed" value="1"' . ($logRed == 1 ? ' checked' : '') . '>Actes redondants<br>';
         echo '  </td>';
         echo " </tr>\n";
         if ($userlevel >= 8) {

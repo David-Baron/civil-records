@@ -24,12 +24,14 @@ $page  = getparam('pg');
 $xdel  = getparam('xdel');
 $xfilter = getparam('xfilter');
 
+$menu_software_active = 'J';
+
 ob_start();
 open_page(SITENAME . " : Activité du site", $root);
 navadmin($root, "Activité du site");
 zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
 echo '<div id="col_main_adm">';
-menu_software('J');
+require(__DIR__ . '/../templates/admin/_menu-software.php');
 
 // Suppression des informations anciennes
 if ($xdel > 31) {

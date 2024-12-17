@@ -34,12 +34,13 @@ if ($action <> "") {
     }
 }
 
+$menu_software_active = 'E';
 ob_start();
 open_page("Paramètres serveur", $root);
 navadmin($root, "Paramètres serveur");
 zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
-echo '<div id="col_main_adm">';
-menu_software('E');
+echo '<div id="col_main">';
+require(__DIR__ . '/../templates/admin/_menu-software.php');
 
 $request = "SELECT valeur FROM " . EA_DB . "_params WHERE param = 'EA_MAINTENANCE'";
 $result = EA_sql_query($request);

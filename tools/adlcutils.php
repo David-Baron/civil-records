@@ -133,8 +133,8 @@ function nogetargs($chaine)
     $x = strpos($chaine, "?");
     if ($x > 0) {
         return mb_substr($chaine, 0, $x);
-    } 
-    
+    }
+
     return $chaine;
 }
 
@@ -144,35 +144,18 @@ function selected_option($valeur, $defaut)  // pour listbox
     $defaut = strval($defaut);
     if ($valeur == $defaut) {
         return 'value="' . $valeur . '" selected="selected"';
-    } 
-    
+    }
+
     return 'value="' . $valeur . '"';
 }
 
-function checked($valeur, $defaut = 1)  // retourne le mot checked si $valeur=1 pour CkeckBox ou radiobutton
-{
-    if ($valeur == $defaut) {
-        return ' checked="checked"';
-    } 
-    
-    return '';
-}
-
-function ischecked($name)  // retourne 1 ou 0 suivant que le parmetres est checké ou pas
-{
-    if (!isset($_REQUEST[$name])) {
-        return 0;
-    } 
-    
-    return $_REQUEST[$name];
-}
 
 function strmin($str1, $str2)
 { // Retourne la chaine la plus en avant par ordre alphabétique
     if ($str1 > $str2) {
         return $str2;
-    } 
-    
+    }
+
     return $str1;
 }
 
@@ -180,30 +163,9 @@ function strmax($str1, $str2)
 { // Retourne la chaine la plus en arriere par ordre alphabétique
     if ($str1 < $str2) {
         return $str2;
-    } 
-
-    return $str1;
-}
-
-function icone($action)
-{
-    global $root;
-    switch ($action) {
-        case "P":
-            $alt = "Permuter";
-            $ima = "permuter.gif";
-            break;
-        case "S":
-            $alt = "Supprimer";
-            $ima = "supprimer.gif";
-            break;
-        case "M":
-            $alt = "Modifier";
-            $ima = "modifier.gif";
-            break;
     }
 
-    return '<img width="11" hspace="7" height="13" border="0" title="' . $alt . '" alt="' . $alt . '" src="' . $root . '/assets/img/' . $ima . '">';
+    return $str1;
 }
 
 function execute_script_sql($filename, $prefixe = "", $selecttxt = "")

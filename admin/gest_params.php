@@ -60,21 +60,15 @@ if ($xgroupe == '') {
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
+$menu_software_active = 'P';
+
 ob_start();
 open_page("Paramétrage du logiciel", $root, $js_show_help);
 navadmin($root, "Paramétrage du logiciel");
 zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
 ?>
 <div id="col_main">
-    <p>
-        <strong>Administration du logiciel : </strong>
-        <strong><a href="<?= $root; ?>/admin/gest_params.php">Paramétrage</a></strong>
-        | <a href="<?= $root; ?>/admin/gest_labels.php">Etiquettes</a>
-        | <a href="<?= $root; ?>/admin/serv_params.php">Etat serveur</a>
-        | <a href="<?= $root; ?>/admin/gesttraceip.php">Fitrage IP</a>
-        | <a href="<?= $root; ?>/admin/gestindex.php">Index</a>
-        | <a href="<?= $root; ?>/admin/listlog.php">Journal</a>
-    </p>
+    <?php require(__DIR__ . '/../templates/admin/_menu-software.php'); ?>
     <h2>Paramétrage du site <?= SITENAME; ?></h2>
     <p>
         <strong>Paramètres : </strong>
@@ -144,7 +138,7 @@ zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
                     <td>
                         <input type="hidden" name="parname<?= $i; ?>" value="<?= $row["param"]; ?>">
                         <?php if ($row["type"] == "B") { ?>
-                            <input type="checkbox" name="parvalue<?= $i; ?>" value="1" <?= checked($row["valeur"]); ?>>
+                            <input type="checkbox" name="parvalue<?= $i; ?>" value="1" <?= ($row["valeur"] == 1 ? ' checked' : ''); ?>>
                         <?php } elseif ($row["type"] == "L") {
                             $leschoix = explode(";", $row["listval"]);
                         ?>

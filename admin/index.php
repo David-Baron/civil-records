@@ -24,31 +24,12 @@ $cptfil = 0;
 $xtyp  = getparam('xtyp', 'A');
 
 $menu_actes = "";
-if ($xtyp == "N") {
-    $menu_actes .= "Naissances" . " | ";
-} else {
-    $menu_actes .= '<a href="' . mkurl($root . "/admin/index.php", "N") . '">' . "Naissances" . "</a> | ";
-}
-if ($xtyp == "M") {
-    $menu_actes .= "Mariages" . " | ";
-} else {
-    $menu_actes .= '<a href="' . mkurl($root . "/admin/index.php", "M") . '">' . "Mariages" . "</a> | ";
-}
-if ($xtyp == "D") {
-    $menu_actes .= "Décès" . " | ";
-} else {
-    $menu_actes .= '<a href="' . mkurl($root . "/admin/index.php", "D") . '">' . "Décès" . "</a> | ";
-}
-if ($xtyp == "V") {
-    $menu_actes .= "Divers";
-} else {
-    $menu_actes .= '<a href="' . mkurl($root . "/admin/index.php", "V") . '">' . "Divers" . "</a>";
-}
-if ($xtyp == "A") {
-    $menu_actes .= " | Tous";
-} else {
-    $menu_actes .= ' | <a href="' . mkurl($root . "/admin/index.php", "A") . '">' . "Tous" . '</a>';
-}
+$menu_actes .= '<a href="' . $root . '/admin/index.php?xtyp=N"' . ($xtyp == "N" ? ' class="bolder"' : '') . '>' . "Naissances" . "</a>";
+$menu_actes .= ' | <a href="' . $root . '/admin/index.php?xtyp=M"' . ($xtyp == "M" ? ' class="bolder"' : '') . '>' . "Mariages" . "</a>";
+$menu_actes .= ' | <a href="' . $root . '/admin/index.php?xtyp=D"' . ($xtyp == "D" ? ' class="bolder"' : '') . '>' . "Décès" . "</a>";
+$menu_actes .= ' | <a href="' . $root . '/admin/index.php?xtyp=V"' . ($xtyp == "V" ? ' class="bolder"' : '') . '>' . "Divers" . "</a>";
+$menu_actes .= ' | <a href="' . $root . '/admin/index.php?xtyp=A"' . ($xtyp == "A" ? ' class="bolder"' : '') . '>' . "Tous" . '</a>';
+
 
 /**
  * @deprecated Because: min version need to be checked on install and version up is backward compatible...
@@ -115,7 +96,7 @@ $row = EA_sql_fetch_row($result);
 $nb_cnt = $row[0];
 if ($nb_sum <> $nb_cnt and $nb_cnt > 0) {
     msg("Attention : les statistiques doivent être recalculées");
-    echo '<p><a href="maj_sums.php"><b>Calcul des statistiques</b></a></p>';
+    echo '<p><a href="' . $root . '/admin/maj_sums.php"><b>Calcul des statistiques</b></a></p>';
 }
 
 echo '</div>';

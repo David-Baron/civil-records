@@ -7,7 +7,7 @@
         </div>
         <div id="copyright2" class="copyright2">
             <p class="copyright2">
-                <em><a href="http://expocartes.monrezo.be/">ExpoActes</a></em> version <?= EA_VERSION; ?> <?= $GLOBALS['EAg_BETA']; ?>(&copy;<em> 2005-<?= date("Y"); ?>, ADSoft)</em>
+                Ce site est propulsé par <em><a href="">Civil-Records</a></em>
             </p>
         </div>
     </div>

@@ -14,12 +14,12 @@ while ($userlevel < 9) {
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
 $T0 = time();
-$logOk      = ischecked('LogOk');
-$logKo      = ischecked('LogKo');
-$logRed     = ischecked('LogRed');
-$sendmail   = ischecked('SendMail');
+$logOk      = getparam('LogOk'); // for checked
+$logKo      = getparam('LogKo'); // for checked
+$logRed     = getparam('LogRed'); // for checked
+$sendmail   = getparam('SendMail'); // for checked
 $xdroits    = getparam('lelevel');
-$xregime    = getparam('regime', 2);// pas activé -> automatique
+$xregime    = getparam('regime', 2); // pas activé -> automatique
 $message    = getparam('Message');
 $xaction    = getparam('action');
 if ($xaction == 'submitted') {
@@ -36,14 +36,15 @@ $cptdeja = 0;
 $avecidnim = false;
 $today = today();
 $userid = current_user("ID");
+$menu_user_active = 'I';
 
 ob_start();
 open_page("Chargement des utilisateurs (CSV)", $root);
 navadmin($root, "Chargement des utilisateurs CSV");
 zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
 echo '<div id="col_main_adm">';
-menu_users('I');
 
+require(__DIR__ . '/../templates/admin/_menu-user.php');
 if ($xaction == 'submitted') {
     // Données postées
     if(empty($_FILES['Users']['tmp_name'])) {
@@ -360,7 +361,7 @@ if($missingargs) {
     echo " <tr>\n";
     echo '  <td align="right">Envoi des codes d\'accès : </td>' . "\n";
     echo '  <td>';
-    echo '    <input type="checkbox" name="SendMail" value="1"' . checked($sendmail) . ' />Envoi automatique du mail ci-dessous&nbsp; ';
+    echo '    <input type="checkbox" name="SendMail" value="1"' . ($sendmail == 1 ? ' checked' : '') . ' />Envoi automatique du mail ci-dessous&nbsp; ';
     echo '  </td>';
     echo " </tr>\n";
 
@@ -374,9 +375,9 @@ if($missingargs) {
     echo " <tr>\n";
     echo '  <td align="right">Contrôle des résultats : </td>' . "\n";
     echo '  <td>';
-    echo '    <input type="checkbox" name="LogOk"  value="1"' . checked($logOk) . ' />Comptes créés &nbsp; ';
-    echo '    <input type="checkbox" name="LogKo"  value="1"' . checked($logKo) . ' />Comptes erronés &nbsp; ';
-    echo '    <input type="checkbox" name="LogRed" value="1"' . checked($logRed) . ' />Comptes redondants<br />';
+    echo '    <input type="checkbox" name="LogOk"  value="1"' . ($logOk == 1 ? ' checked' : '') . ' />Comptes créés &nbsp; ';
+    echo '    <input type="checkbox" name="LogKo"  value="1"' . ($logKo == 1 ? ' checked' : '') . ' />Comptes erronés &nbsp; ';
+    echo '    <input type="checkbox" name="LogRed" value="1"' . ($logRed == 1 ? ' checked' : '') . ' />Comptes redondants<br />';
     echo '  </td>';
     echo " </tr>\n";
     echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";

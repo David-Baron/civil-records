@@ -45,21 +45,21 @@ $enclosed = '"';  // ou '"'
 $htmlpage = false;
 $missingargs = false;
 $oktype = false;
-
+$menu_user_active = 'E';
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
 if ($xaction == 'submitted') {
     // Données postées
     if ($lelevel >= 9 && $suppr == 'Y') {
         init_page();
-        menu_users('E');
+        require(__DIR__ . '/../templates/admin/_menu-user.php');
         msg('Interdit de supprimer les administrateurs !');
         $missingargs = true;
     }
 } else {
     $missingargs = true;  // par défaut
     init_page();
-    menu_users('E');
+    require(__DIR__ . '/../templates/admin/_menu-user.php');
 }
 if (! $missingargs) {
     $condlevel = "level>=0";
@@ -106,7 +106,7 @@ if (! $missingargs) {
             $suppr = 'N'; // retour à la procdure de base
         } else {
             init_page();
-            menu_users('E');
+            require(__DIR__ . '/../templates/admin/_menu-user.php');
 ?>
             <form method="post">
                 <h2>Confirmation de la suppression</h2>
