@@ -1,13 +1,16 @@
 <?php
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
-$userlogin = "";
-$userlevel = logonok(8);
-while ($userlevel < 8) {
-    login($root);
+if (!$userAuthorizer->isGranted(8)) {
+    $response = new RedirectResponse("$root/admin/");
+    $response->send();
+    exit();
 }
 
 $xcomm = $xpatr = $page = "";
@@ -18,7 +21,7 @@ $missingargs = true;
 ob_start();
 open_page("Test e-mail", $root);
 navadmin($root, "Test du mail");
-zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+zone_menu(ADM, $session->get('user')['level'], array());//ADMIN STANDARD
 echo '<div id="col_main_adm">';
 echo "<h1>Test de l'envoi d'un mail</h1> \n";
 

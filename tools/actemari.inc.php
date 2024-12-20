@@ -1,12 +1,14 @@
 <?php
 
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 $lvl = 4;
 if (ADM == 10) $lvl = 5;
 
-$userlogin = "";
-$userlevel = logonok($lvl);
-while ($userlevel < $lvl) {
-    login($root);
+if (!$userAuthorizer->isGranted($lvl)) {
+    $response = new RedirectResponse("$root/");
+    $response->send();
+    exit();
 }
 
 $TIPlevel = 1;
@@ -38,7 +40,7 @@ if ($error == 0) {
         ob_start();
         open_page($title, $root);
         navigation($root, ADM + 4, 'M', $xcomm, $row["NOM"], $row["PRE"]);
-        zone_menu(ADM, $userlevel);
+        zone_menu(ADM, $session->get('user')['level']);
         echo '<div id="col_main">' . "\n";
 
         echo '<h2>Acte de mariage</h2>';

@@ -1,4 +1,7 @@
 <?php
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 define('ADM', 0); // Compatibility only
 $admtxt = ''; // Compatibility only
 require(__DIR__ . '/next/bootstrap.php');
@@ -274,6 +277,7 @@ if (getparam('direct') == 1) {  // ***** recherche directe ****
         $xtypV = (getparam('typact') == "V");
     }
 };
+
 $compmode = "I"; // Indexée par défaut mais ...
 if (((isin("FCS", $xcomp) >= 0  or isin("2478", $xzone) >= 0)  and !empty($xach))
     or ((isin("FCS", $xcomp2) >= 0 or isin("2478", $xzone2) >= 0) and !empty($xach2))
@@ -281,11 +285,12 @@ if (((isin("FCS", $xcomp) >= 0  or isin("2478", $xzone) >= 0)  and !empty($xach)
     or ($xpre . $xpre2 <> "")
 ) {
     $compmode = "F";
-} // Full scan
-$userlogin = "";
-$userlevel = logonok(3);
-while ($userlevel < 3) {
-    login($root);
+}
+
+if (!$userAuthorizer->isGranted(3)) {
+    $response = new RedirectResponse("$root/login.php");
+    $response->send();
+    exit();
 }
 
 $userid = current_user('ID');
@@ -320,7 +325,7 @@ if (current_user_solde() > 0 or RECH_ZERO_PTS == 1) {
         $xzone3 = "";
     }  // zone3 pas utilisé
 
-    if ((strlen(trim($xach . $xpre . $xach2 . $xpre2 . $xach3)) < RECH_MIN) and ($userlevel < 8)) {
+    if ((strlen(trim($xach . $xpre . $xach2 . $xpre2 . $xach3)) < RECH_MIN) and ($session->get('user')['level'] < 8)) {
         msg('La recherche doit porter sur au moins ' . RECH_MIN . ' caractères non blancs.');
     } elseif (!($xtypN or $xtypD or $xtypM or $xtypV)) {
         msg('La recherche doit porter sur au moins un des types d\'actes.');

@@ -186,7 +186,7 @@ function multisin($grand, $listpetits)
 function linkifie($texte, $mode)  // transforme en lien actif les noms de fichier image et les URL rencontrées
 // mode : 0 = ne rien faire, >0 activer les lien : 1 = séparés par des , ou des blancs ou  2 = séparés par des ;
 {
-    global $userlevel, $userlogin;
+    global $session;
     if ($mode == "2") {
         $separs = ";";
         $Saut_Ou_Espace = '<br/>';
@@ -290,13 +290,13 @@ function linkifie($texte, $mode)  // transforme en lien actif les noms de fichie
                         $ipublic = true;
                         if (isin(mb_strtoupper($urlimage), 'PRIVE') > -1) {
                             $ipublic = false;
-                            if ($userlevel < LEVEL_JPG_PRIVE) {
+                            if ($session->get('user')['level'] < LEVEL_JPG_PRIVE) {
                                 $result .= " ";
                             }    // On ne montre pas si prive et pas le niveau suffisant
                             else {
                                 $ipublic = true;
                             }
-                        } elseif (($userlogin == "") and (JPG_SI_LOGIN == 1)) {
+                        } elseif (($session->has('user') == false) && (JPG_SI_LOGIN == 1)) {
                             $cpt++;
                             $result .= $ecarte_element . 'Image' . $cpt . ' privée';    // On ne montre pas car login obligatoire
                             $ipublic = false;

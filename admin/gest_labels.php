@@ -1,4 +1,7 @@
 <?php
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
@@ -6,10 +9,10 @@ require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
 //define('EA_MASTER',"Y"); // pour editer les zones "Techniques"
 
-$userlogin = "";
-$userlevel = logonok(9);
-while ($userlevel < 9) {
-    login($root);
+if (!$userAuthorizer->isGranted(9)) {
+    $response = new RedirectResponse("$root/admin/");
+    $response->send();
+    exit();
 }
 
 function show_grp($grp, $current, $barre)
@@ -71,7 +74,7 @@ navadmin($root, "Paramétrage des étiquettes");
     }
 </script>
 <?php
-zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
+zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
 ?>
 <div id="col_main">
     <?php require(__DIR__ . '/../templates/admin/_menu-software.php'); ?>
@@ -313,5 +316,6 @@ zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
     </form>
 </div>
 <?php include(__DIR__ . '/../templates/front/_footer.php');
+
 $response->setContent(ob_get_clean());
 $response->send();

@@ -16,10 +16,32 @@ class UserModel extends DatabaseConnection
             }
         }
 
-        $sql = "SELECT * FROM " . EA_UDB . "_user3 WHERE $params ORDER BY NOM,PRENOM";
+        $sql = "SELECT * FROM " . $this->table_prefix . "_user3 WHERE $params ORDER BY NOM,PRENOM";
         $stmt = $this->db->prepare($sql);
         $stmt->execute($criteria);
         return $stmt->fetchAll();
+    }
+
+    public function findOneByCriteria(array $criteria)
+    {
+        $params = '';
+        $i = 0;
+        foreach ($criteria as $key => $value) {
+            if ($i === 0) {
+                $params .= "$key=:$key";
+            } else {
+                $params .= " AND $key=:$key";
+            }
+        }
+
+        $sql = "SELECT * FROM " . $this->table_prefix . "_user3 WHERE $params ORDER BY NOM,PRENOM";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($criteria);
+        if ($user = $stmt->fetch()) {
+            return $user;
+        }
+
+        return null;
     }
 
     public function findAllWithMinLevel(int $minUserlevel)
@@ -57,6 +79,31 @@ class UserModel extends DatabaseConnection
             ':pt_conso' => $user['pt_conso'],
             ':REM' => $user['REM'],
             ':libre' => $user['libre']
+        ]);
+    }
+
+    public function update(array $user)
+    {
+        $sql = "UPDATE " . $this->table_prefix . "_user3 SET login=:login, hashpass=:hashpass, nom=:nom, prenom=:prenom, 
+            email=:email, level=:level, regime=:regime, solde=:solde, maj_solde=:maj_solde, 
+            statut=:statut, pt_conso=:pt_conso, REM=:REM, libre=:libre 
+            WHERE ID=:ID";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':login' => $user['login'],
+            ':hashpass' => $user['hashpass'],
+            ':nom' => $user['nom'],
+            ':prenom' => $user['prenom'],
+            ':email' => $user['email'],
+            ':level' => $user['level'],
+            ':regime' => $user['regime'],
+            ':solde' => $user['solde'],
+            ':maj_solde' => $user['maj_solde'],
+            ':statut' => $user['statut'],
+            ':pt_conso' => $user['pt_conso'],
+            ':REM' => $user['REM'],
+            ':libre' => $user['libre'],
+            ':ID' => $user['ID']
         ]);
     }
 }

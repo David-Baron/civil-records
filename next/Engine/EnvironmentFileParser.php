@@ -1,7 +1,7 @@
 <?php
 
 
-class FileEnvironmentParser
+class EnvironmentFileParser
 {
     private array $variables = [
         

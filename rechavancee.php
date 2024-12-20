@@ -1,14 +1,18 @@
 <?php
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 define('ADM', 0); // Compatibility only
 $admtxt = ''; // Compatibility only
 require(__DIR__ . '/next/bootstrap.php');
 require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
-$userlogin = "";
-$userlevel = logonok(3);
-while ($userlevel < 3) {
-    login($root);
+if (!$userAuthorizer->isGranted(3)) {
+    $response = new RedirectResponse("$root/login.php");
+    $response->send();
+    exit();
 }
+
 
 $xcomm = "";
 $xpatr = "";
@@ -129,5 +133,6 @@ zone_menu(0, 0, array('s' => '', 'c' => 'O')); //PUBLIC STAT & CERT
     </div>
 </div>
 <?php include(__DIR__ . '/templates/front/_footer.php');
+
 $response->setContent(ob_get_clean());
 $response->send();

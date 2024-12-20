@@ -1,6 +1,6 @@
 <?php
 
-$userlogin = "";
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 $xcomm = "";
 $xpatr = "";
@@ -26,28 +26,29 @@ pathroot($root, $path, $xcomm, $xpatr, $page);
 
 if (($xpatr == "" or mb_substr($xpatr, 0, 1) == "_")) {
     // Lister les patronymes avec groupements si trop nombreux
-    $userlevel = logonok(2);
-    while ($userlevel < 2) {
-        login($root);
+    if (!$userAuthorizer->isGranted(2)) {
+        $response = new RedirectResponse("$root/");
+        $response->send();
+        exit();
     }
     ob_start();
     open_page($xcomm . " : " . $admtxt . "Naissances/Baptêmes", $root);
     navigation($root, ADM + 2, 'N', $xcomm);
-    zone_menu(ADM, $userlevel);
+    zone_menu(ADM, $session->get('user')['level']);
     echo '<div id="col_main">' . "\n";
     liste_patro_1($program, $path, $xcomm, $xpatr, "Naissances / Baptêmes", EA_DB . "_nai3", $gid, $note);
 } else {
     // Lister les actes
-    $userlevel = logonok(3);
-    while ($userlevel < 3) {
-        login($root);
+    if (!$userAuthorizer->isGranted(3)) {
+        $response = new RedirectResponse("$root/");
+        $response->send();
+        exit();
     }
-    $userid = current_user("ID");
 
     ob_start();
     open_page($xcomm . " : " . $admtxt . "Table des naissances/baptêmes", $root);
     navigation($root, ADM + 3, 'N', $xcomm, $xpatr);
-    zone_menu(ADM, $userlevel);
+    zone_menu(ADM, $session->get('user')['level']);
 
     echo '<div id="col_main">' . "\n";
     echo '<h2>Actes de naissance/baptême</h2>';
@@ -135,7 +136,7 @@ if (($xpatr == "" or mb_substr($xpatr, 0, 1) == "_")) {
             echo '<td>' . annee_seulement($ligne[2]) . '</td>';
             echo '<td><a href="' . $path . '/acte_naiss.php?xid=' . $ligne[3] . '&amp;xct=' . ctrlxid($ligne[0], $ligne[1]) . '">' . $ligne[0] . ' ' . $ligne[1] . '</a></td>';
             if (ADM == 10) {
-                actions_deposant($userid, $ligne[4], $ligne[3], 'N');
+                actions_deposant($session->get('user')['ID'], $ligne[4], $ligne[3], 'N');
             }
             echo '</tr>';
             $i++;

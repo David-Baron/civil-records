@@ -1,14 +1,17 @@
 <?php
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 $bypassTIP = 1; // pas de tracing ici
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
-$userlogin = "";
-$userlevel = logonok(9);
-while ($userlevel < 9) {
-    login($root);
+if (!$userAuthorizer->isGranted(9)) {
+    $response = new RedirectResponse("$root/admin/");
+    $response->send();
+    exit();
 }
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
@@ -24,7 +27,7 @@ $menu_software_active = 'F';
 ob_start();
 open_page("Gestion du filtrage IP", $root);
 navadmin($root, "Gestion du filtrage IP");
-zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+zone_menu(ADM, $session->get('user')['level'], array());//ADMIN STANDARD
 echo '<div id="col_main_adm">';
 require(__DIR__ . '/../templates/admin/_menu-software.php');
 admin_traceip();

@@ -1,6 +1,6 @@
 <?php
 
-$userlogin = "";
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 $xcomm = "";
 $xpatr = "";
@@ -25,28 +25,29 @@ pathroot($root, $path, $xcomm, $xpatr, $page);
 
 if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
     // Lister les patronymes avec groupements si trop nombreux
-    $userlevel = logonok(2);
-    while ($userlevel < 2) {
-        login($root);
+    if (!$userAuthorizer->isGranted(2)) {
+        $response = new RedirectResponse("$root/");
+        $response->send();
+        exit();
     }
 
     ob_start();
     open_page($xcomm . " : " . $admtxt . "Décès/Sépultures", $root);
     navigation($root, ADM + 2, 'D', $xcomm);
-    zone_menu(ADM, $userlevel);
+    zone_menu(ADM, $session->get('user')['level']);
     echo '<div id="col_main">' . "\n";
     liste_patro_1($program, $path, $xcomm, $xpatr, "Décès / Sépultures", EA_DB . "_dec3", $gid, $note);
 } else {
-    $userlevel = logonok(3);
-    while ($userlevel < 3) {
-        login($root);
+    if (!$userAuthorizer->isGranted(3)) {
+        $response = new RedirectResponse("$root/");
+        $response->send();
+        exit();
     }
-    $userid = current_user("ID");
 
     ob_start();
     open_page($xcomm . " : " . $admtxt . "Table des décès/sépultures", $root);
     navigation($root, ADM + 3, 'D', $xcomm, $xpatr);
-    zone_menu(ADM, $userlevel);
+    zone_menu(ADM, $session->get('user')['level']);
     echo '<div id="col_main">' . "\n";
     // Lister les actes
     echo '<h2>Actes de décès/sépulture</h2>';

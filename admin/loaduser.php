@@ -1,14 +1,16 @@
 <?php
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
-$userlogin = "";
-$userlogin = "";
-$userlevel = logonok(9);
-while ($userlevel < 9) {
-    login($root);
+if (!$userAuthorizer->isGranted(9)) {
+    $response = new RedirectResponse("$root/admin/");
+    $response->send();
+    exit();
 }
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
@@ -35,13 +37,12 @@ $cptadd = 0;
 $cptdeja = 0;
 $avecidnim = false;
 $today = today();
-$userid = current_user("ID");
 $menu_user_active = 'I';
 
 ob_start();
 open_page("Chargement des utilisateurs (CSV)", $root);
 navadmin($root, "Chargement des utilisateurs CSV");
-zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+zone_menu(ADM, $session->get('user')['level'], array());//ADMIN STANDARD
 echo '<div id="col_main_adm">';
 
 require(__DIR__ . '/../templates/admin/_menu-user.php');

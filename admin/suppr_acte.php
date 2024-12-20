@@ -1,14 +1,16 @@
 <?php
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
-$userlogin = "";
-$needlevel = 6;  // niveau d'accès (anciennement 5)
-$userlevel = logonok($needlevel);
-while ($userlevel < $needlevel) {
-    login($root);
+if (!$userAuthorizer->isGranted(6)) {
+    $response = new RedirectResponse("$root/admin/");
+    $response->send();
+    exit();
 }
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
@@ -22,7 +24,7 @@ $xconfirm = getparam('xconfirm');
 ob_start();
 open_page("Suppression d'un acte", $root);
 navadmin($root, "Suppression d'un acte");
-zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+zone_menu(ADM, $session->get('user')['level'], array());//ADMIN STANDARD
 echo '<div id="col_main_adm">';
 
 if ($xid == '' or $xtyp == '') {

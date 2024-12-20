@@ -1,20 +1,21 @@
 <?php
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 require(__DIR__ . '/../next/Model/UserModel.php');
 
-$userlogin = "";
-$needlevel = 6;  // niveau d'accès (anciennement 5)
-$userlevel = logonok($needlevel);
-while ($userlevel < $needlevel) {
-    login($root);
+if (!$userAuthorizer->isGranted(6)) {
+    $response = new RedirectResponse("$root/admin/");
+    $response->send();
+    exit();
 }
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
-$userid = current_user("ID");
 $missingargs = false;
 $oktype = false;
 $AnneeDeb   = getparam('AnneeDeb');
@@ -37,7 +38,7 @@ $ajax = new PHPLiveX(array("getCommunes"));
 $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
 
 navadmin($root, "Suppression d'actes");
-zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
+zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
 echo '<div id="col_main_adm">';
 
 if ($xaction == 'submitted' or $xaction == 'validated') {
@@ -58,8 +59,8 @@ if (! $missingargs) {
     $olddepos = getparam('olddepos', 0);
     $params = array(
         'xtdiv' => $xtdiv,
-        'userlevel' => $userlevel,
-        'userid' => $userid,
+        'userlevel' => $session->get('user')['level'],
+        'userid' => $session->get('user')['ID'],
         'olddepos' => $olddepos,
         'TypeActes' => $TypeActes,
         'AnneeDeb' => $AnneeDeb,
@@ -115,7 +116,7 @@ if (! $missingargs) {
     //Si pas tout les arguments nécessaire, on affiche le formulaire
     echo '<form method="post" enctype="multipart/form-data" action="">' . "\n";
     echo '<h2 align="center">Suppression de certains actes</h2>';
-    if ($userlevel < 8) {
+    if ($session->get('user')['level'] < 8) {
         msg('Attention : Vous ne pourrez supprimer que les données dont vous êtes le déposant !', 'info');
     }
     echo '<table cellspacing="0" cellpadding="0" border="0" align="center" summary="Formulaire">' . "\n";
@@ -125,7 +126,7 @@ if (! $missingargs) {
     echo " <tr>\n";
     echo '  <td align="right">Déposant : </td>' . "\n";
     echo '  <td>';
-    if ($userlevel < 8) {
+    if ($session->get('user')['level'] < 8) {
         echo '<input type="hidden" name="olddepos" value="0" />';
     } else {
         listbox_users("olddepos", 0, DEPOSANT_LEVEL, ' *** Tous *** ');
@@ -154,5 +155,6 @@ if (! $missingargs) {
 <?php } ?>
 </div>
 <?php include(__DIR__ . '/../templates/front/_footer.php');
+
 $response->setContent(ob_get_clean());
 $response->send();

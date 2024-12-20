@@ -3,8 +3,6 @@
 //----------------------------------------------------------
 function traite_tables_temps($ip_adr_trait, $heurecreation)
 {
-	$userlogin = "";
-
 	// suppression des tables temporaires  : en cas de time out php les tables ne sont pas effacées. Ceci est normalement traité dans la fonction ci dessous
 	// mais si la requete est relancé immédiatement elle ne seront pas effacées d'ou résultats abhérants
 

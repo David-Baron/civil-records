@@ -1,4 +1,7 @@
 <?php
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
@@ -8,15 +11,16 @@ require(__DIR__ . '/../next/Model/UserModel.php');
 $Destin   = getparam('Destin'); // TODO: will be from last url
 $needlevel = 6;
 if ($Destin == "B") $needlevel = 8;
-$userlogin = "";
-$userlevel = logonok($needlevel);
-while ($userlevel < $needlevel) {
-    login($root);
+
+if (!$userAuthorizer->isGranted($needlevel)) {
+    $response = new RedirectResponse("$root/admin/");
+    $response->send();
+    exit();
 }
 
 function init_page($head = "")
 {
-    global $root,$userlevel,$htmlpage,$titre;
+    global $root, $session, $htmlpage,$titre;
 
     $menu_data_active = 'B';
     open_page($titre, $root, null, null, $head);
@@ -28,7 +32,7 @@ function init_page($head = "")
 
     navadmin($root, $titre);
 
-    zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+    zone_menu(ADM, $session->get('user')['level'], array());//ADMIN STANDARD
 
     echo '<div id="col_main_adm">';
     $htmlpage = true;
@@ -61,10 +65,10 @@ if ($Destin == "B") {  // Backup
         $enteteligne = "NIMEGUEV3;";
     }
 }
-$userid = current_user("ID");
+
 $missingargs = false;
 $oktype = false;
-$tokenfile  = "../" . DIR_BACKUP . $userlogin . '.txt';
+$tokenfile  = "../" . DIR_BACKUP . $session->get('user')['login'] . '.txt';
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
@@ -165,8 +169,8 @@ if (! $missingargs) {
         }
         $params = array(
             'xtdiv' => $xtdiv,
-            'userlevel' => $userlevel,
-            'userid' => $userid,
+            'userlevel' => $session->get('user')['level'],
+            'userid' => $session->get('user')['ID'],
             'olddepos' => $olddepos,
             'TypeActes' => $TypeActes,
             'AnneeDeb' => $AnneeDeb,
@@ -410,7 +414,7 @@ if (! $missingargs) {
     //Si pas tout les arguments nécessaire, on affiche le formulaire
     echo '<form method="post" enctype="multipart/form-data" action="">' . "\n";
     echo '<h2 align="center">' . $titre . '</h2>';
-    if ($userlevel < 8) {
+    if ($session->get('user')['level'] < 8) {
         msg('Attention : Vous ne pourrez réexporter que les données dont vous êtes le déposant !', 'info');
     }
     echo '<table cellspacing="0" cellpadding="0" border="0" align="center" summary="Formulaire">' . "\n";
@@ -438,7 +442,7 @@ if (! $missingargs) {
         echo " <tr>\n";
         echo '  <td align="right">Déposant : </td>' . "\n";
         echo '  <td>';
-        if ($userlevel < 8) {
+        if ($session->get('user')['level'] < 8) {
             echo '<input type="hidden" name="olddepos" value="0" />';
         } else {
             listbox_users("olddepos", 0, DEPOSANT_LEVEL, ' *** Tous *** ');

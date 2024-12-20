@@ -1,14 +1,17 @@
 <?php
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
-require(__DIR__ . '/../install/instutils.php');
+// require(__DIR__ . '/../install/instutils.php');
 
-$userlogin = "";
-$userlevel = logonok(9);
-if ($userlevel == 0) {
-    login($root);
+if (!$userAuthorizer->isGranted(9)) {
+    $response = new RedirectResponse("$root/admin/");
+    $response->send();
+    exit();
 }
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
@@ -22,7 +25,7 @@ $menu_software_active = 'P';
 ob_start();
 open_page("Mise à jour des paramètres", $root);
 navadmin($root, "Mise à jour des paramètres");
-zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+zone_menu(ADM, $session->get('user')['level'], array());//ADMIN STANDARD
 echo '<div id="col_main_adm">';
 require(__DIR__ . '/../templates/admin/_menu-software.php');
 

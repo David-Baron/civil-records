@@ -1,14 +1,17 @@
 <?php
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 require(__DIR__ . '/../tools/defindex.inc.php');
 
-$userlogin = "";
-$userlevel = logonok(9);
-while ($userlevel < 9) {
-    login($root);
+if (!$userAuthorizer->isGranted(9)) {
+    $response = new RedirectResponse("$root/admin/");
+    $response->send();
+    exit();
 }
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
@@ -23,7 +26,7 @@ $menu_software_active = 'I';
 ob_start();
 open_page("Gestion des index", $root);
 navadmin($root, "Gestion des index");
-zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
+zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
 echo '<div id="col_main_adm">';
 require(__DIR__ . '/../templates/admin/_menu-software.php');
 
@@ -143,5 +146,6 @@ if ($action == "ADD") {
 <?php } ?>
 </div>
 <?php include(__DIR__ . '/../templates/front/_footer.php');
+
 $response->setContent(ob_get_clean());
 $response->send();

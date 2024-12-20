@@ -36,6 +36,9 @@ if (isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'dev') {
     }
 }
 
+require(__DIR__ . '/Engine/UserAuthorizer.php');
+
 $request = Request::createFromGlobals();
 $response = new Response();
 
+$userAuthorizer = new UserAuthorizer($session);

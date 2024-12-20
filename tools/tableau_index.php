@@ -14,7 +14,7 @@ if ($xtyp == 'A') {
 }
 
 if ($init != '') {
-    $initiale = '&amp;init=' . $init;
+    $initiale = '&init=' . $init;
     $leninit = mb_strlen($init);
     $condit2 = " AND upper(left(COMMUNE," . $leninit . "))='" . sql_quote($init) . "'";
 }
@@ -37,7 +37,7 @@ while ($row = EA_sql_fetch_row($result)) {
     if ($row[0] == $init) {
         $alphabet .= '<b>' . $row[0] . '</b> ';
     } else {
-        $alphabet .= '<a href="' . $baselink . '?xtyp=' . $xtyp . '&amp;init=' . $row[0] . '">' . $row[0] . '</a> ';
+        $alphabet .= '<a href="' . $baselink . '?xtyp=' . $xtyp . '&init=' . $row[0] . '">' . $row[0] . '</a> ';
     }
 }
 echo '<p align="center">' . $alphabet . '</p>';

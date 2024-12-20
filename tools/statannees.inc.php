@@ -1,15 +1,17 @@
 <?php
 
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 require(__DIR__ . '/../next/bootstrap.php');
 include(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
 $lvl = 2;
 if (ADM == 10) $lvl = 5;
 
-$userlogin = "";
-$userlevel = logonok($lvl);
-while ($userlevel < $lvl) {
-    login($root);
+if (!$userAuthorizer->isGranted($lvl)) {
+    $response = new RedirectResponse("$root/");
+    $response->send();
+    exit();
 }
 
 function barre($valeur, $max)
@@ -22,7 +24,6 @@ function barre($valeur, $max)
 }
 
 $xcomm = $xpatr = $page = "";
-$userid = current_user("ID");
 $missingargs = false;
 $oktype = false;
 $TypeActes  = getparam('xtyp');
@@ -90,7 +91,7 @@ if (! $missingargs) {
         navadmin($root, $title);
     }
 
-    zone_menu(ADM, $userlevel);
+    zone_menu(ADM, $session->get('user')['level']);
 
     echo '<div id="col_main_adm">';
     echo '<h2>' . $title . '</h2>';

@@ -2,7 +2,7 @@
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-require __DIR__ . '/../../next/Engine/FileEnvironmentParser.php';
+require __DIR__ . '/../../next/Engine/EnvironmentFileParser.php';
 
 $requirements = json_decode(file_get_contents(__DIR__ . '/../requirements.json'), true);
 $storage = '_storage';
@@ -42,11 +42,11 @@ if ($request->getMethod() === 'POST') {
     }
 
     if (empty($form_errors)) {
-        $fileEnvironmentParser = new FileEnvironmentParser();
-        $fileEnvironmentParser->set('app_env', 'prod');
+        $environmentFileParser = new EnvironmentFileParser();
+        $environmentFileParser->set('app_env', 'prod');
         $fileEnvironmentParser->set('app_root', $root);
         foreach ($params as $key => $value) {
-            $fileEnvironmentParser->set($key, $value);
+            $environmentFileParser->set($key, $value);
         }
         $session->set('step', '2');
         $response = new RedirectResponse("$root/");

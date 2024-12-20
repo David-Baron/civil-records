@@ -1,4 +1,7 @@
 <?php
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
@@ -7,10 +10,10 @@ require(__DIR__ . '/../next/Model/UserModel.php');
 require(__DIR__ . '/../tools/traitements.inc.php');
 require(__DIR__ . '/../tools/adodb-time.inc.php');
 
-$userlogin = "";
-$userlevel = logonok(6);
-while ($userlevel < 6) {
-    login($root);
+if (!$userAuthorizer->isGranted(6)) {
+    $response = new RedirectResponse("$root/admin/");
+    $response->send();
+    exit();
 }
 
 function nomcolonne($i)  // noms des colonnes à la Excel
@@ -142,13 +145,12 @@ $cptfiltre = 0;
 $avecidnim = false;
 
 $today = today();
-$userid = current_user("ID");
 $missingargs = true;
 
 my_ob_start_affichage_continu();
 open_page("Chargement des actes (CSV)", $root);
 navadmin($root, "Chargement des actes CSV");
-zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
+zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
 
 echo '<div id="col_main_adm">';
 
@@ -224,7 +226,7 @@ if (!$missingargs) { // fichier d'actes
     }
     if ($submit == 'D') {  // upload du fichier CSV
         // Stockage du fichier chargé
-        $uploadfile = UPLOAD_DIR . '/' . $userlogin . '.csv';
+        $uploadfile = UPLOAD_DIR . '/' . $session->get('user')['login'] . '.csv';
         if (!move_uploaded_file($_FILES['Actes']['tmp_name'], $uploadfile)) {
             msg('033 : Impossible de ranger le fichier dans "' . UPLOAD_DIR . '".');
             $missingargs = true;
@@ -894,16 +896,16 @@ if ($missingargs) {
     echo '  </td>';
     echo " </tr>\n";
 
-    if ($userlevel >= 8) {
+    if ($session->get('user')['level'] >= 8) {
         echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";
         echo " <tr>\n";
         echo '  <td align="right">Déposant : </td>' . "\n";
         echo '  <td>';
-        listbox_users("deposant", $userid, DEPOSANT_LEVEL);
+        listbox_users("deposant", $session->get('user')['ID'], DEPOSANT_LEVEL);
         echo '  </td>';
         echo " </tr>\n";
     } else {
-        echo '  <input type="hidden" name="deposant" value="' . $userid . '" />';
+        echo '  <input type="hidden" name="deposant" value="' . $session->get('user')['ID'] . '" />';
     }
     echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";
     echo " <tr><td colspan=\"2\" align=\"center\">\n<br />";

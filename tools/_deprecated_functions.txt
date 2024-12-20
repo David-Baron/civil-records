@@ -699,3 +699,94 @@ function menu_admin($root, $userlevel)
     echo '</dl></div>' . "\n";
     echo '</div>' . "\n";
 }
+
+
+function showmenu($texte, $proc, $id, $current, $barre = true)
+{
+    if ($barre) {
+        echo ' | ';
+    }
+    if ($id == $current) {
+        echo '<a href="' . $proc . '" class="bolder">' . $texte . '</a>';
+    } else {
+        echo '<a href="' . $proc . '">' . $texte . '</a>';
+    }
+}
+
+function listbox_types($fieldname, $default, $vide = 0)
+{
+    $request = "SELECT DISTINCT TYPACT AS TYP FROM " . EA_DB . "_sums ORDER BY INSTR('NMDV',TYPACT)";
+
+    if ($result = EA_sql_query($request)) {
+        $i = 1;
+        echo '<select name="' . $fieldname . '" size="1">';
+        if ($vide) {
+            echo '<option> </option>';
+        }
+        while ($row = EA_sql_fetch_array($result)) {
+            echo '<option ' . selected_option($row["TYP"], $default) . '>' . typact_txt($row["TYP"]) . '</option>';
+            $i++;
+        }
+    }
+    echo " </select>";
+}
+
+function communede($comdep)
+{ // Compatibilité anciens appels
+    list($comm, $dep) = decompose_comm_dep($comdep);
+    return $comm;
+}
+
+function departementde($comdep)
+{ // Compatibilité anciens appels
+    list($comm, $dep) = decompose_comm_dep($comdep);
+    return $dep;
+}
+
+function menu_public()
+{
+    global $userlogin, $root, $userlevel;
+    $changepw = "";
+    $login = "";
+    if ($userlogin != "") {
+        $login = '&nbsp;&lt;' . $userlogin;
+        $solde = current_user_solde();
+        if ($solde < 9999) {
+            $login .= ' : ' . $solde . ' pts';
+        }
+        $login .= '&gt;';
+
+        if ($userlevel >= CHANGE_PW) {
+            $changepw = '<dt><a href="' . $root . '/changepw.php">Changer le mot de passe</a></dt>' . "\n";
+        }
+    }
+    echo '<div class="menu_zone">' . "\n";
+    // traite le cas ou le niveau PUBLIC autre que 4 et 5, on affiche l'accès administration au dela d'un niveau 5 de l'utilisateur
+    if (max($userlevel, PUBLIC_LEVEL) > 5) {
+        echo '<div class="menu_titre">Administration' . $login . '</div>' . "\n";
+    }  // pas de membres visiteurs dans ce cas
+    else {
+        echo '<div class="menu_titre">Accès membre' . $login . '</div>' . "\n";
+    }
+    echo '<div class="menuCorps"><dl>' . "\n";
+    if ($userlogin == "") {
+        echo '<dt><a href="' . $root . '/login.php">Connexion</a></dt>' . "\n";
+        if (SHOW_ACCES == 1) {
+            echo '<dt><a href="' . $root . '/acces.php">Conditions d\'accès</a></dt>' . "\n";
+        }
+    } else {
+        if ($userlevel > 5) {
+            echo '<dt><a href="' . $root . '/admin/index.php">Gérer les actes</a></dt>' . "\n";
+        }
+        echo $changepw;
+        echo '<dt><a href="' . $root . '/index.php?act=logout">Déconnexion</a></dt>' . "\n";
+    }
+    if (EMAIL_CONTACT <> "") {
+        echo '<dt><a href="' . $root . '/form_contact.php">Contact</a></dt>' . "\n";
+    }
+    if ($userlevel > 5) {
+        echo '<dt><a href="' . $root . '/admin/aide/aide.html">Aide</a></dt>' . "\n";
+    }
+    echo '</dl></div>' . "\n";
+    echo '</div>' . "\n";
+}

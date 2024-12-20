@@ -4,14 +4,14 @@ require(__DIR__ . '/traceIP/trace_ip.php');
 
 if (!defined("TIP_LEVEL_NO_IP_TEST")) define("TIP_LEVEL_NO_IP_TEST", 9);
 
-function login($path = '', $cas = 3)  // Uniquement utilisé par authentification
+/* function login($path = '', $cas = 3)  // Uniquement utilisé par authentification
 {
     global $root;
     header("Location: " . $root . "/login.php?cas=" . $cas . "&uri=" . urlencode($_SERVER['REQUEST_URI']));
     die();
 }
-
-function current_user($zone)
+ */
+/* function current_user($zone)
 {
     global $userlogin, $u_db;
     if ($userlogin == "") {
@@ -29,13 +29,13 @@ function current_user($zone)
             else {
                 return $row[$zone];
             }
-        } else {
-            return 0;
-        }
-    }
-}
+        } 
 
-function logonok($level = 0)
+        return 0;
+    }
+} */
+
+/* function logonok($level = 0)
 {
     global $root,$userlogin,$statut,$expirok,$u_db;
 
@@ -47,9 +47,9 @@ function logonok($level = 0)
         $userid = 0;
         $statut = "";
         $expirok = true;
-        $userlevel = CheckUser(getparam('login'), getparam('passwd'), getparam('codedpass'), getparam('iscoded'), $userid);
+        $session->get('user')['level'] = CheckUser(getparam('login'), getparam('passwd'), getparam('codedpass'), getparam('iscoded'), $userid);
         $t = array("W" => 5, "A" => 5, "B" => 7);
-        if($userlevel == 0) {
+        if($session->get('user')['level'] == 0) {
             if (!$expirok) {
                 $cas = 6;
             } elseif (array_key_exists($statut, $t)) {
@@ -112,9 +112,9 @@ function logonok($level = 0)
         traceip();
     }
     return $niveau;
-}
+} */
 
-function CheckUser($login, $pw, $codedpw, $coded, &$userid)
+/* function CheckUser($login, $pw, $codedpw, $coded, &$userid)
 // Vérification réelle du droit d'accès
 {
     global $statut, $level, $expirok, $u_db;
@@ -155,9 +155,9 @@ function CheckUser($login, $pw, $codedpw, $coded, &$userid)
             }
         }
     }
-}
+} */
 
-function CheckMD5($userid, $md5)
+/* function CheckMD5($userid, $md5)
 {
     global $userlogin, $level, $u_db;
     $res = EA_sql_query("SELECT * FROM " . EA_UDB . "_user3 WHERE ID='" . $userid . "'", $u_db);
@@ -177,4 +177,4 @@ function CheckMD5($userid, $md5)
     } else {
         return 0;
     }
-}
+} */

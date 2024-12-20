@@ -1,38 +1,40 @@
 <?php
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
-$userlogin = "";
-$userlevel = logonok(9);
-while ($userlevel < 9) {
-    login($root);
+if (!$userAuthorizer->isGranted(9)) {
+    $response = new RedirectResponse("$root/admin/");
+    $response->send();
+    exit();
 }
 
 function init_page()
 {
-    global $root,$userlevel,$htmlpage;
+    global $root,$session,$htmlpage;
 
     open_page("Export des paramètres ", $root);
     navadmin($root, "Export des paramètres");
 
-    zone_menu(ADM, $userlevel, array());//ADMIN STANDARD
+    zone_menu(ADM, $session->get('user')['level'], array());//ADMIN STANDARD
 
     echo '<div id="col_main_adm">';
     $htmlpage = true;
 }
 
-include(__DIR__ ."/../install/instutils.php");
+// include(__DIR__ ."/../install/instutils.php");
 
 $enclosed = '"';  // ou '"'
 $separator = ';';
 $htmlpage = false;
-$userid = current_user("ID");
 $missingargs = false;
 $oktype = false;
 $Destin = 'T'; // Toujours vers fichier (T) (sauf pour debug .. D )
-
+/* 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
 my_ob_start_affichage_continu();
@@ -90,7 +92,7 @@ echo $doc;
 $list_backups = get_last_backups();
 $list_backups["P"] = today();
 set_last_backups($list_backups);
-writelog('Backup des paramètres', "PARAMS", $nb);
+writelog('Backup des paramètres', "PARAMS", $nb); */
 
 if ($htmlpage) {
     echo '</div>';

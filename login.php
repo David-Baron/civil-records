@@ -1,16 +1,66 @@
 <?php
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
+
 define('ADM', 0); // Compatibility only
 $admtxt = ''; // Compatibility only
 require(__DIR__ . '/next/bootstrap.php');
 require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
+require(__DIR__ . '/next/Engine/AppUserAuthenticator.php');
 
-$xcomm = "";
-$xpatr = "";
-$page = "";
-$uri = getparam('uri', $root . '/');
-$motif = getparam('cas');
+if ($session->has('user')) {
+    $response = new RedirectResponse("$root/?act=logout");
+    $response->send();
+    exit();
+}
+// $xcomm = ""; Useless now.
+// $xpatr = ""; Useless now.
+// $page = ""; Useless now.
+// $uri = getparam('uri', $root . '/'); // Useless now.
+// $motif = getparam('cas'); Useless now.
+/* if ($motif == 1) {
+    msg('Login ou mot de passe incorrect (vérifiez Majuscules/minuscules) !');
+}
+if ($motif == 2) {
+    msg("L'accès à la page que vous voulez consulter est réservé"); // Oui mais pas à la bonne place...
+}
+if ($motif == 3) {
+    msg('Vos droits sont insuffisants pour accéder à cette page'); // Ceci ne devrait JAMAIS arriver...
+}
+if ($motif == 4) {
+    msg("Vous devez vous reconnecter avec le nouveau mot de passe"); // Oui mais pas à la bonne place...
+}
+if ($motif == 5) {
+    msg("Votre compte doit encore être activé et/ou approuvé"); // Oui mais pas à la bonne place...
+}
+if ($motif == 6) {
+    msg("Votre compte a expiré. Contactez l'administrateur pour le réactiver"); // Ceci ne devrait JAMAIS arriver...
+}
+if ($motif == 7) {
+    msg("Votre compte est bloqué. Contactez l'administrateur"); // Ceci ne devrait JAMAIS arriver...
+} */
+$form_errors = [];
 
-pathroot($root, $path, $xcomm, $xpatr, $page);
+if ($request->getMethod() === 'POST') {
+    if ($session->get('antiflood', 0) >= 5 ) {
+        $form_errors['antiflood'] = 'Vous avez dépasser le nombre d\'essai! Vous pourrez réessayer dans 24 heures.';
+    }
+
+    if ($request->request->get('login') && $request->request->get('passwd')) {
+        $appUserAuthenticator = new AppUserAuthenticator($session);
+        if ($appUserAuthenticator->authenticate($request->request->get('login'), $request->request->get('passwd'))) {
+            $response = new RedirectResponse('.');
+            $response->send();
+            exit;
+        }
+
+        $form_errors['credencials'] = 'Login ou mot de passe incorrect!';
+    }
+}
+
+
+// pathroot($root, $path, $xcomm, $xpatr, $page); Useless now.
 
 ob_start();
 open_page("ExpoActes : Login", $root, null, null, null, '../index.htm');
@@ -19,32 +69,9 @@ zone_menu(0, 0);
 ?>
 <div id="col_main">
 
-<?php if ($motif == 1) {
-    msg('Login ou mot de passe incorrect (vérifiez Majuscules/minuscules) !');
-}
-if ($motif == 2) {
-    msg("L'accès à la page que vous voulez consulter est réservé");
-}
-if ($motif == 3) {
-    msg('Vos droits sont insuffisants pour accéder à cette page');
-}
-if ($motif == 4) {
-    msg("Vous devez vous reconnecter avec le nouveau mot de passe");
-}
-if ($motif == 5) {
-    msg("Votre compte doit encore être activé et/ou approuvé");
-}
-if ($motif == 6) {
-    msg("Votre compte a expiré. Contactez l'administrateur pour le réactiver");
-}
-if ($motif == 7) {
-    msg("Votre compte est bloqué. Contactez l'administrateur");
-}
-?>
-
 <h2>Vous devez vous identifier : </h2>
 
-<form method="post" action="<?= $uri; ?>">
+<form method="post">
     <table>
         <tr>
             <td>Login</td>
@@ -72,8 +99,6 @@ if ($motif == 7) {
             </td>
         </tr>
     </table>
-    <input type="hidden" name="codedpass" value="">
-    <input type="hidden" name="iscoded" value="N">
 </form>
 
 <p><a href="<?= $root; ?>/acces.php">Voir les conditions d'accès à la partie privée du site</a></p>

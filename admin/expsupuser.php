@@ -1,23 +1,26 @@
 <?php
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
-$userlogin = "";
-$userlevel = logonok(9);
-while ($userlevel < 9) {
-    login($root);
+if (!$userAuthorizer->isGranted(9)) {
+    $response = new RedirectResponse("$root/admin/");
+    $response->send();
+    exit();
 }
 
 function init_page()
 {
-    global $root, $userlevel, $htmlpage;
+    global $root, $session, $htmlpage;
 
     open_page("Export d'une série d'utilisateur", $root);
     navadmin($root, "Export d'utilisateurs");
 
-    zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
+    zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
 
     echo '<div id="col_main_adm">';
     $htmlpage = true;
@@ -27,7 +30,6 @@ my_ob_start_affichage_continu();
 
 include(__DIR__ . '/../tools/traitements.inc.php');
 
-$userid = current_user("ID");
 $regime   = getparam('regime', -1);
 $lelevel  = getparam('lelevel');
 $rem      = getparam('rem');
@@ -321,6 +323,7 @@ if (! $missingargs) {
         <input type="hidden" name="action" value="submitted">
     </form>
 <?php }
+
 if ($htmlpage) {
     echo '</div>';
     include(__DIR__ . '/../templates/front/_footer.php');

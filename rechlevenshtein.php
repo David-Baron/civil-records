@@ -1,14 +1,17 @@
 <?php
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 define('ADM', 0); // Compatibility only
 $admtxt = ''; // Compatibility only
 require(__DIR__ . '/next/bootstrap.php');
 require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 include("tools/cree_table_levenshtein.php");
 
-$userlogin = "";
-$userlevel = logonok(LEVEL_LEVENSHTEIN);
-while ($userlevel < LEVEL_LEVENSHTEIN) {
-    login($root);
+if (!$userAuthorizer->isGranted(LEVEL_LEVENSHTEIN)) {
+    $response = new RedirectResponse("$root/login.php");
+    $response->send();
+    exit();
 }
 
 $CRIT_RECH_COUPLES = 2;
@@ -113,5 +116,6 @@ zone_menu(0, 0, array('s' => '', 'c' => 'O')); //PUBLIC STAT & CERT
     </div>
 </div>
 <?php include(__DIR__ . '/templates/front/_footer.php');
+
 $response->setContent(ob_get_clean());
 $response->send();

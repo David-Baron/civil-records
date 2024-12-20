@@ -1,4 +1,7 @@
 <?php
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
@@ -14,13 +17,14 @@ $autorise_autoload = true;  // Rechargement automatisé: true|false
 // Dans "_upload"  créer un fichier "nomuser-ErreurNimegue-typeactes.txt"
 function Trace_Ligne_Ignore($nombre, $avec_Log, $info, $line = "\r\n") // Ex : $cptign = Trace_Ligne_Ignore( $cptign, ($logKo==1), "LIGNE INCOMPLETE " . count($acte) . "/" . $minzones, $line);
 {
+    global $session;
     if ($avec_Log) {
         // echo "<br />" . $info . " -> Ignorée" ;
-        echo "<br />" . $info . " (" . ($GLOBALS['line_num'] + 1) . ") -> Ignorée";
+        echo "<br>" . $info . " (" . ($GLOBALS['line_num'] + 1) . ") -> Ignorée";
     }
     // Enregistre éventuellement dans un fichier sur le serveur. Réinitialisé chaque jour
     //$f = realpath('./'.UPLOAD_DIR) . '/' . $GLOBALS['userlogin'] . '-ErreurNimegue-' . $GLOBLAS['TypeActes'] . '.txt';
-    $f = dirname(__FILE__) . DIRECTORY_SEPARATOR . UPLOAD_DIR . DIRECTORY_SEPARATOR . $GLOBALS['userlogin'] . '-ErreurNimegue-' . $GLOBALS['TypeActes'] . '.txt';
+    $f = dirname(__FILE__) . DIRECTORY_SEPARATOR . UPLOAD_DIR . DIRECTORY_SEPARATOR . $session->get('user')['login'] . '-ErreurNimegue-' . $GLOBALS['TypeActes'] . '.txt';
     if (file_exists($f)) {
         $t = 'Ymd';
         $Date_COUR = date($t);
@@ -59,7 +63,7 @@ function lienautoreload($msg)
 
 function init_page($head = "")
 {
-    global $root, $userlevel, $titre, $moderestore, $pageinited;
+    global $root, $session, $titre, $moderestore, $pageinited;
 
     if (!$pageinited) {
         if ($moderestore or $head == "") {
@@ -80,14 +84,13 @@ function init_page($head = "")
             }
         </script>
 <?php
-
         // Ajaxify Your PHP Functions
         include(__DIR__ ."/../tools/PHPLiveX/PHPLiveX.php");
         $ajax = new PHPLiveX(array("getBkFiles"));
         $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
 
         navadmin($root, $titre);
-        zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
+        zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
         echo '<div id="col_main">';
         if ($moderestore) {
             require(__DIR__ . '/../templates/admin/_menu_data.php');
@@ -236,9 +239,10 @@ if ($Origine == "B") {
     $Max_time = $Max_time - 5; // réduit les temps maxi pour laisser du temps au calcul des stats (Auto pour Nimegue)
 }
 
-$userlevel = logonok($needlevel);
-while ($userlevel < $needlevel) {
-    login($root);
+if (!$userAuthorizer->isGranted($needlevel)) {
+    $response = new RedirectResponse("$root/admin/");
+    $response->send();
+    exit();
 }
 
 $missingargs = true;
@@ -295,7 +299,7 @@ if (getparam('action') == 'submitted' and $Origine <> "B") {
 }  // 60 jours
 
 $autokey = getparam('autokey');
-$tokenfile  = "../" . DIR_BACKUP . $userlogin . '.txt';
+$tokenfile  = "../" . DIR_BACKUP . $session->get('user')['login'] . '.txt';
 $bkfile = getparam('bkfile');
 if (empty($bkfile)) {
     $bkfile = "../" . DIR_BACKUP . getparam('bkfile2');
@@ -327,7 +331,6 @@ if ($autokey == "" or $autokey == "NEW") {
 }
 
 $today = today();
-$userid = current_user("ID");
 $gosuivant = 0; // N° du fichier suivant
 $metahead = '';
 $ok = false;
@@ -361,7 +364,7 @@ if (getparam('action') == 'submitted') { // Lancement d'une opération de charge
         }
         if ($ok) {
             // Stockage du fichier chargé
-            $uploadfile = UPLOAD_DIR . '/' . $userlogin . '.csv';
+            $uploadfile = UPLOAD_DIR . '/' . $session->get('user')['login'] . '.csv';
             $filename = $_FILES['Actes']['tmp_name'];
             // Si le fichier proposé est vide ET qu'il existe le fichier "_upload/nomuser-LOCAL-typeactes.csv" ex: admin-LOCAL-M.csv , c'est ce fichier qui sera traité. A NOTER : le fichier en question est renommé en "nomuser.csv" pour le traitement, ainsi en cas de plantage, il faut remettre le fichier en place.
             $vide = false;
@@ -372,7 +375,7 @@ if (getparam('action') == 'submitted') { // Lancement d'une opération de charge
                 }
                 fclose($csv_file);
             }
-            $local_file = dirname(__FILE__) . '/' . UPLOAD_DIR . '/' . $userlogin . '-LOCAL-' . $TypeActes . '.csv';
+            $local_file = dirname(__FILE__) . '/' . UPLOAD_DIR . '/' . $session->get('user')['login'] . '-LOCAL-' . $TypeActes . '.csv';
             $allow_move = false;
             if (($vide) and (file_exists($local_file))) {
                 $_FILES['Actes']['tmp_name'] = $filename = $local_file;
@@ -1071,16 +1074,16 @@ if ($missingargs) {
         echo '        <input type="checkbox" name="LogRed" value="1"' . ($logRed == 1 ? ' checked' : '') . '>Actes redondants<br>';
         echo '  </td>';
         echo " </tr>\n";
-        if ($userlevel >= 8) {
+        if ($session->get('user')['level'] >= 8) {
             echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";
             echo " <tr>\n";
             echo '  <td align="right">Déposant : </td>' . "\n";
             echo '  <td>';
-            listbox_users("deposant", $userid, DEPOSANT_LEVEL);
+            listbox_users("deposant", $session->get('user')['ID'], DEPOSANT_LEVEL);
             echo '  </td>';
             echo " </tr>\n";
         } else {
-            echo '  <input type="hidden" name="deposant" value="' . $userid . '" />';
+            echo '  <input type="hidden" name="deposant" value="' . $session->get('user')['ID'] . '" />';
         }
         echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";
     }

@@ -1,15 +1,17 @@
 <?php
 
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 /** TODO: origin param system... Need to build a DTO and delete this code */
 define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
-$userlogin = "";
-$userlevel = logonok(9);
-while ($userlevel < 9) {
-    login($root);
+if (!$userAuthorizer->isGranted(9)) {
+    $response = new RedirectResponse("$root/admin/");
+    $response->send();
+    exit();
 }
 
 function show_grp($grp, $current, $barre)
@@ -65,7 +67,7 @@ $menu_software_active = 'P';
 ob_start();
 open_page("Paramétrage du logiciel", $root, $js_show_help);
 navadmin($root, "Paramétrage du logiciel");
-zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
+zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
 ?>
 <div id="col_main">
     <?php require(__DIR__ . '/../templates/admin/_menu-software.php'); ?>
@@ -167,5 +169,6 @@ zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
     </form>
 </div>
 <?php include(__DIR__ . '/../templates/front/_footer.php');
+
 $response->setContent(ob_get_clean());
 $response->send();

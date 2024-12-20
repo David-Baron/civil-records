@@ -205,41 +205,49 @@ function ajuste_date($datetxt, &$datesql, &$badannee)  // remise en forme des da
     if (!($d && $d->format('Y-m-d') === $datesql)) {
         $datesql = '1001-01-01';
     }
-    //echo " Bad?".$badannee." --> ".$datetxt." --> ".$datesql." --> ".showdate($datesql);
+    // echo " Bad?".$badannee." --> ".$datetxt." --> ".$datesql." --> ".showdate($datesql);
     return $datetxt;
 }
 
 function form_recherche()
 {
-    global $root, $userid;
-    $userlevel = current_user("level");
+    global $root, $session;
 
-    if (max($userlevel, PUBLIC_LEVEL) >= 3 and (current_user_solde() > 0 or RECH_ZERO_PTS == 1)) {
-        echo '<div class="menu_zone">' . "\n";
-        echo '<div class="menu_titre">Recherche directe</div>' . "\n";
+    $act_types = [
+        ['code' => 'N', 'code_3' => 'NAI', 'label' => 'Naissances'],
+        ['code' => 'M', 'code_3' => 'MAR', 'label' => 'Mariages'],
+        ['code' => 'D', 'code_3' => 'DEC', 'label' => 'Décès'],
+        ['code' => 'V', 'code_3' => 'DIV', 'label' => 'Actes divers'],
+    ];
 
-        echo '<form class="form_rech" name="recherche" method="post" action="' . $root . '/chercher.php">' . "\n";
-        echo '&nbsp;<input type="text" name="achercher" />' . "\n";
-        echo '&nbsp;<input type="submit" name="Submit" value="Chercher" />' . "\n";
-        echo '<br /><input type="radio" name="zone" value="1" checked="checked" />Intéressé(e) ' . "\n";
-        echo '<br /><input type="radio" name="zone" value="2" />Mère, conjoint, témoins, parrain...' . "\n";
+    if (PUBLIC_LEVEL >= 3 || ($session->has('user') && $session->get('user')['level'] >= 3 && ((current_user_solde() > 0) || RECH_ZERO_PTS == 1))) {
+        echo '<div class="menu_zone">';
+        echo '<div class="menu_titre">Recherche directe</div>';
+        echo '<form class="form_rech" name="recherche" method="post" action="' . $root . '/chercher.php">';
+        echo '&nbsp;<input type="text" name="achercher">';
+        echo '&nbsp;<input type="submit" name="Submit" value="Chercher">';
+        echo '<br><input type="radio" name="zone" value="1" checked="checked" />Intéressé(e) ';
+        echo '<br><input type="radio" name="zone" value="2">Mère, conjoint, témoins, parrain...';
         if (CHERCH_TS_TYP != 1) {
-            echo '<br />&nbsp;Dans les actes de&nbsp;' . "\n";
-            listbox_types("typact", "Naissances");
-            //echo '</p>';
+            echo '<br>&nbsp;Dans les actes de&nbsp;';
+            echo '<select name="typact" size="1">';
+            foreach ($act_types as $act_type) {
+                echo '<option value="' . $act_type['code'] . '" ' . ('N' === $act_type['code'] ? 'selected' : '') . '>' . $act_type['label'] . '</option>';
+            }
+            echo " </select>";
         }
-        echo '<input type="hidden" name="direct" value="1" />' . "\n";
-        echo '<input type="hidden" name="debug" value="' . getparam('debug') . '" />' . "\n";
+        echo '<input type="hidden" name="direct" value="1">';
+        echo '<input type="hidden" name="debug" value="' . getparam('debug') . '">';
         echo '<div class="menuTexte"><dl><dd>';
         echo '<a href="' . $root . '/rechavancee.php">Recherche avancée</a>&nbsp; &nbsp;';
 
-        if ((RECH_LEVENSHTEIN == 2) and (max($userlevel, PUBLIC_LEVEL) >= LEVEL_LEVENSHTEIN)) {
-            echo '<br /><a href="' . $root . '/rechlevenshtein.php">Recherche Levenshtein</a>&nbsp; &nbsp;';
+        if ((RECH_LEVENSHTEIN == 2) && (max($session->get('user')['level'], PUBLIC_LEVEL) >= LEVEL_LEVENSHTEIN)) {
+            echo '<br><a href="' . $root . '/rechlevenshtein.php">Recherche Levenshtein</a>&nbsp; &nbsp;';
         }
 
         echo '</dd></dl></div>';
-        echo '</form>' . "\n";
-        echo '</div>' . "\n";
+        echo '</form>';
+        echo '</div>';
     }
 }
 
@@ -355,62 +363,49 @@ function statistiques($vue = "T")
     return $menu_actes;
 }
 
-
-function showmenu($texte, $proc, $id, $current, $barre = true)
-{
-    if ($barre) {
-        echo ' | ';
-    }
-    if ($id == $current) {
-        echo '<a href="' . $proc . '" class="bolder">' . $texte . '</a>';
-    } else {
-        echo '<a href="' . $proc . '">' . $texte . '</a>';
-    }
-}
-
 function menu_public()
 {
-    global $userlogin, $root, $userlevel;
+    global $root, $session, $userAuthorizer;
     $changepw = "";
     $login = "";
-    if ($userlogin != "") {
-        $login = '&nbsp;&lt;' . $userlogin;
+    if ($userAuthorizer->isAuthenticated()) {
+        $login = '&nbsp;&lt;' . $session->get('user')['login'];
         $solde = current_user_solde();
         if ($solde < 9999) {
             $login .= ' : ' . $solde . ' pts';
         }
         $login .= '&gt;';
 
-        if ($userlevel >= CHANGE_PW) {
-            $changepw = '<dt><a href="' . $root . '/changepw.php">Changer le mot de passe</a></dt>' . "\n";
+        if ($userAuthorizer->isGranted(CHANGE_PW)) {
+            $changepw = '<dt><a href="' . $root . '/changepw.php">Changer le mot de passe</a></dt>';
         }
     }
-    echo '<div class="menu_zone">' . "\n";
+    echo '<div class="menu_zone">';
     // traite le cas ou le niveau PUBLIC autre que 4 et 5, on affiche l'accès administration au dela d'un niveau 5 de l'utilisateur
-    if (max($userlevel, PUBLIC_LEVEL) > 5) {
-        echo '<div class="menu_titre">Administration' . $login . '</div>' . "\n";
+    if ($userAuthorizer->isGranted(6)) {
+        echo '<div class="menu_titre">Administration' . $login . '</div>';
     }  // pas de membres visiteurs dans ce cas
     else {
-        echo '<div class="menu_titre">Accès membre' . $login . '</div>' . "\n";
+        echo '<div class="menu_titre">Accès membre' . $login . '</div>';
     }
-    echo '<div class="menuCorps"><dl>' . "\n";
-    if ($userlogin == "") {
-        echo '<dt><a href="' . $root . '/login.php">Connexion</a></dt>' . "\n";
+    echo '<div class="menuCorps"><dl>';
+    if (!$userAuthorizer->isAuthenticated()) {
+        echo '<dt><a href="' . $root . '/login.php">Connexion</a></dt>';
         if (SHOW_ACCES == 1) {
-            echo '<dt><a href="' . $root . '/acces.php">Conditions d\'accès</a></dt>' . "\n";
+            echo '<dt><a href="' . $root . '/acces.php">Conditions d\'accès</a></dt>';
         }
     } else {
-        if ($userlevel > 5) {
-            echo '<dt><a href="' . $root . '/admin/index.php">Gérer les actes</a></dt>' . "\n";
+        if ($userAuthorizer->isGranted(6)) {
+            echo '<dt><a href="' . $root . '/admin/index.php">Gérer les actes</a></dt>';
         }
         echo $changepw;
-        echo '<dt><a href="' . $root . '/index.php?act=logout">Déconnexion</a></dt>' . "\n";
+        echo '<dt><a href="' . $root . '/index.php?act=logout">Déconnexion</a></dt>';
     }
     if (EMAIL_CONTACT <> "") {
-        echo '<dt><a href="' . $root . '/form_contact.php">Contact</a></dt>' . "\n";
+        echo '<dt><a href="' . $root . '/form_contact.php">Contact</a></dt>';
     }
-    if ($userlevel > 5) {
-        echo '<dt><a href="' . $root . '/admin/aide/aide.html">Aide</a></dt>' . "\n";
+    if ($userAuthorizer->isGranted(6)) {
+        echo '<dt><a href="' . $root . '/admin/aide/aide.html">Aide</a></dt>';
     }
     echo '</dl></div>' . "\n";
     echo '</div>' . "\n";
@@ -423,9 +418,9 @@ function show_pub_menu()
         define('PUB_ZONE_MENU', "Zone info libre");
     }
     // pub éventuelle
-    echo '<div class="pub_menu">' . "\n";
+    echo '<div class="pub_menu">';
     echo PUB_ZONE_MENU;
-    echo '</div>' . "\n";
+    echo '</div>';
 }
 
 function zone_menu($admin, int $userlevel, $pp = array())
@@ -465,13 +460,13 @@ function navigation($root = "", $level = 1, $type = "", $commune = null, $patron
             $s2 = "tab_naiss.php";
             $signe = "o";
             break;
-        case "D":
-            $s2 = "tab_deces.php";
-            $signe = "+";
-            break;
         case "M":
             $s2 = "tab_mari.php";
             $signe = "X";
+            break;
+        case "D":
+            $s2 = "tab_deces.php";
+            $signe = "+";
             break;
         case "V":
             $s2 = "tab_bans.php";
@@ -597,9 +592,8 @@ function form_typeactes_communes($mode = '', $alldiv = 1)
 
 function listbox_communes($fieldname, $default, $vide = 0)  // liste de toutes les communes ts actes confondus
 {
-    $request = "SELECT DISTINCT COMMUNE,DEPART FROM " . EA_DB . "_sums "
-        . " ORDER BY COMMUNE, DEPART ";
-    optimize($request);
+    $request = "SELECT DISTINCT COMMUNE, DEPART FROM " . EA_DB . "_sums ORDER BY COMMUNE, DEPART ";
+
     if ($result = EA_sql_query($request)) {
         $i = 1;
         echo '<select name="' . $fieldname . '" size="1">' . "\n";
@@ -618,27 +612,32 @@ function listbox_communes($fieldname, $default, $vide = 0)  // liste de toutes l
     echo " </select>\n";
 }
 
-function decompose_comm_dep($comdep)
-{ // DECOMPOSE EN UNE SEULE OPERATION list ($commune,$departement) = decompose_comm_dep($comdep);
-    $croch = mb_strrpos($comdep, "[");
+/**
+ * Explode communne and departement string
+ * 
+ * @return array ['commune' => $commune, 'departement' => $departement]
+ */
+function decompose_comm_dep(string $communeAndDepartement): array
+{ 
+    $commune = $communeAndDepartement;
+    $departement = '';
+    $croch = mb_strrpos($communeAndDepartement, "[");
     if ($croch > 0) {
-        $comm = mb_substr($comdep, 0, $croch - 1);
-        $dep = mb_substr($comdep, $croch + 1, mb_strlen($comdep) - $croch - 2);
-        return array($comm, $dep);
+        $commune = mb_substr($communeAndDepartement, 0, $croch - 1);
+        $departement = mb_substr($communeAndDepartement, $croch + 1, mb_strlen($communeAndDepartement) - $croch - 2);
     }
-    return array($comdep, '');
+    
+    return ['commune' => $commune, 'departement' => $departement];
 }
 
-function communede($comdep)
-{ // Compatibilité anciens appels
-    list($comm, $dep) = decompose_comm_dep($comdep);
-    return $comm;
+function communede(string $communeAndDepartement)
+{
+    return decompose_comm_dep($communeAndDepartement)['commune'];
 }
 
-function departementde($comdep)
-{ // Compatibilité anciens appels
-    list($comm, $dep) = decompose_comm_dep($comdep);
-    return $dep;
+function departementde(string $communeAndDepartement)
+{
+    return decompose_comm_dep($communeAndDepartement)['departement'];
 }
 
 function load_zlabels($table, $lg, $ordre = "CSV")
@@ -691,24 +690,18 @@ function metadata($zone, $voulu)  // valeur $zone du record $voulu
 
 function listbox_types($fieldname, $default, $vide = 0)
 {
-    $request = "SELECT DISTINCT TYPACT AS TYP "
-        . " FROM " . EA_DB . "_sums "
-        . " ORDER BY INSTR('NMDV',TYPACT)"     // cette ligne permet de trier dans l'ordre voulu
-    ;
+    $act_types = [
+        ['code' => 'N', 'code_3' => 'NAI', 'label' => 'Naissances'],
+        ['code' => 'M', 'code_3' => 'MAR', 'label' => 'Mariages'],
+        ['code' => 'D', 'code_3' => 'DEC', 'label' => 'Décès'],
+        ['code' => 'V', 'code_3' => 'DIV', 'label' => 'Actes divers'],
+    ];
 
-    optimize($request);
-    if ($result = EA_sql_query($request)) {
-        $i = 1;
-        echo '<select name="' . $fieldname . '" size="1">' . "\n";
-        if ($vide) {
-            echo '<option> </option>' . "\n";
-        }
-        while ($row = EA_sql_fetch_array($result)) {
-            echo '<option ' . selected_option($row["TYP"], $default) . '>' . typact_txt($row["TYP"]) . '</option>' . "\n";
-            $i++;
-        }
+    echo '<select name="' . $fieldname . '" size="1">';
+    foreach ($act_types as $act_type) {
+        echo '<option value="' . $act_type['code'] . '" ' . ($act_type['code'] === $default ? 'selected' : '') . '>' . $act_type['label'] . '</option>';
     }
-    echo " </select>\n";
+    echo " </select>";
 }
 
 function listbox_divers($fieldname, $default, $tous = 0)
@@ -911,10 +904,9 @@ function show_deposant3($row, $retrait, $format, $zidinfo, $xid, $tact)
     }
 
     if (ADM == 10) {
-        global $path, $userlevel;
-        $userid = current_user('ID');
+        global $path, $session;
         show_simple_item($retrait, $format, $info, $label);
-        if ($userid == $depid or $userlevel >= 8) {
+        if ($session->get('user')['ID'] == $depid or $session->get('user')['level'] >= 8) {
             $actions = "";
             if ($tact == 'M' or $tact == 'V') {
                 $actions .= '<a href="' . $path . '/permute.php?xid=' . $xid . '&amp;xtyp=' . $tact . '">Permuter</a> - ';
@@ -1403,7 +1395,7 @@ function pagination($nbtot, &$page, $href, &$listpages, &$limit)
 
 function actions_deposant($userid, $depid, $actid, $typact)  // version graphique
 {
-    global $root, $path, $userlevel, $u_db;
+    global $root, $path, $session, $u_db;
     $req = "SELECT NOM,PRENOM FROM " . EA_UDB . "_user3 WHERE (ID=" . $depid . ")";
     $curs = EA_sql_query($req, $u_db);
     if (EA_sql_num_rows($curs) == 1) {
@@ -1412,7 +1404,7 @@ function actions_deposant($userid, $depid, $actid, $typact)  // version graphiqu
     } else {
         $depinfo = "#" . $depid;
     }
-    if ($userid == $depid or $userlevel >= 8) {
+    if ($userid == $depid or $session->get('user')['level'] >= 8) {
         echo '<td align="center">&nbsp;' . "\n";
         echo $depinfo . ' ';
         if ($typact == 'M' or $typact == 'V') {
@@ -1585,15 +1577,17 @@ function recharger_solde()
 
 function current_user_solde()
 {
+    global $session;
+
     if (GEST_POINTS == 0) {
         return 9999;
-    } else {
-        if (current_user('level') >= 8 or current_user('regime') == 0) {
-            return 9999;
-        } else {
-            return current_user('solde');
-        }
-    }
+    } 
+    
+    if ($session->get('user')['level'] >= 8 || $session->get('user')['regime'] == 0) {
+        return 9999;
+    } 
+    
+    return $session->get('user')['solde'];
 }
 
 function show_signal_erreur($typ, $xid, $ctrlcod)
@@ -1619,9 +1613,9 @@ function show_solde()
 
 function annee_seulement($date_txt)  // affichage date simplifié à l'annee si droits limités
 {
-    global $userid, $userlevel;
+    global $session;
 
-    if ((ANNEE_TABLE >= 3) or (ANNEE_TABLE >= 1 and $userid == 0) or (ANNEE_TABLE >= 2 and $userlevel < 5) or (current_user_solde() == 0)) {
+    if ((ANNEE_TABLE >= 3) or (ANNEE_TABLE >= 1 and $session->has('user')['ID'] == 0) or (ANNEE_TABLE >= 2 and $session->get('user')['level'] < 5) or (current_user_solde() == 0)) {
         $tdsql = "";
         $bad = 0;
         $date_txt = ajuste_date($date_txt, $dtsql, $bad);
@@ -2010,6 +2004,7 @@ function set_cond_select_actes($params)
 { // ENTREE : array($xtdiv, $userlevel, $userid, $olddepos, $TypeActes, $AnneeDeb, $AnneeFin, $comdep)
     // SORTIE : array($table, $ntype, $soustype, $condcom, $condad, $condaf, $condtdiv, $conddep);
     // Utilisé dans "supprime.php", "corr_grp_acte.php" et "exporte.php"
+    global $session;
     foreach ($params as $k => $v) {
         ${$k} = $v;
     }
@@ -2031,7 +2026,7 @@ function set_cond_select_actes($params)
     if ($AnneeFin <> '') {
         $condaf = " AND year(LADATE) <= " . $AnneeFin;
     }
-    if ($userlevel < 8) {
+    if ($session->get('user')['level'] < 8) {
         $conddep = " AND DEPOSANT = " . $userid;
     } elseif ($olddepos > 0) {
         $conddep = " AND DEPOSANT = " . $olddepos;

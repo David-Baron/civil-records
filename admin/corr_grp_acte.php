@@ -1,14 +1,17 @@
 <?php
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 require(__DIR__ . '/../next/Model/UserModel.php');
 
-$userlogin = "";
-$userlevel = logonok(8);
-while ($userlevel < 8) {
-    login($root);
+if (!$userAuthorizer->isGranted(8)) {
+    $response = new RedirectResponse("$root/admin/");
+    $response->send();
+    exit();
 }
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
@@ -46,7 +49,7 @@ $ajax = new PHPLiveX(array("getCommunes"));
 $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
 
 navadmin($root, $title);
-zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
+zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
 
 echo '<div id="col_main_adm">';
 require(__DIR__ . '/../templates/admin/_menu_data.php');
@@ -80,8 +83,8 @@ if (! $missingargs) {
 
     $params = array(
         'xtdiv' => $xtdiv,
-        'userlevel' => $userlevel,
-        'userid' => $userid,
+        'userlevel' => $session->get('user')['level'],
+        'userid' => $session->get('user')['ID'],
         'olddepos' => $olddepos,
         'TypeActes' => $xtyp,
         'AnneeDeb' => $AnneeDeb,
@@ -152,11 +155,8 @@ if (! $missingargs) {
         };
         unset($t);
 
-        $request = "UPDATE " . $table
-            . " SET " . $listmodif
-            . " WHERE " . $condcom . $conddep . $condtdiv . $condad . $condaf . " ;";
+        $request = "UPDATE " . $table . " SET " . $listmodif . " WHERE " . $condcom . $conddep . $condtdiv . $condad . $condaf . " ;";
         $result = EA_sql_query($request);
-        // echo $request;
         $nb = EA_sql_affected_rows();
         if ($nb > 0) {
             echo '<p>' . $nb . ' actes de ' . $ntype . $soustype . ' modifiés.</p>';

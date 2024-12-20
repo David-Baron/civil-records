@@ -2,7 +2,7 @@
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-require __DIR__ . '/../../next/Engine/FileEnvironmentParser.php';
+require __DIR__ . '/../../next/Engine/EnvironmentFileParser.php';
 $_ENV = require(__DIR__ . '/../../.env.local.php');
 $requirements = json_decode(file_get_contents(__DIR__ . '/../requirements.json'), true);
 
@@ -51,8 +51,8 @@ if ($request->getMethod() === 'POST') {
                 exit();
                 break;
             case 'update':
-                $fileEnvironmentParser = new FileEnvironmentParser();
-                $fileEnvironmentParser->set('db_tables_prefix', 'act');
+                $environmentFileParser = new EnvironmentFileParser();
+                $environmentFileParser->set('db_tables_prefix', 'act');
                 $session->set('step', '3');
                 $response = new RedirectResponse("$root/");
                 $response->send();

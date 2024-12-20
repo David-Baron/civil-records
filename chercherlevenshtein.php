@@ -1,4 +1,7 @@
 <?php
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 define('ADM', 0); // Compatibility only
 $admtxt = ''; // Compatibility only
 require(__DIR__ . '/next/bootstrap.php');
@@ -46,10 +49,10 @@ function cree_table_temp_sup($nom, $original)
 
 //--------------------------------------------------------
 
-$userlogin = "";
-$userlevel = logonok(LEVEL_LEVENSHTEIN);
-while ($userlevel < LEVEL_LEVENSHTEIN) {
-    login($root);
+if (!$userAuthorizer->isGranted(LEVEL_LEVENSHTEIN)) {
+    $response = new RedirectResponse("$root/login.php");
+    $response->send();
+    exit();
 }
 
 // récupération d l'adresse IP et substition de "_" aux "." pour créer les tables temporaires

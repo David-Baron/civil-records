@@ -5,7 +5,7 @@ $MODE_DEBUG = false; // N'applique pas les mises à jour & affiche les informati
 
 function init_page_EL_GENERALE($head = "", $ajax = "", $affiche = '') // SOURCE DE exporte.php
 {
-    global $root, $userlevel, $htmlpage, $titre;
+    global $root, $session, $htmlpage, $titre;
 
     open_page($titre, $root, null, null, $head);
     /*		if ($ajax != "")
@@ -16,7 +16,7 @@ function init_page_EL_GENERALE($head = "", $ajax = "", $affiche = '') // SOURCE 
 */
     navadmin($root, $titre);
 
-    zone_menu(ADM, $userlevel, array()); //ADMIN STANDARD
+    zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
 
     echo '<div id="col_main_adm">';
     $htmlpage = true;

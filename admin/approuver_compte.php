@@ -1,4 +1,7 @@
 <?php
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 define('ADM', 10); // Compatibility only
 $admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
@@ -6,10 +9,10 @@ require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
-$userlogin = "";
-$userlevel = logonok(9);
-while ($userlevel < 9) {
-    login($root);
+if (!$userAuthorizer->isGranted(9)) {
+    $response = new RedirectResponse("$root/admin/");
+    $response->send();
+    exit();
 }
 
 $xaction = getparam('action');
@@ -19,7 +22,7 @@ ob_start();
 open_page("Approbation d'un compte utilisateur", $root);
 navadmin($root, "Approbation d'un compte utilisateur");
 
-zone_menu(ADM, $userlevel, array('f' => 'N')); //ADMIN SANS FORM_RECHERCHE
+zone_menu(ADM, $session->get('user')['level'], array('f' => 'N')); //ADMIN SANS FORM_RECHERCHE
 echo '<div id="col_main">';
 
 if (USER_AUTO_DEF <> 1) {

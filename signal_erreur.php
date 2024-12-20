@@ -221,7 +221,11 @@ if (AUTO_CAPTCHA) {
     session_start();
 }  // pour captcha
 
-$userlevel = logonok(1);
+if (!$userAuthorizer->isGranted(1)) {
+    $response = new RedirectResponse("$root/login.php");
+    $response->send();
+    exit();
+}
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
@@ -385,6 +389,8 @@ if (!$ok) {
     <?php } ?>
 
 <?php if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
         list($table, $ntype, $script) = set_table_type_script_acte($xty);
         $request = "SELECT VERIFIEU, RELEVEUR, ID FROM " . $table . " WHERE ID=" . $xid . ";";
         $result = EA_sql_query($request);
