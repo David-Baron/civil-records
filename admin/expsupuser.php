@@ -79,7 +79,7 @@ if (! $missingargs) {
     $condsta = "";
     if ($statut <> "0") {
         if ($statut == "X") {
-            $condsta = " AND dtexpiration<'" . date("Y-m-d", time() - (DUREE_EXPIR * 24 * 60 * 60)) . "'";
+            $condsta = " AND dtexpiration<'" . date("Y-m-d", time() - ($config->get('DUREE_EXPIR') * 24 * 60 * 60)) . "'";
         } else {
             $condsta = " AND statut ='" . $statut . "'";
         }
@@ -100,7 +100,7 @@ if (! $missingargs) {
      * @deprecated Only the user himself can delete their account! Except and TODO: send an email to the user for the deleted account within 30 days if he does not log back in.
      */
     if ($suppr == 'Y') {
-        $request = "SELECT count(*) FROM " . EA_UDB . "_user3 WHERE " . $condlevel . $condreg . $condrem . $condsta . $condexp . $condpts . " ;";
+        $request = "SELECT count(*) FROM " . $config->get('EA_UDB') . "_user3 WHERE " . $condlevel . $condreg . $condrem . $condsta . $condexp . $condpts . " ;";
         $result = EA_sql_query($request, $u_db);
         $ligne = EA_sql_fetch_row($result);
         $nbrec = $ligne[0];
@@ -132,7 +132,7 @@ if (! $missingargs) {
     <?php }
     }
     if ($xaction == 'submitted' && $suppr <> "Y") {
-        $request = "SELECT * FROM " . EA_UDB . "_user3 WHERE " . $condlevel . $condreg . $condrem . $condsta . $condexp . $condpts . " ;";
+        $request = "SELECT * FROM " . $config->get('EA_UDB') . "_user3 WHERE " . $condlevel . $condreg . $condrem . $condsta . $condexp . $condpts . " ;";
         $result = EA_sql_query($request, $u_db);
         $nbdocs = EA_sql_num_rows($result);
         $fields_cnt = EA_sql_num_fields($result);
@@ -220,7 +220,7 @@ if (! $missingargs) {
             }
             writelog($actie . ' de fiches utilisateur', "USERS", $nb);
             if ($suppr == "Oui") {
-                $request = "DELETE FROM " . EA_UDB . "_user3 WHERE level=" . $lelevel . $condreg . $condrem . $condsta . $condexp . $condpts . " ;";
+                $request = "DELETE FROM " . $config->get('EA_UDB') . "_user3 WHERE level=" . $lelevel . $condreg . $condrem . $condsta . $condexp . $condpts . " ;";
                 $result = EA_sql_query($request, $u_db);
                 $nb = EA_sql_affected_rows($u_db);
                 if ($nb > 0) {
@@ -244,7 +244,7 @@ if (! $missingargs) {
                 <td>Droits d'accès : </td>
                 <td><?= lb_droits_user($lelevel, 1); ?></td>
             </tr>
-            <?php if (GEST_POINTS > 0) { ?>
+            <?php if ($config->get('GEST_POINTS') > 0) { ?>
                 <tr>
                     <td>ET</td>
                     <td></td>

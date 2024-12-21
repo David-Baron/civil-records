@@ -30,7 +30,7 @@ $JSheader = "";
 
 if ($id > 0) {  // édition
     $action = 'Modification';
-    $request = "SELECT * FROM " . EA_DB . "_geoloc WHERE ID =" . $id;
+    $request = "SELECT * FROM " . $config->get('EA_DB') . "_geoloc WHERE ID =" . $id;
 
     if ($result = EA_sql_query($request)) {
         $row = EA_sql_fetch_array($result);
@@ -47,8 +47,8 @@ if ($id > 0) {  // édition
         echo "<p>*** FICHE NON TROUVEE***</p>";
     }
     $zoom = 11;
-    if ($lon == 0 and $lat == 0 and GEO_CENTRE_CARTE <> "") {
-        $georeq = "SELECT LON,LAT FROM " . EA_DB . "_geoloc WHERE COMMUNE = '" . sql_quote(GEO_CENTRE_CARTE) . "' AND STATUT IN ('A','M')";
+    if ($lon == 0 and $lat == 0 and $config->get('GEO_CENTRE_CARTE') <> "") {
+        $georeq = "SELECT LON,LAT FROM " . $config->get('EA_DB') . "_geoloc WHERE COMMUNE = '" . sql_quote($config->get('GEO_CENTRE_CARTE')) . "' AND STATUT IN ('A','M')";
         $geores =  EA_sql_query($georeq);
         if ($geo = EA_sql_fetch_array($geores)) {
             $lon = $geo['LON'];
@@ -72,7 +72,7 @@ if ($id > 0) {  // édition
     $carto->setHeight(300);
     $carto->setWidth(500);
     global $root;
-    $image = EA_URL_SITE . $root . '/img/pin_eye.png';
+    $image = $config->get('EA_URL_SITE') . $root . '/assets/img/pin_eye.png';
     $Xanchor = 10;
     $Yanchor = 35;
     $carto->setMarkerIcon($image, '', $Xanchor, $Yanchor); // défini le décalage du pied de la punaise
@@ -97,7 +97,7 @@ zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
     <?php require(__DIR__ . '/../templates/admin/_menu_data.php'); ?>
 
     <?php if ($id > 0 && $act == "del") {
-        $reqmaj = "DELETE FROM " . EA_DB . "_geoloc WHERE ID=" . $id . ";";
+        $reqmaj = "DELETE FROM " . $config->get('EA_DB') . "_geoloc WHERE ID=" . $id . ";";
         $result = EA_sql_query($reqmaj, $a_db);
         //writelog('Suppression localité #'.$id,$lelogin,1);
         echo '<p><b>La localité est supprimée.</b></p>';
@@ -117,7 +117,7 @@ zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
                 $newstatut = $statut;
             }
             $missingargs = false;
-            $reqmaj = "UPDATE " . EA_DB . "_geoloc SET ";
+            $reqmaj = "UPDATE " . $config->get('EA_DB') . "_geoloc SET ";
             $reqmaj = $reqmaj .
                 "NOTE_N = '" . sql_quote(getparam('noteN')) . "', " .
                 "NOTE_M = '" . sql_quote(getparam('noteM')) . "', " .

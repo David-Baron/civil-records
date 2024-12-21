@@ -7,7 +7,7 @@ $admtxt = ''; // Compatibility only
 require(__DIR__ . '/next/bootstrap.php');
 require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
-if (PUBLIC_LEVEL < 4 && !$userAuthorizer->isGranted(1)) {
+if ($config->get('PUBLIC_LEVEL') < 4 && !$userAuthorizer->isGranted(1)) {
     $response = new RedirectResponse("$root/login.php");
     $response->send();
     exit();
@@ -19,7 +19,7 @@ pathroot($root, $path, $xcomm, $xpatr, $page);
 
 ob_start();
 open_page(
-    SITENAME . " : Dépouillement d'actes de l'état-civil et des registres paroissiaux",
+    $config->get('SITENAME') . " : Dépouillement d'actes de l'état-civil et des registres paroissiaux",
     $root,
     null,
     null,

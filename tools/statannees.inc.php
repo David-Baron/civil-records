@@ -51,12 +51,12 @@ if (! $missingargs) {
     switch ($TypeActes) {
         case "N":
             $ntype = "naissance";
-            $table = EA_DB . "_nai3";
+            $table = $config->get('EA_DB') . "_nai3";
             $program = "tab_naiss.php";
             break;
         case "V":
             $ntype = "types divers";
-            $table = EA_DB . "_div3";
+            $table = $config->get('EA_DB') . "_div3";
             $program = "tab_bans.php";
             $pos = isin($comdep, "];");
             if (($pos > 0)) {
@@ -69,12 +69,12 @@ if (! $missingargs) {
             break;
         case "M":
             $ntype = "mariage";
-            $table = EA_DB . "_mar3";
+            $table = $config->get('EA_DB') . "_mar3";
             $program = "tab_mari.php";
             break;
         case "D":
             $ntype = "décès";
-            $table = EA_DB . "_dec3";
+            $table = $config->get('EA_DB') . "_dec3";
             $program = "tab_deces.php";
             break;
     }

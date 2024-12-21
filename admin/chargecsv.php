@@ -40,7 +40,7 @@ function listbox_cols($fieldname, $default)
     echo " </select>\n";
 }
 
-$Max_time = min(ini_get("max_execution_time") - 3, MAX_EXEC_TIME);
+$Max_time = min(ini_get("max_execution_time") - 3, $config->get('MAX_EXEC_TIME'));
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
@@ -111,25 +111,25 @@ if (isset($_REQUEST['action'])) {
     switch ($TypeActes) {
         case "N":
             $ntype = "Naissance";
-            $table = EA_DB . "_nai3";
+            $table = $config->get('EA_DB') . "_nai3";
             $annee = 8;
             $script = 'tab_naiss.php';
             break;
         case "M":
             $ntype = "Mariage";
-            $table = EA_DB . "_mar3";
+            $table = $config->get('EA_DB') . "_mar3";
             $annee = 6;
             $script = 'tab_mari.php';
             break;
         case "D":
             $ntype = "Décès";
-            $table = EA_DB . "_dec3";
+            $table = $config->get('EA_DB') . "_dec3";
             $annee = 7;
             $script = 'tab_deces.php';
             break;
         case "V":
             $ntype = "Divers";
-            $table = EA_DB . "_div3";
+            $table = $config->get('EA_DB') . "_div3";
             $annee = 0;
             $script = 'tab_bans.php';
             break;
@@ -226,9 +226,9 @@ if (!$missingargs) { // fichier d'actes
     }
     if ($submit == 'D') {  // upload du fichier CSV
         // Stockage du fichier chargé
-        $uploadfile = UPLOAD_DIR . '/' . $session->get('user')['login'] . '.csv';
+        $uploadfile = $config->get('UPLOAD_DIR') . '/' . $session->get('user')['login'] . '.csv';
         if (!move_uploaded_file($_FILES['Actes']['tmp_name'], $uploadfile)) {
-            msg('033 : Impossible de ranger le fichier dans "' . UPLOAD_DIR . '".');
+            msg('033 : Impossible de ranger le fichier dans "' . $config->get('UPLOAD_DIR') . '".');
             $missingargs = true;
         }
     }
@@ -373,13 +373,13 @@ if (!$missingargs) { // fichier d'actes
                                 $inversion = false;
                                 // Recherche si épouse en 1er
                                 $prem_pre = explode(' ', $pre, 2);
-                                $sql = "SELECT * FROM " . EA_DB . "_prenom WHERE prenom = '" . sql_quote($prem_pre[0]) . "'";
+                                $sql = "SELECT * FROM " . $config->get('EA_DB') . "_prenom WHERE prenom = '" . sql_quote($prem_pre[0]) . "'";
                                 $res = EA_sql_query($sql);
                                 $nb = EA_sql_num_rows($res);
                                 if ($nb > 0) {
                                     // vérifier que cpre n'est pas feminin
                                     $prem_pre = explode(' ', $cpre, 2);
-                                    $sql = "SELECT * FROM " . EA_DB . "_prenom WHERE prenom = '" . sql_quote($prem_pre[0]) . "'";
+                                    $sql = "SELECT * FROM " . $config->get('EA_DB') . "_prenom WHERE prenom = '" . sql_quote($prem_pre[0]) . "'";
                                     $res = EA_sql_query($sql);
                                     $nb = EA_sql_num_rows($res);
                                     if ($nb == 0) {
@@ -680,11 +680,11 @@ if (!$missingargs) { // fichier d'actes
 
         if (($submit == 'S') and (getparam('ModeleS') !== '')) { // Sauvegarde modèle
             $Contenu_a_sauver = 'TypeActes' . ' -||- ' . $TypeActes;
-            file_put_contents(UPLOAD_DIR . '/' . $TypeActes . '-' . getparam('ModeleS') . '.m_csv', $Contenu_a_sauver . "\r\n");
+            file_put_contents($config->get('UPLOAD_DIR') . '/' . $TypeActes . '-' . getparam('ModeleS') . '.m_csv', $Contenu_a_sauver . "\r\n");
             foreach ($_REQUEST as $k => $v) {
                 $Contenu_a_sauver = $k . ' -||- ' . $v;
                 if (in_array(substr($k, 0, 3), array('ZID', 'Tra', 'Zon')) or (in_array($k, array('Filtre', 'Condition', 'Compare')))) {
-                    file_put_contents(UPLOAD_DIR . '/' . $TypeActes . '-' . getparam('ModeleS') . '.m_csv', $Contenu_a_sauver . "\r\n", FILE_APPEND);
+                    file_put_contents($config->get('UPLOAD_DIR') . '/' . $TypeActes . '-' . getparam('ModeleS') . '.m_csv', $Contenu_a_sauver . "\r\n", FILE_APPEND);
                 }
             }
         }
@@ -789,7 +789,7 @@ if (!$missingargs) { // fichier d'actes
             echo '  <input type="submit" name="submitC" value=" CHARGER maintenant " />' . "\n";
             echo '<br><br>';
             echo '<select name="ModeleL" size="1"><option value="" selected="selected">--</option>';
-            foreach (glob(UPLOAD_DIR . '/' . $TypeActes . '-*.m_csv') as $v) {
+            foreach (glob($config->get('UPLOAD_DIR') . '/' . $TypeActes . '-*.m_csv') as $v) {
                 echo '<option value="' . $v . '">' . $v . '</option>';
             }
             echo '</select>';
@@ -901,7 +901,7 @@ if ($missingargs) {
         echo " <tr>\n";
         echo '  <td align="right">Déposant : </td>' . "\n";
         echo '  <td>';
-        listbox_users("deposant", $session->get('user')['ID'], DEPOSANT_LEVEL);
+        listbox_users("deposant", $session->get('user')['ID'], $config->get('DEPOSANT_LEVEL'));
         echo '  </td>';
         echo " </tr>\n";
     } else {

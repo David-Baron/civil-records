@@ -83,8 +83,9 @@ function decodemyslash($text)
 
 function mkurl($script, $arg1, $arg2 = "", $args = "")
 { // Compose une URL avec les arguments passés en mode chemin ou non suivant config.
+    global $config;
     $url = $script; // par défaut
-    if (FULL_URL == 1) {
+    if ($config->get('FULL_URL') == 1) {
         if ($arg1 <> "") {
             $url = $script . '/' . urlencode(encodemyslash($arg1));
         }
@@ -170,8 +171,9 @@ function strmax($str1, $str2)
 
 function execute_script_sql($filename, $prefixe = "", $selecttxt = "")
 {
+    global $config;
     if ($prefixe == "") {
-        $prefixe = EA_DB;
+        $prefixe = $config->get('EA_DB');
     }
 
     if (!file_exists($filename)) {

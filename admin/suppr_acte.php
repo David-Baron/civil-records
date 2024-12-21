@@ -37,25 +37,25 @@ if (! $missingargs) {
     switch ($xtyp) {
         case "N":
             $ntype = "de naissance";
-            $table = EA_DB . "_nai3";
+            $table = $config->get('EA_DB') . "_nai3";
             $script = "tab_naiss.php";
             $conj = "";
             break;
         case "V":
             $ntype = "divers";
-            $table = EA_DB . "_div3";
+            $table = $config->get('EA_DB') . "_div3";
             $script = "tab_bans.php";
             $conj = ", C_NOM, C_PRE";
             break;
         case "M":
             $ntype = "de mariage";
-            $table = EA_DB . "_mar3";
+            $table = $config->get('EA_DB') . "_mar3";
             $script = "tab_mari.php";
             $conj = ", C_NOM, C_PRE";
             break;
         case "D":
             $ntype = "de décès";
-            $table = EA_DB . "_dec3";
+            $table = $config->get('EA_DB') . "_dec3";
             $script = "tab_deces.php";
             $conj = "";
             break;

@@ -23,6 +23,9 @@ if (!file_exists(__DIR__ . '/../.env.local.php') || file_exists(__DIR__ . '/../s
 $_ENV = require(__DIR__ . '/../.env.local.php');
 $root = $_ENV['APP_ROOT'];
 
+require(__DIR__ . '/Engine/AppConfiguration.php');
+$config = new AppConfiguration();
+
 if (isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'dev') {
 
     error_reporting(E_ALL);

@@ -25,7 +25,7 @@ navadmin($root, "Approbation d'un compte utilisateur");
 zone_menu(ADM, $session->get('user')['level'], array('f' => 'N')); //ADMIN SANS FORM_RECHERCHE
 echo '<div id="col_main">';
 
-if (USER_AUTO_DEF <> 1) {
+if ($config->get('USER_AUTO_DEF') <> 1) {
     echo "<p><b>Désolé : Cette action n'a pas de sens dans la configuration actuelle du logiciel</b></p>";
     echo '</div>';
     include(__DIR__ . '/../templates/front/_footer.php');
@@ -52,7 +52,7 @@ if (!isset($_REQUEST['action'])) {
     msg('Vous devez sélectionner l\'action à poser');
     $ok = false;
 }
-$res = EA_sql_query("SELECT * FROM " . EA_UDB . "_user3 WHERE id='" . sql_quote(getparam('id'))
+$res = EA_sql_query("SELECT * FROM " . $config->get('EA_UDB') . "_user3 WHERE id='" . sql_quote(getparam('id'))
     . "' and  (statut='W' or statut='A')", $u_db);
 if (EA_sql_num_rows($res) != 1) {
     echo "<p><b>Pas de compte à approuver avec cette identification.</b></p>";
@@ -79,7 +79,7 @@ if ($ok) {
         $sujet = "Refus de votre compte";
         $mes = "refusé";
     }
-    $reqmaj = "UPDATE " . EA_UDB . "_user3 SET "
+    $reqmaj = "UPDATE " . $config->get('EA_UDB') . "_user3 SET "
         . " statut = '" . $statut . "',"
         . " rem = ' '"
         . " WHERE id=" . $id . ";";
@@ -91,16 +91,16 @@ if ($ok) {
         $message = getparam('messageplus');
 
         $sql = "SELECT NOM, PRENOM, LOGIN"
-            . " FROM " . EA_UDB . "_user3 WHERE id=" . $id . ";";
+            . " FROM " . $config->get('EA_UDB') . "_user3 WHERE id=" . $id . ";";
         $res = EA_sql_query($sql, $u_db);
         $ligne = EA_sql_fetch_array($res);
 
-        $urlsite = EA_URL_SITE . $root . "/index.php";
+        $urlsite = $config->get('EA_URL_SITE') . $root . "/index.php";
         $codes = array("#NOMSITE#", "#URLSITE#", "#LOGIN#", "#NOM#", "#PRENOM#");
-        $decodes = array(SITENAME, $urlsite, $ligne['LOGIN'], $ligne['NOM'], $ligne['PRENOM']);
+        $decodes = array($config->get('SITENAME'), $urlsite, $ligne['LOGIN'], $ligne['NOM'], $ligne['PRENOM']);
         $bon_message = str_replace($codes, $decodes, $message);
 
-        $sender = mail_encode(SITENAME) . ' <' . LOC_MAIL . ">";
+        $sender = mail_encode($config->get('SITENAME')) . ' <' . $config->get('LOC_MAIL') . ">";
         $okmail = sendmail($sender, $row['email'], $sujet, $bon_message);
         if ($okmail) {
             $log .= " + mail";
@@ -118,10 +118,9 @@ if ($ok) {
 
 //Si pas tout les arguments nécessaire, on affiche le formulaire
 if (!$ok) {
+    $messageplus = $config->get('MAIL_APPROBATION');
     if ($xaction == 'KO') {
-        $messageplus = MAIL_REFUS;
-    } else {
-        $messageplus = MAIL_APPROBATION;
+        $messageplus = $config->get('MAIL_REFUS');
     }
 
     echo '<h2>Approbation d\'un compte d\'utilisateur</h2>' . "\n";

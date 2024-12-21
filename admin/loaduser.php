@@ -97,7 +97,7 @@ if(!empty($_FILES['Users']['tmp_name'])) { // fichier d'utilisateurs
                 }
                 if ($ok) {
                     // Recherche si existant
-                    $sql = "SELECT * FROM " . EA_UDB . "_user3 WHERE nom = '" . sql_quote($nom) . "' AND prenom = '" . sql_quote($pre) . "'";
+                    $sql = "SELECT * FROM " . $config->get('EA_UDB') . "_user3 WHERE nom = '" . sql_quote($nom) . "' AND prenom = '" . sql_quote($pre) . "'";
                     $res = EA_sql_query($sql, $u_db);
                     $nb = EA_sql_num_rows($res);
                     if ($nb > 0) {
@@ -108,8 +108,8 @@ if(!empty($_FILES['Users']['tmp_name'])) { // fichier d'utilisateurs
                         $ok = false;
                     }
                 }
-                if ($ok and TEST_EMAIL_UNIC == 1) {
-                    $sql = "SELECT * FROM " . EA_UDB . "_user3 WHERE email = '" . sql_quote($mail) . "'";
+                if ($ok and $config->get('TEST_EMAIL_UNIC') == 1) {
+                    $sql = "SELECT * FROM " . $config->get('EA_UDB') . "_user3 WHERE email = '" . sql_quote($mail) . "'";
                     $res = EA_sql_query($sql, $u_db);
                     $nb = EA_sql_num_rows($res);
                     if ($nb > 0) {
@@ -128,12 +128,12 @@ if(!empty($_FILES['Users']['tmp_name'])) { // fichier d'utilisateurs
                         $racine = strtolower(mb_substr($pre, 0, 3) . mb_substr($nom, 0, 3));
                         $login = $racine;
                         // recherche si existe
-                        $sql = "SELECT * FROM " . EA_UDB . "_user3 WHERE login = '" . sql_quote($login) . "'";
+                        $sql = "SELECT * FROM " . $config->get('EA_UDB') . "_user3 WHERE login = '" . sql_quote($login) . "'";
                         $res = EA_sql_query($sql, $u_db);
                         $nb = EA_sql_num_rows($res);
                         if ($nb > 0) {
                             // création d'un login numéroté
-                            $sql = "SELECT login FROM " . EA_UDB . "_user3"
+                            $sql = "SELECT login FROM " . $config->get('EA_UDB') . "_user3"
                                         . " WHERE login LIKE '" . $racine . "__' AND cast( substring( login, 7, 2 ) AS unsigned ) >0"
                                         . " ORDER BY login DESC";
                             $res = EA_sql_query($sql, $u_db);
@@ -147,7 +147,7 @@ if(!empty($_FILES['Users']['tmp_name'])) { // fichier d'utilisateurs
                         }
                     }
                     // TEST FINAL du login (dans tous les cas)
-                    $sql = "SELECT * FROM " . EA_UDB . "_user3 WHERE login = '" . sql_quote($login) . "'";
+                    $sql = "SELECT * FROM " . $config->get('EA_UDB') . "_user3 WHERE login = '" . sql_quote($login) . "'";
                     $res = EA_sql_query($sql, $u_db);
                     $nb = EA_sql_num_rows($res);
                     if ($nb > 0) {
@@ -193,7 +193,7 @@ if(!empty($_FILES['Users']['tmp_name'])) { // fichier d'utilisateurs
                         }
                     }
                     if ($user[7] == "") {
-                        $solde = PTS_PAR_PER;
+                        $solde = $config->get('PTS_PAR_PER');
                     } else {
                         $solde = $user[7];
                     }
@@ -235,7 +235,7 @@ if(!empty($_FILES['Users']['tmp_name'])) { // fichier d'utilisateurs
                     // test sur le n° ID
                     if (!empty($user[11])) {
                         $iduser = $user[11];
-                        $sql = "SELECT * FROM " . EA_UDB . "_user3 WHERE ID = '" . sql_quote($iduser) . "'";
+                        $sql = "SELECT * FROM " . $config->get('EA_UDB') . "_user3 WHERE ID = '" . sql_quote($iduser) . "'";
                         $res = EA_sql_query($sql, $u_db);
                         $nb = EA_sql_num_rows($res);
                         if ($nb > 0) {
@@ -252,7 +252,7 @@ if(!empty($_FILES['Users']['tmp_name'])) { // fichier d'utilisateurs
 
                 if ($ok) {
                     // insertion
-                    $reqmaj = "INSERT INTO " . EA_UDB . "_user3 "
+                    $reqmaj = "INSERT INTO " . $config->get('EA_UDB') . "_user3 "
                       . " ( `login` , `hashpass` , `nom` , `prenom` , `email` , `level` , `regime` , `solde` , `maj_solde` , statut, dtcreation, dtexpiration, libre, pt_conso, ID,`REM`)"
                       . " VALUES('" . sql_quote($login) . "','"
                                             . sql_quote($hashpw) . "','"
@@ -273,12 +273,12 @@ if(!empty($_FILES['Users']['tmp_name'])) { // fichier d'utilisateurs
                     //echo $reqmaj;
                     if  ($result = EA_sql_query($reqmaj, $u_db)) {
                         if ($sendmail == 1) {
-                            $urlsite = EA_URL_SITE . $root . "/index.php";
+                            $urlsite = $config->get('EA_URL_SITE') . $root . "/index.php";
                             $codes = array("#NOMSITE#","#URLSITE#", "#LOGIN#", "#PASSW#", "#NOM#", "#PRENOM#");
-                            $decodes = array(SITENAME, $urlsite, $login, $pw, $nom, $pre);
+                            $decodes = array($config->get('SITENAME'), $urlsite, $login, $pw, $nom, $pre);
                             $bon_message = str_replace($codes, $decodes, $message);
-                            $sujet = "Votre compte " . SITENAME;
-                            $sender = mail_encode(SITENAME) . ' <' . LOC_MAIL . ">";
+                            $sujet = "Votre compte " . $config->get('SITENAME');
+                            $sender = mail_encode($config->get('SITENAME')) . ' <' . $config->get('LOC_MAIL') . ">";
                             $okmail = sendmail($sender, $mail, $sujet, $bon_message);
                         } else {
                             $okmail = false;
@@ -325,7 +325,7 @@ if($missingargs) {
         $sendmail   = $chargeUSERparam[0];
         $xdroits    = $chargeUSERparam[1];
         $xregime    = $chargeUSERparam[2];
-        $message    = MAIL_NEWUSER;
+        $message    = $config->get('MAIL_NEWUSER');
     }
     echo '<form method="post" enctype="multipart/form-data" action="">' . "\n";
     echo '<h2 align="center">Chargement de comptes utilisateurs</h2>';
@@ -346,7 +346,7 @@ if($missingargs) {
     echo " </tr>\n";
     echo " <tr><td colspan=2>&nbsp;</td></tr>\n";
 
-    if (GEST_POINTS > 0) {
+    if ($config->get('GEST_POINTS') > 0) {
         echo " <tr>\n";
         echo "  <td align=right>Régime (points) AUTO : </td>\n";
         echo '  <td>';

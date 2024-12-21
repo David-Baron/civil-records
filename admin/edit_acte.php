@@ -56,22 +56,22 @@ if (! $missingargs) {
     switch ($xtyp) {
         case "N":
             $ntype = "de naissance";
-            $table = EA_DB . "_nai3";
+            $table = $config->get('EA_DB') . "_nai3";
             $script = "tab_naiss.php";
             break;
         case "D":
             $ntype = "de décès";
-            $table = EA_DB . "_dec3";
+            $table = $config->get('EA_DB') . "_dec3";
             $script = "tab_deces.php";
             break;
         case "V":
             $ntype = "divers";
-            $table = EA_DB . "_div3";
+            $table = $config->get('EA_DB') . "_div3";
             $script = "tab_bans.php";
             break;
         case "M":
             $ntype = "de mariage";
-            $table = EA_DB . "_mar3";
+            $table = $config->get('EA_DB') . "_mar3";
             $script = "tab_mari.php";
             break;
         default:
@@ -216,7 +216,7 @@ if (! $missingargs) {
                                 $value = $xtdiv;
                                 break;
                             case "DEPOSANT":
-                                $value = current_user("ID");
+                                $value = $session->get('user')['ID'];
                                 break;
                             default:
                                 $value = getparam($mdb[$i]['ZONE']);

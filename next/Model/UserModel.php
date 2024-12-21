@@ -1,6 +1,6 @@
 <?php
 
-require(__DIR__ . '/../Engine/DatabaseConnection.php');
+require_once(__DIR__ . '/../Engine/DatabaseConnection.php');
 
 class UserModel extends DatabaseConnection
 {

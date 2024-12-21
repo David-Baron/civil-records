@@ -31,8 +31,8 @@ if (getparam('action') == 'submitted') {
         msg("Vous devez préciser votre adresse email");
     } else {
         $missingargs = false;
-        $sender = mail_encode(SITENAME) . ' <' . LOC_MAIL . ">";
-        $okmail = sendmail($sender, $dest, 'Test messagerie de ' . SITENAME, 'Ce message de test a été envoyé via ExpoActes');
+        $sender = mail_encode($config->get('SITENAME')) . ' <' . $config->get('LOC_MAIL') . ">";
+        $okmail = sendmail($sender, $dest, 'Test messagerie de ' . $config->get('SITENAME'), 'Ce message de test a été envoyé via ExpoActes');
         if ($okmail) {
             echo "<p>Un mail de test vous a été envoyé. Vérifiez qu'il vous est bien parvenu.</p>";
         } else {
@@ -51,7 +51,7 @@ if($missingargs) {
 
     echo " <tr>\n";
     echo "  <td align=right>Votre adresse email : </td>\n";
-    echo '  <td><input type="text" name="email" size=40 value="' . LOC_MAIL . '"></td>';
+    echo '  <td><input type="text" name="email" size=40 value="' . $config->get('LOC_MAIL') . '"></td>';
     echo " </tr>\n";
 
     echo " <tr><td colspan=\"2\" align=\"center\">\n<br>";

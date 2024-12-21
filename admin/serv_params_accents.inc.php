@@ -192,11 +192,11 @@ function check_collation($mes_variables_divers, $Trt_accents = 'N')
 
 $LOCAL_EA_MAINTENANCE = $row[0]; // Récupère l'information MAINTENANCE du script parents
 
-$GLOBALS['Type_Table'] = array('N' => EA_DB . '_nai3', 'M' => EA_DB . '_mar3', 'D' => EA_DB . '_dec3', 'V' => EA_DB . '_div3');
+$GLOBALS['Type_Table'] = array('N' => $config->get('EA_DB') . '_nai3', 'M' => $config->get('EA_DB') . '_mar3', 'D' => $config->get('EA_DB') . '_dec3', 'V' => $config->get('EA_DB') . '_div3');
 $affiche_debug = 'TEST';
 
 // $table_control = $GLOBALS['Type_Table']['V']; $champ_control = 'BIDON';
-$table_control = EA_DB . '_traceip';
+$table_control = $config->get('EA_DB') . '_traceip';
 $champ_control = 'ip';
 $mes_variables_divers = array();
 
@@ -205,16 +205,16 @@ $tables = array(
     $GLOBALS['Type_Table']['M'],
     $GLOBALS['Type_Table']['D'],
     $GLOBALS['Type_Table']['N'],
-    EA_DB . '_geoloc',
-    EA_DB . '_log',
-    EA_DB . '_metadb',
-    EA_DB . '_metalg',
-    EA_DB . '_mgrplg',
-    EA_DB . '_prenom',
-    EA_DB . '_sums',
-    EA_DB . '_params',
-    EA_DB . '_traceip',
-    EA_UDB . '_user3',
+    $config->get('EA_DB') . '_geoloc',
+    $config->get('EA_DB') . '_log',
+    $config->get('EA_DB') . '_metadb',
+    $config->get('EA_DB') . '_metalg',
+    $config->get('EA_DB') . '_mgrplg',
+    $config->get('EA_DB') . '_prenom',
+    $config->get('EA_DB') . '_sums',
+    $config->get('EA_DB') . '_params',
+    $config->get('EA_DB') . '_traceip',
+    $config->get('EA_UDB') . '_user3',
     $table_control,
 );
 

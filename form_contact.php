@@ -5,9 +5,6 @@ require(__DIR__ . '/next/bootstrap.php');
 require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
 //global $loc_mail;
-if (AUTO_CAPTCHA) {
-    session_start();
-}  // pour captcha
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
@@ -45,7 +42,7 @@ if (getparam('action') == 'submitted') {
         msg('Vous devez donner un objet');
         $ok = false;
     }
-    if (AUTO_CAPTCHA and function_exists('imagettftext')) {
+    if ($config->get('AUTO_CAPTCHA') and function_exists('imagettftext')) {
         if (md5(getparam('captcha')) != $_SESSION['valeur_image']) {
             msg('Attention à bien recopier le code dissimulé dans l\'image !');
             $ok = false;
@@ -57,7 +54,7 @@ if (getparam('action') == 'submitted') {
         $log = "Contact";
         $crlf = chr(10) . chr(13);
 
-        $lemessage = "Message envoyé par " . $nompre . " (" . $email . ") via " . SITENAME . $crlf . $crlf;
+        $lemessage = "Message envoyé par " . $nompre . " (" . $email . ") via " . $config->get('SITENAME') . $crlf . $crlf;
         if ($sweb <> "") {
             $lemessage .= "Site web : " . $sweb . " " . $crlf . $crlf;
         }
@@ -67,11 +64,11 @@ if (getparam('action') == 'submitted') {
 
         $sujet = $objet;
         $sender = mail_encode($nompre) . ' <' . $email . ">";
-        $okmail = sendmail($sender, EMAIL_CONTACT, $sujet, $lemessage);
+        $okmail = sendmail($sender, $config->get('EMAIL_CONTACT'), $sujet, $lemessage);
         if ($okmail) {
             $mes = "Un mail a été envoyé à l'administrateur.";
         } else {
-            $mes = "ERREUR : Le mail n'a pas pu être envoyé ! <br />Merci de contactez directement l'administrateur du site à l'adresse " . EMAIL_CONTACT;
+            $mes = "ERREUR : Le mail n'a pas pu être envoyé ! <br />Merci de contactez directement l'administrateur du site à l'adresse " . $config->get('EMAIL_CONTACT');
         }
         //writelog($log,$nompre,1);
         echo '<p><b>' . $mes . '</b></p>';
@@ -106,7 +103,7 @@ if (!$ok) { ?>
                     <textarea name="txtmsg" cols="80" rows="12"><?= $txtmsg; ?></textarea>
                 </td>
             </tr>
-            <?php if (AUTO_CAPTCHA && function_exists('imagettftext')) { ?>
+            <?php if ($config->get('AUTO_CAPTCHA') && function_exists('imagettftext')) { ?>
                 <tr>
                     <td><img src="<?= $root; ?>/tools/captchas/image.php" alt="captcha" id="captcha"></td>
                     <td>

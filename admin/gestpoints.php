@@ -77,7 +77,7 @@ if (getparam('action') == 'submitted') {
 
     if ($ok) {
         if ($oper == "E") { // ==== ajustement de la date d'expiration
-            $request = "UPDATE " . EA_UDB . "_user3 SET"
+            $request = "UPDATE " . $config->get('EA_UDB') . "_user3 SET"
                     . " dtexpiration='" . $sqlnewdt . "'"
                     . " WHERE level=" . $xdroits . $condreg . $condrem . " ;";
             $result = EA_sql_query($request, $u_db);
@@ -87,7 +87,7 @@ if (getparam('action') == 'submitted') {
             writelog('Modif. dates expiration', "USERS", $nb);
             $missingargs = false;
         } elseif ($oper == "R") { //==== remise à 0 des points consommés
-            $request = "UPDATE " . EA_UDB . "_user3 SET"
+            $request = "UPDATE " . $config->get('EA_UDB') . "_user3 SET"
                 . " pt_conso=0"
                 . " WHERE level=" . $xdroits . $condreg . $condrem . " ;";
             $result = EA_sql_query($request, $u_db);
@@ -99,7 +99,7 @@ if (getparam('action') == 'submitted') {
         } elseif ($oper == "A" or $oper == "F") {
             // modification des points disponibles
             $request = "SELECT id, nom, prenom, solde, pt_conso"
-                . " FROM " . EA_UDB . "_user3 "
+                . " FROM " . $config->get('EA_UDB') . "_user3 "
                 . " WHERE level=" . $xdroits . $condreg . $condrem . " ;";
             //echo $request;
             $sites = EA_sql_query($request, $u_db);
@@ -117,7 +117,7 @@ if (getparam('action') == 'submitted') {
                 } else {
                     $newsolde = $nbrepts;
                 }
-                $request = "UPDATE " . EA_UDB . "_user3 SET"
+                $request = "UPDATE " . $config->get('EA_UDB') . "_user3 SET"
                     . " solde=" . $newsolde . ", maj_solde='" . $today . "'"
                     . " WHERE id=" . $idsit . " ;";
                 $result = EA_sql_query($request, $u_db);
@@ -160,7 +160,7 @@ if ($missingargs) {
     lb_droits_user($xdroits);
     echo '  </td>';
     echo " </tr>\n";
-    if (GEST_POINTS > 0) {
+    if ($config->get('GEST_POINTS') > 0) {
         echo " <tr><td align=right>ET</td><td>&nbsp;</td></tr>\n";
         echo " <tr>\n";
         echo "  <td align=right>Régime (points) : </td>\n";
@@ -207,7 +207,7 @@ if ($missingargs) {
     echo '  <td>';
     echo '        <br />';
     echo '        <input type="radio" name="oper" value="E" />Fixer la date d\'expiration des comptes à <br />';
-    if (GEST_POINTS > 0) {
+    if ($config->get('GEST_POINTS') > 0) {
         echo '        <input type="radio" name="oper" value="R" />Remettre à 0 les points <i>consommés</i> <br />';
         echo '        <input type="radio" name="oper" value="A" />Ajouter les points suivants au solde <i>disponible</i><br />';
         echo '        <input type="radio" name="oper" value="F" />Fixer le solde de points <i>disponibles</i> à <br />';

@@ -23,7 +23,7 @@ if (!file_exists($rep_PHPMailer)) {
     writelog('Dossier PHPMailer absent.', 'PHPMailer', 0);
     return $retour_mail_externe; // Le return est nécessaire pour stopper le script mais le contenu n'est pas utilisé
 }
-if ((SMTP_HOST . LOC_HOST) == "") {
+if (($config->get('SMTP_HOST') . $config->get('LOC_HOST')) == "") {
     msg("052 : Paramètres de gestion du mail incomplètement configurés.");
     writelog('Paramètres manquants.', 'PHPMailer', 0);
     return $retour_mail_externe; // Le return est nécessaire pour stopper le script mais le contenu n'est pas utilisé
@@ -38,21 +38,21 @@ require_once($rep_PHPMailer . "src/SMTP.php");
 $mail = new PHPMailer();
 
 // Extrait le port du nom du serveur, par défaut port 465
-$temp = explode(':', SMTP_HOST);
+$temp = explode(':', $config->get('SMTP_HOST'));
 if (!isset($temp[1])) {
     $temp[1] = 465;
 }
 
 $mail->Host = $temp[0];
 $mail->Port = $temp[1];
-$mail->Hostname = LOC_HOST;
+$mail->Hostname = $config->get('LOC_HOST');
 
-if (SMTP_PASS == "") {
+if ($config->get('SMTP_PASS') == "") {
     $mail->SMTPAuth = false;
 } else {
     $mail->SMTPAuth = true;
-    $mail->Username = SMTP_ACC; //Username to use for SMTP authentication - use full email address for gmail
-    $mail->Password = SMTP_PASS; //Password to use for SMTP authentication
+    $mail->Username = $config->get('SMTP_ACC'); //Username to use for SMTP authentication - use full email address for gmail
+    $mail->Password = $config->get('SMTP_PASS'); //Password to use for SMTP authentication
 }
 
 $mail->isSMTP();

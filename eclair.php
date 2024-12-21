@@ -6,7 +6,7 @@ require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
 if (!defined("ECLAIR_LOG")) define("ECLAIR_LOG", 0);
 
-if (ECLAIR_AUTORISE == 0) {
+if ($config->get('ECLAIR_AUTORISE') == 0) {
     header("Location: $root/");
     exit();
 }
@@ -36,7 +36,7 @@ echo '<body>';
 
 if (($xcom == "") or ($xtyp == "")) {
     // Lise des communes
-    $request = "SELECT TYPACT AS TYP, sum(NB_TOT) AS CPT, COMMUNE, DEPART FROM " . EA_DB . "_sums GROUP BY COMMUNE, DEPART, TYP";
+    $request = "SELECT TYPACT AS TYP, sum(NB_TOT) AS CPT, COMMUNE, DEPART FROM " . $config->get('EA_DB') . "_sums GROUP BY COMMUNE, DEPART, TYP";
     $result = EA_sql_query($request);
     $nblign = EA_sql_num_rows($result);
 
@@ -51,22 +51,22 @@ if (($xcom == "") or ($xtyp == "")) {
     switch ($xtyp) {
         case "N":
             $ntype = "de naissance";
-            $table = EA_DB . "_nai3";
+            $table = $config->get('EA_DB') . "_nai3";
             $zones = "NOM,P_NOM,M_NOM,T1_NOM,T2_NOM";
             break;
         case "D":
             $ntype = "de décès";
-            $table = EA_DB . "_dec3";
+            $table = $config->get('EA_DB') . "_dec3";
             $zones = "NOM,C_NOM,P_NOM,M_NOM,T1_NOM,T2_NOM";
             break;
         case "V":
             $ntype = "divers";
-            $table = EA_DB . "_div3";
+            $table = $config->get('EA_DB') . "_div3";
             $zones = "NOM,C_NOM,P_NOM,M_NOM,CP_NOM,CM_NOM,T1_NOM,T2_NOM,T3_NOM,T4_NOM";
             break;
         case "M":
             $ntype = "de mariage";
-            $table = EA_DB . "_mar3";
+            $table = $config->get('EA_DB') . "_mar3";
             $zones = "NOM,C_NOM,P_NOM,M_NOM,CP_NOM,CM_NOM,T1_NOM,T2_NOM,T3_NOM,T4_NOM";
             break;
         default:
@@ -85,7 +85,7 @@ if (($xcom == "") or ($xtyp == "")) {
     $result = EA_sql_query($request);
     $cptrow = EA_sql_num_rows($result);
 
-    if ($cptrow > ECLAIR_MAX_ROW) {
+    if ($cptrow > $config->get('ECLAIR_MAX_ROW')) {
         // Trop de lignes dans la commune => traiter par initiale
         $lgi  = strlen($xini) + 1;
         $initiale = "";
@@ -183,7 +183,7 @@ echo '<p>Patronymes  : ' . $cptrec . '.</p>';
 </body>
 
 </html>
-<?php if (ECLAIR_LOG > 0) {
+<?php if ($config->get('ECLAIR_LOG') > 0) {
     $array_server_values = $_SERVER;
     $Vua   = $array_server_values['HTTP_USER_AGENT'];
     $Vip   = $array_server_values['REMOTE_ADDR'];

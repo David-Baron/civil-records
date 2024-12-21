@@ -3,6 +3,7 @@
 
 function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $xmax, $T0, $Max_time, $COLLATION = '') // remplissage table temporaire pour requete avec jointure
 {
+    global $config;
 
     if ($COLLATION == '') {
         $COLLATION = 'latin1_general_ci';
@@ -48,11 +49,11 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
 
         if ($hf == "H") {  // recherche homme
 
-            $request = "CREATE TEMPORARY TABLE IF NOT EXISTS " . EA_DB . "_" . $ip_adr_trait . "_h (`disth` int( 11 ) NOT NULL DEFAULT 0, PRIMARY KEY ( `nomlev` ) )
+            $request = "CREATE TEMPORARY TABLE IF NOT EXISTS " . $config->get('EA_DB') . "_" . $ip_adr_trait . "_h (`disth` int( 11 ) NOT NULL DEFAULT 0, PRIMARY KEY ( `nomlev` ) )
 		AS (SELECT `NOM` AS `nomlev` FROM " . $table . " WHERE `ID` = '0');";
 
             $result = EA_sql_query($request) or die('Erreur SQL creation !' . $request . '<br>' . EA_sql_error());
-            if ($table == EA_DB . "_div3") {
+            if ($table == $config->get('EA_DB') . "_div3") {
                 if ($commune1 == "U") {
                     if ($crit != '') {
                         $request = "SELECT nom FROM " . $table . " WHERE " . $crit . " AND commune='" . sql_quote($xcomm) . "' GROUP BY nom ORDER BY nom";
@@ -67,7 +68,7 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
                     }
                 }
 
-            } elseif ($table == EA_DB . "_mar3") {
+            } elseif ($table == $config->get('EA_DB') . "_mar3") {
                 if ($commune1 == "U") {
                     if ($crit != '') {
                         $request = "SELECT nom FROM " . $table . " WHERE " . $crit . " AND commune='" . sql_quote($xcomm) . "' GROUP BY nom ORDER BY nom";
@@ -103,12 +104,12 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
             //								) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;";
             //	  	  $request = "CREATE TEMPORARY TABLE IF NOT EXISTS ".EA_DB."_".$ip_adr_trait."_f  (`nomlev` varchar( 25 ) COLLATE ".$COLLATION." NOT NULL ,`distf` int( 11 ) NOT NULL ,PRIMARY KEY ( `nomlev` )
             //								) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=".$COLLATION.";";
-            $request = "CREATE TEMPORARY TABLE IF NOT EXISTS " . EA_DB . "_" . $ip_adr_trait . "_f  
+            $request = "CREATE TEMPORARY TABLE IF NOT EXISTS " . $config->get('EA_DB') . "_" . $ip_adr_trait . "_f  
 			(`distf` int( 11 ) NOT NULL DEFAULT 0, PRIMARY KEY ( `nomlev` ) )
 			AS  (SELECT   `NOM` AS `nomlev` FROM " . $table . " WHERE `ID` = '0');";
 
-            $result = EA_sql_query($request) or die('Erreur SQL creation !' . $sql . '<br>' . EA_sql_error());
-            if ($table == EA_DB . "_div3") {   // ##########################NOUVEAU###############################"
+            $result = EA_sql_query($request) or die('Erreur SQL creation !' . $request . '<br>' . EA_sql_error());
+            if ($table == $config->get('EA_DB') . "_div3") {   // ##########################NOUVEAU###############################"
                 if ($commune1 == "U") {
                     if ($crit != '') {
                         $request = "SELECT c_nom FROM " . $table . " WHERE " . $crit . " AND  commune='" . sql_quote($xcomm) . "' GROUP BY c_nom ORDER BY c_nom";
@@ -122,7 +123,7 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
                         $request = "SELECT c_nom FROM " . $table . " GROUP BY c_nom ORDER BY c_nom";
                     }
                 }
-            } elseif ($table == EA_DB . "_mar3") {
+            } elseif ($table == $config->get('EA_DB') . "_mar3") {
                 if ($commune1 == "U") {
                     if ($crit != '') {
                         $request = "SELECT c_nom FROM " . $table . " WHERE " . $crit . " AND  commune='" . sql_quote($xcomm) . "' GROUP BY c_nom ORDER BY c_nom";
@@ -159,11 +160,11 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
             //								) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;";
             //	  	  	  $request = "CREATE TEMPORARY TABLE IF NOT EXISTS ".EA_DB."_".$ip_adr_trait."_d  (`nomlev` varchar( 25 ) COLLATE ".$COLLATION." NOT NULL ,`distd` int( 11 ) NOT NULL ,PRIMARY KEY ( `nomlev` )
             //								) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=".$COLLATION.";";
-            $request = "CREATE TEMPORARY TABLE IF NOT EXISTS " . EA_DB . "_" . $ip_adr_trait . "_d  
+            $request = "CREATE TEMPORARY TABLE IF NOT EXISTS " . $config->get('EA_DB') . "_" . $ip_adr_trait . "_d  
 			(`distd` int( 11 ) NOT NULL DEFAULT 0, PRIMARY KEY ( `nomlev` ) )
 			AS  (SELECT   `NOM` AS `nomlev` FROM " . $table . " WHERE `ID` = '0');";
 
-            $result = EA_sql_query($request) or die('Erreur SQL creation !' . $sql . '<br>' . EA_sql_error());
+            $result = EA_sql_query($request) or die('Erreur SQL creation !' . $request . '<br>' . EA_sql_error());
             if ($commune1 == "U") {
                 if ($crit != '') {
                     $request = "SELECT nom FROM " . $table . " WHERE " . $crit . " AND commune='" . sql_quote($xcomm) . "' GROUP BY nom ORDER BY nom";
@@ -184,11 +185,11 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
             //								) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;";
             //	  	  	  $request = "CREATE TEMPORARY TABLE IF NOT EXISTS ".EA_DB."_".$ip_adr_trait."_n  (`nomlev` varchar( 25 ) COLLATE ".$COLLATION." NOT NULL ,`distn` int( 11 ) NOT NULL ,PRIMARY KEY ( `nomlev` )
             //								) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=".$COLLATION.";";
-            $request = "CREATE TEMPORARY TABLE IF NOT EXISTS " . EA_DB . "_" . $ip_adr_trait . "_n  
+            $request = "CREATE TEMPORARY TABLE IF NOT EXISTS " . $config->get('EA_DB') . "_" . $ip_adr_trait . "_n  
 			(`distn` int( 11 ) NOT NULL DEFAULT 0, PRIMARY KEY ( `nomlev` ) )
 			AS  (SELECT   `NOM` AS `nomlev` FROM " . $table . " WHERE `ID` = '0');";
 
-            $result = EA_sql_query($request) or die('Erreur SQL creation !' . $sql . '<br>' . EA_sql_error());
+            $result = EA_sql_query($request) or die('Erreur SQL creation !' . $request . '<br>' . EA_sql_error());
             if ($commune1 == "U") {
                 if ($crit != '') {
                     $request = "SELECT nom FROM " . $table . " WHERE  " . $crit . " AND commune='" . sql_quote($xcomm) . "' GROUP BY nom ORDER BY nom";
@@ -207,7 +208,7 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
         //$T5 = time();
 
 
-        $result = EA_sql_query($request) or die('Erreur SQL !' . $sql . '<br>' . EA_sql_error());
+        $result = EA_sql_query($request) or die('Erreur SQL !' . $request . '<br>' . EA_sql_error());
         $nbtot = EA_sql_num_rows($result);
         $nb = $nbtot;
 
@@ -219,19 +220,19 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
                 $k = levenshtein(strtoupper($xacht), strtoupper($ligne[0]));
                 if ($k < $dm) {
                     if ($hf == "H") {
-                        $request1 = "INSERT IGNORE INTO " . EA_DB . "_" . $ip_adr_trait . "_h (nomlev,disth) VALUES ('" . sql_quote($ligne[0]) . "'," . $k . " )";
+                        $request1 = "INSERT IGNORE INTO " . $config->get('EA_DB') . "_" . $ip_adr_trait . "_h (nomlev,disth) VALUES ('" . sql_quote($ligne[0]) . "'," . $k . " )";
                     }
                     if ($hf == "F") {
-                        $request1 = "INSERT IGNORE INTO " . EA_DB . "_" . $ip_adr_trait . "_f (nomlev,distf) VALUES ('" . sql_quote($ligne[0]) . "'," . $k . " )";
+                        $request1 = "INSERT IGNORE INTO " . $config->get('EA_DB') . "_" . $ip_adr_trait . "_f (nomlev,distf) VALUES ('" . sql_quote($ligne[0]) . "'," . $k . " )";
                     }
                     if ($hf == "D") {
-                        $request1 = "INSERT IGNORE INTO " . EA_DB . "_" . $ip_adr_trait . "_d (nomlev,distd) VALUES ('" . sql_quote($ligne[0]) . "'," . $k . " )";
+                        $request1 = "INSERT IGNORE INTO " . $config->get('EA_DB') . "_" . $ip_adr_trait . "_d (nomlev,distd) VALUES ('" . sql_quote($ligne[0]) . "'," . $k . " )";
                     }
                     if ($hf == "N") {
-                        $request1 = "INSERT IGNORE INTO " . EA_DB . "_" . $ip_adr_trait . "_n (nomlev,distn) VALUES ('" . sql_quote($ligne[0]) . "'," . $k . " )";
+                        $request1 = "INSERT IGNORE INTO " . $config->get('EA_DB') . "_" . $ip_adr_trait . "_n (nomlev,distn) VALUES ('" . sql_quote($ligne[0]) . "'," . $k . " )";
                     }
 
-                    $result1 = EA_sql_query($request1) or die('Erreur SQL insertion !' . $sql . '<br>' . EA_sql_error());
+                    $result1 = EA_sql_query($request1) or die('Erreur SQL insertion !' . $request1 . '<br>' . EA_sql_error());
                     //$i++;
                 }
             }

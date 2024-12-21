@@ -182,7 +182,7 @@ else {
     echo " <tr>\n";
     echo '  <td align="right">Déposant : </td>' . "\n";
     echo '  <td>';
-    listbox_users("olddepos", 0, DEPOSANT_LEVEL, ' *** Tous *** ');
+    listbox_users("olddepos", 0, $config->get('DEPOSANT_LEVEL'), ' *** Tous *** ');
     echo '  </td>';
     echo " </tr>\n";
     //			echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";
@@ -215,7 +215,7 @@ else {
     echo " <tr>\n";
     echo '  <td align="right">Déposant : </td>' . "\n";
     echo '  <td>';
-    listbox_users("newdepos", 0, DEPOSANT_LEVEL, ' -- Inchangé(s) --');
+    listbox_users("newdepos", 0, $config->get('DEPOSANT_LEVEL'), ' -- Inchangé(s) --');
     echo '  </td>';
     echo " </tr>\n";
     if (isin('OFA', metadata('AFFICH', 'PHOTOGRA')) >= 0) {

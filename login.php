@@ -1,7 +1,6 @@
 <?php
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
 
 define('ADM', 0); // Compatibility only
 $admtxt = ''; // Compatibility only
@@ -103,8 +102,8 @@ zone_menu(0, 0);
 
 <p><a href="<?= $root; ?>/acces.php">Voir les conditions d'accès à la partie privée du site</a></p>
 <p><a href="<?= $root; ?>/renvoilogin.php">Login ou mot de passe perdu ?</a></p>
-<?php if (USER_AUTO_DEF > 0) {
-    if (USER_AUTO_DEF == 1) {
+<?php if ($config->get('USER_AUTO_DEF') > 0) {
+    if ($config->get('USER_AUTO_DEF') == 1) {
         $mescpte = "Demander ici la création d'un compte d'utilisateur";
     } else {
         $mescpte = "Créer ici votre compte d'utilisateur";

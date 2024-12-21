@@ -88,11 +88,11 @@ echo '<p><b>' . $menu_actes . '</b></p>';
 include(__DIR__ . '/../tools/tableau_index.php');
 
 // verification des statistiques
-$request = "SELECT sum(NB_TOT) AS nb_sum FROM " . EA_DB . "_sums WHERE TYPACT='N'";
+$request = "SELECT sum(NB_TOT) AS nb_sum FROM " . $config->get('EA_DB') . "_sums WHERE TYPACT='N'";
 $result = EA_sql_query($request);
 $row = EA_sql_fetch_row($result);
 $nb_sum = $row[0];
-$request = "SELECT count(*) AS nb_cnt FROM " . EA_DB . "_nai3";
+$request = "SELECT count(*) AS nb_cnt FROM " . $config->get('EA_DB') . "_nai3";
 $result = EA_sql_query($request);
 $row = EA_sql_fetch_row($result);
 $nb_cnt = $row[0];

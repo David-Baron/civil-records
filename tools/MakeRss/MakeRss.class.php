@@ -38,6 +38,7 @@ class GenRss
     var $html = 0;
 
     function Load(){
+        global $config;
         Header("Content-type: text/xml; charset=utf-8;");
         //Header("Content-type: text/xml;");
         $this->entete.='<'.'?xml version="1.0" encoding="utf-8" ?'.'>'."\n";
@@ -47,7 +48,7 @@ class GenRss
    				}
         $this->entete.='<rss version="2.0">'."\n\n";
         $this->entete.='<channel>'."\n\n";
-        $this->generator='<generator>ExpoActes '.EA_VERSION.' + ILIX MakeRss 0.2</generator>'."\n";   // MERCI DE NE PAS ENLEVER CETTE LIGNE
+        $this->generator='<generator>ExpoActes '.$config->get('EA_VERSION') .' + ILIX MakeRss 0.2</generator>'."\n";   // MERCI DE NE PAS ENLEVER CETTE LIGNE
     }
 
     // ENTETE

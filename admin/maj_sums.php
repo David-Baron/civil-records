@@ -45,7 +45,7 @@ echo '<p><b>' . $menu_actes . '</b></p>';
 
 if ($xtyp == "") {
     $request = "SELECT TYPACT, max(DER_MAJ) AS DERMAJ, count(COMMUNE) AS CPTCOM "
-                    . " FROM " . EA_DB . "_sums"
+                    . " FROM " . $config->get('EA_DB') . "_sums"
                     . " GROUP BY TYPACT"
                     . " ORDER BY INSTR('NMDV',TYPACT)"     // cette ligne permet de trier dans l'ordre voulu
     ;

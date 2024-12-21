@@ -20,7 +20,7 @@ $ok = true;
 $JSheader = "";
 
 if ($id > 0) { // édition
-    $request = "SELECT * FROM " . EA_DB . "_geoloc WHERE ID =" . $id;
+    $request = "SELECT * FROM " . $config->get('EA_DB') . "_geoloc WHERE ID =" . $id;
     if ($result = EA_sql_query($request)) {
         $row = EA_sql_fetch_array($result);
         $commune   = $row["COMMUNE"];
@@ -34,7 +34,7 @@ if ($id > 0) { // édition
         $noteV     = $row["NOTE_V"];
 
         $request = "SELECT TYPACT, LIBELLE, sum(NB_TOT) AS NB_TOT, COMMUNE, DEPART, max(DTDEPOT) AS DTDEPOT, min(AN_MIN) AS AN_MIN, max(AN_MAX) AS AN_MAX "
-            . " FROM " . EA_DB . "_sums WHERE COMMUNE = '" . sql_quote($commune) . "' AND DEPART = '" . sql_quote($depart) . "'"
+            . " FROM " . $config->get('EA_DB') . "_sums WHERE COMMUNE = '" . sql_quote($commune) . "' AND DEPART = '" . sql_quote($depart) . "'"
                 . ' GROUP BY DEPART, COMMUNE, TYPACT, LIBELLE  '
             . " ORDER BY INSTR('NMDV',TYPACT),LIBELLE; ";
 
@@ -78,7 +78,7 @@ if ($id > 0) { // édition
     $carto->setHeight(400);
     $carto->setWidth(600);
     global $root;
-    $fullpath = EA_URL_SITE . $root;
+    $fullpath = $config->get('EA_URL_SITE') . $root;
     $image = $fullpath . '/assets/img/pin_eye.png';
     $Xanchor = 10;
     $Yanchor = 35;
@@ -104,7 +104,6 @@ if ($id > 0) { // édition
 }
 
 $localite = $commune . " [" . $depart . "]";
-$userid = current_user("ID");
 
 ob_start();
 open_page($localite, $root, null, null, $JSheader);

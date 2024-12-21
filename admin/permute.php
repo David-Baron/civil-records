@@ -38,13 +38,13 @@ if (! $missingargs) {
     switch ($xtyp) {
         case "V":
             $ntype = "divers";
-            $table = EA_DB . "_div3";
+            $table = $config->get('EA_DB') . "_div3";
             $script = "tab_bans.php";
             $sexe = "SEXE, C_SEXE, ";
             break;
         case "M":
             $ntype = "mariage";
-            $table = EA_DB . "_mar3";
+            $table = $config->get('EA_DB') . "_mar3";
             $script = "tab_mari.php";
             $sexe = "";
             break;

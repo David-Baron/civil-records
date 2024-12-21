@@ -33,7 +33,7 @@ if ($xtyp == "" or $xtyp == "A") {
 }
 
 $request = "SELECT TYPACT AS TYP, sum(NB_TOT) AS CPT, COMMUNE, DEPART, max(DTDEPOT) AS DTE, min(AN_MIN) AS DEB, max(AN_MAX) AS FIN "
-    . " FROM " . EA_DB . "_sums AS a "
+    . " FROM " . $config->get('EA_DB') . "_sums AS a "
     . $condit
     . ' GROUP BY COMMUNE, DEPART, TYP  '
     . ' ORDER BY DTE desc, COMMUNE, DEPART '
@@ -50,11 +50,11 @@ if ($xall !== "") {
 
 /* OUVERTURE DU FIL */
 $rss->Load();
-$titre = 'Actes de ' . SITENAME;
+$titre = 'Actes de ' . $config->get('SITENAME');
 
 /* LES PARAMETRES OBLIGATOIRES */
 $rss->SetTitre(htmlspecialchars($titre, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET));
-$rss->SetLink(EA_URL_CE_SERVEUR . $root . '/index.php');
+$rss->SetLink($config->get('EA_URL_CE_SERVEUR') . $root . '/index.php');
 $rss->SetDetails("Dépouillement de tables et actes d'état-civil ou de registres paroissiaux");
 /* LES PARAMETRES FACULTATIFS (Mettez // devant les paramètres que vous ne voulez pas renseigner) */
 $rss->SetLanguage($lg);
@@ -107,7 +107,7 @@ while ($row = EA_sql_fetch_array($result) and $cpt < $max) {
         htmlspecialchars($auteur),
         $typ,
         $date_rss,
-        EA_URL_CE_SERVEUR . $url
+        $config->get('EA_URL_CE_SERVEUR') . $url
     );
 }
 

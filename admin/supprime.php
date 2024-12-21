@@ -129,7 +129,7 @@ if (! $missingargs) {
     if ($session->get('user')['level'] < 8) {
         echo '<input type="hidden" name="olddepos" value="0" />';
     } else {
-        listbox_users("olddepos", 0, DEPOSANT_LEVEL, ' *** Tous *** ');
+        listbox_users("olddepos", 0, $config->get('DEPOSANT_LEVEL'), ' *** Tous *** ');
     } ?>
     </td>
     </tr>

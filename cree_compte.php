@@ -5,9 +5,7 @@ require(__DIR__ . '/next/bootstrap.php');
 require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
 global $loc_mail;
-if (AUTO_CAPTCHA) {
-    session_start();
-}  // pour captcha
+
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
@@ -30,7 +28,7 @@ zone_menu(0, 0, array('f' => 'N')); //PUBLIC SANS FORM_RECHERCHE
 ?>
 <div id="col_main">
 
-<?php if (USER_AUTO_DEF == 0) { ?>
+<?php if ($config->get('USER_AUTO_DEF') == 0) { ?>
     <p><b>Désolé : Cette action n'est pas autorisée sur ce site</b></p>
     <p>Vous devez contacter le gestionnaire du site pour demander un compte utilisateur</p>
     </div>
@@ -59,12 +57,12 @@ if (getparam('action') == 'submitted') {
         msg('Les deux copies de l\'adresse e-mail ne sont pas identiques');
         $ok = false;
     }
-    $zonelibre = USER_ZONE_LIBRE;
+    $zonelibre = $config->get('USER_ZONE_LIBRE');
     if (!empty($zonelibre) and strlen($libre) < 2) {
         msg('Vous devez compléter la zone [' . $zonelibre . ']');
         $ok = false;
     }
-    $txtconduse = TXT_CONDIT_USAGE;
+    $txtconduse = $config->get('TXT_CONDIT_USAGE');
     if (!empty($txtconduse) and strlen($accept) == 0) {
         msg("Vous devez marquer votre accord sur les conditions d'utilisation");
         $ok = false;
@@ -85,20 +83,20 @@ if (getparam('action') == 'submitted') {
         msg('Les deux copies du MOT DE PASSE ne sont pas identiques');
         $ok = false;
     }
-    if (AUTO_CAPTCHA and function_exists('imagettftext')) {
+    if ($config->get('AUTO_CAPTCHA') and function_exists('imagettftext')) {
         if (md5(getparam('captcha')) != $_SESSION['valeur_image']) {
             msg('Attention à bien recopier le code dissimulé dans l\'image !');
             $ok = false;
         }
     }
     $pw = $lepassw;
-    $res = EA_sql_query("SELECT * FROM " . EA_UDB . "_user3 WHERE login='" . sql_quote($lelogin) . "'", $u_db);
+    $res = EA_sql_query("SELECT * FROM " . $config->get('EA_UDB') . "_user3 WHERE login='" . sql_quote($lelogin) . "'", $u_db);
     if (EA_sql_num_rows($res) != 0) {
         $row = EA_sql_fetch_array($res);
         msg('Ce code de login est déjà utilisé par un autre utilisateur, choissisez-en un autre.');
         $ok = false;
     }
-    $res = EA_sql_query("SELECT * FROM " . EA_UDB . "_user3 WHERE email='" . sql_quote($email) . "'", $u_db);
+    $res = EA_sql_query("SELECT * FROM " . $config->get('EA_UDB') . "_user3 WHERE email='" . sql_quote($email) . "'", $u_db);
     if (EA_sql_num_rows($res) != 0) {
         $row = EA_sql_fetch_array($res);
         msg('Cette adresse mail possède déjà un code de login, utilisez-en une autre ou faite vous renvoyer votre mot de passe.');
@@ -110,17 +108,17 @@ if (getparam('action') == 'submitted') {
         $dtexpir = dt_expiration_defaut();
         $mes = "";
         $maj_solde = date("Y-m-d");
-        $reqmaj = "INSERT INTO " . EA_UDB . "_user3 "
+        $reqmaj = "INSERT INTO " . $config->get('EA_UDB') . "_user3 "
             . "(nom, prenom, email, level, login, hashpass, regime, solde, maj_solde, statut, dtcreation, dtexpiration, pt_conso, libre, rem)"
             . " VALUES('"
             . sql_quote(getparam('nom')) . "','"
             . sql_quote(getparam('prenom')) . "','"
             . sql_quote($email) . "','"
-            . sql_quote(USER_AUTO_LEVEL) . "','"  // level
+            . sql_quote($config->get('USER_AUTO_LEVEL')) . "','"  // level
             . sql_quote($lelogin) . "','"
             . sql_quote(sha1($pw)) . "','"
-            . sql_quote(GEST_POINTS) . "','"  // regime
-            . sql_quote(PTS_PAR_PER) . "','"  // solde courant
+            . sql_quote($config->get('GEST_POINTS')) . "','"  // regime
+            . sql_quote($config->get('PTS_PAR_PER')) . "','"  // solde courant
             . sql_quote($maj_solde) . "','"   // date maj du solde
             . sql_quote('W') . "','"          // statut : toujours attendre validation de l'email (W)
             . sql_quote($maj_solde) . "','"   // dtcreation
@@ -135,19 +133,18 @@ if (getparam('action') == 'submitted') {
             // echo '<p>'.EA_sql_error().'<br />'.$reqmaj.'</p>';
             $log = "Créat. auto user";
             $crlf = chr(10) . chr(13);
-            if (USER_AUTO_DEF == 1) {
-                $message = MAIL_VALIDUSER;
-            } else {
-                $message = MAIL_AUTOUSER;
+            $message = $config->get('MAIL_AUTOUSER');
+            if ($config->get('USER_AUTO_DEF') == 1) {
+                $message = $config->get('MAIL_VALIDUSER');
             }
 
-            $urlvalid = EA_URL_SITE . $root . "/activer_compte.php?login=" . $lelogin . "&amp;key=" . $clevalid . $crlf . $crlf;
-            $urlsite = EA_URL_SITE . $root . "/index.php";
+            $urlvalid = $config->get('EA_URL_SITE') . $root . "/activer_compte.php?login=" . $lelogin . "&amp;key=" . $clevalid . $crlf . $crlf;
+            $urlsite = $config->get('EA_URL_SITE') . $root . "/index.php";
             $codes = array("#NOMSITE#", "#URLSITE#", "#LOGIN#", "#PASSW#", "#NOM#", "#PRENOM#", "#URLVALID#", "#KEYVALID#");
-            $decodes = array(SITENAME, $urlsite, $lelogin, $pw, getparam('nom'), getparam('prenom'), $urlvalid, $clevalid);
+            $decodes = array($config->get('SITENAME'), $urlsite, $lelogin, $pw, getparam('nom'), getparam('prenom'), $urlvalid, $clevalid);
             $bon_message = str_replace($codes, $decodes, $message);
-            $sujet = "Votre compte " . SITENAME;
-            $sender = mail_encode(SITENAME) . ' <' . LOC_MAIL . ">";
+            $sujet = "Votre compte " . $config->get('SITENAME');
+            $sender = mail_encode($config->get('SITENAME')) . ' <' . $config->get('LOC_MAIL') . ">";
             $okmail = sendmail($sender, $email, $sujet, $bon_message);
             if ($okmail) {
                 $log .= " + mail";
@@ -184,9 +181,9 @@ if (!$ok) {
                 <td>Prénom : </td>
                 <td><input type="text" name="prenom" size="30" value="<?= $prenom; ?>"></td>
             </tr>
-            <?php if (!empty(USER_ZONE_LIBRE)) { ?>
+            <?php if (!empty($config->get('USER_ZONE_LIBRE'))) { ?>
                 <tr>
-                    <td><?= USER_ZONE_LIBRE; ?> : </td>
+                    <td><?= $config->get('USER_ZONE_LIBRE'); ?> : </td>
                     <td><input type="text" name="libre" size="50" value="<?= $libre; ?>"></td>
                 </tr>
             <?php } ?>
@@ -212,16 +209,16 @@ if (!$ok) {
                     <input type="password" name="passwverif" size="15" maxlength="15" value="<?= getparam('passwverif'); ?>">
                 </td>
             </tr>
-            <?php if (TXT_CONDIT_USAGE <> "") { ?>
+            <?php if ($config->get('TXT_CONDIT_USAGE') <> "") { ?>
                 <tr>
                     <td>Conditions d'utilisation : </td>
                     <td>
-                        <textarea name="captcha" cols="60" rows="10" readonly><?= TXT_CONDIT_USAGE; ?></textarea>
+                        <textarea name="captcha" cols="60" rows="10" readonly><?= $config->get('TXT_CONDIT_USAGE'); ?></textarea>
                         <input type="checkbox" name="acceptcond">J'ai lu et j'accepte les conditions ci-dessus.</input>
                     </td>
                 </tr>
             <?php } ?>
-            <?php if (AUTO_CAPTCHA && function_exists('imagettftext')) { ?>
+            <?php if ($config->get('AUTO_CAPTCHA') && function_exists('imagettftext')) { ?>
                 <tr>
                     <td><img src="<?= $root; ?>/tools/captchas/image.php" alt="captcha" id="captcha"></td>
                     <td>

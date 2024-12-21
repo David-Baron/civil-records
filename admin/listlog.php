@@ -29,7 +29,7 @@ $xfilter = getparam('xfilter');
 $menu_software_active = 'J';
 
 ob_start();
-open_page(SITENAME . " : Activité du site", $root);
+open_page($config->get('SITENAME') . " : Activité du site", $root);
 navadmin($root, "Activité du site");
 zone_menu(ADM, $session->get('user')['level'], array());//ADMIN STANDARD
 echo '<div id="col_main_adm">';
@@ -37,14 +37,14 @@ require(__DIR__ . '/../templates/admin/_menu-software.php');
 
 // Suppression des informations anciennes
 if ($xdel > 31) {
-    $request = "DELETE FROM " . EA_DB . "_log WHERE datediff(curdate(),DATE)>" . $xdel;
+    $request = "DELETE FROM " . $config->get('EA_DB') . "_log WHERE datediff(curdate(),DATE)>" . $xdel;
     $result = EA_sql_query($request);
     $nb = EA_sql_affected_rows();
     echo $nb . " ligne(s) suprimée(s)."; // .$datedel;
 }
 echo '<p><a href="?xdel=365">' . "Supprimer les événements âgés de plus d'un an</a></p>";
 // Lister les actions
-echo '<h2>Activité sur les données du site ' . SITENAME . '</h2>';
+echo '<h2>Activité sur les données du site ' . $config->get('SITENAME') . '</h2>';
 
 echo '<center><form method="post" action="">' . "\n";
 echo '<input type="text" name="xfilter" value="" />' . "\n";
@@ -76,7 +76,7 @@ $baselink .= "&amp;xfilter=" . $xfilter;
 $request = "CREATE TEMPORARY TABLE temp_user3 (ID int(11), nom varchar(30), prenom varchar(30), PRIMARY KEY (ID))";
 $result = EA_sql_query($request);
 
-$request = "SELECT ID,NOM,PRENOM FROM " . EA_UDB . "_user3";
+$request = "SELECT ID,NOM,PRENOM FROM " . $config->get('EA_UDB') . "_user3";
 $result = EA_sql_query($request, $u_db);
 while ($ligne = EA_sql_fetch_row($result)) {
     $treq = "INSERT INTO temp_user3 VALUES (" . sql_quote($ligne[0]) . ",'" . sql_quote($ligne[1]) . "','" . sql_quote($ligne[2]) . "')";
@@ -85,7 +85,7 @@ while ($ligne = EA_sql_fetch_row($result)) {
 }
 
 $request = "SELECT NOM, PRENOM, ID, DATE, ACTION, COMMUNE, NB_ACTES"
-            . " FROM " . EA_DB . "_log left JOIN temp_user3 ON (temp_user3.id=" . EA_DB . "_log.user)";
+            . " FROM " . $config->get('EA_DB') . "_log left JOIN temp_user3 ON (temp_user3.id=" . $config->get('EA_DB') . "_log.user)";
 if ($xfilter <> "") {
     $request .= " WHERE COMMUNE LIKE '%" . $xfilter . "%' or ACTION LIKE '%" . $xfilter . "%' or NOM LIKE '%" . $xfilter . "%'";
 }
@@ -110,7 +110,7 @@ if ($limit <> "") {
 
 if ($nb > 0) {
     echo '<p>' . $listpages . '</p>';
-    $i = 1 + ($page - 1) * MAX_PAGE;
+    $i = 1 + ($page - 1) * $config->get('MAX_PAGE');
     echo '<table summary="Liste des actions">';
     echo '<tr class="rowheader">';
     // echo '<th> Tri : </th>';

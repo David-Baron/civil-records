@@ -45,7 +45,7 @@ echo '<div id="col_main_adm">';
 require(__DIR__ . '/../templates/admin/_menu-user.php');
 
 if (isset($udbname)) {
-    msg('ATTENTION : Données ajoutées/modifiées dans ' . $udbaddr . "/" . $udbuser . "/" . $udbname . "/" . EA_UDB . "</p>", 'info');
+    msg('ATTENTION : Données ajoutées/modifiées dans ' . $udbaddr . "/" . $udbuser . "/" . $udbname . "/" . $config->get('EA_UDB') . "</p>", 'info');
 }
 
 // Données postées -> ajouter ou modifier
@@ -82,14 +82,14 @@ if (getparam('action') == 'submitted') {
     } else {
         $pw = "";
     }
-    $res = EA_sql_query("SELECT * FROM " . EA_UDB . "_user3 WHERE login='" . sql_quote($lelogin) . "' AND id <> " . $leid, $u_db);
+    $res = EA_sql_query("SELECT * FROM " . $config->get('EA_UDB') . "_user3 WHERE login='" . sql_quote($lelogin) . "' AND id <> " . $leid, $u_db);
     if (EA_sql_num_rows($res) != 0) {
         $row = EA_sql_fetch_array($res);
         msg('Ce code de login est déjà utilisé par "' . $row['prenom'] . ' ' . $row['nom'] . '" !');
         $ok = false;
     }
-    if (TEST_EMAIL_UNIC == 1) {
-        $res = EA_sql_query("SELECT * FROM " . EA_UDB . "_user3 WHERE email='" . sql_quote(getparam('email')) . "' AND id <> " . $leid, $u_db);
+    if ($config->get('TEST_EMAIL_UNIC') == 1) {
+        $res = EA_sql_query("SELECT * FROM " . $config->get('EA_UDB') . "_user3 WHERE email='" . sql_quote(getparam('email')) . "' AND id <> " . $leid, $u_db);
         if (EA_sql_num_rows($res) != 0) {
             $row = EA_sql_fetch_array($res);
             msg('Cette adresse email est déjà utilisé par "' . $row['prenom'] . ' ' . $row['nom'] . '" !');
@@ -99,11 +99,11 @@ if (getparam('action') == 'submitted') {
     if ($ok) {
         $mes = "";
         if ($dtexpir == "") {
-            $dtexpir = TOUJOURS;
+            $dtexpir = $config->get('TOUJOURS');
         }
         if ($id <= 0) {
             $maj_solde = date("Y-m-d");
-            $reqmaj = "INSERT INTO " . EA_UDB . "_user3 "
+            $reqmaj = "INSERT INTO " . $config->get('EA_UDB') . "_user3 "
                 . "(nom, prenom, email, level, login, hashpass, regime, solde, maj_solde, statut, dtcreation, dtexpiration, rem, libre)"
                 . " VALUES ('"
                 . sql_quote(getparam('nom')) . "','"
@@ -128,7 +128,7 @@ if (getparam('action') == 'submitted') {
                 $maj_solde = $_REQUEST['maj_solde'];
             }
 
-            $reqmaj = "UPDATE " . EA_UDB . "_user3 SET ";
+            $reqmaj = "UPDATE " . $config->get('EA_UDB') . "_user3 SET ";
             $reqmaj = $reqmaj .
                 "NOM        = '" . sql_quote(getparam('nom')) . "', " .
                 "PRENOM     = '" . sql_quote(getparam('prenom')) . "', " .
@@ -155,12 +155,12 @@ if (getparam('action') == 'submitted') {
             if ($id <= 0) {
                 $log = "Ajout utilisateur";
                 if ($sendmail == 1) {
-                    $urlsite = EA_URL_SITE . $root . "/index.php";
+                    $urlsite = $config->get('EA_URL_SITE') . $root . "/index.php";
                     $codes = array("#NOMSITE#", "#URLSITE#", "#LOGIN#", "#PASSW#", "#NOM#", "#PRENOM#");
-                    $decodes = array(SITENAME, $urlsite, $lelogin, $pw, getparam('nom'), getparam('prenom'));
+                    $decodes = array($config->get('SITENAME'), $urlsite, $lelogin, $pw, getparam('nom'), getparam('prenom'));
                     $bon_message = str_replace($codes, $decodes, $message);
-                    $sujet = "Votre compte " . SITENAME;
-                    $sender = mail_encode(SITENAME) . ' <' . LOC_MAIL . ">";
+                    $sujet = "Votre compte " . $config->get('SITENAME');
+                    $sender = mail_encode($config->get('SITENAME')) . ' <' . $config->get('LOC_MAIL') . ">";
                     $okmail = sendmail($sender, getparam('email'), $sujet, $bon_message);
                 } else {
                     $okmail = false;
@@ -186,7 +186,7 @@ if (getparam('action') == 'submitted') {
 }
 
 if ($id > 0 and $act == "del") {
-    $reqmaj = "DELETE FROM " . EA_UDB . "_user3 WHERE ID=" . $id . ";";
+    $reqmaj = "DELETE FROM " . $config->get('EA_UDB') . "_user3 WHERE ID=" . $id . ";";
     if ($result = EA_sql_query($reqmaj, $u_db)) {
         writelog('Suppression utilisateur #' . $id, $lelogin, 1);
         echo '<p><b>FICHE SUPPRIMEE.</b></p>';
@@ -206,7 +206,7 @@ if ($id == -1) {  // Initialisation
     $sendmail   = $chargeUSERparam[0];
     $xdroits    = $chargeUSERparam[1];
     $xregime    = $chargeUSERparam[2];
-    $message    = MAIL_NEWUSER;
+    $message    = $config->get('MAIL_NEWUSER');
     /* $_COOKIE['chargeUSERmessage'];
     if ($message=="")
       {
@@ -221,7 +221,7 @@ if ($id == -1) {  // Initialisation
     $lepassw = "";
     $level = $xdroits;
     $regime = $xregime;
-    $solde  = PTS_PAR_PER;
+    $solde  = $config->get('PTS_PAR_PER');
     $maj_solde = today();
     $statut = "N";
     $dtcreation = $maj_solde;
@@ -234,7 +234,7 @@ if ($id == -1) {  // Initialisation
 if ($id > 0) {  //
     $action = 'Modification';
     $request = "SELECT NOM, PRENOM, EMAIL, LEVEL, LOGIN, REGIME, SOLDE, MAJ_SOLDE, STATUT, DTCREATION, DTEXPIRATION, PT_CONSO, REM, LIBRE"
-        . " FROM " . EA_UDB . "_user3 "
+        . " FROM " . $config->get('EA_UDB') . "_user3 "
         . " WHERE ID =" . $id;
     //echo '<P>'.$request;
     if ($result = EA_sql_query($request, $u_db)) {
@@ -276,7 +276,7 @@ if ($id <> 0 && $missingargs) { ?>
                 <td>E-mail : </td>
                 <td><input type="text" name="email" size="50" value="<?= $email; ?>"></td>
             </tr>
-            <?php $zonelibre = USER_ZONE_LIBRE;
+            <?php $zonelibre = $config->get('USER_ZONE_LIBRE');
             if (empty($zonelibre)) {
                 $zonelibre = "Zone libre (à définir)";
             } ?>
@@ -306,7 +306,7 @@ if ($id <> 0 && $missingargs) { ?>
                 <td>Statut : </td>
                 <td>
                     <?php lb_statut_user($statut); ?>
-                    <?php if (USER_AUTO_DEF == 1 && ($statut == "A" || $statut == "W")) { ?>
+                    <?php if ($config->get('USER_AUTO_DEF') == 1 && ($statut == "A" || $statut == "W")) { ?>
                         <a href="<?= $root; ?>/approuver_compte.php?id=<?= $id; ?>&action=OK">Approuver</a>
                         ou <a href="<?= $root; ?>/approuver_compte.php?id=<?= $id; ?>&action=KO">Refuser</a>
                     <?php } ?>
@@ -339,7 +339,7 @@ if ($id <> 0 && $missingargs) { ?>
                     <?php lb_droits_user($level); ?>
                 </td>
             </tr>
-            <?php if (GEST_POINTS > 0) { ?>
+            <?php if ($config->get('GEST_POINTS') > 0) { ?>
                 <tr><td colspan="2">&emsp;</td></tr>
                 <tr>
                     <td>Régime (points) : </td>

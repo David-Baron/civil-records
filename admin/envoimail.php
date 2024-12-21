@@ -54,7 +54,7 @@ if ($xaction == 'submitted') {
         $condreg = " AND regime =" . $regime;
     }
     $request = "SELECT nom, prenom, email, level, statut"
-        . " FROM " . EA_UDB . "_user3 "
+        . " FROM " . $config->get('EA_UDB') . "_user3 "
         . " WHERE (1=1) " . $condlevel . $condreg . $condrem . " ;";
     //echo $request1;
     $sites = EA_sql_query($request, $u_db);
@@ -68,11 +68,11 @@ if ($xaction == 'submitted') {
             $nom = $site['nom'];
             $prenom = $site['prenom'];
 
-            $urlsite = EA_URL_SITE . $root . "/index.php";
+            $urlsite = $config->get('EA_URL_SITE') . $root . "/index.php";
             $codes = array("#URLSITE#", "#NOM#", "#PRENOM#");
             $decodes = array($urlsite, $nom, $prenom);
             $bon_message = str_replace($codes, $decodes, $message);
-            $sender = mail_encode(SITENAME) . ' <' . LOC_MAIL . ">";
+            $sender = mail_encode($config->get('SITENAME')) . ' <' . $config->get('LOC_MAIL') . ">";
             $okmail = sendmail($sender, $mail, $sujet, $bon_message);
             //$okmail=false;
             echo "<p>Envoi à " . $prenom . " " . $nom . " (" . $mail . ") ";
@@ -108,7 +108,7 @@ if ($missingargs) {
     lb_droits_user($xdroits, 2);
     echo '  </td>';
     echo " </tr>\n";
-    if (GEST_POINTS > 0) {
+    if ($config->get('GEST_POINTS') > 0) {
         echo " <tr><td align=right>ET</td><td>&nbsp;</td></tr>\n";
         echo " <tr>\n";
         echo "  <td align=right>Régime (points) : </td>\n";

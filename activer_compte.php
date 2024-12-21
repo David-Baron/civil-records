@@ -15,7 +15,7 @@ zone_menu(0, 0, array('f' => 'N')); //PUBLIC SANS FORM_RECHERCHE
 ?>
 <div id="col_main_adm">
 
-<?php if (USER_AUTO_DEF == 0) {
+<?php if ($config->get('USER_AUTO_DEF') == 0) {
     echo "<p><b>Désolé : Cette action n'est pas autorisée sur ce site</b></p>";
     echo "<p>Vous devez contacter le gestionnaire du site pour demander un compte utilisateur</p>";
     echo '</div>';
@@ -35,7 +35,7 @@ if (empty($_REQUEST['key'])) {
     msg('Vous devez inscrire la clé qui vous été envoyée par mail');
     $ok = false;
 }
-$res = EA_sql_query("SELECT * FROM " . EA_UDB . "_user3 WHERE login='" . sql_quote($_REQUEST['login'])
+$res = EA_sql_query("SELECT * FROM " . $config->get('EA_UDB') . "_user3 WHERE login='" . sql_quote($_REQUEST['login'])
     . "' and  rem='" . sql_quote($_REQUEST['key'])
     . "' and  statut='W'", $u_db);
 if (EA_sql_num_rows($res) != 1) {
@@ -51,32 +51,32 @@ if ($ok) {
     $missingargs = false;
     $mes = "";
     $statut = 'N'; // A = attente approbation par admin, N = normal
-    if (USER_AUTO_DEF == 1) {
+    if ($config->get('USER_AUTO_DEF') == 1) {
         $statut = 'A';
     }
     
-    $reqmaj = "UPDATE " . EA_UDB . "_user3 SET statut='" . $statut . "', rem=' ' WHERE id=" . $id . ";";
+    $reqmaj = "UPDATE " . $config->get('EA_UDB') . "_user3 SET statut='" . $statut . "', rem=' ' WHERE id=" . $id . ";";
     if ($result = EA_sql_query($reqmaj, $u_db)) {
         $crlf = chr(10) . chr(13);
         $log = "Activation compte";
-        if (USER_AUTO_DEF == 1) {
+        if ($config->get('USER_AUTO_DEF') == 1) {
             $message  = $nomprenom . " (" . $login . ")" . $crlf;
-            $message .= "vient de demander accès au site " . SITENAME . "." . $crlf;
+            $message .= "vient de demander accès au site " . $config->get('SITENAME') . "." . $crlf;
             $message .= "Vous pouvez APPROUVER cet acces avec le lien suivant : " . $crlf;
-            $message .= EA_URL_SITE . $root . "/admin/approuver_compte.php?id=" . $id . "&action=OK" . $crlf;
+            $message .= $config->get('EA_URL_SITE') . $root . "/admin/approuver_compte.php?id=" . $id . "&action=OK" . $crlf;
             $message .= "OU " . $crlf;
             $message .= "Vous pouvez REFUSER cet acces avec le lien suivant : " . $crlf;
-            $message .= EA_URL_SITE . $root . "/admin/approuver_compte.php?id=" . $id . "&action=KO" . $crlf;
+            $message .= $config->get('EA_URL_SITE') . $root . "/admin/approuver_compte.php?id=" . $id . "&action=KO" . $crlf;
             $sujet = "Approbation acces de " . $nomprenom;
             $mes = " Votre demande de compte est soumise à l'approbation de l'administrateur.";
         } else {
             $message  = $nomprenom . " (" . $login . ")" . $crlf;
-            $message .= "vient d'obtenir un accès au site " . SITENAME . "." . $crlf;
+            $message .= "vient d'obtenir un accès au site " . $config->get('SITENAME') . "." . $crlf;
             $sujet = "Validation acces de " . $nomprenom;
             $mes = " Votre compte est actif et vous pouvez à présent vous connecter.";
         }
-        $sender = mail_encode(SITENAME) . ' <' . LOC_MAIL . ">";
-        $okmail = sendmail($sender, LOC_MAIL, $sujet, $message);
+        $sender = mail_encode($config->get('SITENAME')) . ' <' . $config->get('LOC_MAIL') . ">";
+        $okmail = sendmail($sender, $config->get('LOC_MAIL'), $sujet, $message);
         if ($okmail) {
             $log .= " + mail";
         } else {

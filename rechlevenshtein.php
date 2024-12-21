@@ -8,7 +8,7 @@ require(__DIR__ . '/next/bootstrap.php');
 require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 include("tools/cree_table_levenshtein.php");
 
-if (!$userAuthorizer->isGranted(LEVEL_LEVENSHTEIN)) {
+if (!$userAuthorizer->isGranted($config->get('LEVEL_LEVENSHTEIN'))) {
     $response = new RedirectResponse("$root/login.php");
     $response->send();
     exit();
@@ -16,7 +16,7 @@ if (!$userAuthorizer->isGranted(LEVEL_LEVENSHTEIN)) {
 
 $CRIT_RECH_COUPLES = 2;
 if (defined("CRIT_RECH_COUPLES")) {
-    $CRIT_RECH_COUPLES = CRIT_RECH_COUPLES;
+    $CRIT_RECH_COUPLES = $config->get('CRIT_RECH_COUPLES');
 }
 
 $xcomm = $xpatr = $page = "";
@@ -24,7 +24,7 @@ $xcomm = $xpatr = $page = "";
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
 ob_start();
-open_page(SITENAME . " : Dépouillement d'actes de l'état-civil et des registres paroissiaux", $root, null, null, null, '../index.htm', 'rss.php');
+open_page($config->get('SITENAME') . " : Dépouillement d'actes de l'état-civil et des registres paroissiaux", $root, null, null, null, '../index.htm', 'rss.php');
 navigation($root, 2, 'A', "Recherche  Levenshtein");
 zone_menu(0, 0, array('s' => '', 'c' => 'O')); //PUBLIC STAT & CERT
 ?>
@@ -67,7 +67,7 @@ zone_menu(0, 0, array('s' => '', 'c' => 'O')); //PUBLIC STAT & CERT
             </div>
             <div class="rech_zone">
                 <div class="rech_titre">Actes recherchés individus (suppose conjoint non renseigné) :</div>
-                <?php if (CHERCH_TS_TYP == 1) { ?>
+                <?php if ($config->get('CHERCH_TS_TYP') == 1) { ?>
                     <p>
                         <input type="checkbox" name="TypN" value="N" checked="checked">Naissances
                         <input type="checkbox" name="TypD" value="D" checked="checked">Décès

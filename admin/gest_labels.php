@@ -99,11 +99,11 @@ zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
                 $paffi = getparam("affi_$i");
                 $petiq = htmlentities(getparam("etiq_$i"), ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
                 if ($petiq <> "") { // interdit de mettre à blanc
-                    $request = "UPDATE " . EA_DB . "_metadb SET affich = '" . sql_quote($paffi) . "' WHERE ZID = '" . $pzid . "'";
+                    $request = "UPDATE " . $config->get('EA_DB') . "_metadb SET affich = '" . sql_quote($paffi) . "' WHERE ZID = '" . $pzid . "'";
                     //echo "<p>".$request;
                     $result = EA_sql_query($request);
                     $cpt += EA_sql_affected_rows();
-                    $request = "UPDATE " . EA_DB . "_metalg SET etiq = '" . sql_quote($petiq) . "' WHERE ZID = '" . $pzid . "' AND LG='" . $lg . "'";
+                    $request = "UPDATE " . $config->get('EA_DB') . "_metalg SET etiq = '" . sql_quote($petiq) . "' WHERE ZID = '" . $pzid . "' AND LG='" . $lg . "'";
                     $result = EA_sql_query($request);
                     $cpt += EA_sql_affected_rows();
                 }
@@ -115,7 +115,7 @@ zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
                 $grp  = getparam("grp_$j");
                 $getiq = htmlentities(getparam("group_$j"), ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
                 if ($getiq <> "") { // interdit de mettre à blanc
-                    $request = "UPDATE " . EA_DB . "_mgrplg SET getiq = '" . sql_quote($getiq) . "' WHERE grp = '" . $grp . "' AND LG='" . $lg . "' AND dtable='" . $xfile . "'";
+                    $request = "UPDATE " . $config->get('EA_DB') . "_mgrplg SET getiq = '" . sql_quote($getiq) . "' WHERE grp = '" . $grp . "' AND LG='" . $lg . "' AND dtable='" . $xfile . "'";
                     $result = EA_sql_query($request);
                     $tt = EA_sql_affected_rows();
                     //if ($tt>0) echo '<p>'.$request;
@@ -144,20 +144,20 @@ zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
                     $lesigne_traite = '';
                 }
                 $libelle_reset_defaut = ($libelle_reset_defaut and ($lesigne_traite != ''));
-                $request = "SELECT count(*) AS CPT FROM " . EA_DB . "_mgrplg WHERE lg='" . $lg . "' AND dtable='V' AND grp='" . $grp . "' AND sigle='" . $lesigne_traite . "'";
+                $request = "SELECT count(*) AS CPT FROM " . $config->get('EA_DB') . "_mgrplg WHERE lg='" . $lg . "' AND dtable='V' AND grp='" . $grp . "' AND sigle='" . $lesigne_traite . "'";
                 $result = EA_sql_query($request);
                 $row = EA_sql_fetch_array($result);
                 $request_exec = true;
                 if ($row["CPT"] > 0) {
                     if ($libelle_reset_defaut) {
-                        $request = "DELETE FROM " . EA_DB . "_mgrplg WHERE grp = '" . $grp . "' AND LG='" . $lg . "' AND dtable='V' AND sigle='" . $lesigne_traite . "'";
+                        $request = "DELETE FROM " . $config->get('EA_DB') . "_mgrplg WHERE grp = '" . $grp . "' AND LG='" . $lg . "' AND dtable='V' AND sigle='" . $lesigne_traite . "'";
                     } else {
-                        $request = "UPDATE " . EA_DB . "_mgrplg SET getiq = '" . sql_quote($getiq) . "' WHERE grp = '" . $grp . "' AND LG='" . $lg . "' AND dtable='V' AND sigle='" . $lesigne_traite . "'";
+                        $request = "UPDATE " . $config->get('EA_DB') . "_mgrplg SET getiq = '" . sql_quote($getiq) . "' WHERE grp = '" . $grp . "' AND LG='" . $lg . "' AND dtable='V' AND sigle='" . $lesigne_traite . "'";
                     }
                 } elseif ($libelle_reset_defaut) {
                     $request_exec = false;
                 } else {
-                    $request = "INSERT into " . EA_DB . "_mgrplg (grp,dtable,lg,sigle,getiq) VALUE ('" . $grp . "','V','" . $lg . "','" . $lesigne_traite . "','" . sql_quote($getiq) . "')";
+                    $request = "INSERT into " . $config->get('EA_DB') . "_mgrplg (grp,dtable,lg,sigle,getiq) VALUE ('" . $grp . "','V','" . $lg . "','" . $lesigne_traite . "','" . sql_quote($getiq) . "')";
                 }
                 if ($request_exec) {
                     $result = EA_sql_query($request);
@@ -183,7 +183,7 @@ zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
                     <td><b>Sigle des actes divers : </b></td>
                     <td>
                         <?php // COALESCE : traite les "null" comme vide
-                        $request = "SELECT DISTINCT COALESCE(SIGLE, '') AS SIGLE FROM " . EA_DB . "_div3 WHERE length(SIGLE)>0 ORDER BY SIGLE";
+                        $request = "SELECT DISTINCT COALESCE(SIGLE, '') AS SIGLE FROM " . $config->get('EA_DB') . "_div3 WHERE length(SIGLE)>0 ORDER BY SIGLE";
                         if ($result = EA_sql_query($request)) {
                             $i = 1;
                             echo '<select name="SIGLE" onchange="changesigle()">';
@@ -197,15 +197,15 @@ zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
                         </select>
                     </td>
                 </tr>
-                <?php $request = "SELECT DISTINCT LIBELLE, COALESCE(SIGLE, '') AS SIGLE FROM " . EA_DB . "_div3 WHERE COALESCE(SIGLE, '') = '" . $lesigle . "' ORDER BY LIBELLE";
+                <?php $request = "SELECT DISTINCT LIBELLE, COALESCE(SIGLE, '') AS SIGLE FROM " . $config->get('EA_DB') . "_div3 WHERE COALESCE(SIGLE, '') = '" . $lesigle . "' ORDER BY LIBELLE";
                 $format = ' %2$s '; // ' %1$s -> %2$s';
                 if ($lesigle == $code_liste) {
-                    $request = "SELECT DISTINCT LIBELLE, COALESCE(SIGLE, '') AS SIGLE FROM " . EA_DB . "_div3 ORDER BY LIBELLE, SIGLE";
+                    $request = "SELECT DISTINCT LIBELLE, COALESCE(SIGLE, '') AS SIGLE FROM " . $config->get('EA_DB') . "_div3 ORDER BY LIBELLE, SIGLE";
                     $format .= '( %1$s )';
                 }
 
                 if ($lesigle == $sans_sigle_par_defaut) {
-                    $request = "SELECT DISTINCT LIBELLE, COALESCE(SIGLE, '') AS SIGLE FROM " . EA_DB . "_div3 WHERE COALESCE(SIGLE, '') = '' ORDER BY LIBELLE";
+                    $request = "SELECT DISTINCT LIBELLE, COALESCE(SIGLE, '') AS SIGLE FROM " . $config->get('EA_DB') . "_div3 WHERE COALESCE(SIGLE, '') = '' ORDER BY LIBELLE";
                 } ?>
                 <tr>
                     <td>&nbsp;</td>
@@ -260,7 +260,7 @@ zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
                         } else {
                             $notech = " AND affich<>'T' ";
                         }
-                        $request = "SELECT * FROM (" . EA_DB . "_metadb d JOIN " . EA_DB . "_metalg l) WHERE d.zid=l.zid AND LG='" . $lg . "' AND dtable='" . $xfile . "'" . $notech . " ORDER BY GROUPE, OV3";
+                        $request = "SELECT * FROM (" . $config->get('EA_DB') . "_metadb d JOIN " . $config->get('EA_DB') . "_metalg l) WHERE d.zid=l.zid AND LG='" . $lg . "' AND dtable='" . $xfile . "'" . $notech . " ORDER BY GROUPE, OV3";
                         $result = EA_sql_query($request);
                         $i = 0;
                         $j = 0;

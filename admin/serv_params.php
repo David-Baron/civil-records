@@ -28,11 +28,11 @@ pathroot($root, $path, $xcomm, $xpatr, $page);
 $action = getparam('maint');
 if ($action <> "") {
     if ($action == "SET") {
-        $request = "UPDATE " . EA_DB . "_params SET valeur = '1' WHERE param = 'EA_MAINTENANCE'";
+        $request = "UPDATE " . $config->get('EA_DB') . "_params SET valeur = '1' WHERE param = 'EA_MAINTENANCE'";
         $result = EA_sql_query($request);
     }
     if ($action == "UNSET") {
-        $request = "UPDATE " . EA_DB . "_params SET valeur = '0' WHERE param = 'EA_MAINTENANCE'";
+        $request = "UPDATE " . $config->get('EA_DB') . "_params SET valeur = '0' WHERE param = 'EA_MAINTENANCE'";
         $result = EA_sql_query($request);
     }
 }
@@ -45,7 +45,7 @@ zone_menu(ADM, $session->get('user')['level'], array());//ADMIN STANDARD
 echo '<div id="col_main">';
 require(__DIR__ . '/../templates/admin/_menu-software.php');
 
-$request = "SELECT valeur FROM " . EA_DB . "_params WHERE param = 'EA_MAINTENANCE'";
+$request = "SELECT valeur FROM " . $config->get('EA_DB') . "_params WHERE param = 'EA_MAINTENANCE'";
 $result = EA_sql_query($request);
 $row = EA_sql_fetch_array($result);
 if ($row[0] == 1) {

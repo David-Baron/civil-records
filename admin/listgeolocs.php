@@ -25,18 +25,18 @@ $init  = getparam('init');
 $menu_data_active = 'L';
 
 ob_start();
-open_page(SITENAME . " : Liste des localités (communes et paroisses)", $root);
+open_page($config->get('SITENAME') . " : Liste des localités (communes et paroisses)", $root);
 navadmin($root, "Liste des localités");
 zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
 echo '<div id="col_main_adm">';
 require(__DIR__ . '/../templates/admin/_menu-data.php');
 
-echo '<h2>Localités connues du site ' . SITENAME . '</h2>';
+echo '<h2>Localités connues du site ' . $config->get('SITENAME') . '</h2>';
 
 $baselink = $root . '/admin/listgeolocs.php';
 // $request = "SELECT DISTINCT upper(left(COMMUNE,1)) AS init FROM ".EA_DB."_geoloc ORDER BY init";
 // Sélectionner et grouper sur initiale de commune et ascii(initiale), ordonner code ascii ascendant pour avoir + grand code (accentué) en dernier
-$request = "SELECT  alphabet.init  FROM ( SELECT upper(left(COMMUNE,1)) AS init,ascii(upper(left(COMMUNE,1)))  AS oo FROM " . EA_DB . "_geoloc GROUP BY init,oo  ORDER BY init , oo ASC) AS alphabet GROUP BY init";
+$request = "SELECT  alphabet.init  FROM ( SELECT upper(left(COMMUNE,1)) AS init,ascii(upper(left(COMMUNE,1)))  AS oo FROM " . $config->get('EA_DB') . "_geoloc GROUP BY init,oo  ORDER BY init , oo ASC) AS alphabet GROUP BY init";
 
 $result = EA_sql_query($request);
 $alphabet = "";
@@ -81,7 +81,7 @@ if ($init == "") {
 
 
 $request = "SELECT ID,COMMUNE,DEPART,LON,LAT,STATUT"
-    . " FROM " . EA_DB . "_geoloc "
+    . " FROM " . $config->get('EA_DB') . "_geoloc "
     . $condit
     . " ORDER BY " . $order;
 //echo $request;
@@ -104,7 +104,7 @@ if ($nb > 0) {
     if ($listpages <> "") {
         echo '<p>' . $listpages . '</p>';
     }
-    $i = 1 + ($page - 1) * MAX_PAGE_ADM;
+    $i = 1 + ($page - 1) * $config->get('MAX_PAGE_ADM');
     echo '<table summary="Liste des localités">';
     echo '<tr class="rowheader">';
     echo '<th> Tri : </th>';

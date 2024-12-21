@@ -5,7 +5,9 @@
 
 function traceip()
 {
-
+    global $config, $session;    
+    global $bypassTIP; // bypassTIP : pour ne pas exécuter traceip sur une page il suffit de déclarer $bypassTIP=1;
+    global $TIPlevel;  // $TIPlevel : niveau de la page : 1=page a compter (actes) 0 = autre (par défaut)
     // visitor general data
     $TIPlocked = 0;
     $Vcpt  = 1;
@@ -16,32 +18,29 @@ function traceip()
     if (isset($array_server_values['HTTP_USER_AGENT']))
         $Vua   = $array_server_values['HTTP_USER_AGENT'];
     $Vip   = $array_server_values['REMOTE_ADDR'];
-    global $userlogin;
-
-    if (!defined("TIP_FILTRER")) define("TIP_FILTRER", "0");
-    if (!defined("TIP_AUTOFREE")) define("TIP_AUTOFREE", "0");
-    if (!defined("TIP_DUREE")) define("TIP_DUREE", "1");
-
-    global $bypassTIP; // bypassTIP : pour ne pas exécuter traceip sur une page il suffit de déclarer $bypassTIP=1;
+    
     if (!isset($bypassTIP)) $bypassTIP = 0;
-    global $TIPlevel;  // $TIPlevel : niveau de la page : 1=page a compter (actes) 0 = autre (par défaut)
     if (!isset($TIPlevel)) $TIPlevel = 0;
 
-    if ((TIP_FILTRER == 1 or (TIP_FILTRER == 2 and $TIPlevel > 0)) and $bypassTIP != 1)
+    /* if (!defined("TIP_FILTRER")) define("TIP_FILTRER", "0");
+    if (!defined("TIP_AUTOFREE")) define("TIP_AUTOFREE", "0");
+    if (!defined("TIP_DUREE")) define("TIP_DUREE", "1"); */
+
     // Filtrage activé
+    if (($config->get('TIP_FILTRER') == 1 or ($config->get('TIP_FILTRER') == 2 and $TIPlevel > 0)) and $bypassTIP != 1)
     {
 
         // Elimine l'IP non bloquée qui est plus âgée que TIP_DUREE minutes
-        $req_tip_del_oldIP = "DELETE FROM " . EA_DB . "_traceip WHERE (datetime < " . ($Vdatetime - 60 * TIP_DUREE) . " AND locked = 0)";
+        $req_tip_del_oldIP = "DELETE FROM " . $config->get('EA_DB') . "_traceip WHERE (datetime < " . ($Vdatetime - 60 * $config->get('TIP_DUREE')) . " AND locked = 0)";
         EA_sql_query($req_tip_del_oldIP) or die(EA_sql_error() . ' ' . __LINE__);
-        if (TIP_AUTOFREE > 0) {
+        if ($config->get('TIP_AUTOFREE') > 0) {
             // clean up IP banned older then TIP_AUTOFREE days (and with less then 2 X TIP_MAX_PAGE_COUNT)
-            $req_tip_del_oldIP = "DELETE FROM " . EA_DB . "_traceip WHERE (datetime < " . ($Vdatetime - 60 * 60 * 24 * TIP_AUTOFREE) . " AND locked = 1 AND cpt <= " . (2 * TIP_MAX_PAGE_COUNT) . ")";
+            $req_tip_del_oldIP = "DELETE FROM " . $config->get('EA_DB') . "_traceip WHERE (datetime < " . ($Vdatetime - 60 * 60 * 24 * $config->get('TIP_AUTOFREE')) . " AND locked = 1 AND cpt <= " . (2 * $config->get('TIP_MAX_PAGE_COUNT')) . ")";
             EA_sql_query($req_tip_del_oldIP) or die(EA_sql_error() . ' ' . __LINE__);
         }
 
         $lock = 0;
-        $whitelist = explode(",", TIP_WHITELIST);
+        $whitelist = explode(",", $config->get('TIP_WHITELIST'));
         foreach ($whitelist as $whitesign) {
             if (isin($Vua, trim($whitesign)) >= 0) {
                 $lock = -1;
@@ -50,14 +49,14 @@ function traceip()
         }
 
         // is this visitor banned or already in DB ?
-        $req_tip_ip = "SELECT ip, datetime, cpt, locked FROM " . EA_DB . "_traceip WHERE ip = '" . $Vip . "';";
+        $req_tip_ip = "SELECT ip, datetime, cpt, locked FROM " . $config->get('EA_DB') . "_traceip WHERE ip = '" . $Vip . "';";
         $tip_ip = EA_sql_query($req_tip_ip) or die(EA_sql_error() . ' ' . __LINE__);
         $tip_num_rows = EA_sql_num_rows($tip_ip);
 
         if ($tip_num_rows != 0) {
             $Vdata = EA_sql_fetch_array($tip_ip);
-            $dateReOpen = date("d M Y H:i:s", $Vdata['datetime'] + 60 * 1440 * TIP_AUTOFREE);
-            $dateTerme  = date("d M Y H:i:s", $Vdata['datetime'] + 60 * TIP_DUREE);
+            $dateReOpen = date("d M Y H:i:s", $Vdata['datetime'] + 60 * 1440 * $config->get('TIP_AUTOFREE'));
+            $dateTerme  = date("d M Y H:i:s", $Vdata['datetime'] + 60 * $config->get('TIP_DUREE'));
 
             if ($Vdata['locked'] == 1) {
                 $TIPlocked = 1;
@@ -68,28 +67,28 @@ function traceip()
         // here we assume he's not banned or not in DB list ...
         // if not in DB list : add him, otherwise add +1 to his counter.
         if ($tip_num_rows == 0) {
-            if (($lock == 0) or ($lock == -1 and TIP_MEMOWHITE == 1)) {
-                $req_tip_IP = "INSERT INTO " . EA_DB . "_traceip (ua, ip, datetime, cpt, locked, login) VALUES ('" . addslashes($Vua) . "','" . $Vip . "'," . $Vdatetime . "," . $Vcpt . "," . $lock . ",'" . $userlogin . "');";
+            if (($lock == 0) or ($lock == -1 and $config->get('TIP_MEMOWHITE') == 1)) {
+                $req_tip_IP = "INSERT INTO " . $config->get('EA_DB') . "_traceip (ua, ip, datetime, cpt, locked, login) VALUES ('" . addslashes($Vua) . "','" . $Vip . "'," . $Vdatetime . "," . $Vcpt . "," . $lock . ",'" . $session->get('user')['login'] . "');";
                 EA_sql_query($req_tip_IP) or die(EA_sql_error() . ' ' . __LINE__);
             }
         } else // he's in DB, neither locked nor banned
         {
             $Vcpt = $Vdata['cpt']++; // update his counter
-            $req_tip_IP = "UPDATE " . EA_DB . "_traceip SET cpt=cpt+1, login='" . $userlogin . "' WHERE ip='" . $Vip . "';";
+            $req_tip_IP = "UPDATE " . $config->get('EA_DB') . "_traceip SET cpt=cpt+1, login='" . $session->get('user')['login'] . "' WHERE ip='" . $Vip . "';";
             EA_sql_query($req_tip_IP) or die(EA_sql_error() . ' ' . __LINE__);
         };
         // Avertissement du blocage imminent
-        if ($Vcpt >= TIP_MAX_PAGE_COUNT - TIP_ALERT and $Vdata['locked'] == 0) {
+        if ($Vcpt >= $config->get('TIP_MAX_PAGE_COUNT') - $config->get('TIP_ALERT') and $Vdata['locked'] == 0) {
             global $TIPmsg;
             $codes = array("#IPCLIENT#", "#COMPTE#", "#RESTE#", "#TERME#");
-            $decodes = array($Vip, $Vcpt, TIP_MAX_PAGE_COUNT - $Vcpt, $dateTerme);
-            $TIPmsg = str_replace($codes, $decodes, TIP_MSG_ALERT);
+            $decodes = array($Vip, $Vcpt, $config->get('TIP_MAX_PAGE_COUNT') - $Vcpt, $dateTerme);
+            $TIPmsg = str_replace($codes, $decodes, $config->get('TIP_MSG_ALERT'));
         }
 
         // if this visitor is at TIP_MAX_PAGE_COUNT, ban his IP.
-        if ($Vcpt > TIP_MAX_PAGE_COUNT and $Vdata['locked'] == 0) {
+        if ($Vcpt > $config->get('TIP_MAX_PAGE_COUNT') and $Vdata['locked'] == 0) {
             $TIPlocked = 1;
-            $req_tip_banIP = "UPDATE " . EA_DB . "_traceip SET locked = 1 WHERE ip='" . $Vip . "';";
+            $req_tip_banIP = "UPDATE " . $config->get('EA_DB') . "_traceip SET locked = 1 WHERE ip='" . $Vip . "';";
             EA_sql_query($req_tip_banIP) or die(EA_sql_error() . ' ' . __LINE__);
 
             // Generate the alert mail
@@ -106,20 +105,20 @@ function traceip()
             $path = "";
             $xcomm = $xpatr = $page = "";
             pathroot($root, $path, $xcomm, $xpatr, $page);
-            $url_admin_tip = EA_URL_SITE . $root . "/admin/gesttraceip.php";
+            $url_admin_tip = $config->get('EA_URL_SITE') . $root . "/admin/gesttraceip.php";
             $tip_body .= "\n\nAdministrer les IP bannies : " . $url_admin_tip;
 
             // Send the mail
             //mail(TIP_MAIL_TO, $tip_subject, $tip_body, $tip_headers);
-            $from = remove_accent(SITENAME) . ' <' . LOC_MAIL . '>';
-            sendmail($from, TIP_MAIL_TO, $tip_subject, $tip_body);
+            $from = remove_accent($config->get('SITENAME')) . ' <' . $config->get('LOC_MAIL') . '>';
+            sendmail($from, $config->get('TIP_MAIL_TO'), $tip_subject, $tip_body);
         };
         if ($TIPlocked == 1) {
             // this visitor is banned
-            echo "<h2>" . SITENAME . " : IP " . $Vip . " bloqu&eacute;e";
-            if (TIP_AUTOFREE > 0) echo " jusque " . $dateReOpen;
+            echo "<h2>" . $config->get('SITENAME') . " : IP " . $Vip . " bloqu&eacute;e";
+            if ($config->get('TIP_AUTOFREE') > 0) echo " jusque " . $dateReOpen;
             echo " </h2>";
-            echo "<h2>" . TIP_MSG_BAN . "</h2>";
+            echo "<h2>" . $config->get('TIP_MSG_BAN') . "</h2>";
             exit();
         };
         EA_sql_free_result($tip_ip);
@@ -130,6 +129,7 @@ function traceip()
 function admin_traceip()
 // Administration des IP Bannies 
 {
+    global $config;
     echo '<h1>Gestion du filtrage d\'IP (adapté de TraceIP v2)</h1>' . "\n";
 
     if (!defined("TIP_FILTRER")) define("TIP_FILTRER", "0");
@@ -144,25 +144,25 @@ function admin_traceip()
     $ipid = (isset($_GET['ipid'])) ? abs(sprintf("%d", $_GET['ipid'])) : 0;
 
     if (($do == 'cle') && ($ipid != 0)) {
-        $req_delban = "DELETE FROM " . EA_DB . "_traceip WHERE locked = -1 AND cpt<='" . $ipid . "';";
+        $req_delban = "DELETE FROM " . $config->get('EA_DB') . "_traceip WHERE locked = -1 AND cpt<='" . $ipid . "';";
         EA_sql_query($req_delban);
         echo '<h3>Nettoyage d\'IP effectuée.</h3>' . "\n";
     };
     if (($do == 'del') && ($ipid != 0)) {
-        $req_delban = "DELETE FROM " . EA_DB . "_traceip WHERE id='" . $ipid . "' LIMIT 1;";
+        $req_delban = "DELETE FROM " . $config->get('EA_DB') . "_traceip WHERE id='" . $ipid . "' LIMIT 1;";
         EA_sql_query($req_delban);
         echo '<h3>Suppression d\'IP effectuée.</h3>' . "\n";
     };
 
     if (($do == 'fre') && ($ipid != 0)) {
 
-        $req_delban = "UPDATE " . EA_DB . "_traceip SET locked = -1 WHERE id='" . $ipid . "' LIMIT 1;";
+        $req_delban = "UPDATE " . $config->get('EA_DB') . "_traceip SET locked = -1 WHERE id='" . $ipid . "' LIMIT 1;";
         EA_sql_query($req_delban);
         echo '<h3>Affranchissement permanent d\'IP effectué.</h3>' . "\n";
     };
 
     $req_allIP = "SELECT id,ua, ip, login, datetime, cpt,locked
-										FROM " . EA_DB . "_traceip
+										FROM " . $config->get('EA_DB') . "_traceip
 										ORDER BY id ASC";
 
     $allIP = EA_sql_query($req_allIP) or die(EA_sql_error() . ' ' . __LINE__);

@@ -293,7 +293,8 @@ function listbox_trait($fieldname, $typetrait, $default)
 
 function traitement($indice, $objet, $code)
 {
-    global $acte, $data;
+    global $config, $acte, $data;
+    
     $reponse = "";
     switch ($objet) {
         case "SEX": //----------- Traitements du genre -------------------
@@ -309,7 +310,7 @@ function traitement($indice, $objet, $code)
                     break;
                 case "S": // Détection selon le premier prénom
                     $prem_pre = explode(' ', $acte[$indice], 2);
-                    $sql = "SELECT * FROM " . EA_DB . "_prenom WHERE prenom = '" . sql_quote($prem_pre[0]) . "'";
+                    $sql = "SELECT * FROM " . $config->get('EA_DB') . "_prenom WHERE prenom = '" . sql_quote($prem_pre[0]) . "'";
                     $res = EA_sql_query($sql);
                     $nb = EA_sql_num_rows($res);
                     if ($nb > 0) {

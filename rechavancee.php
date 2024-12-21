@@ -21,14 +21,14 @@ $page = "";
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
 ob_start();
-open_page(SITENAME . " : Dépouillement d'actes de l'état-civil et des registres paroissiaux", $root, null, null, null, '../index.htm', 'rss.php');
+open_page($config->get('SITENAME') . " : Dépouillement d'actes de l'état-civil et des registres paroissiaux", $root, null, null, null, '../index.htm', 'rss.php');
 navigation($root, 2, 'A', "Recherche avancée");
 zone_menu(0, 0, array('s' => '', 'c' => 'O')); //PUBLIC STAT & CERT
 ?>
 <div id="col_main">
     <h2>Recherche avancée</h2>
 
-    <?php if ((RECH_LEVENSHTEIN == 1) && (max($userlevel, PUBLIC_LEVEL) >= LEVEL_LEVENSHTEIN)) { ?>
+    <?php if (($config->get('RECH_LEVENSHTEIN') == 1) && (max($session->get('user')['level'], $config->get('PUBLIC_LEVEL')) >= $config->get('LEVEL_LEVENSHTEIN'))) { ?>
         <div>
             <a href="<?= $root; ?>/rechlevenshtein.php">Recherche Levenshtein</a>
         </div>
@@ -101,7 +101,7 @@ zone_menu(0, 0, array('s' => '', 'c' => 'O')); //PUBLIC STAT & CERT
             </div>
             <div class="rech_zone">
                 <div class="rech_titre">Actes recherchés : </div>
-                <?php if (CHERCH_TS_TYP == 1) { ?>
+                <?php if ($config->get('CHERCH_TS_TYP') == 1) { ?>
                     <p>
                         <input type="checkbox" name="TypN" value="N" checked="checked">Naissances
                         <input type="checkbox" name="TypD" value="D" checked="checked">Décès

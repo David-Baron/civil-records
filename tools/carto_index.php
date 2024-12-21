@@ -4,8 +4,8 @@
 
 function plot_commune($carto, $depart, $commune, $etiquette, $texte_html, $listTypes = "", $listSigles = "")
 {
-    global $imagePin;
-    $georeq = "SELECT LON,LAT FROM " . EA_DB . "_geoloc WHERE COMMUNE = '" . sql_quote($commune) . "' AND DEPART = '" . sql_quote($depart) . "' AND STATUT in ('A','M')";
+    global $config, $imagePin;
+    $georeq = "SELECT LON,LAT FROM " . $config->get('EA_DB') . "_geoloc WHERE COMMUNE = '" . sql_quote($commune) . "' AND DEPART = '" . sql_quote($depart) . "' AND STATUT in ('A','M')";
     $geores =  EA_sql_query($georeq);
     if ($geo = EA_sql_fetch_array($geores)) {
         if (strlen($listTypes) == 1) {
@@ -32,7 +32,7 @@ if ($xtyp != '' || $xtyp != "A") {
 }
 
 $request = "SELECT DEPART,COMMUNE,TYPACT,LIBELLE, sum(NB_TOT) AS NB_TOT "
-                . " FROM " . EA_DB . "_sums " . $condit1
+                . " FROM " . $config->get('EA_DB') . "_sums " . $condit1
                 . " GROUP BY DEPART,COMMUNE,TYPACT,LIBELLE"
                 . " ORDER BY DEPART,COMMUNE,INSTR('NMDV',TYPACT),LIBELLE; ";
 
@@ -40,7 +40,7 @@ $pre_libelle = "XXX";
 $pre_commune = "XXX";
 $txthtml = "";
 global $root;
-$fullpath = EA_URL_SITE . $root;
+$fullpath = $config->get('EA_URL_SITE') . $root;
 $image = $fullpath . '/img/pin_N.png';
 global $imagePin;
 $imagePin = $fullpath . '/img/pin_';

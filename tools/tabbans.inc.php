@@ -48,7 +48,7 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
     navigation($root, ADM + 2, 'V', $xcomm);
     zone_menu(ADM, $userlevel);
     echo '<div id="col_main">' . "\n";
-    liste_patro_2($program, $path, $xcomm, $xpatr, "Divers $stitre", EA_DB . "_div3", $stype, $gid, $note);
+    liste_patro_2($program, $path, $xcomm, $xpatr, "Divers $stitre", $config->get('EA_DB') . "_div3", $stype, $gid, $note);
 
 } else {
     // **** Lister les actes
@@ -112,7 +112,7 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
     }
 
     $request = "SELECT act.NOM, act.PRE, C_NOM, C_PRE, DATETXT, act.ID, act.LIBELLE, act.DEPOSANT"
-        . " FROM " . EA_DB . "_div3 AS act"
+        . " FROM " . $config->get('EA_DB') . "_div3 AS act"
         . " WHERE COMMUNE = '" . sql_quote($Commune) . "'" . $condDep
         . " " . $soustype . $condit
         . " ORDER BY " . $order;
@@ -136,7 +136,7 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
         if ($listpages <> "") {
             echo '<p>' . $listpages . '</p>';
         }
-        $i = 1 + ($page - 1) * iif((ADM > 0), MAX_PAGE_ADM, MAX_PAGE);
+        $i = 1 + ($page - 1) * iif((ADM > 0), $config->get('MAX_PAGE_ADM'), $config->get('MAX_PAGE'));
         echo '<table summary="Liste des patronymes">';
         echo '<tr class="rowheader">';
         echo '<th> Tri : </th>';

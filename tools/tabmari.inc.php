@@ -36,7 +36,7 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
     navigation($root, ADM + 2, 'M', $xcomm);
     zone_menu(ADM, $session->get('user')['level']);
     echo '<div id="col_main">' . "\n";
-    liste_patro_2($program, $path, $xcomm, $xpatr, "Mariages", EA_DB . "_mar3", "", $gid, $note);
+    liste_patro_2($program, $path, $xcomm, $xpatr, "Mariages", $config->get('EA_DB') . "_mar3", "", $gid, $note);
 } else {
     if (!$userAuthorizer->isGranted(3)) {
         $response = new RedirectResponse("$root/");
@@ -101,7 +101,7 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
     }
 
     $request = "SELECT act.NOM, act.PRE, C_NOM, C_PRE, DATETXT, act.ID, act.DEPOSANT"
-                . " FROM " . EA_DB . "_mar3 AS act"
+                . " FROM " . $config->get('EA_DB') . "_mar3 AS act"
             . " WHERE COMMUNE = '" . sql_quote($Commune) . "'" . $condDep
                 . $condit . " ORDER BY " . $order;
 
@@ -125,7 +125,7 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
         if ($listpages <> "") {
             echo '<p>' . $listpages . '</p>';
         }
-        $i = 1 + ($page - 1) * iif((ADM > 0), MAX_PAGE_ADM, MAX_PAGE);
+        $i = 1 + ($page - 1) * iif((ADM > 0), $config->get('MAX_PAGE_ADM'), $config->get('MAX_PAGE'));
         echo '<table summary="Liste des patronymes">';
         echo '<tr class="rowheader">';
         echo '<th> Tri : </th>';

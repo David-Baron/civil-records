@@ -17,14 +17,14 @@ $autorise_autoload = true;  // Rechargement automatisé: true|false
 // Dans "_upload"  créer un fichier "nomuser-ErreurNimegue-typeactes.txt"
 function Trace_Ligne_Ignore($nombre, $avec_Log, $info, $line = "\r\n") // Ex : $cptign = Trace_Ligne_Ignore( $cptign, ($logKo==1), "LIGNE INCOMPLETE " . count($acte) . "/" . $minzones, $line);
 {
-    global $session;
+    global $session, $config;
     if ($avec_Log) {
         // echo "<br />" . $info . " -> Ignorée" ;
         echo "<br>" . $info . " (" . ($GLOBALS['line_num'] + 1) . ") -> Ignorée";
     }
     // Enregistre éventuellement dans un fichier sur le serveur. Réinitialisé chaque jour
     //$f = realpath('./'.UPLOAD_DIR) . '/' . $GLOBALS['userlogin'] . '-ErreurNimegue-' . $GLOBLAS['TypeActes'] . '.txt';
-    $f = dirname(__FILE__) . DIRECTORY_SEPARATOR . UPLOAD_DIR . DIRECTORY_SEPARATOR . $session->get('user')['login'] . '-ErreurNimegue-' . $GLOBALS['TypeActes'] . '.txt';
+    $f = dirname(__FILE__) . DIRECTORY_SEPARATOR . $config->get('UPLOAD_DIR') . DIRECTORY_SEPARATOR . $session->get('user')['login'] . '-ErreurNimegue-' . $GLOBALS['TypeActes'] . '.txt';
     if (file_exists($f)) {
         $t = 'Ymd';
         $Date_COUR = date($t);
@@ -172,8 +172,10 @@ function acte2data($acte, $moderestore)
 
 function getBkFiles($typact) // Utilisée pour remplir dynamiquement la listbox selon le type d'actes
 {
+    global $config;
+
     $limit_liste = '.001.'; // ne prends que les fichiers ".001." // avant v3.2.3 prenait tout => $limit_liste = '.';
-    $restfiles = mydir("../" . DIR_BACKUP, EXT_BACKUP);
+    $restfiles = mydir("../" . $config->get('DIR_BACKUP'), $config->get('EXT_BACKUP'));
     $filterdfiles = array();
     foreach ($restfiles as $bkfile) {
         if (isin($bkfile, "_" . $typact . $limit_liste) > 1) {
@@ -212,7 +214,7 @@ function messageFinChargement()
 
 $delaireload = 10;
 $MT0 = microtime_float();
-$Max_time = min(ini_get("max_execution_time") - 3, MAX_EXEC_TIME);
+$Max_time = min(ini_get("max_execution_time") - 3, $config->get('MAX_EXEC_TIME'));
 $Max_size = return_bytes(ini_get("upload_max_filesize"));
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
@@ -299,10 +301,10 @@ if (getparam('action') == 'submitted' and $Origine <> "B") {
 }  // 60 jours
 
 $autokey = getparam('autokey');
-$tokenfile  = "../" . DIR_BACKUP . $session->get('user')['login'] . '.txt';
+$tokenfile  = "../" . $config->get('DIR_BACKUP') . $session->get('user')['login'] . '.txt';
 $bkfile = getparam('bkfile');
 if (empty($bkfile)) {
-    $bkfile = "../" . DIR_BACKUP . getparam('bkfile2');
+    $bkfile = "../" . $config->get('DIR_BACKUP') . getparam('bkfile2');
 }  // lecture directe
 if ($autokey == "" or $autokey == "NEW") {
     if (($tof = @fopen($tokenfile, "r")) and $autokey != "NEW") {
@@ -364,7 +366,7 @@ if (getparam('action') == 'submitted') { // Lancement d'une opération de charge
         }
         if ($ok) {
             // Stockage du fichier chargé
-            $uploadfile = UPLOAD_DIR . '/' . $session->get('user')['login'] . '.csv';
+            $uploadfile = $config->get('UPLOAD_DIR') . '/' . $session->get('user')['login'] . '.csv';
             $filename = $_FILES['Actes']['tmp_name'];
             // Si le fichier proposé est vide ET qu'il existe le fichier "_upload/nomuser-LOCAL-typeactes.csv" ex: admin-LOCAL-M.csv , c'est ce fichier qui sera traité. A NOTER : le fichier en question est renommé en "nomuser.csv" pour le traitement, ainsi en cas de plantage, il faut remettre le fichier en place.
             $vide = false;
@@ -375,7 +377,7 @@ if (getparam('action') == 'submitted') { // Lancement d'une opération de charge
                 }
                 fclose($csv_file);
             }
-            $local_file = dirname(__FILE__) . '/' . UPLOAD_DIR . '/' . $session->get('user')['login'] . '-LOCAL-' . $TypeActes . '.csv';
+            $local_file = dirname(__FILE__) . '/' . $config->get('UPLOAD_DIR') . '/' . $session->get('user')['login'] . '-LOCAL-' . $TypeActes . '.csv';
             $allow_move = false;
             if (($vide) and (file_exists($local_file))) {
                 $_FILES['Actes']['tmp_name'] = $filename = $local_file;
@@ -388,7 +390,7 @@ if (getparam('action') == 'submitted') { // Lancement d'une opération de charge
                 }
             }
             if (!$allow_move) {
-                msgplus('033 : Impossible de ranger le fichier dans "' . UPLOAD_DIR . '".');
+                msgplus('033 : Impossible de ranger le fichier dans "' . $config->get('UPLOAD_DIR') . '".');
                 $missingargs = true;
                 $ok = false;
             }
@@ -484,22 +486,22 @@ if (getparam('action') == 'submitted') { // Lancement d'une opération de charge
 switch ($TypeActes) {
     case "N":
         $ntype = "Naissance";
-        $table = EA_DB . "_nai3";
+        $table = $config->get('EA_DB') . "_nai3";
         $script = 'tab_naiss.php';
         break;
     case "V":
         $ntype = "Divers";
-        $table = EA_DB . "_div3";
+        $table = $config->get('EA_DB') . "_div3";
         $script = 'tab_bans.php';
         break;
     case "M":
         $ntype = "Mariage";
-        $table = EA_DB . "_mar3";
+        $table = $config->get('EA_DB') . "_mar3";
         $script = 'tab_mari.php';
         break;
     case "D":
         $ntype = "Décès";
-        $table = EA_DB . "_dec3";
+        $table = $config->get('EA_DB') . "_dec3";
         $script = 'tab_deces.php';
         break;
 }
@@ -1079,7 +1081,7 @@ if ($missingargs) {
             echo " <tr>\n";
             echo '  <td align="right">Déposant : </td>' . "\n";
             echo '  <td>';
-            listbox_users("deposant", $session->get('user')['ID'], DEPOSANT_LEVEL);
+            listbox_users("deposant", $session->get('user')['ID'], $config->get('DEPOSANT_LEVEL'));
             echo '  </td>';
             echo " </tr>\n";
         } else {
@@ -1102,7 +1104,7 @@ if ($missingargs) {
 } else {
     echo "<hr /><p id='finalmsg'>";
     if ($moderestore) {
-        $commune = substr(str_replace('../' . DIR_BACKUP, '', $uploadfile), 0, 30);
+        $commune = substr(str_replace('../' . $config->get('DIR_BACKUP'), '', $uploadfile), 0, 30);
         $action = "restaurés";
         $txtTRT = "Restauration ";
     } else {

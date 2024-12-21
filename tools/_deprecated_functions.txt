@@ -790,3 +790,111 @@ function menu_public()
     echo '</dl></div>' . "\n";
     echo '</div>' . "\n";
 }
+function form_recherche()
+{
+    global $root, $session;
+
+    $act_types = [
+        ['code' => 'N', 'code_3' => 'NAI', 'label' => 'Naissances'],
+        ['code' => 'M', 'code_3' => 'MAR', 'label' => 'Mariages'],
+        ['code' => 'D', 'code_3' => 'DEC', 'label' => 'Décès'],
+        ['code' => 'V', 'code_3' => 'DIV', 'label' => 'Actes divers'],
+    ];
+
+    if (PUBLIC_LEVEL >= 3 || ($session->has('user') && $session->get('user')['level'] >= 3 && ((current_user_solde() > 0) || RECH_ZERO_PTS == 1))) {
+        echo '<div class="menu_zone">';
+        echo '<div class="menu_titre">Recherche directe</div>';
+        echo '<form class="form_rech" name="recherche" method="post" action="' . $root . '/chercher.php">';
+        echo '&nbsp;<input type="text" name="achercher">';
+        echo '&nbsp;<input type="submit" name="Submit" value="Chercher">';
+        echo '<br><input type="radio" name="zone" value="1" checked="checked" />Intéressé(e) ';
+        echo '<br><input type="radio" name="zone" value="2">Mère, conjoint, témoins, parrain...';
+        if (CHERCH_TS_TYP != 1) {
+            echo '<br>&nbsp;Dans les actes de&nbsp;';
+            echo '<select name="typact" size="1">';
+            foreach ($act_types as $act_type) {
+                echo '<option value="' . $act_type['code'] . '" ' . ('N' === $act_type['code'] ? 'selected' : '') . '>' . $act_type['label'] . '</option>';
+            }
+            echo " </select>";
+        }
+        echo '<input type="hidden" name="direct" value="1">';
+        echo '<input type="hidden" name="debug" value="' . getparam('debug') . '">';
+        echo '<div class="menuTexte"><dl><dd>';
+        echo '<a href="' . $root . '/rechavancee.php">Recherche avancée</a>&nbsp; &nbsp;';
+
+        if ((RECH_LEVENSHTEIN == 2) && (max($session->get('user')['level'], PUBLIC_LEVEL) >= LEVEL_LEVENSHTEIN)) {
+            echo '<br><a href="' . $root . '/rechlevenshtein.php">Recherche Levenshtein</a>&nbsp; &nbsp;';
+        }
+
+        echo '</dd></dl></div>';
+        echo '</form>';
+        echo '</div>';
+    }
+}
+
+
+/* // Lecture des paramètres de configuration
+
+// Pour déplacer dans load_params, il faut protéger par if (!defined)
+define("EA_VERSION_PRG", "3.2.4");
+//{ $GLOBALS['EAg_BETA']="-beta"; }
+//{ $GLOBALS['EAg_BETA']="-rc6"; }
+{
+    $GLOBALS['EAg_BETA'] = "-p406";
+}
+
+$lg = '';
+load_params();
+
+// Pour déplacer dans load_params, il faut protéger par if (!defined)
+define("EXT_BACKUP", ".bea");
+define("DIR_BACKUP", "_backup/"); */
+
+function load_params()
+{
+    if (!defined("EA_DB")) define("EA_DB", "cr"); // Préfixe des noms de tables
+    if (!defined("EA_UDB")) define("EA_UDB", EA_DB); //préfixe de la table utilisateurs
+    if (function_exists("date_default_timezone_set")) date_default_timezone_set('Europe/Paris');
+
+    $GLOBALS['TIPmsg'] = "";
+    $GLOBALS['lg'] = 'fr';
+    // $GLOBALS['T0'] = time();
+
+    $db  = con_db();
+    $res = EA_sql_query("SHOW TABLES LIKE '" . EA_DB . "_params';");
+    if (! $res) {
+        echo "ERREUR SHOW TABLES LIKE '" . EA_DB . "_params';";
+        exit;
+    } elseif (EA_sql_num_rows($res) > 0) {
+        $request = "SELECT * FROM " . EA_DB . "_params";
+        $result = EA_sql_query($request);
+        while ($row = EA_sql_fetch_array($result)) {
+            if (!defined($row["param"])) {
+                define($row["param"], html_entity_decode($row["valeur"], ENTITY_REPLACE_FLAGS, ENTITY_CHARSET));
+            }
+        }
+    }
+
+    if (!defined("EA_ERROR")) define("EA_ERROR", 0);  // Pas d'affichage d'erreur en production   
+    if (defined('EA_LANG')) $GLOBALS['lg'] = EA_LANG;
+    // Autres lus dans les paramètres mais contrôles dispersés dans les scripts, en particulier nécessaires lors d'une installation
+    if (!defined("EA_VERSION")) define("EA_VERSION", EA_VERSION_PRG);
+    if (!defined("EA_MAINTENANCE")) define("EA_MAINTENANCE", 0);
+    if (!defined("EXTERN_MAIL")) define("EXTERN_MAIL", 0);
+    if (!defined('CHERCH_TS_TYP')) define('CHERCH_TS_TYP', 0);
+    if (!defined("ECLAIR_LOG")) define("ECLAIR_LOG", 0);
+    if (!defined("TIP_FILTRER")) define("TIP_FILTRER", "0");
+    if (!defined("TIP_AUTOFREE")) define("TIP_AUTOFREE", "0");
+    if (!defined("TIP_DUREE")) define("TIP_DUREE", "1");
+    if (!defined("UPLOAD_DIR")) define("UPLOAD_DIR", "_upload");
+    if (!defined("INCLUDE_HEADER")) define("INCLUDE_HEADER", "");
+    if (!defined("PIED_PAGE")) define("PIED_PAGE", "");
+    if (!defined("PUB_ZONE_MENU")) define('PUB_ZONE_MENU', "Zone info libre");
+    if (!defined("SITENAME")) define("SITENAME", "Civil-Records");
+    if (!defined('SITE_URL')) define('SITE_URL', '');
+    if (!defined("SITE_INVENTAIRE")) define("SITE_INVENTAIRE", "");
+    // On peut a) mettre dans "config" : define('EA_URL_CE_SERVEUR', 'http://127.0.0.1'); b) ajouter dans act_params "EA_URL_CE_SERVEUR"
+    if (!defined('EA_URL_CE_SERVEUR')) define('EA_URL_CE_SERVEUR', mkSiteUrl()); // "actutils.php" soit toujours référencé après "adlcutils.php" définissant mkSiteUrl
+    if (!defined('EA_URL_SITE')) define('EA_URL_SITE', EA_URL_CE_SERVEUR); // dans l'immédiat on ne change pas les anciennes REFs
+    if (!defined('TOUJOURS')) define('TOUJOURS', '2033-12-31'); // limite des comptes illimités
+}

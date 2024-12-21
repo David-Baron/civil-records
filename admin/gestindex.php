@@ -42,8 +42,8 @@ if ($action == "ADD") {
         echo '<p><a href="?act=ADD&amp;confirm=YES&amp;ti=' . $aindex . '"><b>Confirmer</b></a>';
         echo ' - <a href="?act=SHO"><b>Annuler</b></a></p>';
     } else {
-        $reqmaj = "ALTER TABLE " . EA_DB . '_' . $idx[$aindex][0] . ' ADD INDEX ' . $idx[$aindex][1] . ' (' . $idx[$aindex][2] . ');';
-        echo '<p>Création de l\'index ' . $idx[$aindex][6] . ' sur la table ' . EA_DB . '_' . $idx[$aindex][0] . '... </p>';
+        $reqmaj = "ALTER TABLE " . $config->get('EA_DB') . '_' . $idx[$aindex][0] . ' ADD INDEX ' . $idx[$aindex][1] . ' (' . $idx[$aindex][2] . ');';
+        echo '<p>Création de l\'index ' . $idx[$aindex][6] . ' sur la table ' . $config->get('EA_DB') . '_' . $idx[$aindex][0] . '... </p>';
         $res = EA_sql_query($reqmaj);
         //echo '<p>'.$reqmaj;
         if ($res === true) {
@@ -63,8 +63,8 @@ if ($action == "ADD") {
         echo '<p><a href="?act=DEL&amp;confirm=YES&amp;ti=' . $aindex . '"><b>Confirmer</b></a>';
         echo ' - <a href="?act=SHO"><b>Annuler</b></a></p>';
     } else {
-        $reqmaj = "ALTER TABLE " . EA_DB . '_' . $idx[$aindex][0] . ' DROP INDEX ' . $idx[$aindex][1] . ';';
-        echo '<p>Suppression de l\'index ' . $idx[$aindex][6] . ' de la table ' . EA_DB . '_' . $idx[$aindex][0] . '... </p>';
+        $reqmaj = "ALTER TABLE " . $config->get('EA_DB') . '_' . $idx[$aindex][0] . ' DROP INDEX ' . $idx[$aindex][1] . ';';
+        echo '<p>Suppression de l\'index ' . $idx[$aindex][6] . ' de la table ' . $config->get('EA_DB') . '_' . $idx[$aindex][0] . '... </p>';
         $res = EA_sql_query($reqmaj);
         //echo '<p>'.$reqmaj;
         if ($res === true) {
@@ -88,12 +88,12 @@ if ($action == "ADD") {
             }
         else
     */ {
-        $reqmaj = "ANALYZE TABLE " . EA_DB . '_' . $tablename . ';';
-        echo '<p>Analyse de la table ' . EA_DB . '_' . $tablename . '... </p>';
+        $reqmaj = "ANALYZE TABLE " . $config->get('EA_DB') . '_' . $tablename . ';';
+        echo '<p>Analyse de la table ' . $config->get('EA_DB') . '_' . $tablename . '... </p>';
         $res = EA_sql_query($reqmaj);
         $tabres = EA_sql_fetch_array($res);
         echo $tabres[2] . " : " . $tabres[3];
-        writelog("Analyse de " . EA_DB . '_' . $tablename . ":" . $tabres[2]);
+        writelog("Analyse de " . $config->get('EA_DB') . '_' . $tablename . ":" . $tabres[2]);
         echo '<p><a href="?act=SHO"><b>Retour à la liste des index</b></a></p>';
     }
 } else { ?>
@@ -112,17 +112,17 @@ if ($action == "ADD") {
             $i++;
             if ($table <> $index[0]) {
                 $table = $index[0];
-                $res = EA_sql_query("SELECT count(*) AS NBRE FROM " . EA_DB . '_' . $table . "; ");
+                $res = EA_sql_query("SELECT count(*) AS NBRE FROM " . $config->get('EA_DB') . '_' . $table . "; ");
                 $row = EA_sql_fetch_array($res);
                 $totfiches = $row[0];
                 ?>
                 <tr class="rowheader">
-                <td colspan="3"><b>Table des <?= typact_txt($table); ?> (<?= EA_DB . '_' . $table; ?> : <?= entier($totfiches); ?> lignes)</b>
+                <td colspan="3"><b>Table des <?= typact_txt($table); ?> (<?= $config->get('EA_DB') . '_' . $table; ?> : <?= entier($totfiches); ?> lignes)</b>
                  <a href="<?= $root; ?>/admin/gestindex.php?act=ANA&amp;tbl=<?= $table; ?>"><b>Analyser</b></a>
                 </td>
             </tr>
                 <?php
-                $res = EA_sql_query("SHOW INDEX FROM " . EA_DB . '_' . $table . "; ");
+                $res = EA_sql_query("SHOW INDEX FROM " . $config->get('EA_DB') . '_' . $table . "; ");
                 $nbr = EA_sql_num_rows($res);
                 $realindex = array();
                 for ($j = 1; $j <= $nbr; $j++) {

@@ -22,7 +22,7 @@ zone_menu(0, 0, array('f' => 'N')); //PUBLIC SANS FORM_RECHERCHE
         msg('Vous devez fournir votre adresse email');
     } else {
         $missingargs = false;
-        $request = "SELECT nom, prenom,login,email,level FROM " . EA_UDB . "_user3 WHERE email = '" . getparam('email') . "'; ";
+        $request = "SELECT nom, prenom,login,email,level FROM " . $config->get('EA_UDB') . "_user3 WHERE email = '" . getparam('email') . "'; ";
         $result = EA_sql_query($request, $u_db);
         $nb = EA_sql_num_rows($result);
         if ($nb == 1) {
@@ -30,7 +30,7 @@ zone_menu(0, 0, array('f' => 'N')); //PUBLIC SANS FORM_RECHERCHE
             $userlevel = $user["level"];
             $pw = MakeRandomPassword(8);
             $hash = sha1($pw);
-            $reqmaj = "UPDATE " . EA_UDB . "_user3 SET HASHPASS = '" . $hash . "' " .
+            $reqmaj = "UPDATE " . $config->get('EA_UDB') . "_user3 SET HASHPASS = '" . $hash . "' " .
                 " WHERE email = '" . getparam('email') . "'; ";
 
             //echo "<p>" . $reqmaj . "</p>";
@@ -48,12 +48,12 @@ zone_menu(0, 0, array('f' => 'N')); //PUBLIC SANS FORM_RECHERCHE
             $message .= "" . $lb;
             $message .= "Voici vos codes d'accès au site  :" . $lb;
             $message .= "" . $lb;
-            $message .= EA_URL_SITE . $root . "/index.php" . $lb;
+            $message .= $config->get('EA_URL_SITE') . $root . "/index.php" . $lb;
             $message .= "" . $lb;
             $message .= "Votre login : " . $user['login'] . $lb;
             $message .= "Votre NOUVEAU mot de passe : " . $pw . $lb;
             $message .= "" . $lb;
-            if ($userlevel >= CHANGE_PW) {
+            if ($userlevel >= $config->get('CHANGE_PW')) {
                 $message .= "Après connexion, vous pourrez changer ce mot de passe pour un mot plus facile à retenir." . $lb;
                 $message .= "" . $lb;
             }
@@ -61,11 +61,11 @@ zone_menu(0, 0, array('f' => 'N')); //PUBLIC SANS FORM_RECHERCHE
             $message .= "" . $lb;
             $message .= "Votre webmestre." . $lb;
 
-            $sujet = "Rappel de vos codes pour " . SITENAME;
-            $sender = mail_encode(SITENAME) . ' <' . LOC_MAIL . ">";
+            $sujet = "Rappel de vos codes pour " . $config->get('SITENAME');
+            $sender = mail_encode($config->get('SITENAME')) . ' <' . $config->get('LOC_MAIL') . ">";
             $okmail = sendmail($sender, $user['email'], $sujet, $message);
             if (!$okmail) {
-                msg('Désolé, problème lors de l\'envoi du mail ! - Contactez <a href=mailto:' . LOC_MAIL . '>l\'administrateur.</a>');
+                msg('Désolé, problème lors de l\'envoi du mail ! - Contactez <a href=mailto:' . $config->get('LOC_MAIL') . '>l\'administrateur.</a>');
                 $ok = false;
             } else {
                 echo "<p>Courrier envoyé.<br />Consultez votre messagerie pour récupérer vos codes d'accès.<p>";
@@ -75,7 +75,7 @@ zone_menu(0, 0, array('f' => 'N')); //PUBLIC SANS FORM_RECHERCHE
             }
         } else {
             if ($nb > 1) {
-                msg('Cette adresse email est référencée pour plusieurs comptes. Contactez <a href=mailto:' . LOC_MAIL . '>l\'administrateur.</a>');
+                msg('Cette adresse email est référencée pour plusieurs comptes. Contactez <a href=mailto:' . $config->get('LOC_MAIL') . '>l\'administrateur.</a>');
             } else {
                 msg('Cette adresse email n\'est pas connue !');
             }

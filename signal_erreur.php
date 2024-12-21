@@ -1,4 +1,8 @@
 <?php
+
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 define('ADM', 0); // Compatibility only
 $admtxt = ''; // Compatibility only
 require(__DIR__ . '/next/bootstrap.php');
@@ -76,11 +80,13 @@ function gen_id_nim($xty, $xacte)
 }
 
 function set_table_type_script_acte($TypeActes)
-{    // ENTREE : $TypeActes
+{    
+    global $config;
+    // ENTREE : $TypeActes
     // SORTIE : array($table, $ntype, $script);
     // Utilisé dans search_acte et construction formulaire    list($table, $ntype, $script) = set_table_type_script_acte($TypeActes);
     $EA_TypAct_Txt = array('N' => 'de naissances', 'M' => 'de mariages', 'D' => 'de décès', 'V' => 'divers');
-    $EA_Type_Table = array('N' => EA_DB . '_nai3', 'M' => EA_DB . '_mar3', 'D' => EA_DB . '_dec3', 'V' => EA_DB . '_div3');
+    $EA_Type_Table = array('N' => $config->get('EA_DB') . '_nai3', 'M' => $config->get('EA_DB') . '_mar3', 'D' => $config->get('EA_DB') . '_dec3', 'V' => $config->get('EA_DB') . '_div3');
     $EA_Type_TabScript = array('N' => "tab_naiss.php", 'M' => "tab_mari.php", 'D' => "tab_deces.php", 'V' => "tab_bans.php");
     $script = $EA_Type_TabScript[$TypeActes];
 
@@ -95,7 +101,7 @@ function set_table_type_script_acte($TypeActes)
 }
 function search_acte($xid, $xtyp, $TYPE_TRT)
 {
-    global $crlf;
+    global $session, $crlf;
     $lg = $GLOBALS['lg'];
     list($table, $ntype, $script) = set_table_type_script_acte($xtyp);
     // LIBELLE","A0","50","V","Type de document","TXT"),
@@ -164,7 +170,7 @@ function search_acte($xid, $xtyp, $TYPE_TRT)
                                 $value = $xtdiv;
                                 break;
                             case "DEPOSANT":
-                                $value = current_user("ID");
+                                $value = $session->get('user')['ID'];
                                 break;
                             default:
                                 $value = getparam($mdb[$i]['ZONE']);
@@ -217,9 +223,6 @@ function search_acte($xid, $xtyp, $TYPE_TRT)
 
 
 global $loc_mail;
-if (AUTO_CAPTCHA) {
-    session_start();
-}  // pour captcha
 
 if (!$userAuthorizer->isGranted(1)) {
     $response = new RedirectResponse("$root/login.php");
@@ -230,9 +233,9 @@ if (!$userAuthorizer->isGranted(1)) {
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
 $missingargs = true;
-$nompre = getparam('nompre', current_user('nom') . ", " . current_user('prenom'));
+$nompre = getparam('nompre', $session->get('user')['nom'] . ", " . $session->get('user')['prenom']);
 $msgerreur = getparam('msgerreur');
-$email = getparam('email', current_user('email'));
+$email = getparam('email', $session->get('user')['email']);
 $xid   = getparam('xid');
 $xct   = getparam('xct');
 $xty   = getparam('xty');
@@ -265,7 +268,7 @@ if (getparam('action') == 'submitted') {
             $ok = false;
         }
     }
-    if (AUTO_CAPTCHA and function_exists('imagettftext')) {
+    if ($config->get('AUTO_CAPTCHA') and function_exists('imagettftext')) {
         if (md5(getparam('captcha')) != $_SESSION['valeur_image']) {
             msg('Attention à bien recopier le code dissimulé dans l\'image !');
             $ok = false;
@@ -279,7 +282,7 @@ if (getparam('action') == 'submitted') {
         $EA_Type_ActScript = array('N' => "acte_naiss.php", 'M' => "acte_mari.php", 'D' => "acte_deces.php", 'V' => "acte_bans.php");
         $s4 = $EA_Type_ActScript[$xty];
 
-        $urlvalid = EA_URL_SITE . $root . "/admin/" . $s4 . "?xid=" . $xid . "&amp;xct=" . $xct . $crlf . $crlf;
+        $urlvalid = $config->get('EA_URL_SITE') . $root . "/admin/" . $s4 . "?xid=" . $xid . "&amp;xct=" . $xct . $crlf . $crlf;
         $lemessage = '';
 
         if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
@@ -310,20 +313,20 @@ if (getparam('action') == 'submitted') {
             $nouveaux_champs = str_replace("\r", "%0D", $nouveaux_champs);
             $nouveaux_champs = str_replace("\n", "%0A", $nouveaux_champs);
 
-            $urlmodif = EA_URL_SITE . $root . "/admin/edit_acte.php?xid=" . $xid . "&amp;xtyp=" . $xty;
+            $urlmodif = $config->get('EA_URL_SITE') . $root . "/admin/edit_acte.php?xid=" . $xid . "&amp;xtyp=" . $xty;
             $lemessage .= $crlf . "Lien pour le responsable des modifications sur ExpoActes :" . $crlf . $crlf;
             $lemessage .= $urlmodif . $nouveaux_champs . $crlf . $crlf;
         }
 
-        $sujet = "Erreur signalée sur " . SITENAME;
+        $sujet = "Erreur signalée sur " . $config->get('SITENAME');
         $sender = mail_encode($nompre) . ' <' . $email . ">";
 
-        $dest = EMAIL_SIGN_ERR;
+        $dest = $config->get('EMAIL_SIGN_ERR');
         if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
             if ($xcc == "cc") {
-                $dest = EMAIL_SIGN_ERR . "," . $email;
+                $dest = $config->get('EMAIL_SIGN_ERR') . "," . $email;
             } else {
-                $dest = EMAIL_SIGN_ERR;
+                $dest = $config->get('EMAIL_SIGN_ERR');
             }
         }
 
@@ -378,7 +381,7 @@ if (!$ok) {
         echo " </tr>\n";
     } ?>
 
-    <?php if (AUTO_CAPTCHA && function_exists('imagettftext')) { ?>
+    <?php if ($config->get('AUTO_CAPTCHA') && function_exists('imagettftext')) { ?>
         <tr>
             <td><img src="<?= $root; ?>/tools/captchas/image.php" alt="captcha" id="captcha"></td>
             <td>
@@ -390,7 +393,6 @@ if (!$ok) {
 
 <?php if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
 
-use Symfony\Component\HttpFoundation\RedirectResponse;
         list($table, $ntype, $script) = set_table_type_script_acte($xty);
         $request = "SELECT VERIFIEU, RELEVEUR, ID FROM " . $table . " WHERE ID=" . $xid . ";";
         $result = EA_sql_query($request);

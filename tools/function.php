@@ -186,7 +186,7 @@ function multisin($grand, $listpetits)
 function linkifie($texte, $mode)  // transforme en lien actif les noms de fichier image et les URL rencontrées
 // mode : 0 = ne rien faire, >0 activer les lien : 1 = séparés par des , ou des blancs ou  2 = séparés par des ;
 {
-    global $session;
+    global $session, $config;
     if ($mode == "2") {
         $separs = ";";
         $Saut_Ou_Espace = '<br/>';
@@ -209,7 +209,7 @@ function linkifie($texte, $mode)  // transforme en lien actif les noms de fichie
         $siturl = array();
         $modurl = array();
 
-        $lbase = explode(";", URL_JPG);
+        $lbase = explode(";", $config->get('URL_JPG'));
         if (count($lbase) == 0) {
             $base_url = "";
         } else {
@@ -263,7 +263,7 @@ function linkifie($texte, $mode)  // transforme en lien actif les noms de fichie
                     $url = mb_substr($image, $l);
                     //echo "<p>L=".$l."LEN=".strlen($image)." URL=".$url;
                     $cpt++;
-                    if (($userlogin == "") and (JPG_SI_LOGIN == 1)) {
+                    if (!$session->has('user') && ($config->get('JPG_SI_LOGIN') == 1)) {
                         $lien = 'Document' . $cpt . ' privé';
                     } else {
                         $lien = '<a href="' . $url . '" target="_blank">Document' . $cpt . '</a> ';
@@ -290,13 +290,13 @@ function linkifie($texte, $mode)  // transforme en lien actif les noms de fichie
                         $ipublic = true;
                         if (isin(mb_strtoupper($urlimage), 'PRIVE') > -1) {
                             $ipublic = false;
-                            if ($session->get('user')['level'] < LEVEL_JPG_PRIVE) {
+                            if ($session->get('user')['level'] < $config->get('LEVEL_JPG_PRIVE')) {
                                 $result .= " ";
                             }    // On ne montre pas si prive et pas le niveau suffisant
                             else {
                                 $ipublic = true;
                             }
-                        } elseif (($session->has('user') == false) && (JPG_SI_LOGIN == 1)) {
+                        } elseif (($session->has('user') == false) && ($config->get('JPG_SI_LOGIN') == 1)) {
                             $cpt++;
                             $result .= $ecarte_element . 'Image' . $cpt . ' privée';    // On ne montre pas car login obligatoire
                             $ipublic = false;
@@ -323,7 +323,7 @@ function linkifie($texte, $mode)  // transforme en lien actif les noms de fichie
 function sql_and($cond) // ajoute and si condition non vide
 {
     if ($cond != "") {
-        return $cond . " and ";
+        return $cond . " AND ";
     } 
     
     return "";
@@ -556,12 +556,16 @@ function update_sql_mode($allow_mode = '', $replace = false)
 
 function writelog($texte, $commune = "-", $nbactes = 0)
 {
-    $user = sql_quote(current_user("ID"));
+    global $config, $session;
+
     $time = now();
-    if (empty($user)) {
+    if(!$session->has('user')) {
+        $user = 'Unidentified user';
         $texte = $_SERVER['REMOTE_ADDR'] . ":" . $texte;
+    } else {
+        $user = $session->get('user')['ID'];
     }
-    $sql = "INSERT INTO " . EA_DB . "_log VALUES ($user,'$time','" . sql_quote($texte) . "','" . sql_quote($commune) . "',$nbactes)";
+    $sql = "INSERT INTO " . $config->get('EA_DB') . "_log VALUES ($user, '$time', '" . sql_quote($texte) . "','" . sql_quote($commune) . "',$nbactes)";
     update_sql_mode('STRICT_TRANS_TABLES', true); // sur la session, lève le contrôle strict = longueur de champ
     EA_sql_query($sql);
     update_sql_mode('', false); // sur la session, reset
@@ -668,13 +672,14 @@ function mail_encode($texte)
 
 function sendmail($from, $to, $sujet, $message)
 {
+    global $config;
     /*
         echo '<p>Expéditeur : ['.htmlspecialchars($from, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET).']';
         echo '<br />Destinataire : ['.htmlspecialchars($to, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET).']';
         echo '<br />Sujet : ['.htmlspecialchars($sujet, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET).']'.base64_encode($sujet);
         echo '<br />Message : ['.htmlspecialchars($message, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET).']'.'</p>';
         */
-    if (EXTERN_MAIL == 0) {
+    if ($config->get('EXTERN_MAIL') == 0) {
         // appel de la fonction interne ... pour autant qu'elle soit bien configurée
         $headers  = 'MIME-Version: 1.0' . "\n";
         $headers .= "Content-Type: text/plain; charset=" . MAIL_CHARSET . "; format=flowed\n";
@@ -704,7 +709,7 @@ function sendmail($from, $to, $sujet, $message)
         // envoi du mail vers un autre serveur smtp ... si c'est nécessaire
         $lb = "\r\n";                //linebreak
 
-        if (SMTP_HOST == "" or LOC_HOST == "" or LOC_MAIL == "") {
+        if ($config->get('SMTP_HOST') == "" or $config->get('LOC_HOST') == "" or $config->get('LOC_MAIL') == "") {
             msg("052 : Paramètres de gestion du mail incomlètement configurés.");
             return false;
         }
@@ -722,20 +727,20 @@ function sendmail($from, $to, $sujet, $message)
 
         // build the array for the SMTP dialog. Line content is array(command, success code, additonal error message)
 
-        if (SMTP_PASS <> "") {
+        if ($config->get('SMTP_PASS') <> "") {
             // SMTP authentication methode AUTH LOGIN, use extended HELO "EHLO"
             $smtp = array(
                 // call the server and tell the name of your local host
-                array("EHLO " . LOC_HOST . $lb, "220,250", "HELO error: "),
+                array("EHLO " . $config->get('LOC_HOST') . $lb, "220,250", "HELO error: "),
                 // request to auth
                 array("AUTH LOGIN" . $lb, "334", "AUTH error:"),
                 // username
-                array(base64_encode(SMTP_ACC) . $lb, "334", "AUTHENTIFICATION error : "),
+                array(base64_encode($config->get('SMTP_ACC')) . $lb, "334", "AUTHENTIFICATION error : "),
                 // password
-                array(base64_encode(SMTP_PASS) . $lb, "235", "AUTHENTIFICATION error : "),
+                array(base64_encode($config->get('SMTP_PASS')) . $lb, "235", "AUTHENTIFICATION error : "),
             );
         } else {
-            $smtp = array(array("HELO " . LOC_HOST . $lb, "220,250", "HELO error: "));
+            $smtp = array(array("HELO " . $config->get('LOC_HOST') . $lb, "220,250", "HELO error: "));
         }
 
         // call the server and tell the name of your local host
@@ -756,10 +761,10 @@ function sendmail($from, $to, $sujet, $message)
         $smtp[] = array("QUIT" . $lb, "221", "QUIT error: ");
 
         // open socket
-        $fp = @fsockopen(SMTP_HOST, $smtp_port, $errno, $errstr, 15);
+        $fp = @fsockopen($config->get('SMTP_HOST'), $smtp_port, $errno, $errstr, 15);
         if (!$fp) {
-            writelog("Cannot connect to host", SMTP_HOST, 0);
-            msg('053 : Impossible de se connecter au serveur mail "' . SMTP_HOST . '".');
+            writelog("Cannot connect to host", $config->get('SMTP_HOST'), 0);
+            msg('053 : Impossible de se connecter au serveur mail "' . $config->get('SMTP_HOST') . '".');
             return false;
         }
 
@@ -777,8 +782,8 @@ function sendmail($from, $to, $sujet, $message)
                     }
                 }
                 if (!strstr($req[1], mb_substr($result, 0, 3))) {
-                    writelog($req[2] . $result, SMTP_HOST, 0);
-                    msg('054 : Problème lors du dialogue avec le serveur mail "' . SMTP_HOST . '" : ' . $req[2] . $result);
+                    writelog($req[2] . $result, $config->get('SMTP_HOST'), 0);
+                    msg('054 : Problème lors du dialogue avec le serveur mail "' . $config->get('SMTP_HOST') . '" : ' . $req[2] . $result);
                     return false;
                 }
             }

@@ -15,9 +15,9 @@ if (!$userAuthorizer->isGranted(9)) {
 
 global $dbaddr, $dbuser, $dbpass, $dbname;
 
-$mysql_path = "";
+$mysql_path = $config->get('MYSQL_PATH', '');
 if (defined("MYSQL_PATH")) {
-    $mysql_path = MYSQL_PATH;
+    
     if (mb_substr($mysql_path, -1, 1) != "\\") {
         $mysql_path .= "\\";
     }

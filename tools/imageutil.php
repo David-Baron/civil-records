@@ -3,6 +3,7 @@
 function linkjpg($texte)   // transforme en lien actif les nom de fichier JPG rencontrés (séparés par des , ou des blancs)
 {
     // adapté pour http://marmottesdesavoie.org/
+    global $config;
 
     $result = '';
     $cpt = 0;
@@ -17,7 +18,7 @@ function linkjpg($texte)   // transforme en lien actif les nom de fichier JPG re
 
         //CAS 00A
         if ($longsuffixe == 3) {
-            $image = URK_JPG . $texte . ".jpg";
+            $image = $config->get('URK_JPG') . $texte . ".jpg";
             $result .= ' <a href="' . $image . '" target="_blank">Image' . $cpt++ . '</a> ';
         }
 
@@ -32,7 +33,7 @@ function linkjpg($texte)   // transforme en lien actif les nom de fichier JPG re
                 $index2 = $prem + $k;
                 $index1 = "000" . $index2;
                 $index = mb_substr($index1, -3);
-                $image = URK_JPG . $prefixe . $index . ".jpg";
+                $image = $config->get('URK_JPG') . $prefixe . $index . ".jpg";
                 $result .= ' <a href="' . $image . '" target="_blank">Image' . $cpt++ . '</a> ';
             }
         }
@@ -41,9 +42,9 @@ function linkjpg($texte)   // transforme en lien actif les nom de fichier JPG re
         if ($longsuffixe == 8) {
             $prem = mb_substr($suffixe, 0, 3);
             $dern = mb_substr($suffixe, 5, 3);
-            $image = URK_JPG . $prefixe . $prem . ".jpg";
+            $image = $config->get('URK_JPG') . $prefixe . $prem . ".jpg";
             $result .= ' <a href="' . $image . '" target="_blank">Image' . $cpt++ . '</a> ';
-            $image = URK_JPG . $prefixe . $dern . ".jpg";
+            $image = $config->get('URK_JPG') . $prefixe . $dern . ".jpg";
             $result .= ' <a href="' . $image . '" target="_blank">Image' . $cpt++ . '</a> ';
         }
 
@@ -57,13 +58,13 @@ function linkjpg($texte)   // transforme en lien actif les nom de fichier JPG re
                 $dern = mb_substr($suffixe, -3);
                 $extra = mb_substr($suffixe, 0, 3);
                 $nb = $dern - $prem;
-                $image = URK_JPG . $prefixe . $extra . ".jpg";
+                $image = $config->get('URK_JPG') . $prefixe . $extra . ".jpg";
                 $result .= ' <a href="' . $image . '" target="_blank">Image' . $cpt++ . '</a> ';
                 for ($k = 0; $k <= $nb; $k++) {
                     $index2 = $prem + $k;
                     $index1 = "000" . $index2;
                     $index = mb_substr($index1, -3);
-                    $image = URK_JPG . $prefixe . $index . ".jpg";
+                    $image = $config->get('URK_JPG') . $prefixe . $index . ".jpg";
                     $result .= ' <a href="' . $image . '" target="_blank">Image' . $cpt++ . '</a> ';
                 }
 
@@ -78,10 +79,10 @@ function linkjpg($texte)   // transforme en lien actif les nom de fichier JPG re
                     $index2 = $prem + $i;
                     $index1 = "000" . $index2;
                     $index = mb_substr($index1, -3);
-                    $image = URK_JPG . $prefixe . $index . ".jpg";
+                    $image = $config->get('URK_JPG') . $prefixe . $index . ".jpg";
                     $result .= ' <a href="' . $image . '" target="_blank">Image' . $cpt++ . '</a> ';
                 }
-                $image = URK_JPG . $prefixe . $extra . ".jpg";
+                $image = $config->get('URK_JPG') . $prefixe . $extra . ".jpg";
                 $result .= ' <a href="' . $image . '" target="_blank">Image' . $cpt++ . '</a> ';
             }
         }

@@ -43,7 +43,7 @@ $tpsreserve = 3;
 $separator = ';';
 $htmlpage = false;
 $Max_exe_time = ini_get("max_execution_time");
-$Max_time = min($Max_exe_time - $tpsreserve, MAX_EXEC_TIME);
+$Max_time = min($Max_exe_time - $tpsreserve, $config->get('MAX_EXEC_TIME'));
 $Max_size = return_bytes(ini_get("upload_max_filesize"));
 $Format   = getparam('Format');
 $TypeActes = getparam('TypeActes', 'N');
@@ -68,7 +68,7 @@ if ($Destin == "B") {  // Backup
 
 $missingargs = false;
 $oktype = false;
-$tokenfile  = "../" . DIR_BACKUP . $session->get('user')['login'] . '.txt';
+$tokenfile  = "../" . $config->get('DIR_BACKUP') . $session->get('user')['login'] . '.txt';
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
@@ -82,7 +82,7 @@ $AnneeFin = getparam('AnneeFin');
 $TypeActes = mb_substr(getparam('TypeActes'), 0, 1);
 $xtdiv    = getparam('typdivers');
 $maxmega  = getparam('maxmega');
-$max_select_rec_i = getparam('maxrecord', MAX_SELECT_REC); // valeur visible Input
+$max_select_rec_i = getparam('maxrecord', $config->get('MAX_SELECT_REC')); // valeur visible Input
 $max_select_rec = $max_select_rec_i; // Valeur utile programme
 if ($max_select_rec == 0) {
     $max_select_rec = 999999999;
@@ -246,19 +246,19 @@ if (! $missingargs) {
                         } else {
                             $com_name  = mb_substr(strtr(remove_accent($Commune), '-/ "', '____'), 0, 30);
                         }
-                        $filename  = 'backup_' . date('Y-m-d') . '_' . $com_name . '_' . $TypeActes . '.' . zeros($file, 3) . EXT_BACKUP;
+                        $filename  = 'backup_' . date('Y-m-d') . '_' . $com_name . '_' . $TypeActes . '.' . zeros($file, 3) . $config->get('EXT_BACKUP');
                         $bytes = 0;
-                        if (!is_dir("../" . DIR_BACKUP)) {
-                            msg('034 : Répertoire de backup "' . DIR_BACKUP . '" inaccessible ou inexistant.');
+                        if (!is_dir("../" . $config->get('DIR_BACKUP'))) {
+                            msg('034 : Répertoire de backup "' . $config->get('DIR_BACKUP') . '" inaccessible ou inexistant.');
                             die();
                         }
-                        if (!is__writable("../" . DIR_BACKUP, false)) {
-                            msg('035 : Impossible de créer un fichier dans "' . DIR_BACKUP . '".');
+                        if (!is__writable("../" . $config->get('DIR_BACKUP'), false)) {
+                            msg('035 : Impossible de créer un fichier dans "' . $config->get('DIR_BACKUP') . '".');
                             die();
                         }
 
                         echo '<p>Backup en cours vers le fichier <b>' . $filename . '</b> ...';
-                        $filename  = "../" . DIR_BACKUP . $filename;
+                        $filename  = "../" . $config->get('DIR_BACKUP') . $filename;
                         if(($hof = fopen($filename, "w")) === false) {
                             die('Impossible d\'ouvrir le fichier en écriture!');
                             // NB "a" permet "append"
@@ -445,7 +445,7 @@ if (! $missingargs) {
         if ($session->get('user')['level'] < 8) {
             echo '<input type="hidden" name="olddepos" value="0" />';
         } else {
-            listbox_users("olddepos", 0, DEPOSANT_LEVEL, ' *** Tous *** ');
+            listbox_users("olddepos", 0, $config->get('DEPOSANT_LEVEL'), ' *** Tous *** ');
         }
         echo '  </td>';
         echo " </tr>\n";

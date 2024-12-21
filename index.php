@@ -7,7 +7,7 @@ $admtxt = ''; // Compatibility only
 require(__DIR__ . '/next/bootstrap.php');
 require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
-if (PUBLIC_LEVEL < 4 && !$userAuthorizer->isGranted(1)) {
+if ($config->get('PUBLIC_LEVEL') < 4 && !$userAuthorizer->isGranted(1)) {
     $response = new RedirectResponse("$root/login.php");
     $response->send();
     exit();
@@ -28,20 +28,16 @@ $xpatr = "";
 $page = "";
 $JSheader = "";
 
-if (SHOW_ALLTYPES != 1) $xtyp = 'N';
+if ($config->get('SHOW_ALLTYPES') != 1) $xtyp = 'N';
 
 
 // pathroot($root, $path, $xtyp, $xpatr, $page);
 
-if (GEO_MODE_PUBLIC == 5 || $vue == 'C') { // si pas localité isolée et avec carte
+if ($config->get('GEO_MODE_PUBLIC') == 5 || $vue == 'C') { // si pas localité isolée et avec carte
 
-    $geo_haut_carte = 400;
-    $geo_degroupage = 10;
-    $geo_zoom = 0;
-
-    if (GEO_HAUT_CARTE != "") $geo_haut_carte = GEO_HAUT_CARTE;
-    if (GEO_ZOOM_DEGROUPAGE != "") $geo_degroupage = GEO_ZOOM_DEGROUPAGE;
-    if (GEO_ZOOM_INITIAL != "") $geo_zoom = GEO_ZOOM_INITIAL;
+    $geo_haut_carte = $config->get('GEO_HAUT_CARTE', 400);
+    $geo_degroupage = $config->get('GEO_ZOOM_DEGROUPAGE', 10);
+    $geo_zoom = $config->get('GEO_ZOOM_INITIAL', 0);
 
     require(__DIR__ .'/tools/GoogleMap/OrienteMap.inc.php');
     require(__DIR__ .'/tools/GoogleMap/Jsmin.php');
@@ -58,8 +54,8 @@ if (GEO_MODE_PUBLIC == 5 || $vue == 'C') { // si pas localité isolée et avec c
     $carto->setClusterOptions($geo_degroupage); // plus de cluster au dela de ce niveau de zoom
     $carto->setClusterLocation(__DIR__ . "/tools/GoogleMap/markerclusterer_compiled.js");
 
-    if (GEO_CENTRE_CARTE <> "") {
-        $georeq = "SELECT LON,LAT FROM " . EA_DB . "_geoloc WHERE COMMUNE='" . sql_quote(GEO_CENTRE_CARTE) . "' AND STATUT IN ('A','M')";
+    if ($config->get('GEO_CENTRE_CARTE') !== null) {
+        $georeq = "SELECT LON,LAT FROM " . $config->get('EA_DB') . "_geoloc WHERE COMMUNE='" . sql_quote($config->get('GEO_CENTRE_CARTE')) . "' AND STATUT IN ('A','M')";
         $geores =  EA_sql_query($georeq);
         if ($geo = EA_sql_fetch_array($geores)) {
             $carto->setCenterCoords($geo['LON'], $geo['LAT']);
@@ -76,23 +72,19 @@ if (GEO_MODE_PUBLIC == 5 || $vue == 'C') { // si pas localité isolée et avec c
 }
 
 ob_start();
-open_page(SITENAME . " : Dépouillement d'actes de l'état-civil et des registres paroissiaux", $root, null, null, $JSheader, '../index.htm', 'rss.php');
+open_page($config->get('SITENAME') . " : Dépouillement d'actes de l'état-civil et des registres paroissiaux", $root, null, null, $JSheader, '../index.htm', 'rss.php');
 navigation($root, 1);
 
 $menu_actes = zone_menu(0, 0, array('s' => $vue, 'c' => 'O')); // PUBLIC STAT(retour menu_actes)
 
 echo '<div id="col_main">';
 
-if (strlen(trim(AVERTISMT)) > 0) {
-    if (isin(AVERTISMT, "</p>") > 0) {
-        echo AVERTISMT;
-    } else {
-        echo '<p>' . AVERTISMT . '</p>';
-    }
+if (null !== $config->get('AVERTISMT')) {
+    echo '<p>' . $config->get('AVERTISMT') . '</p>';
 }
 
 echo '<h2>Communes et paroisses';
-if (GEO_MODE_PUBLIC >= 3 && GEO_MODE_PUBLIC < 5) {
+if ($config->get('GEO_MODE_PUBLIC') >= 3 && $config->get('GEO_MODE_PUBLIC') < 5) {
     echo " : ";
     if ($vue == 'C') {
         echo 'Carte | <a href="' . $root . '/index.php?vue=T&xtyp=' . $xtyp . '"' . ($vue == 'T' ? ' class="bolder"' : '') . '>Tableau</a>';
@@ -104,7 +96,7 @@ if (GEO_MODE_PUBLIC >= 3 && GEO_MODE_PUBLIC < 5) {
 }
 echo '</h2>';
 
-if (GEO_MODE_PUBLIC == 5 || $vue == 'C') { // si pas localité isolée et avec carte
+if ($config->get('GEO_MODE_PUBLIC') == 5 || $vue == 'C') { // si pas localité isolée et avec carte
     echo '<p><b>' . $menu_actes . '</b></p>';
     //--- Carte
     $carto->printOnLoad();
@@ -112,7 +104,7 @@ if (GEO_MODE_PUBLIC == 5 || $vue == 'C') { // si pas localité isolée et avec c
     //$carto->printSidebar();
 }
 
-if (GEO_MODE_PUBLIC == 5 || $vue == 'T') { // si pas localité isolée et avec carte
+if ($config->get('GEO_MODE_PUBLIC') == 5 || $vue == 'T') { // si pas localité isolée et avec carte
     // $menu_actes calculé dans le module statistiques
     echo '<p><b>' . $menu_actes . '</b></p>';
     require(__DIR__ .'/tools/tableau_index.php');

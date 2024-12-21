@@ -265,7 +265,7 @@ if (getparam('direct') == 1) {  // ***** recherche directe ****
     $xcomp = default_rech_code();  // dépend du parametre RECH_DEF_TYP
     $xcomm = "***";  // toutes
     $comdep = $xcomm;
-    if (CHERCH_TS_TYP == 1) {
+    if ($config->get('CHERCH_TS_TYP') == 1) {
         $xtypN = true;
         $xtypD = true;
         $xtypM = true;
@@ -293,11 +293,11 @@ if (!$userAuthorizer->isGranted(3)) {
     exit();
 }
 
-$userid = current_user('ID');
+// $userid = current_user('ID');
 
 ob_start();
 open_page("Recherches dans les tables", $root);
-if (current_user_solde() > 0 or RECH_ZERO_PTS == 1) {
+if (current_user_solde() > 0 or $config->get('RECH_ZERO_PTS') == 1) {
     $nav = "";
     if ($xcomp != "") {
         $nav = '<a href="' .$root. '/rechavancee.php">Recherche (avancée)</a> &gt; ';
@@ -325,8 +325,8 @@ if (current_user_solde() > 0 or RECH_ZERO_PTS == 1) {
         $xzone3 = "";
     }  // zone3 pas utilisé
 
-    if ((strlen(trim($xach . $xpre . $xach2 . $xpre2 . $xach3)) < RECH_MIN) and ($session->get('user')['level'] < 8)) {
-        msg('La recherche doit porter sur au moins ' . RECH_MIN . ' caractères non blancs.');
+    if ((strlen(trim($xach . $xpre . $xach2 . $xpre2 . $xach3)) < $config->get('RECH_MIN')) and ($session->get('user')['level'] < 8)) {
+        msg('La recherche doit porter sur au moins ' . $config->get('RECH_MIN') . ' caractères non blancs.');
     } elseif (!($xtypN or $xtypD or $xtypM or $xtypV)) {
         msg('La recherche doit porter sur au moins un des types d\'actes.');
     } elseif (strpos("X" . $xach . $xpre . $xach2 . $xpre2 . $xach3, '%') > 0 or strpos("X" . $xach . $xpre . $xach2 . $xpre2 . $xach3, '__') > 0) {
@@ -400,15 +400,15 @@ if (current_user_solde() > 0 or RECH_ZERO_PTS == 1) {
             $listzones = "ID, TYPACT, DATETXT, COMMUNE, NOM, PRE, C_NOM, C_PRE, LADATE, 'Mariage' AS LIBELLE ";
             if ($compmode == "F") {  // full scan
                 $request .= "(SELECT " . $listzones
-                    . " FROM " . EA_DB . "_mar3 "
+                    . " FROM " . $config->get('EA_DB') . "_mar3 "
                     . " WHERE  " . $critM . ") ";
             } else { // indexed
                 $request .= "(SELECT " . $listzones
-                    . " FROM " . EA_DB . "_mar3 "
+                    . " FROM " . $config->get('EA_DB') . "_mar3 "
                     . " WHERE  " . $critM1 . ") ";
                 $request .= ' union ';
                 $request .= "(SELECT " . $listzones
-                    . " FROM " . EA_DB . "_mar3 "
+                    . " FROM " . $config->get('EA_DB') . "_mar3 "
                     . " WHERE  " . $critM2 . ") ";
             }
             $listactes = "mariages";
@@ -421,15 +421,15 @@ if (current_user_solde() > 0 or RECH_ZERO_PTS == 1) {
             $listzones = "ID, TYPACT, DATETXT, COMMUNE, NOM, PRE, C_NOM, C_PRE, LADATE, LIBELLE ";
             if ($compmode == "F") {
                 $request .= "(SELECT " . $listzones
-                    . " FROM " . EA_DB . "_div3 "
+                    . " FROM " . $config->get('EA_DB') . "_div3 "
                     . " WHERE  " . $critV . ") ";
             } else {
                 $request .= "(SELECT " . $listzones
-                    . " FROM " . EA_DB . "_div3 "
+                    . " FROM " . $config->get('EA_DB') . "_div3 "
                     . " WHERE  " . $critV1 . ") ";
                 $request .= ' union ';
                 $request .= "(SELECT " . $listzones
-                    . " FROM " . EA_DB . "_div3 "
+                    . " FROM " . $config->get('EA_DB') . "_div3 "
                     . " WHERE  " . $critV2 . ") ";
             }
             if (strlen($listactes) > 0) {
@@ -443,7 +443,7 @@ if (current_user_solde() > 0 or RECH_ZERO_PTS == 1) {
                 $request .= ' union ';
             }
             $request .= "(SELECT ID, TYPACT, DATETXT, COMMUNE, NOM, PRE, 'X' AS C_NOM, 'Y' AS C_PRE, LADATE,'Décès' AS LIBELLE "
-                . " FROM " . EA_DB . "_dec3 "
+                . " FROM " . $config->get('EA_DB') . "_dec3 "
                 . " WHERE  " . $critD . ") ";
             if (strlen($listactes) > 0) {
                 $listactes = ", " . $listactes;
@@ -456,7 +456,7 @@ if (current_user_solde() > 0 or RECH_ZERO_PTS == 1) {
                 $request .= ' union ';
             }
             $request .= "(SELECT ID, TYPACT, DATETXT, COMMUNE, NOM, PRE, 'X' AS C_NOM, 'Y' AS C_PRE, LADATE,'Naissance' AS LIBELLE "
-                . " FROM " . EA_DB . "_nai3 "
+                . " FROM " . $config->get('EA_DB') . "_nai3 "
                 . " WHERE  " . $critN . ") ";
             if (strlen($listactes) > 0) {
                 $listactes = ", " . $listactes;
@@ -498,7 +498,7 @@ if (current_user_solde() > 0 or RECH_ZERO_PTS == 1) {
         echo '<div class="critrech">Recherche de : <ul>' . $mes . $listactes . '</ul></div>';
 
         if ($nb > 0) {
-            $i = ($page - 1) * MAX_PAGE + 1;
+            $i = ($page - 1) * $config->get('MAX_PAGE') + 1;
             echo '<p><b>' . $nbtot . ' actes trouvés</b></p>';
             echo '<p>' . $listpages . '</p>';
             echo '<table summary="Liste des résultats">';

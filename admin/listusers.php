@@ -24,20 +24,20 @@ $init  = getparam('init');
 $menu_user_active = 'L';
 
 ob_start();
-open_page(SITENAME . " : Liste des utilisateurs enregistrés", $root);
+open_page($config->get('SITENAME') . " : Liste des utilisateurs enregistrés", $root);
 navadmin($root, "Liste des utilisateurs");
 zone_menu(ADM, $session->get('user')['level'], array());//ADMIN STANDARD
 echo '<div id="col_main_adm">';
 require(__DIR__ . '/../templates/admin/_menu-user.php');
-echo '<h2>Utilisateurs enregistrés du site ' . SITENAME . '</h2>';
+echo '<h2>Utilisateurs enregistrés du site ' . $config->get('SITENAME') . '</h2>';
 
 if (isset($udbname)) {
-    msg('ATTENTION : Base des utilisateurs déportée sur ' . $udbaddr . "/" . $udbuser . "/" . $udbname . "/" . EA_UDB . "</p>", 'info');
+    msg('ATTENTION : Base des utilisateurs déportée sur ' . $udbaddr . "/" . $udbuser . "/" . $udbname . "/" . $config->get('EA_UDB') . "</p>", 'info');
 }
 
 //$request = "SELECT DISTINCT upper(left(NOM,1)) AS init FROM ".EA_UDB."_user3 ORDER BY init";
 // Sélectionner et grouper sur initiale utilisateur et ascii(initiale), ordonner code ascii ascendant pour avoir + grand code (accentué) en dernier
-$request = "SELECT  alphabet.init  FROM ( SELECT upper(left(NOM,1)) AS init,ascii(upper(left(NOM,1)))  AS oo FROM " . EA_UDB . "_user3 GROUP BY init,oo  ORDER BY init , oo ASC) AS alphabet GROUP BY init";
+$request = "SELECT  alphabet.init  FROM ( SELECT upper(left(NOM,1)) AS init,ascii(upper(left(NOM,1)))  AS oo FROM " . $config->get('EA_UDB') . "_user3 GROUP BY init,oo  ORDER BY init , oo ASC) AS alphabet GROUP BY init";
 
 $result = EA_sql_query($request, $u_db);
 $alphabet = "";
@@ -109,7 +109,7 @@ if ($init == "") {
 
 
 $request = "SELECT NOM, PRENOM, LOGIN, LEVEL, ID, EMAIL, REGIME, SOLDE, MAJ_SOLDE, if(STATUT='N',if(dtexpiration<'" . date("Y-m-d", time()) . "','X',STATUT),STATUT) AS STATUT, PT_CONSO"
-            . " FROM " . EA_UDB . "_user3 "
+            . " FROM " . $config->get('EA_UDB') . "_user3 "
             . $condit
             . " ORDER BY " . $order;
 //echo $request;
@@ -132,7 +132,7 @@ if ($nb > 0) {
     if ($listpages <> "") {
         echo '<p>' . $listpages . '</p>';
     }
-    $i = 1 + ($page - 1) * MAX_PAGE_ADM;
+    $i = 1 + ($page - 1) * $config->get('MAX_PAGE_ADM');
     echo '<table summary="Liste des utilisateurs">';
     echo '<tr class="rowheader">';
     echo '<th> Tri : </th>';
@@ -141,7 +141,7 @@ if ($nb > 0) {
     echo '<th>' . $hnoms . '</th>';
     echo '<th>' . $hacces . '</th>';
     echo '<th>' . $hstatu . '</th>';
-    if (GEST_POINTS > 0) {
+    if ($config->get('GEST_POINTS') > 0) {
         echo '<th>' . $hsolde . '</th>';
         echo '<th>' . $hrecha . '</th>';
         echo '<th>' . $hconso . '</th>';
@@ -164,7 +164,7 @@ if ($nb > 0) {
         $ast = array("W" => "A activer", "A" => "A approuver","N" => "Normal","B" => "*Bloqué*","X" => "*Expiré*");
 
         echo '<td align="center">' . $ast[$ligne[9]] . '</td>';
-        if (GEST_POINTS > 0) {
+        if ($config->get('GEST_POINTS') > 0) {
             if ($ligne[3] >= 8 or $ligne[6] == 0) {
                 echo '<td colspan=2 align="center">* Libre accès *</td>';
             } else {

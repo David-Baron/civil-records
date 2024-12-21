@@ -71,10 +71,10 @@ zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
 ?>
 <div id="col_main">
     <?php require(__DIR__ . '/../templates/admin/_menu-software.php'); ?>
-    <h2>Paramétrage du site <?= SITENAME; ?></h2>
+    <h2>Paramétrage du site <?= $config->get('SITENAME'); ?></h2>
     <p>
         <strong>Paramètres : </strong>
-        <?php $request = "SELECT distinct groupe FROM " . EA_DB . "_params WHERE NOT (groupe in ('Hidden','Deleted')) ORDER BY groupe";
+        <?php $request = "SELECT distinct groupe FROM " . $config->get('EA_DB') . "_params WHERE NOT (groupe in ('Hidden','Deleted')) ORDER BY groupe";
         $result = EA_sql_query($request);
         $barre = false;
         while ($row = EA_sql_fetch_array($result)) {
@@ -95,14 +95,14 @@ zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
                 $parname = getparam("parname$i");
                 $parvalue = htmlentities(getparam("parvalue$i"), ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
                 if ($parvalue == "") {
-                    $request = "SELECT * FROM " . EA_DB . "_params WHERE param = '" . $parname . "'";
+                    $request = "SELECT * FROM " . $config->get('EA_DB') . "_params WHERE param = '" . $parname . "'";
                     $result = EA_sql_query($request);
                     $row = EA_sql_fetch_array($result);
                     if ($row["type"] == "B") {
                         $parvalue = 0;
                     }
                 }
-                $request = "UPDATE " . EA_DB . "_params SET valeur = '" . sql_quote($parvalue) . "' WHERE param = '" . $parname . "'";
+                $request = "UPDATE " . $config->get('EA_DB') . "_params SET valeur = '" . sql_quote($parvalue) . "' WHERE param = '" . $parname . "'";
                 $result = EA_sql_query($request);
                 $cpt += EA_sql_affected_rows();
                 $i++;
@@ -113,7 +113,7 @@ zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
         }
     }
 
-    $request = "SELECT * FROM " . EA_DB . "_params WHERE groupe='" . $xgroupe . "' ORDER BY ordre";
+    $request = "SELECT * FROM " . $config->get('EA_DB') . "_params WHERE groupe='" . $xgroupe . "' ORDER BY ordre";
     $result = EA_sql_query($request);
     ?>
     <h2><?= $xgroupe; ?></h2>
@@ -121,7 +121,7 @@ zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
         <p><a href="<?= $root; ?>/admin/test_mail.php"><b>Tester l'envoi d'e-mail</b></a></p>
     <?php }
     if ($xgroupe == "Utilisateurs" and isset($udbname)) {
-        msg('ATTENTION : Base des utilisateurs déportée sur ' . $udbaddr . "/" . $udbuser . "/" . $udbname . "/" . EA_UDB . "</p>", 'info');
+        msg('ATTENTION : Base des utilisateurs déportée sur ' . $udbaddr . "/" . $udbuser . "/" . $udbname . "/" . $config->get('EA_UDB') . "</p>", 'info');
     } ?>
 
     <form method="post">
