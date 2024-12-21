@@ -78,30 +78,33 @@ $menu_actes .= ' | <a href="' . $root . '/admin/index.php?xtyp=A"' . ($xtyp == "
  */
 
 ob_start();
-open_page("Administration des actes", $root);
-navadmin($root, '');
-zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
-echo '<div id="col_main">';
-echo '<h1 align="center">Administration des actes &amp; tables</h1>';
-echo '<p><b>' . $menu_actes . '</b></p>';
+open_page("Administration des actes", $root); ?>
+<div class="main">
+    <?php zone_menu(ADM, $session->get('user')['level']); ?>
+    <div class="main-col-center text-center">
+        <?php
+        navadmin($root, '');
 
-include(__DIR__ . '/../tools/tableau_index.php');
+        echo '<h1 align="center">Administration des actes &amp; tables</h1>';
+        echo '<p><b>' . $menu_actes . '</b></p>';
 
-// verification des statistiques
-$request = "SELECT sum(NB_TOT) AS nb_sum FROM " . $config->get('EA_DB') . "_sums WHERE TYPACT='N'";
-$result = EA_sql_query($request);
-$row = EA_sql_fetch_row($result);
-$nb_sum = $row[0];
-$request = "SELECT count(*) AS nb_cnt FROM " . $config->get('EA_DB') . "_nai3";
-$result = EA_sql_query($request);
-$row = EA_sql_fetch_row($result);
-$nb_cnt = $row[0];
-if ($nb_sum <> $nb_cnt and $nb_cnt > 0) {
-    msg("Attention : les statistiques doivent être recalculées");
-    echo '<p><a href="' . $root . '/admin/maj_sums.php"><b>Calcul des statistiques</b></a></p>';
-}
+        include(__DIR__ . '/../tools/tableau_index.php');
 
-echo '</div>';
-include(__DIR__ . '/../templates/front/_footer.php');
+        // verification des statistiques
+        $request = "SELECT sum(NB_TOT) AS nb_sum FROM " . $config->get('EA_DB') . "_sums WHERE TYPACT='N'";
+        $result = EA_sql_query($request);
+        $row = EA_sql_fetch_row($result);
+        $nb_sum = $row[0];
+        $request = "SELECT count(*) AS nb_cnt FROM " . $config->get('EA_DB') . "_nai3";
+        $result = EA_sql_query($request);
+        $row = EA_sql_fetch_row($result);
+        $nb_cnt = $row[0];
+        if ($nb_sum <> $nb_cnt and $nb_cnt > 0) {
+            msg("Attention : les statistiques doivent être recalculées");
+            echo '<p><a href="' . $root . '/admin/maj_sums.php"><b>Calcul des statistiques</b></a></p>';
+        } ?>
+    </div>
+</div>
+<?php include(__DIR__ . '/../templates/front/_footer.php');
 $response->setContent(ob_get_clean());
 $response->send();

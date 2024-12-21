@@ -113,7 +113,7 @@ if (($xcom == "") or ($xtyp == "")) {
         echo "<ul>";
         while ($ligne = EA_sql_fetch_row($result)) {
             echo '<li>
-            <a href="' .$root. '/eclair.php?xtyp=' . $xtyp . '&amp;xcom=' . urlencode($xcom) . '&amp;xdep=' . urlencode($xdep) . '&amp;xini=' . urlencode($ligne[0]) . '">
+            <a href="' . $root . '/eclair.php?xtyp=' . $xtyp . '&amp;xcom=' . urlencode($xcom) . '&amp;xdep=' . urlencode($xdep) . '&amp;xini=' . urlencode($ligne[0]) . '">
             ' . typact_txt($xtyp) . ' [' . $xdep . '] de ' . $xcom . ' initiale ' . $ligne[0] . '
             </a> (' . $ligne[1] . ' actes)
             </li>';
@@ -123,7 +123,7 @@ if (($xcom == "") or ($xtyp == "")) {
         // Liste éclair Creation table temporaire
         $request = "CREATE TEMPORARY TABLE  tmp_eclair (ANNEE varchar(4), PATRO varchar(25)) DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci";
         $res = EA_sql_query($request);
-          if (!($res === true)) {
+        if (!($res === true)) {
             echo '<font color="#FF0000"> Erreur </font>';
             echo '<p>' . EA_sql_error() . '<br>' . $request . '</p>';
             die();

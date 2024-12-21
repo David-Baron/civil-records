@@ -24,17 +24,15 @@ function init_page($head = "")
 
     $menu_data_active = 'B';
     open_page($titre, $root, null, null, $head);
-
-    // Ajaxify Your PHP Functions
     include("../tools/PHPLiveX/PHPLiveX.php");
     $ajax = new PHPLiveX(array("getCommunes"));
     $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
-
+    ?>
+    <div class="main">
+        <?php zone_menu(ADM, $session->get('user')['level'], array()); ?>
+        <div class="main-col-center text-center">
+            <?php 
     navadmin($root, $titre);
-
-    zone_menu(ADM, $session->get('user')['level'], array());//ADMIN STANDARD
-
-    echo '<div id="col_main_adm">';
     $htmlpage = true;
     my_flush(); // On affiche un minimum
 }
@@ -417,7 +415,7 @@ if (! $missingargs) {
     if ($session->get('user')['level'] < 8) {
         msg('Attention : Vous ne pourrez réexporter que les données dont vous êtes le déposant !', 'info');
     }
-    echo '<table cellspacing="0" cellpadding="0" border="0" align="center" summary="Formulaire">' . "\n";
+    echo '<table class="m-auto" summary="Formulaire">' . "\n";
     if ($Destin == "B") {
         echo '<tr><td align="right">Derniers backups : &nbsp;</td><td>';
         echo show_last_backup("NMDV");
@@ -491,6 +489,7 @@ if (! $missingargs) {
     echo "</form>\n";
 }
 if ($htmlpage) {
+    echo '</div>';
     echo '</div>';
     include(__DIR__ . '/../templates/front/_footer.php');
 }

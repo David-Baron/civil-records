@@ -65,108 +65,110 @@ pathroot($root, $path, $xcomm, $xpatr, $page);
 $menu_software_active = 'P';
 
 ob_start();
-open_page("Paramétrage du logiciel", $root, $js_show_help);
-navadmin($root, "Paramétrage du logiciel");
-zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
-?>
-<div id="col_main">
-    <?php require(__DIR__ . '/../templates/admin/_menu-software.php'); ?>
-    <h2>Paramétrage du site <?= $config->get('SITENAME'); ?></h2>
-    <p>
-        <strong>Paramètres : </strong>
-        <?php $request = "SELECT distinct groupe FROM " . $config->get('EA_DB') . "_params WHERE NOT (groupe in ('Hidden','Deleted')) ORDER BY groupe";
-        $result = EA_sql_query($request);
-        $barre = false;
-        while ($row = EA_sql_fetch_array($result)) {
-            show_grp($row["groupe"], $xgroupe, $barre);
-            $barre = true;
-        } ?>
-        | <a href="<?= $root; ?>/admin/update_params.php">Backup</a>
-    </p>
+open_page("Paramétrage du logiciel", $root, $js_show_help); ?>
+<div class="main">
+    <?php zone_menu(ADM, $session->get('user')['level'], array()); ?>
+    <div class="main-col-center text-center">
+        <?php
+        navadmin($root, "Paramétrage du logiciel");
+        require(__DIR__ . '/../templates/admin/_menu-software.php'); ?>
+        <h2>Paramétrage du site <?= $config->get('SITENAME'); ?></h2>
+        <p>
+            <strong>Paramètres : </strong>
+            <?php $request = "SELECT distinct groupe FROM " . $config->get('EA_DB') . "_params WHERE NOT (groupe in ('Hidden','Deleted')) ORDER BY groupe";
+            $result = EA_sql_query($request);
+            $barre = false;
+            while ($row = EA_sql_fetch_array($result)) {
+                show_grp($row["groupe"], $xgroupe, $barre);
+                $barre = true;
+            } ?>
+            | <a href="<?= $root; ?>/admin/update_params.php">Backup</a>
+        </p>
 
-    <?php if (!$missingargs) {
-        $oktype = true;
-        if ($xconfirm == 'confirmed') {
-            // *** Vérification des données reçues
-            $parnbr = getparam("parnbr");
-            $i = 1;
-            $cpt = 0;
-            while ($i <= $parnbr) {
-                $parname = getparam("parname$i");
-                $parvalue = htmlentities(getparam("parvalue$i"), ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
-                if ($parvalue == "") {
-                    $request = "SELECT * FROM " . $config->get('EA_DB') . "_params WHERE param = '" . $parname . "'";
-                    $result = EA_sql_query($request);
-                    $row = EA_sql_fetch_array($result);
-                    if ($row["type"] == "B") {
-                        $parvalue = 0;
+        <?php if (!$missingargs) {
+            $oktype = true;
+            if ($xconfirm == 'confirmed') {
+                // *** Vérification des données reçues
+                $parnbr = getparam("parnbr");
+                $i = 1;
+                $cpt = 0;
+                while ($i <= $parnbr) {
+                    $parname = getparam("parname$i");
+                    $parvalue = htmlentities(getparam("parvalue$i"), ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
+                    if ($parvalue == "") {
+                        $request = "SELECT * FROM " . $config->get('EA_DB') . "_params WHERE param = '" . $parname . "'";
+                        $result = EA_sql_query($request);
+                        $row = EA_sql_fetch_array($result);
+                        if ($row["type"] == "B") {
+                            $parvalue = 0;
+                        }
                     }
+                    $request = "UPDATE " . $config->get('EA_DB') . "_params SET valeur = '" . sql_quote($parvalue) . "' WHERE param = '" . $parname . "'";
+                    $result = EA_sql_query($request);
+                    $cpt += EA_sql_affected_rows();
+                    $i++;
                 }
-                $request = "UPDATE " . $config->get('EA_DB') . "_params SET valeur = '" . sql_quote($parvalue) . "' WHERE param = '" . $parname . "'";
-                $result = EA_sql_query($request);
-                $cpt += EA_sql_affected_rows();
-                $i++;
-            }
-            if ($cpt > 0) {
-                msg("Sauvegarde : " . $cpt . " paramètre(s) modifié(s).", "info");
+                if ($cpt > 0) {
+                    msg("Sauvegarde : " . $cpt . " paramètre(s) modifié(s).", "info");
+                }
             }
         }
-    }
 
-    $request = "SELECT * FROM " . $config->get('EA_DB') . "_params WHERE groupe='" . $xgroupe . "' ORDER BY ordre";
-    $result = EA_sql_query($request);
-    ?>
-    <h2><?= $xgroupe; ?></h2>
-    <?php if ($xgroupe == "Mail") { ?>
-        <p><a href="<?= $root; ?>/admin/test_mail.php"><b>Tester l'envoi d'e-mail</b></a></p>
-    <?php }
-    if ($xgroupe == "Utilisateurs" and isset($udbname)) {
-        msg('ATTENTION : Base des utilisateurs déportée sur ' . $udbaddr . "/" . $udbuser . "/" . $udbname . "/" . $config->get('EA_UDB') . "</p>", 'info');
-    } ?>
+        $request = "SELECT * FROM " . $config->get('EA_DB') . "_params WHERE groupe='" . $xgroupe . "' ORDER BY ordre";
+        $result = EA_sql_query($request);
+        ?>
+        <h2><?= $xgroupe; ?></h2>
+        <?php if ($xgroupe == "Mail") { ?>
+            <p><a href="<?= $root; ?>/admin/test_mail.php"><b>Tester l'envoi d'e-mail</b></a></p>
+        <?php }
+        if ($xgroupe == "Utilisateurs" and isset($udbname)) {
+            msg('ATTENTION : Base des utilisateurs déportée sur ' . $udbaddr . "/" . $udbuser . "/" . $udbname . "/" . $config->get('EA_UDB') . "</p>", 'info');
+        } ?>
 
-    <form method="post">
-        <table cellspacing="0" cellpadding="1" summary="Formulaire">
-            <?php $i = 0;
-            while ($row = EA_sql_fetch_array($result)) {
-                $i++;
-            ?>
+        <form method="post">
+            <table class="m-auto" summary="Formulaire">
+                <?php $i = 0;
+                while ($row = EA_sql_fetch_array($result)) {
+                    $i++;
+                ?>
+                    <tr>
+                        <td>
+                            <b><?= $row["libelle"]; ?></b>
+                            <a href="<?= $root; ?>/admin/gest_params.php?grp=<?= $xgroupe; ?>" id="help<?= $i; ?>" onclick="show('aide<?= $i; ?>');return false;"><b>(?)</b></a>
+                            <span id="aide<?= $i; ?>" style="display: none" class="aide"><br><?= $row["param"]; ?> :
+                                <?= alaligne($row["aide"]); ?></span> :
+                        </td>
+                        <td>
+                            <input type="hidden" name="parname<?= $i; ?>" value="<?= $row["param"]; ?>">
+                            <?php if ($row["type"] == "B") { ?>
+                                <input type="checkbox" name="parvalue<?= $i; ?>" value="1" <?= ($row["valeur"] == 1 ? ' checked' : ''); ?>>
+                            <?php } elseif ($row["type"] == "L") {
+                                $leschoix = explode(";", $row["listval"]);
+                            ?>
+                                <select name="parvalue<?= $i; ?>">
+                                    <?php foreach ($leschoix as $lechoix) { ?>
+                                        <option <?= selected_option(intval(mb_substr($lechoix, 0, isin($lechoix, "-", 0) - 1)), $row["valeur"]); ?>><?= $lechoix; ?></option>
+                                    <?php } ?>
+                                </select>
+                            <?php } else { ?>
+                                <textarea name="parvalue<?= $i; ?>" cols="40" rows="6"><?= html_entity_decode($row["valeur"], ENTITY_REPLACE_FLAGS, ENTITY_CHARSET); ?></textarea>
+                            <?php } ?>
+                        </td>
+                    </tr>
+                <?php } ?>
                 <tr>
+                    <td></td>
                     <td>
-                        <b><?= $row["libelle"]; ?></b>
-                        <a href="<?= $root; ?>/admin/gest_params.php?grp=<?= $xgroupe; ?>" id="help<?= $i; ?>" onclick="show('aide<?= $i; ?>');return false;"><b>(?)</b></a>
-                        <span id="aide<?= $i; ?>" style="display: none" class="aide"><br><?= $row["param"]; ?> :
-                            <?= alaligne($row["aide"]); ?></span> :
-                    </td>
-                    <td>
-                        <input type="hidden" name="parname<?= $i; ?>" value="<?= $row["param"]; ?>">
-                        <?php if ($row["type"] == "B") { ?>
-                            <input type="checkbox" name="parvalue<?= $i; ?>" value="1" <?= ($row["valeur"] == 1 ? ' checked' : ''); ?>>
-                        <?php } elseif ($row["type"] == "L") {
-                            $leschoix = explode(";", $row["listval"]);
-                        ?>
-                            <select name="parvalue<?= $i; ?>">
-                                <?php foreach ($leschoix as $lechoix) { ?>
-                                    <option <?= selected_option(intval(mb_substr($lechoix, 0, isin($lechoix, "-", 0) - 1)), $row["valeur"]); ?>><?= $lechoix; ?></option>
-                                <?php } ?>
-                            </select>
-                        <?php } else { ?>
-                            <textarea name="parvalue<?= $i; ?>" cols="40" rows="6"><?= html_entity_decode($row["valeur"], ENTITY_REPLACE_FLAGS, ENTITY_CHARSET); ?></textarea>
-                        <?php } ?>
+                        <a href="<?= $root; ?>/admin/index.php">Annuler</a>
+                        <button type="submit">Enregistrer</button>
                     </td>
                 </tr>
-            <?php } ?>
-            <tr>
-                <td></td>
-                <td>
-                    <a href="<?= $root; ?>/admin/index.php">Annuler</a>
-                    <button type="submit">Enregistrer</button>
-                </td>
-            </tr>
-        </table>
-        <input type="hidden" name="parnbr" value="<?= $i; ?>">
-        <input type="hidden" name="grp" value="<?= $xgroupe; ?>">
-        <input type="hidden" name="xconfirm" value="confirmed">
-    </form>
+            </table>
+            <input type="hidden" name="parnbr" value="<?= $i; ?>">
+            <input type="hidden" name="grp" value="<?= $xgroupe; ?>">
+            <input type="hidden" name="xconfirm" value="confirmed">
+        </form>
+    </div>
 </div>
 <?php include(__DIR__ . '/../templates/front/_footer.php');
 

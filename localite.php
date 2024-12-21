@@ -35,7 +35,7 @@ if ($id > 0) { // édition
 
         $request = "SELECT TYPACT, LIBELLE, sum(NB_TOT) AS NB_TOT, COMMUNE, DEPART, max(DTDEPOT) AS DTDEPOT, min(AN_MIN) AS AN_MIN, max(AN_MAX) AS AN_MAX "
             . " FROM " . $config->get('EA_DB') . "_sums WHERE COMMUNE = '" . sql_quote($commune) . "' AND DEPART = '" . sql_quote($depart) . "'"
-                . ' GROUP BY DEPART, COMMUNE, TYPACT, LIBELLE  '
+            . ' GROUP BY DEPART, COMMUNE, TYPACT, LIBELLE  '
             . " ORDER BY INSTR('NMDV',TYPACT),LIBELLE; ";
 
         $cptN = $cptM = $cptD = $cptV = 0;
@@ -106,54 +106,56 @@ if ($id > 0) { // édition
 $localite = $commune . " [" . $depart . "]";
 
 ob_start();
-open_page($localite, $root, null, null, $JSheader);
-navigation($root, 2, "A", "Localisation d'une commune ou paroisse");
-$carto->printOnLoad();
-zone_menu(0, $userlevel);
+open_page($localite, $root, null, null, $JSheader); ?>
+<div class="main">
+    <?php zone_menu(0, $userlevel); ?>
+    <div class="main-col-center text-center">
+        <?php navigation($root, 2, "A", "Localisation d'une commune ou paroisse");
+        $carto->printOnLoad();
 
-echo '<div id="col_main">' . "\n";
-echo '<h2>Commune/Paroisse : ' . $localite . '</h2>';
-echo '<div id="mapzone" align="center">';
-$carto->printMap();
-echo '</div>';
+        echo '<h2>Commune/Paroisse : ' . $localite . '</h2>';
+        echo '<div id="mapzone" align="center">';
+        $carto->printMap();
+        echo '</div>';
 
-if ($noteN <> '' or $cptN > 0) {
-    if ($cptN > 0) {
-        $href = '<a href="' . mkurl($root . '/tab_naiss.php', $commune . ' [' . $depart . ']') . '">';
-        $txthtml = "<p>" . $href . entier($cptN) . " Naissances/Baptêmes</a><br />";
-    } else {
-        $txthtml = "<p>";
-    }
-    echo $txthtml . $noteN . "</p>";
-}
-if ($noteM <> '' or $cptM > 0) {
-    if ($cptM > 0) {
-        $href = '<a href="' . mkurl($root . '/tab_mari.php', $commune . ' [' . $depart . ']') . '">';
-        $txthtml = "<p>" . $href . entier($cptM) . " Mariages</a><br />";
-    } else {
-        $txthtml = "<p>";
-    }
-    echo $txthtml . $noteM . "</p>";
-}
-if ($noteD <> '' or $cptD > 0) {
-    if ($cptD > 0) {
-        $href = '<a href="' . mkurl($root . '/tab_deces.php', $commune . ' [' . $depart . ']') . '">';
-        $txthtml = "<p>" . $href . entier($cptD) . " Décès/Sépultures</a><br />";
-    } else {
-        $txthtml = "<p>";
-    }
-    echo $txthtml . $noteD . "</p>";
-}
-if ($noteV <> '' or $cptV > 0) {
-    if ($cptV > 0) {
-        $href = '<a href="' . mkurl($root . '/tab_bans.php', $commune . ' [' . $depart . ']') . '">';
-        $txthtml = "<p>" . $href . entier($cptV) . " Actes divers</a><br />";
-    } else {
-        $txthtml = "<p>";
-    }
-    echo $txthtml . $noteV . "</p>";
-} ?>
+        if ($noteN <> '' or $cptN > 0) {
+            if ($cptN > 0) {
+                $href = '<a href="' . mkurl($root . '/tab_naiss.php', $commune . ' [' . $depart . ']') . '">';
+                $txthtml = "<p>" . $href . entier($cptN) . " Naissances/Baptêmes</a><br />";
+            } else {
+                $txthtml = "<p>";
+            }
+            echo $txthtml . $noteN . "</p>";
+        }
+        if ($noteM <> '' or $cptM > 0) {
+            if ($cptM > 0) {
+                $href = '<a href="' . mkurl($root . '/tab_mari.php', $commune . ' [' . $depart . ']') . '">';
+                $txthtml = "<p>" . $href . entier($cptM) . " Mariages</a><br />";
+            } else {
+                $txthtml = "<p>";
+            }
+            echo $txthtml . $noteM . "</p>";
+        }
+        if ($noteD <> '' or $cptD > 0) {
+            if ($cptD > 0) {
+                $href = '<a href="' . mkurl($root . '/tab_deces.php', $commune . ' [' . $depart . ']') . '">';
+                $txthtml = "<p>" . $href . entier($cptD) . " Décès/Sépultures</a><br />";
+            } else {
+                $txthtml = "<p>";
+            }
+            echo $txthtml . $noteD . "</p>";
+        }
+        if ($noteV <> '' or $cptV > 0) {
+            if ($cptV > 0) {
+                $href = '<a href="' . mkurl($root . '/tab_bans.php', $commune . ' [' . $depart . ']') . '">';
+                $txthtml = "<p>" . $href . entier($cptV) . " Actes divers</a><br />";
+            } else {
+                $txthtml = "<p>";
+            }
+            echo $txthtml . $noteV . "</p>";
+        } ?>
 
+    </div>
 </div>
 <?php include(__DIR__ . '/templates/front/_footer.php');
 

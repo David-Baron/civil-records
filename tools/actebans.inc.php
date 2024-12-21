@@ -38,10 +38,12 @@ if ($error == 0) {
     $xcomm = $row['COMMUNE'] . ' [' . $row['DEPART'] . ']';
     if (solde_ok(1, $row["DEPOSANT"], 'V', $xid) > 0) {
         ob_start();
-        open_page($title, $root);
+        open_page($title, $root); ?>
+        <div class="main">
+            <?php zone_menu(ADM, $session->get('user')['level']); ?>
+            <div class="main-col-center text-center">
+        <?php
         navigation($root, ADM + 4, 'V', $xcomm, $row["NOM"], $row["PRE"]);
-        zone_menu(ADM, $session->get('user')['level']);
-        echo '<div id="col_main">' . "\n";
 
         $sigle = $row["SIGLE"];
 
@@ -145,6 +147,7 @@ if ($error == 0) {
     open_page($title, $root);
     msg('Identifiant incorrect');
 }
+echo '</div>';
 echo '</div>';
 include(__DIR__ . '/../templates/front/_footer.php');
 $response->setContent(ob_get_clean());

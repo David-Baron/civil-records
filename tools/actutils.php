@@ -30,14 +30,15 @@ function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = n
     echo '<meta name="keywords" content="' . $meta_keywords . ', ' . $titre . '">';
     echo '<meta name="generator" content="Civil-Records">';
     echo "<title>$titre</title>";
-    echo '<link rel="shortcut icon" href="' . $root . '/assets/img/favicon.ico" type="image/x-icon">';
-    echo '<link rel="stylesheet" href="' . $root . '/assets/css/actes.css" type="text/css">';
+    echo '<link rel="shortcut icon" href="' . $root . '/themes/img/favicon.ico" type="image/x-icon">';
+    echo '<link rel="stylesheet" href="' . $root . '/themes/default.css" type="text/css">';
+    echo '<link rel="stylesheet" href="' . $root . '/themes/css/style.css" type="text/css">';
 
     if (file_exists(__DIR__ . '/../_config/actes.css')) {
         echo '<link rel="stylesheet" href="' . $root . '/_config/actes.css" type="text/css">';
     }
 
-    echo '<link rel="stylesheet" href="' . $root . '/assets/css/actes_print.css" type="text/css" media="print">';
+    // echo '<link rel="stylesheet" href="' . $root . '/assets/css/actes_print.css" type="text/css" media="print">';
 
     if (file_exists(__DIR__ . '/../_config/js_externe_header.inc.php')) {
         include(__DIR__ . '/../_config/js_externe_header.inc.php');
@@ -72,16 +73,12 @@ function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = n
     echo '<div id="top" class="entete">';
     if (EA_MAINTENANCE == 1) {
         echo '<font color="#FF0000"><b>!! MAINTENANCE !!</b></font>';
-    } */
+    }
 
     if ($TIPmsg <> "" && ($config->get('TIP_MODE_ALERT') % 2) == 1) {
         echo '<h2><font color="#FF0000">' . $TIPmsg . "</font></h2>";
-    }
+    } */
     echo '<div id="top" class="entete">';
-    if ($config->get('EA_MAINTENANCE') == 1) {
-        echo '<font color="#FF0000"><b>!! MAINTENANCE !!</b></font>';
-    }
-
     include(__DIR__ . '/../templates/front/_bandeau.php');
     echo "</div>";
 }
@@ -181,8 +178,8 @@ function prechecked($typrech)
 function statistiques($vue = "T")
 {
     global $root, $config, $xtyp, $show_alltypes;
-    echo '<div class="menu_zone">' . "\n";
-    echo '<div class="menu_titre">Statistiques</div>' . "\n";
+    echo '<div class="box">' . "\n";
+    echo '<div class="box-title">Statistiques</div>' . "\n";
 
     if ($config->get('SHOW_DATES')) {
         $crit_dates = " WHERE year(LADATE) > 0 ";
@@ -251,7 +248,7 @@ function statistiques($vue = "T")
         }
     }
 
-    echo '<div class="menuTexte"><dl>' . "\n";
+    echo '<div class="box-body p-2"><dl>' . "\n";
     echo '<dt><strong>' . entier($tot) . ' actes</strong> dont :</dt>' . "\n" . $texte;
     if ($config->get('SHOW_RSS') <> 0) {
         $urlrss = $root . '/rss.php';
@@ -282,37 +279,37 @@ function menu_public()
         $login .= '&gt;';
 
         if ($userAuthorizer->isGranted($config->get('CHANGE_PW'))) {
-            $changepw = '<dt><a href="' . $root . '/changepw.php">Changer le mot de passe</a></dt>';
+            $changepw = '<a href="' . $root . '/changepw.php">Changer le mot de passe</a>';
         }
     }
-    echo '<div class="menu_zone">';
+    echo '<div class="box">';
     // traite le cas ou le niveau PUBLIC autre que 4 et 5, on affiche l'accès administration au dela d'un niveau 5 de l'utilisateur
     if ($userAuthorizer->isGranted(6)) {
-        echo '<div class="menu_titre">Administration' . $login . '</div>';
-    }  // pas de membres visiteurs dans ce cas
-    else {
-        echo '<div class="menu_titre">Accès membre' . $login . '</div>';
+        echo '<div class="box-title">Administration</div>';
+    } else {
+        echo '<div class="box-title">Accès membre</div>';
     }
-    echo '<div class="menuCorps"><dl>';
+    echo '<div class="box-body">';
+    echo '<nav class="nav">';
     if (!$userAuthorizer->isAuthenticated()) {
-        echo '<dt><a href="' . $root . '/login.php">Connexion</a></dt>';
+        echo '<a href="' . $root . '/login.php">Connexion</a>';
         if ($config->get('SHOW_ACCES') == 1) {
-            echo '<dt><a href="' . $root . '/acces.php">Conditions d\'accès</a></dt>';
+            echo '<a href="' . $root . '/acces.php">Conditions d\'accès</a>';
         }
     } else {
         if ($userAuthorizer->isGranted(6)) {
-            echo '<dt><a href="' . $root . '/admin/index.php">Gérer les actes</a></dt>';
+            echo '<a href="' . $root . '/admin/index.php">Gérer les actes</a>';
         }
         echo $changepw;
-        echo '<dt><a href="' . $root . '/index.php?act=logout">Déconnexion</a></dt>';
+        echo '<a href="' . $root . '/index.php?act=logout">Déconnexion</a>';
     }
     if ($config->get('EMAIL_CONTACT') <> "") {
-        echo '<dt><a href="' . $root . '/form_contact.php">Contact</a></dt>';
+        echo '<a href="' . $root . '/form_contact.php">Contact</a>';
     }
     if ($userAuthorizer->isGranted(6)) {
-        echo '<dt><a href="' . $root . '/admin/aide/aide.html">Aide</a></dt>';
+        echo '<a href="' . $root . '/admin/aide/aide.html">Aide</a>';
     }
-    echo '</dl></div>' . "\n";
+    echo '</nav></div>' . "\n";
     echo '</div>' . "\n";
 }
 
@@ -323,8 +320,11 @@ function show_pub_menu()
 {
     global $config;
 
-    echo '<div class="pub_menu">';
+    echo '<div class="box">';
+    echo '<div class="box-title">Info</div>';
+    echo '<div class="box-body p-2">';
     echo $config->get('PUB_ZONE_MENU');
+    echo '</div>';
     echo '</div>';
 }
 
@@ -333,7 +333,7 @@ function zone_menu($admin, int $userlevel, $pp = array())
     //affice les menus standardises
     global $root;
     $menu_actes = '';
-    echo '<div id="col_menu">';
+    echo '<div class="main-col-left">';
     if (!isset($pp['f']) or ($pp['f'] != 'N')) {
         // form_recherche($root);
         require(__DIR__ . '/../templates/front/_search-form.php');
@@ -390,7 +390,9 @@ function navigation($root = "", $level = 1, $type = "", $commune = null, $patron
     if ($signe <> "") {
         $signe = " (" . $signe . ")";
     }
-    echo '<div class="navigation">';
+    echo '<div class="box">';
+    echo '<div class="box-title">';
+    echo '<div class="breadcrumb">';
     echo 'Navigation';
     if ($level > 1) {
         if ($level > 10) {
@@ -428,18 +430,32 @@ function navigation($root = "", $level = 1, $type = "", $commune = null, $patron
     if ($level == 4) {
         echo ' &gt; ' . $prenom . "\n";
     }
-    echo '</div>' . "\n";
+    echo '</div>';
+    ?>
+    <div class="tool">
+        <!-- <select name="theme-menu" id="theme-menu">
+            <option data-ea-theme-value="default" aria-pressed="false">Thème jaune</option>
+            <option data-ea-theme-value="olive" aria-pressed="false">Thème olive</option>
+        </select> -->
+    </div>
+<?php
+    echo '</div>';
+    echo '</div>';
 }
 
 function navadmin($root = '', $current = '')
 {
-    echo '<div class="navigation">';
+    echo '<div class="box">';
+    echo '<div class="box-title">';
+    echo '<div class="breadcrumb">';
     echo '<strong>Civil-Records</strong> | <a href="' . $root . '/admin/index.php">Administration</a>';
     if ($current == '') {
         echo ' &gt; Tableau de bord';
     } else {
         echo ' &gt; ' . $current;
     }
+    echo '</div>';
+    echo '</div>';
     echo '</div>';
 }
 

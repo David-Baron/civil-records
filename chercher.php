@@ -296,259 +296,263 @@ if (!$userAuthorizer->isGranted(3)) {
 // $userid = current_user('ID');
 
 ob_start();
-open_page("Recherches dans les tables", $root);
-if (current_user_solde() > 0 or $config->get('RECH_ZERO_PTS') == 1) {
-    $nav = "";
-    if ($xcomp != "") {
-        $nav = '<a href="' .$root. '/rechavancee.php">Recherche (avancée)</a> &gt; ';
-    }
-    navigation($root, 2, 'A', $nav . "Résultats de la recherche");
-    echo '<div class="contenu">';
-    echo '<h2>Résultats de la recherche</h2>';
+open_page("Recherches dans les tables", $root); ?>
+<div class="main">
+    <?php zone_menu(0, 0); ?>
+    <?php if (current_user_solde() > 0 or $config->get('RECH_ZERO_PTS') == 1) {
+        $nav = "";
+        if ($xcomp != "") {
+            $nav = '<a href="' . $root . '/rechavancee.php">Recherche (avancée)</a> &gt; ';
+        }
+        echo '<div class="main-col-center text-center">';
+        navigation($root, 2, 'A', $nav . "Résultats de la recherche");
 
-    // Résultats de la recherche
-    $critN = "";
-    $critD = "";
-    $critM = "";   // critère mariage/divers pour rech full scan
-    $critM1 = "";  // critère mariage/divers pour rech indexée sur 1er intéressé  ( car le "or" bloque l'indexé)
-    $critM2 = "";  // critère mariage/divers pour rech indexée sur 2d intéressé
-    $critV = "";
-    $mes = "";
+        echo '<h2>Résultats de la recherche</h2>';
 
-    if ($xach . $xpre == "") {
-        $xzone = "";
-    }   // zone1 pas utilisé
-    if ($xach2 . $xpre2 == "") {
-        $xzone2 = "";
-    }  // zone2 pas utilisé
-    if ($xach3 == "") {
-        $xzone3 = "";
-    }  // zone3 pas utilisé
+        // Résultats de la recherche
+        $critN = "";
+        $critD = "";
+        $critM = "";   // critère mariage/divers pour rech full scan
+        $critM1 = "";  // critère mariage/divers pour rech indexée sur 1er intéressé  ( car le "or" bloque l'indexé)
+        $critM2 = "";  // critère mariage/divers pour rech indexée sur 2d intéressé
+        $critV = "";
+        $mes = "";
 
-    if ((strlen(trim($xach . $xpre . $xach2 . $xpre2 . $xach3)) < $config->get('RECH_MIN')) and ($session->get('user')['level'] < 8)) {
-        msg('La recherche doit porter sur au moins ' . $config->get('RECH_MIN') . ' caractères non blancs.');
-    } elseif (!($xtypN or $xtypD or $xtypM or $xtypV)) {
-        msg('La recherche doit porter sur au moins un des types d\'actes.');
-    } elseif (strpos("X" . $xach . $xpre . $xach2 . $xpre2 . $xach3, '%') > 0 or strpos("X" . $xach . $xpre . $xach2 . $xpre2 . $xach3, '__') > 0) {
-        msg('La recherche ne peut contenir les caractères "%" ou "__".');
-    } elseif (($xzone == 4 or $xzone2 == 4) and $xtypN and !($xtypD or $xtypM or $xtypV)) {
-        msg('Pas de "Conjoint" dans les actes de naissance.');
-    } elseif ($xzone3 == 9 and $xtypN and !($xtypD or $xtypM or $xtypV)) {
-        msg('Pas de zone "Origine" dans les actes de naissance.');
-    } else {
-        makecrit($xach, $xpre, $xzone, $xcomp);      // génération critère 1ere personne
-        makecrit($xach2, $xpre2, $xzone2, $xcomp2);  // génération critère 2ème personne
-        makecrit($xach3, "", $xzone3, $xcomp3);      // génération critère autres élements
-        if ($xmin != "") {
-            $critX = " (year(LADATE)>= " . $xmin . ")";
-            $critN = sql_and($critN) . $critX;
-            $critD = sql_and($critD) . $critX;
-            $critM = sql_and($critM) . $critX;
-            $critM1 = sql_and($critM1) . $critX;
-            $critM2 = sql_and($critM2) . $critX;
-            if ($xmax == "") {
-                $mes .= '<li>Années égales ou postérieures à <b>' . $xmin . "</b></li>\n";
+        if ($xach . $xpre == "") {
+            $xzone = "";
+        }   // zone1 pas utilisé
+        if ($xach2 . $xpre2 == "") {
+            $xzone2 = "";
+        }  // zone2 pas utilisé
+        if ($xach3 == "") {
+            $xzone3 = "";
+        }  // zone3 pas utilisé
+
+        if ((strlen(trim($xach . $xpre . $xach2 . $xpre2 . $xach3)) < $config->get('RECH_MIN')) and ($session->get('user')['level'] < 8)) {
+            msg('La recherche doit porter sur au moins ' . $config->get('RECH_MIN') . ' caractères non blancs.');
+        } elseif (!($xtypN or $xtypD or $xtypM or $xtypV)) {
+            msg('La recherche doit porter sur au moins un des types d\'actes.');
+        } elseif (strpos("X" . $xach . $xpre . $xach2 . $xpre2 . $xach3, '%') > 0 or strpos("X" . $xach . $xpre . $xach2 . $xpre2 . $xach3, '__') > 0) {
+            msg('La recherche ne peut contenir les caractères "%" ou "__".');
+        } elseif (($xzone == 4 or $xzone2 == 4) and $xtypN and !($xtypD or $xtypM or $xtypV)) {
+            msg('Pas de "Conjoint" dans les actes de naissance.');
+        } elseif ($xzone3 == 9 and $xtypN and !($xtypD or $xtypM or $xtypV)) {
+            msg('Pas de zone "Origine" dans les actes de naissance.');
+        } else {
+            makecrit($xach, $xpre, $xzone, $xcomp);      // génération critère 1ere personne
+            makecrit($xach2, $xpre2, $xzone2, $xcomp2);  // génération critère 2ème personne
+            makecrit($xach3, "", $xzone3, $xcomp3);      // génération critère autres élements
+            if ($xmin != "") {
+                $critX = " (year(LADATE)>= " . $xmin . ")";
+                $critN = sql_and($critN) . $critX;
+                $critD = sql_and($critD) . $critX;
+                $critM = sql_and($critM) . $critX;
+                $critM1 = sql_and($critM1) . $critX;
+                $critM2 = sql_and($critM2) . $critX;
+                if ($xmax == "") {
+                    $mes .= '<li>Années égales ou postérieures à <b>' . $xmin . "</b></li>\n";
+                }
+            }
+            if ($xmax != "") {
+                $critX = " (year(LADATE)<= " . $xmax . ")";
+                $critN = sql_and($critN) . $critX;
+                $critD = sql_and($critD) . $critX;
+                $critM = sql_and($critM) . $critX;
+                $critM1 = sql_and($critM1) . $critX;
+                $critM2 = sql_and($critM2) . $critX;
+                if ($xmin == "") {
+                    $mes .= '<li>Années antérieures ou égales à <b>' . $xmax . "</b></li>\n";
+                } else {
+                    $mes .= '<li>Années comprises entre <b>' . $xmin . '</b> et <b>' . $xmax . "</b></li>\n";
+                }
+            }
+            if (mb_substr($xcomm, 0, 2) != "**") {
+                $critX = " (COMMUNE = '" . sql_quote($xcomm) . "' and DEPART= '" . sql_quote($xdepa) . "') ";
+                $critN = sql_and($critN) . $critX;
+                $critD = sql_and($critD) . $critX;
+                $critM = sql_and($critM) . $critX;
+                $critM1 = sql_and($critM1) . $critX;
+                $critM2 = sql_and($critM2) . $critX;
+                $mes .= '<li>Commune ou paroisse de <b>' . $xcomm . " [" . $xdepa . "]</b></li>\n";
             }
         }
-        if ($xmax != "") {
-            $critX = " (year(LADATE)<= " . $xmax . ")";
-            $critN = sql_and($critN) . $critX;
-            $critD = sql_and($critD) . $critX;
-            $critM = sql_and($critM) . $critX;
-            $critM1 = sql_and($critM1) . $critX;
-            $critM2 = sql_and($critM2) . $critX;
-            if ($xmin == "") {
-                $mes .= '<li>Années antérieures ou égales à <b>' . $xmax . "</b></li>\n";
-            } else {
-                $mes .= '<li>Années comprises entre <b>' . $xmin . '</b> et <b>' . $xmax . "</b></li>\n";
+        $critV = $critM;
+        $critV1 = $critM1;
+        $critV2 = $critM2;
+        if (($xtypV) and ($xtdiv <> "") and (mb_substr($xtdiv, 0, 2) <> "**")) {
+            if (!empty($critV)) {
+                $critV  = sql_and($critV) . " (LIBELLE='" . sql_quote(urldecode($xtdiv)) . "')";
             }
+            if (!empty($critV1)) {
+                $critV1 = sql_and($critV1) . " (LIBELLE='" . sql_quote(urldecode($xtdiv)) . "')";
+            }
+            if (!empty($critV2)) {
+                $critV2 = sql_and($critV2) . " (LIBELLE='" . sql_quote(urldecode($xtdiv)) . "')";
+            }
+            $mes .= '<li>Actes divers de type <b>' . $xtdiv . "</b></li>";
         }
-        if (mb_substr($xcomm, 0, 2) != "**") {
-            $critX = " (COMMUNE = '" . sql_quote($xcomm) . "' and DEPART= '" . sql_quote($xdepa) . "') ";
-            $critN = sql_and($critN) . $critX;
-            $critD = sql_and($critD) . $critX;
-            $critM = sql_and($critM) . $critX;
-            $critM1 = sql_and($critM1) . $critX;
-            $critM2 = sql_and($critM2) . $critX;
-            $mes .= '<li>Commune ou paroisse de <b>' . $xcomm . " [" . $xdepa . "]</b></li>\n";
-        }
-    }
-    $critV = $critM;
-    $critV1 = $critM1;
-    $critV2 = $critM2;
-    if (($xtypV) and ($xtdiv <> "") and (mb_substr($xtdiv, 0, 2) <> "**")) {
-        if (!empty($critV)) {
-            $critV  = sql_and($critV) . " (LIBELLE='" . sql_quote(urldecode($xtdiv)) . "')";
-        }
-        if (!empty($critV1)) {
-            $critV1 = sql_and($critV1) . " (LIBELLE='" . sql_quote(urldecode($xtdiv)) . "')";
-        }
-        if (!empty($critV2)) {
-            $critV2 = sql_and($critV2) . " (LIBELLE='" . sql_quote(urldecode($xtdiv)) . "')";
-        }
-        $mes .= '<li>Actes divers de type <b>' . $xtdiv . "</b></li>";
-    }
 
-    if (trim($critN . $critM . $critD) == "") {
-        msg('Aucun critère de recherche n\'a été spécifié.');
-    } else {
-        $request = "";
-        $listactes = "";
-        $listtyps = "";
-        $listcrit = "";
-        if ($xtypM) {  // M en premier pour taille zones C_NOM et C_PRE
-            $listzones = "ID, TYPACT, DATETXT, COMMUNE, NOM, PRE, C_NOM, C_PRE, LADATE, 'Mariage' AS LIBELLE ";
-            if ($compmode == "F") {  // full scan
-                $request .= "(SELECT " . $listzones
-                    . " FROM " . $config->get('EA_DB') . "_mar3 "
-                    . " WHERE  " . $critM . ") ";
-            } else { // indexed
-                $request .= "(SELECT " . $listzones
-                    . " FROM " . $config->get('EA_DB') . "_mar3 "
-                    . " WHERE  " . $critM1 . ") ";
-                $request .= ' union ';
-                $request .= "(SELECT " . $listzones
-                    . " FROM " . $config->get('EA_DB') . "_mar3 "
-                    . " WHERE  " . $critM2 . ") ";
+        if (trim($critN . $critM . $critD) == "") {
+            msg('Aucun critère de recherche n\'a été spécifié.');
+        } else {
+            $request = "";
+            $listactes = "";
+            $listtyps = "";
+            $listcrit = "";
+            if ($xtypM) {  // M en premier pour taille zones C_NOM et C_PRE
+                $listzones = "ID, TYPACT, DATETXT, COMMUNE, NOM, PRE, C_NOM, C_PRE, LADATE, 'Mariage' AS LIBELLE ";
+                if ($compmode == "F") {  // full scan
+                    $request .= "(SELECT " . $listzones
+                        . " FROM " . $config->get('EA_DB') . "_mar3 "
+                        . " WHERE  " . $critM . ") ";
+                } else { // indexed
+                    $request .= "(SELECT " . $listzones
+                        . " FROM " . $config->get('EA_DB') . "_mar3 "
+                        . " WHERE  " . $critM1 . ") ";
+                    $request .= ' union ';
+                    $request .= "(SELECT " . $listzones
+                        . " FROM " . $config->get('EA_DB') . "_mar3 "
+                        . " WHERE  " . $critM2 . ") ";
+                }
+                $listactes = "mariages";
+                $listtyps .= "N";
             }
-            $listactes = "mariages";
-            $listtyps .= "N";
-        }
-        if ($xtypV) {
-            if (strlen($request) > 0) {
-                $request .= ' union ';
+            if ($xtypV) {
+                if (strlen($request) > 0) {
+                    $request .= ' union ';
+                }
+                $listzones = "ID, TYPACT, DATETXT, COMMUNE, NOM, PRE, C_NOM, C_PRE, LADATE, LIBELLE ";
+                if ($compmode == "F") {
+                    $request .= "(SELECT " . $listzones
+                        . " FROM " . $config->get('EA_DB') . "_div3 "
+                        . " WHERE  " . $critV . ") ";
+                } else {
+                    $request .= "(SELECT " . $listzones
+                        . " FROM " . $config->get('EA_DB') . "_div3 "
+                        . " WHERE  " . $critV1 . ") ";
+                    $request .= ' union ';
+                    $request .= "(SELECT " . $listzones
+                        . " FROM " . $config->get('EA_DB') . "_div3 "
+                        . " WHERE  " . $critV2 . ") ";
+                }
+                if (strlen($listactes) > 0) {
+                    $listactes .= ", ";
+                }
+                $listactes .= "types divers";
+                $listtyps .= "N";
             }
-            $listzones = "ID, TYPACT, DATETXT, COMMUNE, NOM, PRE, C_NOM, C_PRE, LADATE, LIBELLE ";
-            if ($compmode == "F") {
-                $request .= "(SELECT " . $listzones
-                    . " FROM " . $config->get('EA_DB') . "_div3 "
-                    . " WHERE  " . $critV . ") ";
-            } else {
-                $request .= "(SELECT " . $listzones
-                    . " FROM " . $config->get('EA_DB') . "_div3 "
-                    . " WHERE  " . $critV1 . ") ";
-                $request .= ' union ';
-                $request .= "(SELECT " . $listzones
-                    . " FROM " . $config->get('EA_DB') . "_div3 "
-                    . " WHERE  " . $critV2 . ") ";
+            if ($xtypD) {
+                if (strlen($request) > 0) {
+                    $request .= ' union ';
+                }
+                $request .= "(SELECT ID, TYPACT, DATETXT, COMMUNE, NOM, PRE, 'X' AS C_NOM, 'Y' AS C_PRE, LADATE,'Décès' AS LIBELLE "
+                    . " FROM " . $config->get('EA_DB') . "_dec3 "
+                    . " WHERE  " . $critD . ") ";
+                if (strlen($listactes) > 0) {
+                    $listactes = ", " . $listactes;
+                }
+                $listactes = "décès" . $listactes;
+                $listtyps .= "N";
             }
-            if (strlen($listactes) > 0) {
-                $listactes .= ", ";
+            if ($xtypN and !empty($critN)) {
+                if (strlen($request) > 0) {
+                    $request .= ' union ';
+                }
+                $request .= "(SELECT ID, TYPACT, DATETXT, COMMUNE, NOM, PRE, 'X' AS C_NOM, 'Y' AS C_PRE, LADATE,'Naissance' AS LIBELLE "
+                    . " FROM " . $config->get('EA_DB') . "_nai3 "
+                    . " WHERE  " . $critN . ") ";
+                if (strlen($listactes) > 0) {
+                    $listactes = ", " . $listactes;
+                }
+                $listactes = "naissances" . $listactes;
+                $listtyps .= "N";
             }
-            $listactes .= "types divers";
-            $listtyps .= "N";
-        }
-        if ($xtypD) {
-            if (strlen($request) > 0) {
-                $request .= ' union ';
-            }
-            $request .= "(SELECT ID, TYPACT, DATETXT, COMMUNE, NOM, PRE, 'X' AS C_NOM, 'Y' AS C_PRE, LADATE,'Décès' AS LIBELLE "
-                . " FROM " . $config->get('EA_DB') . "_dec3 "
-                . " WHERE  " . $critD . ") ";
-            if (strlen($listactes) > 0) {
-                $listactes = ", " . $listactes;
-            }
-            $listactes = "décès" . $listactes;
-            $listtyps .= "N";
-        }
-        if ($xtypN and !empty($critN)) {
-            if (strlen($request) > 0) {
-                $request .= ' union ';
-            }
-            $request .= "(SELECT ID, TYPACT, DATETXT, COMMUNE, NOM, PRE, 'X' AS C_NOM, 'Y' AS C_PRE, LADATE,'Naissance' AS LIBELLE "
-                . " FROM " . $config->get('EA_DB') . "_nai3 "
-                . " WHERE  " . $critN . ") ";
-            if (strlen($listactes) > 0) {
-                $listactes = ", " . $listactes;
-            }
-            $listactes = "naissances" . $listactes;
-            $listtyps .= "N";
-        }
-        $request .= " ORDER BY LADATE";
-        $listactes = "<li>Actes de " . $listactes . "</li>\n";
+            $request .= " ORDER BY LADATE";
+            $listactes = "<li>Actes de " . $listactes . "</li>\n";
 
-        //	echo $request;
-        $reqbigs = "set sql_big_selects=1";
-        $resbase = EA_sql_query($reqbigs);
+            //	echo $request;
+            $reqbigs = "set sql_big_selects=1";
+            $resbase = EA_sql_query($reqbigs);
 
-        optimize($request);
+            optimize($request);
 
-        $result = EA_sql_query($request);
-        $nbtot = EA_sql_num_rows($result);
-
-        $baselink = $path . '/chercher.php?achercher=' . $xach . '&amp;zone=' . $xzone . '&amp;prenom=' . $xpre . '&amp;comp=' . $xcomp;
-        $baselink .= '&amp;achercher2=' . $xach2 . '&amp;zone2=' . $xzone2 . '&amp;prenom2=' . $xpre2 . '&amp;comp2=' . $xcomp2;
-        $baselink .= '&amp;achercher3=' . $xach3 . '&amp;zone3=' . $xzone3 . '&amp;comp3=' . $xcomp3;
-        $baselink .= iif($xtypN, '&amp;TypN=N', '') . iif($xtypD, '&amp;TypD=D', '') . iif($xtypM, '&amp;TypM=M', '') . iif($xtypV, '&amp;TypV=V', '');
-        $baselink .= '&amp;typdivers=' . urlencode($xtdiv) . '&amp;ComDep=' . urlencode($comdep);
-        $baselink .= '&amp;amin=' . $xmin . '&amp;amax=' . $xmax;
-
-        $limit = "";
-        $listpages = "";
-        pagination($nbtot, $page, $baselink, $listpages, $limit);
-
-        if ($limit <> "") {
-            $request = $request . $limit;
             $result = EA_sql_query($request);
-            $nb = EA_sql_num_rows($result);
-        } else {
-            $nb = $nbtot;
-        }
+            $nbtot = EA_sql_num_rows($result);
 
-        echo '<div class="critrech">Recherche de : <ul>' . $mes . $listactes . '</ul></div>';
+            $baselink = $path . '/chercher.php?achercher=' . $xach . '&amp;zone=' . $xzone . '&amp;prenom=' . $xpre . '&amp;comp=' . $xcomp;
+            $baselink .= '&amp;achercher2=' . $xach2 . '&amp;zone2=' . $xzone2 . '&amp;prenom2=' . $xpre2 . '&amp;comp2=' . $xcomp2;
+            $baselink .= '&amp;achercher3=' . $xach3 . '&amp;zone3=' . $xzone3 . '&amp;comp3=' . $xcomp3;
+            $baselink .= iif($xtypN, '&amp;TypN=N', '') . iif($xtypD, '&amp;TypD=D', '') . iif($xtypM, '&amp;TypM=M', '') . iif($xtypV, '&amp;TypV=V', '');
+            $baselink .= '&amp;typdivers=' . urlencode($xtdiv) . '&amp;ComDep=' . urlencode($comdep);
+            $baselink .= '&amp;amin=' . $xmin . '&amp;amax=' . $xmax;
 
-        if ($nb > 0) {
-            $i = ($page - 1) * $config->get('MAX_PAGE') + 1;
-            echo '<p><b>' . $nbtot . ' actes trouvés</b></p>';
-            echo '<p>' . $listpages . '</p>';
-            echo '<table summary="Liste des résultats">';
-            echo '<tr class="rowheader">';
-            echo '<th> &nbsp; </th>';
-            echo '<th>Type</th>';
-            echo '<th>Date</th>';
-            echo '<th>Intéressé(e)</th>';
-            echo '<th>Commune/Paroisse</th>';
-            echo '</tr>';
-            while ($ligne = EA_sql_fetch_row($result)) {
-                switch ($ligne[1]) {
-                    case "N":
-                        $url = $root . '/acte_naiss.php';
-                        break;
-                    case "D":
-                        $url = $root . '/acte_deces.php';
-                        break;
-                    case "M":
-                        $url = $root . '/acte_mari.php';
-                        break;
-                    case "V":
-                        $url = $root . '/acte_bans.php';
-                        break;
-                }
-                echo '<tr class="row' . (fmod($i, 2)) . '">';
-                echo '<td>' . $i . '. </td>';
-                echo '<td>' . $ligne[9] . ' </td>';
-                echo '<td>&nbsp;' . annee_seulement($ligne[2]) . '&nbsp;</td>';
-                $EA_url = '<a href="' . $url . '?xid=' . $ligne[0] . '&amp;xct=' . ctrlxid($ligne[4], $ligne[5]) . '">';
-                echo '<td>' . $EA_url . $ligne[4] . ' ' . $ligne[5] . '</a>';
-                if ($ligne[1] == 'M' or ($ligne[1] == 'V' and $ligne[6] <> '')) {
-                    echo ' x ' . $EA_url . $ligne[6] . ' ' . $ligne[7] . '</a>';
-                }
-                echo '</td>';
-                echo '<td>' . $ligne[3] . '</td>';
-                echo '</tr>';
-                $i++;
+            $limit = "";
+            $listpages = "";
+            pagination($nbtot, $page, $baselink, $listpages, $limit);
+
+            if ($limit <> "") {
+                $request = $request . $limit;
+                $result = EA_sql_query($request);
+                $nb = EA_sql_num_rows($result);
+            } else {
+                $nb = $nbtot;
             }
-            echo '</table>';
-            echo '<p>' . $listpages . '</p>';
-        } else {
-            echo '<p> Aucun acte trouvé </p>';
+
+            echo '<div class="critrech">Recherche de : <ul>' . $mes . $listactes . '</ul></div>';
+
+            if ($nb > 0) {
+                $i = ($page - 1) * $config->get('MAX_PAGE') + 1;
+                echo '<p><b>' . $nbtot . ' actes trouvés</b></p>';
+                echo '<p>' . $listpages . '</p>';
+                echo '<table summary="Liste des résultats">';
+                echo '<tr class="rowheader">';
+                echo '<th> &nbsp; </th>';
+                echo '<th>Type</th>';
+                echo '<th>Date</th>';
+                echo '<th>Intéressé(e)</th>';
+                echo '<th>Commune/Paroisse</th>';
+                echo '</tr>';
+                while ($ligne = EA_sql_fetch_row($result)) {
+                    switch ($ligne[1]) {
+                        case "N":
+                            $url = $root . '/acte_naiss.php';
+                            break;
+                        case "D":
+                            $url = $root . '/acte_deces.php';
+                            break;
+                        case "M":
+                            $url = $root . '/acte_mari.php';
+                            break;
+                        case "V":
+                            $url = $root . '/acte_bans.php';
+                            break;
+                    }
+                    echo '<tr class="row' . (fmod($i, 2)) . '">';
+                    echo '<td>' . $i . '. </td>';
+                    echo '<td>' . $ligne[9] . ' </td>';
+                    echo '<td>&nbsp;' . annee_seulement($ligne[2]) . '&nbsp;</td>';
+                    $EA_url = '<a href="' . $url . '?xid=' . $ligne[0] . '&amp;xct=' . ctrlxid($ligne[4], $ligne[5]) . '">';
+                    echo '<td>' . $EA_url . $ligne[4] . ' ' . $ligne[5] . '</a>';
+                    if ($ligne[1] == 'M' or ($ligne[1] == 'V' and $ligne[6] <> '')) {
+                        echo ' x ' . $EA_url . $ligne[6] . ' ' . $ligne[7] . '</a>';
+                    }
+                    echo '</td>';
+                    echo '<td>' . $ligne[3] . '</td>';
+                    echo '</tr>';
+                    $i++;
+                }
+                echo '</table>';
+                echo '<p>' . $listpages . '</p>';
+            } else {
+                echo '<p> Aucun acte trouvé </p>';
+            }
         }
+        echo '<p>Durée du traitement  : ' . round(microtime_float() - $MT0, 3) . ' sec.</p>';
+    } else {
+        msg('Recherche non autorisée car votre solde de points est épuisé !');
     }
-    echo '<p>Durée du traitement  : ' . round(microtime_float() - $MT0, 3) . ' sec.</p>';
-} else {
-    msg('Recherche non autorisée car votre solde de points est épuisé !');
-}
-echo '</div>';
-include(__DIR__ . '/templates/front/_footer.php');
-$response->setContent(ob_get_clean());
-$response->send();
+    echo '</div>';
+    echo '</div>';
+    include(__DIR__ . '/templates/front/_footer.php');
+    $response->setContent(ob_get_clean());
+    $response->send();

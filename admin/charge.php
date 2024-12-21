@@ -77,21 +77,21 @@ function init_page($head = "")
         }
         $menu_data_active = 'R';
         open_page($titre, $root, $js, $bodyaction, $head);
-?>
-        <script type="text/javascript">
-            function ShowSpinner() {
-                document.getElementById("spinner").style.visibility = "visible";
-            }
-        </script>
-<?php
         // Ajaxify Your PHP Functions
-        include(__DIR__ ."/../tools/PHPLiveX/PHPLiveX.php");
+        include(__DIR__ . "/../tools/PHPLiveX/PHPLiveX.php");
         $ajax = new PHPLiveX(array("getBkFiles"));
         $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
+?>
+        <div class="main">
+            <?php zone_menu(ADM, $session->get('user')['level'], array()); ?>
+            <div class="main-col-center text-center">
+                <script type="text/javascript">
+                    function ShowSpinner() {
+                        document.getElementById("spinner").style.visibility = "visible";
+                    }
+                </script>
+        <?php navadmin($root, $titre);
 
-        navadmin($root, $titre);
-        zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
-        echo '<div id="col_main">';
         if ($moderestore) {
             require(__DIR__ . '/../templates/admin/_menu_data.php');
         }
@@ -986,7 +986,7 @@ if ($missingargs) {
     echo "<div id='topmsg'></div>";
     echo '<form method="post" enctype="multipart/form-data" action="">' . "\n";
     echo '<h2 align="center">' . $titre . '</h2>';
-    echo '<table cellspacing="0" cellpadding="0" border="0" align="center" summary="Formulaire">' . "\n";
+    echo '<table class="m-auto" summary="Formulaire">' . "\n";
     echo " <tr>\n";
     echo '  <td align="right">Type des actes : </td>' . "\n";
     echo '  <td>';
@@ -1138,6 +1138,7 @@ if ($missingargs) {
     echo '<p>Durée du traitement  : ' . (time() - $T0) . ' sec.</p>';
     echo '<p>Durée du traitement  : ' . (microtime_float() - $MT0) . ' microsec.</p>';
 }
+echo '</div>';
 echo '</div>';
 include(__DIR__ . '/../templates/front/_footer.php');
 $response->setContent(ob_get_clean());

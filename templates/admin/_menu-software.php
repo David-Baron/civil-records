@@ -1,4 +1,4 @@
-<p>
+<p class="text-center">
     <strong>Administration du logiciel : </strong>
     <a href="<?= $root; ?>/admin/gest_params.php" <?= ('P' == $menu_software_active ? 'class="bolder"' : ''); ?>>Paramétrage</a>
     | <a href="<?= $root; ?>/admin/gest_labels.php" <?= ('Q' == $menu_software_active ? 'class="bolder"' : ''); ?>>Etiquettes</a>

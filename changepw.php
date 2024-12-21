@@ -45,79 +45,81 @@ if ($request->getMethod() === 'POST') {
 }
 
 ob_start();
-open_page("Changement de mot de passe", $root);
-navigation($root, 2, 'A', "Changement de mot de passe");
-zone_menu(0, 0, array('s' => '', 'c' => 'O')); //PUBLIC STAT & CERT
-?>
-<div id="col_main_adm">
-    <h2>Modification de votre mot de passe</h2>
-    <form method="post">
-        <table cellspacing="0" cellpadding="1" summary="Formulaire">
-            <tr>
-                <td>Code utilisateur : </td>
-                <td><?= $userlogin; ?></td>
-            </tr>
-            <tr>
-                <td>Ancien mot de passe : </td>
-                <td>
-                    <input type="password" name="actual_password" <?= isset($form_errors['actual_password']) ? ' erreur' : ''; ?>>
-                </td>
-                <td>
-                    <?php if (isset($form_errors['actual_password'])) { ?>
-                        <div class="erreur">
-                            <?= $form_errors['actual_password']; ?>
-                        </div>
-                    <?php } else { ?>
-                        <img onmouseover="seetext(EApwdverif)" onmouseout="seeasterisk(EApwdverif)"
-                            src="<?= $root; ?>/assets/img/eye-16-16.png"
-                            alt="Voir mot de passe" width="16" height="16">
-                    <?php } ?>
-                </td>
-            </tr>
-            <tr>
-                <td>Nouveau mot de passe : </td>
-                <td>
-                    <input type="password" name="new_password">
-                </td>
-                <td>
-                    <?php if (isset($form_errors['new_password'])) { ?>
-                        <div class="erreur">
-                            <?= $form_errors['new_password']; ?>
-                        </div>
-                    <?php } else { ?>
-                        <img onmouseover="seetext(EApwdverif)" onmouseout="seeasterisk(EApwdverif)"
-                            src="<?= $root; ?>/assets/img/eye-16-16.png"
-                            alt="Voir mot de passe" width="16" height="16">
-                    <?php } ?>
-                </td>
-            </tr>
-            <tr>
-                <td>Nouveau mot de passe (vérif.) : </td>
-                <td>
-                    <input type="password" name="new_password_confirm">
-                </td>
-                <td>
-                    <?php if (isset($form_errors['new_password_confirm'])) { ?>
-                        <div class="erreur">
-                            <?= $form_errors['new_password_confirm']; ?>
-                        </div>
-                    <?php } else { ?>
-                        <img onmouseover="seetext(EApwdverif)" onmouseout="seeasterisk(EApwdverif)"
-                            src="<?= $root; ?>/assets/img/eye-16-16.png"
-                            alt="Voir mot de passe" width="16" height="16">
-                    <?php } ?>
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>
-                    <button type="reset">Effacer</button>
-                    <button type="submit">Modifier</button>
-                </td>
-                <td></td>
-            </tr>
-        </table>
-    </form>
+open_page("Changement de mot de passe", $root); ?>
+<div class="main">
+    <?php zone_menu(0, 0); ?>
+    <div class="main-col-center text-center">
+        <?php navigation($root, 2, 'A', "Changement de mot de passe"); ?>
+
+        <h2>Modification de votre mot de passe</h2>
+        <form method="post">
+            <table cellspacing="0" cellpadding="1" summary="Formulaire">
+                <tr>
+                    <td>Code utilisateur : </td>
+                    <td><?= $userlogin; ?></td>
+                </tr>
+                <tr>
+                    <td>Ancien mot de passe : </td>
+                    <td>
+                        <input type="password" name="actual_password" <?= isset($form_errors['actual_password']) ? ' erreur' : ''; ?>>
+                    </td>
+                    <td>
+                        <?php if (isset($form_errors['actual_password'])) { ?>
+                            <div class="erreur">
+                                <?= $form_errors['actual_password']; ?>
+                            </div>
+                        <?php } else { ?>
+                            <img onmouseover="seetext(EApwdverif)" onmouseout="seeasterisk(EApwdverif)"
+                                src="<?= $root; ?>/assets/img/eye-16-16.png"
+                                alt="Voir mot de passe" width="16" height="16">
+                        <?php } ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Nouveau mot de passe : </td>
+                    <td>
+                        <input type="password" name="new_password">
+                    </td>
+                    <td>
+                        <?php if (isset($form_errors['new_password'])) { ?>
+                            <div class="erreur">
+                                <?= $form_errors['new_password']; ?>
+                            </div>
+                        <?php } else { ?>
+                            <img onmouseover="seetext(EApwdverif)" onmouseout="seeasterisk(EApwdverif)"
+                                src="<?= $root; ?>/assets/img/eye-16-16.png"
+                                alt="Voir mot de passe" width="16" height="16">
+                        <?php } ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Nouveau mot de passe (vérif.) : </td>
+                    <td>
+                        <input type="password" name="new_password_confirm">
+                    </td>
+                    <td>
+                        <?php if (isset($form_errors['new_password_confirm'])) { ?>
+                            <div class="erreur">
+                                <?= $form_errors['new_password_confirm']; ?>
+                            </div>
+                        <?php } else { ?>
+                            <img onmouseover="seetext(EApwdverif)" onmouseout="seeasterisk(EApwdverif)"
+                                src="<?= $root; ?>/assets/img/eye-16-16.png"
+                                alt="Voir mot de passe" width="16" height="16">
+                        <?php } ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <button type="reset">Effacer</button>
+                        <button type="submit">Modifier</button>
+                    </td>
+                    <td></td>
+                </tr>
+            </table>
+        </form>
+    </div>
 </div>
 <script type="text/javascript">
     function seetext(x) {

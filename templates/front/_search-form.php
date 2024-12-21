@@ -9,9 +9,11 @@ $act_types = [
 ];
 
 if ($config->get('PUBLIC_LEVEL') >= 3 || ($session->has('user') && $session->get('user')['level'] >= 3 && ((current_user_solde() > 0) || $config->get('RECH_ZERO_PTS') == 1))) { ?>
-    <div class="menu_zone">
-        <div class="menu_titre">Recherche directe</div>
-        <form class="form_rech" name="recherche" method="post" action="<?= $root; ?>/chercher.php">
+    <div class="box">
+        <div class="box-title">Recherche directe</div>
+        <div class="box-body p-2">
+
+        <form name="recherche" method="post" action="<?= $root; ?>/chercher.php">
             <input type="text" name="achercher">
             <input type="submit" name="Submit" value="Chercher">
             <br><input type="radio" name="zone" value="1" checked="checked">Intéressé(e)
@@ -25,7 +27,7 @@ if ($config->get('PUBLIC_LEVEL') >= 3 || ($session->has('user') && $session->get
                 </select>
             <?php } ?>
             <input type="hidden" name="direct" value="1">
-            <div class="menuTexte">
+            <div class="text-right p-2">
                 <dl>
                     <dd>
                         <a href="<?= $root; ?>/rechavancee.php">Recherche avancée</a>
@@ -35,6 +37,6 @@ if ($config->get('PUBLIC_LEVEL') >= 3 || ($session->has('user') && $session->get
                     </dd>
                 </dl>
             </div>
-        </form>
+        </form></div>
     </div>
 <?php }

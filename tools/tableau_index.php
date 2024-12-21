@@ -39,7 +39,7 @@ while ($row = EA_sql_fetch_row($result)) {
     }
 }
 echo '<p align="center">' . $alphabet . '</p>';
-echo '<table summary="Liste des communes avec décompte des actes">';
+echo '<table class="m-auto" summary="Liste des communes avec décompte des actes">';
 echo '<tr class="rowheader">';
 echo '<th>Localité</th>';
 $nbcol = 3;

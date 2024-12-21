@@ -19,11 +19,12 @@ $xaction = getparam('action');
 $missingargs = true;
 
 ob_start();
-open_page("Approbation d'un compte utilisateur", $root);
+open_page("Approbation d'un compte utilisateur", $root); ?>
+<div class="main">
+    <?php zone_menu(ADM, $session->get('user')['level'], array('f' => 'N')); ?>
+    <div class="main-col-center text-center">
+        <?php 
 navadmin($root, "Approbation d'un compte utilisateur");
-
-zone_menu(ADM, $session->get('user')['level'], array('f' => 'N')); //ADMIN SANS FORM_RECHERCHE
-echo '<div id="col_main">';
 
 if ($config->get('USER_AUTO_DEF') <> 1) {
     echo "<p><b>Désolé : Cette action n'a pas de sens dans la configuration actuelle du logiciel</b></p>";
@@ -170,6 +171,7 @@ if (!$ok) {
     echo '&nbsp;|&nbsp; <a href="listusers.php">la liste des utilisateurs</a>';
     echo '&nbsp;|&nbsp; <a href="gestuser.php?id=' . $id . '">la fiche de ' . $nomprenom . '</a></p>';
 }
+echo '</div>';
 echo '</div>';
 include(__DIR__ . '/../templates/front/_footer.php');
 $response->setContent(ob_get_clean());

@@ -35,11 +35,13 @@ $condlevel = "";
 $menu_user_active = 'M';
 
 ob_start();
-open_page("Envoi d'un mail circulaire", $root);
+open_page("Envoi d'un mail circulaire", $root); ?>
+<div class="main">
+    <?php zone_menu(ADM, $session->get('user')['level'], array()); ?>
+    <div class="main-col-center text-center">
+        <?php 
 navadmin($root, "Envoi d'un mail circulaire");
-zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
 
-echo '<div id="col_main_adm">';
 require(__DIR__ . '/../templates/admin/_menu-user.php');
 
 if ($xaction == 'submitted') {
@@ -99,7 +101,7 @@ if ($missingargs) {
 
     echo '<form method="post" enctype="multipart/form-data" action="">' . "\n";
     echo '<h2 align="center">Envoi d\'un mail circulaire</h2>';
-    echo '<table cellspacing="2" cellpadding="0" border="0" align="center">' . "\n";
+    echo '<table class="m-auto">' . "\n";
 
     echo " <tr><td colspan=\"2\"><b>Destinataires</b></td></tr>\n";
     echo " <tr>\n";
@@ -169,6 +171,7 @@ if ($missingargs) {
     echo '<a href="' . mkurl("listusers.php", "") . '"><b>' . "liste des utilisateurs" . '</b></a>';
     echo '</p>';
 }
+echo '</div>';
 echo '</div>';
 include(__DIR__ . '/../templates/front/_footer.php');
 $response->setContent(ob_get_clean());

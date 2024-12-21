@@ -86,137 +86,139 @@ if ($id > 0) {  // édition
 
 $menu_data_active = 'L';
 ob_start();
-open_page("Gestion des localités", $root, null, null, $JSheader);
-if ($id > 0) {
-    $carto->printOnLoad(); // TODO: Need test, display fail...
-}
-navadmin($root, "Gestion d'une localité");
-zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
-?>
-<div id="col_main">
-    <?php require(__DIR__ . '/../templates/admin/_menu_data.php'); ?>
+open_page("Gestion des localités", $root, null, null, $JSheader); ?>
+<div class="main">
+    <?php zone_menu(ADM, $session->get('user')['level'], array()); ?>
+    <div class="main-col-center text-center">
+        <?php
+        if ($id > 0) {
+            $carto->printOnLoad(); // TODO: Need test, display fail...
+        }
+        navadmin($root, "Gestion d'une localité");
+        require(__DIR__ . '/../templates/admin/_menu_data.php'); ?>
 
-    <?php if ($id > 0 && $act == "del") {
-        $reqmaj = "DELETE FROM " . $config->get('EA_DB') . "_geoloc WHERE ID=" . $id . ";";
-        $result = EA_sql_query($reqmaj, $a_db);
-        //writelog('Suppression localité #'.$id,$lelogin,1);
-        echo '<p><b>La localité est supprimée.</b></p>';
-        header("Location: $root/admin/gestgeoloc.php");
-        exit();
-    }
+        <?php if ($id > 0 && $act == "del") {
+            $reqmaj = "DELETE FROM " . $config->get('EA_DB') . "_geoloc WHERE ID=" . $id . ";";
+            $result = EA_sql_query($reqmaj, $a_db);
+            //writelog('Suppression localité #'.$id,$lelogin,1);
+            echo '<p><b>La localité est supprimée.</b></p>';
+            header("Location: $root/admin/gestgeoloc.php");
+            exit();
+        }
 
-    // Données postées -> ajouter ou modifier
-    if (getparam('action') == 'submitted') {
-        $ok = true;
-        // validations si besoin
-        if ($ok) {
-            $mes = "";
-            if (getparam('lon') <> $lon or getparam('lat') <> $lat) {
-                $newstatut = 'M';
-            } else {
-                $newstatut = $statut;
-            }
-            $missingargs = false;
-            $reqmaj = "UPDATE " . $config->get('EA_DB') . "_geoloc SET ";
-            $reqmaj = $reqmaj .
-                "NOTE_N = '" . sql_quote(getparam('noteN')) . "', " .
-                "NOTE_M = '" . sql_quote(getparam('noteM')) . "', " .
-                "NOTE_D = '" . sql_quote(getparam('noteD')) . "', " .
-                "NOTE_V = '" . sql_quote(getparam('noteV')) . "', " .
-                "STATUT = '" . sql_quote($newstatut) . "', " .
-                "LON    = '" . sql_quote(getparam('lon')) . "', " .
-                "LAT    = '" . sql_quote(getparam('lat')) . "' " .
-                " WHERE ID=" . $id . ";";
+        // Données postées -> ajouter ou modifier
+        if (getparam('action') == 'submitted') {
+            $ok = true;
+            // validations si besoin
+            if ($ok) {
+                $mes = "";
+                if (getparam('lon') <> $lon or getparam('lat') <> $lat) {
+                    $newstatut = 'M';
+                } else {
+                    $newstatut = $statut;
+                }
+                $missingargs = false;
+                $reqmaj = "UPDATE " . $config->get('EA_DB') . "_geoloc SET ";
+                $reqmaj = $reqmaj .
+                    "NOTE_N = '" . sql_quote(getparam('noteN')) . "', " .
+                    "NOTE_M = '" . sql_quote(getparam('noteM')) . "', " .
+                    "NOTE_D = '" . sql_quote(getparam('noteD')) . "', " .
+                    "NOTE_V = '" . sql_quote(getparam('noteV')) . "', " .
+                    "STATUT = '" . sql_quote($newstatut) . "', " .
+                    "LON    = '" . sql_quote(getparam('lon')) . "', " .
+                    "LAT    = '" . sql_quote(getparam('lat')) . "' " .
+                    " WHERE ID=" . $id . ";";
 
-            //echo "<p>".$reqmaj."</p>";
-            if ($result = EA_sql_query($reqmaj)) {
-                // echo '<p>'.EA_sql_error().'<br />'.$reqmaj.'</p>';
-                echo '<p><b>Fiche enregistrée' . $mes . '.</b></p>';
-                $id = 0;
-            } else {
-                echo ' -> Erreur : ';
-                echo '<p>' . EA_sql_error() . '<br />' . $reqmaj . '</p>';
+                //echo "<p>".$reqmaj."</p>";
+                if ($result = EA_sql_query($reqmaj)) {
+                    // echo '<p>'.EA_sql_error().'<br />'.$reqmaj.'</p>';
+                    echo '<p><b>Fiche enregistrée' . $mes . '.</b></p>';
+                    $id = 0;
+                } else {
+                    echo ' -> Erreur : ';
+                    echo '<p>' . EA_sql_error() . '<br />' . $reqmaj . '</p>';
+                }
             }
         }
-    }
 
-    //Si pas tout les arguments nécessaire, on affiche le formulaire
-    if ($id <> 0 && $missingargs) { ?>
-        <h2><?= $action; ?> d'une fiche de localité</h2>
-        <form method="post">
-            <table cellspacing="0" cellpadding="1" summary="Formulaire">
-                <tr>
-                    <td>Localité : </td>
-                    <td colspan="2"><b><?= $commune; ?> [<?= $depart; ?>]</b></td>
-                </tr>
-                <tr>
-                    <td>Longitude : </td>
-                    <td><input type="text" name="lon" id="lon" size="10" value="<?= $row['LON']; ?>"></td>
-                    <td rowspan="4">
-                        <?php $carto->printMap(); ?>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Latitude : </td>
-                    <td><input type="text" name="lat" id="lat" size="10" value="<?= $row['LAT']; ?>"></td>
-                </tr>
-                <tr>
-                    <td>Géolocalisation : </td>
-                    <td><?= $ast[$statut]; ?></td>
-                </tr>
-                <tr>
-                    <td colspan="2"><b>Déplacer la punaise pour corriger la localisation </b>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Commentaire Naissances : </td>
-                    <td colspan="2">
-                        <textarea name="noteN" cols="60" rows="2"><?= html_entity_decode($noteN, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET); ?></textarea>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Commentaire Mariages : </td>
-                    <td colspan="2">
-                        <textarea name="noteM" cols="60" rows="2"><?= html_entity_decode($noteM, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET); ?></textarea>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Commentaire Décès : </td>
-                    <td colspan="2">
-                        <textarea name="noteD" cols="60" rows="2"><?= html_entity_decode($noteD, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET); ?></textarea>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Commentaire Actes divers : </td>
-                    <td colspan="2">
-                        <textarea name="noteV" cols="60" rows="2"><?= html_entity_decode($noteV, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET); ?></textarea>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <input type="hidden" name="id" value="<?= $id; ?>">
-                        <input type="hidden" name="commune" value="<?= $commune; ?>">
-                        <input type="hidden" name="action" value="submitted">
-                    </td>
-                    <td colspan="2">
-                        <a href="<?= $root; ?>/admin/aide/geoloc.html" target="_blank">Aide</a>
-                        <button type="reset">Effacer</button>
-                        <button type="submit">Enregistrer</button>
-                        <?php if ($id > 0) { ?>
-                            <a href="<?= $root; ?>/admin/gestgeoloc.php?id=<?= $id; ?>&amp;act=del">Supprimer cette localité</a>
-                        <?php } ?>
-                    </td>
-                </tr>
-            </table>
-        </form>
-    <?php } else { ?>
-        <p>
-            <a href="<?= $root; ?>/admin/listgeolocs.php">Retour à la liste des localités</a>
-            <?php if ($leid > 0 && $act != "del") { ?>
-                <a href="<?= $root; ?>/admin/gestgeoloc.php?id=<?= $leid; ?>">Retour à la fiche de <?= getparam('commune'); ?></a>
-            <?php } ?>
-        </p>
-    <?php } ?>
+        //Si pas tout les arguments nécessaire, on affiche le formulaire
+        if ($id <> 0 && $missingargs) { ?>
+            <h2><?= $action; ?> d'une fiche de localité</h2>
+            <form method="post">
+                <table cellspacing="0" cellpadding="1" summary="Formulaire">
+                    <tr>
+                        <td>Localité : </td>
+                        <td colspan="2"><b><?= $commune; ?> [<?= $depart; ?>]</b></td>
+                    </tr>
+                    <tr>
+                        <td>Longitude : </td>
+                        <td><input type="text" name="lon" id="lon" size="10" value="<?= $row['LON']; ?>"></td>
+                        <td rowspan="4">
+                            <?php $carto->printMap(); ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Latitude : </td>
+                        <td><input type="text" name="lat" id="lat" size="10" value="<?= $row['LAT']; ?>"></td>
+                    </tr>
+                    <tr>
+                        <td>Géolocalisation : </td>
+                        <td><?= $ast[$statut]; ?></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><b>Déplacer la punaise pour corriger la localisation </b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Commentaire Naissances : </td>
+                        <td colspan="2">
+                            <textarea name="noteN" cols="60" rows="2"><?= html_entity_decode($noteN, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET); ?></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Commentaire Mariages : </td>
+                        <td colspan="2">
+                            <textarea name="noteM" cols="60" rows="2"><?= html_entity_decode($noteM, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET); ?></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Commentaire Décès : </td>
+                        <td colspan="2">
+                            <textarea name="noteD" cols="60" rows="2"><?= html_entity_decode($noteD, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET); ?></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Commentaire Actes divers : </td>
+                        <td colspan="2">
+                            <textarea name="noteV" cols="60" rows="2"><?= html_entity_decode($noteV, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET); ?></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="hidden" name="id" value="<?= $id; ?>">
+                            <input type="hidden" name="commune" value="<?= $commune; ?>">
+                            <input type="hidden" name="action" value="submitted">
+                        </td>
+                        <td colspan="2">
+                            <a href="<?= $root; ?>/admin/aide/geoloc.html" target="_blank">Aide</a>
+                            <button type="reset">Effacer</button>
+                            <button type="submit">Enregistrer</button>
+                            <?php if ($id > 0) { ?>
+                                <a href="<?= $root; ?>/admin/gestgeoloc.php?id=<?= $id; ?>&amp;act=del">Supprimer cette localité</a>
+                            <?php } ?>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        <?php } else { ?>
+            <p>
+                <a href="<?= $root; ?>/admin/listgeolocs.php">Retour à la liste des localités</a>
+                <?php if ($leid > 0 && $act != "del") { ?>
+                    <a href="<?= $root; ?>/admin/gestgeoloc.php?id=<?= $leid; ?>">Retour à la fiche de <?= getparam('commune'); ?></a>
+                <?php } ?>
+            </p>
+        <?php } ?>
+    </div>
 </div>
 <?php include(__DIR__ . '/../templates/front/_footer.php');
 

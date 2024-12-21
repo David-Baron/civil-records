@@ -32,10 +32,13 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
     }
 
     ob_start();
-    open_page($xcomm . " : " . $admtxt . "Mariages", $root);
+    open_page($xcomm . " : " . $admtxt . "Mariages", $root); ?>
+    <div class="main">
+        <?php zone_menu(ADM, $session->get('user')['level']); ?>
+        <div class="main-col-center text-center">
+            <?php 
     navigation($root, ADM + 2, 'M', $xcomm);
-    zone_menu(ADM, $session->get('user')['level']);
-    echo '<div id="col_main">' . "\n";
+
     liste_patro_2($program, $path, $xcomm, $xpatr, "Mariages", $config->get('EA_DB') . "_mar3", "", $gid, $note);
 } else {
     if (!$userAuthorizer->isGranted(3)) {
@@ -45,10 +48,13 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
     }
 
     ob_start();
-    open_page($xcomm . " : " . $admtxt . "Table des mariages", $root);
+    open_page($xcomm . " : " . $admtxt . "Table des mariages", $root); ?>
+    <div class="main">
+        <?php zone_menu(ADM, $session->get('user')['level']); ?>
+        <div class="main-col-center text-center">
+            <?php 
     navigation($root, ADM + 3, 'M', $xcomm, $xpatr);
-    zone_menu(ADM, $session->get('user')['level']);
-    echo '<div id="col_main">' . "\n";
+
     // **** Lister la table des actes
     echo '<h2>Actes de mariage</h2>';
 
@@ -171,6 +177,7 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
     }
 }
 
+echo '</div>';
 echo '</div>';
 include(__DIR__ . '/../templates/front/_footer.php');
 $response->setContent(ob_get_clean());

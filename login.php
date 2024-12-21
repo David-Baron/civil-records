@@ -42,7 +42,7 @@ if ($motif == 7) {
 $form_errors = [];
 
 if ($request->getMethod() === 'POST') {
-    if ($session->get('antiflood', 0) >= 5 ) {
+    if ($session->get('antiflood', 0) >= 5) {
         $form_errors['antiflood'] = 'Vous avez dépasser le nombre d\'essai! Vous pourrez réessayer dans 24 heures.';
     }
 
@@ -62,64 +62,65 @@ if ($request->getMethod() === 'POST') {
 // pathroot($root, $path, $xcomm, $xpatr, $page); Useless now.
 
 ob_start();
-open_page("ExpoActes : Login", $root, null, null, null, '../index.htm');
-navigation($root, 2, 'A', "Connexion");
-zone_menu(0, 0);
-?>
-<div id="col_main">
+open_page("ExpoActes : Login", $root, null, null, null, '../index.htm'); ?>
+<div class="main">
+    <?php zone_menu(0, 0); ?>
+    <div class="main-col-center text-center">
+        <?php navigation($root, 2, 'A', "Connexion"); ?>
+        <h2>Vous devez vous identifier : </h2>
 
-<h2>Vous devez vous identifier : </h2>
+        <form method="post">
+            <table class="m-auto">
+                <tr>
+                    <td>Login</td>
+                    <td><input type="text" name="login" maxlength="15"></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Mot de passe</td>
+                    <td>
+                        <input type="password" name="passwd" id="EApwd" maxlength="15">
+                    </td>
+                    <td>
+                        <img onmouseover="seetext(EApwd)" onmouseout="seeasterisk(EApwd)" src="<?= $root; ?>/assets/img/eye-16-16.png" alt="Voir mot de passe" width="16" height="16">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <input type="checkbox" name="saved" value="yes">Mémoriser le mot de passe quelques jours.
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td colspan="2">
+                        <button type="submit">Me connecter</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
 
-<form method="post">
-    <table>
-        <tr>
-            <td>Login</td>
-            <td><input type="text" name="login" maxlength="15"></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>Mot de passe</td>
-            <td>
-                <input type="password" name="passwd" id="EApwd" maxlength="15">
-            </td>
-            <td>
-                <img onmouseover="seetext(EApwd)" onmouseout="seeasterisk(EApwd)" src="<?= $root; ?>/assets/img/eye-16-16.png" alt="Voir mot de passe" width="16" height="16">
-            </td>
-        </tr>
-        <tr>
-            <td colspan="3">
-                <input type="checkbox" name="saved" value="yes">Mémoriser le mot de passe quelques jours.
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td colspan="2">
-                <button type="submit">Me connecter</button>
-            </td>
-        </tr>
-    </table>
-</form>
-
-<p><a href="<?= $root; ?>/acces.php">Voir les conditions d'accès à la partie privée du site</a></p>
-<p><a href="<?= $root; ?>/renvoilogin.php">Login ou mot de passe perdu ?</a></p>
-<?php if ($config->get('USER_AUTO_DEF') > 0) {
-    if ($config->get('USER_AUTO_DEF') == 1) {
-        $mescpte = "Demander ici la création d'un compte d'utilisateur";
-    } else {
-        $mescpte = "Créer ici votre compte d'utilisateur";
-    } ?>
-    <p>
-        <a href="<?= $root; ?>/cree_compte.php"><b>Pas encore inscrit ? <?= $mescpte; ?></b></a>
-    </p>
-<?php } ?>
+        <p><a href="<?= $root; ?>/acces.php">Voir les conditions d'accès à la partie privée du site</a></p>
+        <p><a href="<?= $root; ?>/renvoilogin.php">Login ou mot de passe perdu ?</a></p>
+        <?php if ($config->get('USER_AUTO_DEF') > 0) {
+            if ($config->get('USER_AUTO_DEF') == 1) {
+                $mescpte = "Demander ici la création d'un compte d'utilisateur";
+            } else {
+                $mescpte = "Créer ici votre compte d'utilisateur";
+            } ?>
+            <p>
+                <a href="<?= $root; ?>/cree_compte.php"><b>Pas encore inscrit ? <?= $mescpte; ?></b></a>
+            </p>
+        <?php } ?>
+    </div>
 </div>
 <script type="text/javascript">
-	function seetext(x) {
-		x.type = 'text';
-	}
-	function seeasterisk(x) {
-		x.type = 'password';
-	}
+    function seetext(x) {
+        x.type = 'text';
+    }
+
+    function seeasterisk(x) {
+        x.type = 'password';
+    }
 </script>
 <?php include(__DIR__ . '/templates/front/_footer.php');
 $response->setContent(ob_get_clean());

@@ -1,4 +1,4 @@
-<p>
+<p class="text-center">
     <strong>Administration utilisateurs : </strong>
     <a href="<?= $root; ?>/admin/listusers.php" <?= ('L' == $menu_user_active ? 'class="bolder"' : ''); ?>>Lister</a>
     | <a href="<?= $root; ?>/admin/gestuser.php?id=-1" <?= ('A' == $menu_user_active ? 'class="bolder"' : ''); ?>>Ajouter</a>

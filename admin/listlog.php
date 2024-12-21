@@ -29,10 +29,13 @@ $xfilter = getparam('xfilter');
 $menu_software_active = 'J';
 
 ob_start();
-open_page($config->get('SITENAME') . " : Activité du site", $root);
+open_page($config->get('SITENAME') . " : Activité du site", $root); ?>
+<div class="main">
+    <?php zone_menu(ADM, $session->get('user')['level']); ?>
+    <div class="main-col-center text-center">
+        <?php 
 navadmin($root, "Activité du site");
-zone_menu(ADM, $session->get('user')['level'], array());//ADMIN STANDARD
-echo '<div id="col_main_adm">';
+
 require(__DIR__ . '/../templates/admin/_menu-software.php');
 
 // Suppression des informations anciennes
@@ -136,10 +139,13 @@ if ($nb > 0) {
     echo '<p>' . $listpages . '</p>';
 } else {
     msg('Aucune action enregistrée');
-}
+} ?>
 
-echo '</div>';
-echo '<p>Durée du traitement  : ' . round(microtime_float() - $MT0, 3) . ' sec.</p>' . "\n";
-include(__DIR__ . '/../templates/front/_footer.php');
+<p>Durée du traitement  : <?= round(microtime_float() - $MT0, 3); ?> sec.</p>
+
+</div>
+</div>
+
+<?php include(__DIR__ . '/../templates/front/_footer.php');
 $response->setContent(ob_get_clean());
 $response->send();

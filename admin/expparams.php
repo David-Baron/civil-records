@@ -18,11 +18,12 @@ function init_page()
     global $root,$session,$htmlpage;
 
     open_page("Export des paramètres ", $root);
+    ?>
+    <div class="main">
+        <?php zone_menu(ADM, $session->get('user')['level'], array()); ?>
+        <div class="main-col-center text-center">
+            <?php 
     navadmin($root, "Export des paramètres");
-
-    zone_menu(ADM, $session->get('user')['level'], array());//ADMIN STANDARD
-
-    echo '<div id="col_main_adm">';
     $htmlpage = true;
 }
 
@@ -95,6 +96,7 @@ set_last_backups($list_backups);
 writelog('Backup des paramètres', "PARAMS", $nb); */
 
 if ($htmlpage) {
+    echo '</div>';
     echo '</div>';
     include(__DIR__ . '/../templates/front/_footer.php');
 }

@@ -17,12 +17,12 @@ function init_page()
 {
     global $root, $session, $htmlpage;
 
-    open_page("Export d'une série d'utilisateur", $root);
+    open_page("Export d'une série d'utilisateur", $root); ?>
+    <div class="main">
+        <?php zone_menu(ADM, $session->get('user')['level'], array()); ?>
+        <div class="main-col-center text-center">
+            <?php 
     navadmin($root, "Export d'utilisateurs");
-
-    zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
-
-    echo '<div id="col_main_adm">';
     $htmlpage = true;
 }
 
@@ -232,7 +232,7 @@ if (! $missingargs) {
 } else { ?>
     <form method="post" enctype="multipart/form-data">
         <h2>Export/Suppression d'utilisateurs</h2>
-        <table cellspacing="0" cellpadding="0" summary="Formulaire">
+        <table class="m-auto" summary="Formulaire">
             <tr>
                 <td>Dernier backup : </td>
                 <td><?= show_last_backup("U"); ?></td>
@@ -325,6 +325,7 @@ if (! $missingargs) {
 <?php }
 
 if ($htmlpage) {
+    echo '</div>';
     echo '</div>';
     include(__DIR__ . '/../templates/front/_footer.php');
 }

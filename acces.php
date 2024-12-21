@@ -26,13 +26,14 @@ open_page(
     null,
     '../index.htm',
     'rss.php'
-);
-navigation($root, 2, 'A', "Conditions d'accès");
-zone_menu(0, 0);
-?>
-<div id="col_main">
-    <h2>Conditions d'accès aux détails des données</h2>
-    <?php include(__DIR__ . '/templates/front/_commentaire.php'); ?>
+); ?>
+<div class="main">
+    <?php zone_menu(0, 0); ?>
+    <div class="main-col-center text-center">
+        <?php navigation($root, 2, 'A', "Conditions d'accès"); ?>
+        <h2>Conditions d'accès aux détails des données</h2>
+        <?php include(__DIR__ . '/templates/front/_commentaire.php'); ?>
+    </div>
 </div>
 <?php include(__DIR__ . '/templates/front/_footer.php');
 

@@ -39,12 +39,12 @@ if ($config->get('GEO_MODE_PUBLIC') == 5 || $vue == 'C') { // si pas localité i
     $geo_degroupage = $config->get('GEO_ZOOM_DEGROUPAGE', 10);
     $geo_zoom = $config->get('GEO_ZOOM_INITIAL', 0);
 
-    require(__DIR__ .'/tools/GoogleMap/OrienteMap.inc.php');
-    require(__DIR__ .'/tools/GoogleMap/Jsmin.php');
+    require(__DIR__ . '/tools/GoogleMap/OrienteMap.inc.php');
+    require(__DIR__ . '/tools/GoogleMap/Jsmin.php');
 
     $carto = new GoogleMapAPI();
     $carto->_minify_js = isset($_REQUEST["min"]) ? false : true;
-    require(__DIR__ .'/tools/carto_index.php');
+    require(__DIR__ . '/tools/carto_index.php');
     //$carto->addMarkerByAddress("Bievre, Namur","Bièvre", "Texte de la bulle");
     $carto->setMapType("terrain");
     $carto->setTypeControlsStyle("dropdown");
@@ -72,47 +72,47 @@ if ($config->get('GEO_MODE_PUBLIC') == 5 || $vue == 'C') { // si pas localité i
 }
 
 ob_start();
-open_page($config->get('SITENAME') . " : Dépouillement d'actes de l'état-civil et des registres paroissiaux", $root, null, null, $JSheader, '../index.htm', 'rss.php');
-navigation($root, 1);
+open_page($config->get('SITENAME') . " : Dépouillement d'actes de l'état-civil et des registres paroissiaux", $root, null, null, $JSheader, '../index.htm', 'rss.php'); ?>
+<div class="main">
+    <?php $menu_actes = zone_menu(0, 0); ?>
+    <div class="main-col-center text-center">
+        <?php navigation($root, 1);
 
-$menu_actes = zone_menu(0, 0, array('s' => $vue, 'c' => 'O')); // PUBLIC STAT(retour menu_actes)
+        if (null !== $config->get('AVERTISMT')) {
+            echo '<p>' . $config->get('AVERTISMT') . '</p>';
+        }
 
-echo '<div id="col_main">';
+        echo '<h2>Communes et paroisses';
+        if ($config->get('GEO_MODE_PUBLIC') >= 3 && $config->get('GEO_MODE_PUBLIC') < 5) {
+            echo " : ";
+            if ($vue == 'C') {
+                echo 'Carte | <a href="' . $root . '/index.php?vue=T&xtyp=' . $xtyp . '"' . ($vue == 'T' ? ' class="bolder"' : '') . '>Tableau</a>';
+            }
 
-if (null !== $config->get('AVERTISMT')) {
-    echo '<p>' . $config->get('AVERTISMT') . '</p>';
-}
+            if ($vue == 'T') {
+                echo '<a href="' . $root . '/index.php?vue=C&xtyp=' . $xtyp . '"' . ($vue == 'C' ? ' class="bolder"' : '') . '>Carte</a> | Tableau';
+            }
+        }
+        echo '</h2>';
 
-echo '<h2>Communes et paroisses';
-if ($config->get('GEO_MODE_PUBLIC') >= 3 && $config->get('GEO_MODE_PUBLIC') < 5) {
-    echo " : ";
-    if ($vue == 'C') {
-        echo 'Carte | <a href="' . $root . '/index.php?vue=T&xtyp=' . $xtyp . '"' . ($vue == 'T' ? ' class="bolder"' : '') . '>Tableau</a>';
-    }
+        if ($config->get('GEO_MODE_PUBLIC') == 5 || $vue == 'C') { // si pas localité isolée et avec carte
+            echo '<p><b>' . $menu_actes . '</b></p>';
+            //--- Carte
+            $carto->printOnLoad();
+            $carto->printMap();
+            //$carto->printSidebar();
+        }
 
-    if ($vue == 'T') {
-        echo '<a href="' . $root . '/index.php?vue=C&xtyp=' . $xtyp . '"' . ($vue == 'C' ? ' class="bolder"' : '') . '>Carte</a> | Tableau';
-    }
-}
-echo '</h2>';
+        if ($config->get('GEO_MODE_PUBLIC') == 5 || $vue == 'T') { // si pas localité isolée et avec carte
+            // $menu_actes calculé dans le module statistiques
+            echo '<p><b>' . $menu_actes . '</b></p>';
+            require(__DIR__ . '/tools/tableau_index.php');
+        }
 
-if ($config->get('GEO_MODE_PUBLIC') == 5 || $vue == 'C') { // si pas localité isolée et avec carte
-    echo '<p><b>' . $menu_actes . '</b></p>';
-    //--- Carte
-    $carto->printOnLoad();
-    $carto->printMap();
-    //$carto->printSidebar();
-}
+        include(__DIR__ . "/templates/front/_commentaire.php");
 
-if ($config->get('GEO_MODE_PUBLIC') == 5 || $vue == 'T') { // si pas localité isolée et avec carte
-    // $menu_actes calculé dans le module statistiques
-    echo '<p><b>' . $menu_actes . '</b></p>';
-    require(__DIR__ .'/tools/tableau_index.php');
-}
-
-include(__DIR__ . "/templates/front/_commentaire.php");
-
-echo '</div>';
-include(__DIR__ . '/templates/front/_footer.php');
-$response->setContent(ob_get_clean());
-$response->send();
+        echo '</div>';
+        echo '</div>';
+        include(__DIR__ . '/templates/front/_footer.php');
+        $response->setContent(ob_get_clean());
+        $response->send();

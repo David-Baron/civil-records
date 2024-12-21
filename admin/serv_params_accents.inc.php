@@ -7,18 +7,12 @@ function init_page_EL_GENERALE($head = "", $ajax = "", $affiche = '') // SOURCE 
 {
     global $root, $session, $htmlpage, $titre;
 
-    open_page($titre, $root, null, null, $head);
-    /*		if ($ajax != "")
-        // Ajaxify Your PHP Functions
-        include("../tools/PHPLiveX/PHPLiveX.php");
-        $ajax = new PHPLiveX($ajax);
-        $ajax->Run(false,"../tools/PHPLiveX/phplivex.js");
-*/
+    open_page($titre, $root, null, null, $head); ?>
+    <div class="main">
+        <?php zone_menu(ADM, $session->get('user')['level']); ?>
+        <div class="main-col-center text-center">
+            <?php 
     navadmin($root, $titre);
-
-    zone_menu(ADM, $session->get('user')['level'], array()); //ADMIN STANDARD
-
-    echo '<div id="col_main_adm">';
     $htmlpage = true;
     my_flush();
 }

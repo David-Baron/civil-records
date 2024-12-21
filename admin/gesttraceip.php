@@ -25,13 +25,16 @@ $cptko = 0;
 $menu_software_active = 'F';
 
 ob_start();
-open_page("Gestion du filtrage IP", $root);
-navadmin($root, "Gestion du filtrage IP");
-zone_menu(ADM, $session->get('user')['level'], array());//ADMIN STANDARD
-echo '<div id="col_main_adm">';
-require(__DIR__ . '/../templates/admin/_menu-software.php');
-admin_traceip();
-echo '</div>';
-include(__DIR__ . '/../templates/front/_footer.php');
+open_page("Gestion du filtrage IP", $root); ?>
+<div class="main">
+    <?php zone_menu(ADM, $session->get('user')['level']); ?>
+    <div class="main-col-center text-center">
+        <?php
+        navadmin($root, "Gestion du filtrage IP");
+        require(__DIR__ . '/../templates/admin/_menu-software.php');
+        admin_traceip(); ?>
+    </div>
+</div>
+<?php include(__DIR__ . '/../templates/front/_footer.php');
 $response->setContent(ob_get_clean());
 $response->send();

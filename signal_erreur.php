@@ -80,7 +80,7 @@ function gen_id_nim($xty, $xacte)
 }
 
 function set_table_type_script_acte($TypeActes)
-{    
+{
     global $config;
     // ENTREE : $TypeActes
     // SORTIE : array($table, $ntype, $script);
@@ -145,12 +145,12 @@ function search_acte($xid, $xtyp, $TYPE_TRT)
             //echo '<form method="post" action="">'."\n";
             echo '<h3 align="center">' . $logtxt . ' ' . $ntype . '</h3>' . "\n";
             //echo '<h3 align="center">Commune/paroisse : '.$acte["COMMUNE"].'</h3>';
-            echo '<table cellspacing="0" cellpadding="1" border="0" summary="Formulaire">' . "\n";
+            echo '<table class="m-auto" summary="Formulaire">' . "\n";
             $grp = "";
             for ($i = 0; $i < count($mdb); $i++) {
                 if ($mdb[$i]['GROUPE'] <> $grp) {
                     $grp = $mdb[$i]['GROUPE'];
-                    echo ' <tr class="row0">' . "\n";
+                    echo ' <tr>' . "\n";
                     echo '  <td align="left"><b>&nbsp; ' . $mdb[$i]['GETIQ'] . "  </b></td>\n";
                     echo '  <td> </td>' . "\n";
                     echo ' </tr>';
@@ -179,8 +179,8 @@ function search_acte($xid, $xtyp, $TYPE_TRT)
                         $value = $acte[$mdb[$i]['ZONE']];
                     }
                 } // if $value
-                echo ' <tr class="row1">';
-                echo "  <td align=right>" . $mdb[$i]['ETIQ'] . " : </td>";
+                echo ' <tr>';
+                echo "  <td>" . $mdb[$i]['ETIQ'] . " : </td>";
                 echo '  <td>';
                 if ($col[$mdb[$i]['ZONE']] <= 70) {
                     $value = str_replace('"', '&quot;', $value);
@@ -192,7 +192,7 @@ function search_acte($xid, $xtyp, $TYPE_TRT)
                 echo '  </td>';
                 echo " </tr>";
             } // for
-            echo ' <tr class="row0"><td>' . "\n";
+            echo ' <tr><td>' . "\n";
             echo "</td></tr></table>\n";
             // return
         } else { //CAS 2  diff_acte et CAS 3  gen_modif  FUSION EN 1 SEUL APPEL
@@ -244,189 +244,190 @@ $xcc   = getparam('xcc');
 $ok = false;
 
 ob_start();
-open_page("Signaler une erreur dans un acte", $root);
-navigation($root, 2, "", "Signaler une erreur dans un acte");
-zone_menu(0, 0, array('f' => 'N')); //PUBLIC SANS FORM_RECHERCHE
+open_page("Signaler une erreur dans un acte", $root); ?>
+<div class="main">
+    <?php zone_menu(0, 0); ?>
+    <div class="main-col-center text-center">
+        <?php navigation($root, 2, "", "Signaler une erreur dans un acte");
 
-echo '<div id="col_main_adm">' . "\n";
-
-// Données postées -> ajouter ou modifier
-if (getparam('action') == 'submitted') {
-    $ok = true;
-    if (empty($nompre)) {
-        msg('Merci de préciser vos nom et prenom');
-        $ok = false;
-    }
-    if (empty($email) or isin($email, '@') == -1 or isin($email, '.') == -1) {
-        msg("Vous devez préciser une adresse email valide");
-        $ok = false;
-    }
-
-    if (!$AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
-        if (strlen($msgerreur) < 10) {
-            msg('Vous devez décrire l\'erreur observée');
-            $ok = false;
-        }
-    }
-    if ($config->get('AUTO_CAPTCHA') and function_exists('imagettftext')) {
-        if (md5(getparam('captcha')) != $_SESSION['valeur_image']) {
-            msg('Attention à bien recopier le code dissimulé dans l\'image !');
-            $ok = false;
-        }
-    }
-    if ($ok) {
-        $missingargs = false;
-        $mes = "";
-        $log = "Signalmt erreur";
-
-        $EA_Type_ActScript = array('N' => "acte_naiss.php", 'M' => "acte_mari.php", 'D' => "acte_deces.php", 'V' => "acte_bans.php");
-        $s4 = $EA_Type_ActScript[$xty];
-
-        $urlvalid = $config->get('EA_URL_SITE') . $root . "/admin/" . $s4 . "?xid=" . $xid . "&amp;xct=" . $xct . $crlf . $crlf;
-        $lemessage = '';
-
-        if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
-            $lemessage .= "Destinataire final (Vérificateur, ou releveur sinon) : " . $xdf . $crlf . $crlf;
-        }
-        $lemessage .= "Erreur signalée par " . $nompre . " (" . $email . ")." . $crlf . $crlf;
-        if ($AVEC_INFOS_SUGGESTION) {
-            $lemessage .= "Description générale :" . $crlf;
-            if ($msgerreur == '') {
-                $msgerreur = 'Non remplie par le signaleur, voir champs individuels.';
+        // Données postées -> ajouter ou modifier
+        if (getparam('action') == 'submitted') {
+            $ok = true;
+            if (empty($nompre)) {
+                msg('Merci de préciser vos nom et prenom');
+                $ok = false;
             }
-        }
-        $lemessage .= $msgerreur . $crlf . $crlf;
+            if (empty($email) or isin($email, '@') == -1 or isin($email, '.') == -1) {
+                msg("Vous devez préciser une adresse email valide");
+                $ok = false;
+            }
 
-        $lemessage .= "Acte concerné (lien pour vérificateur) : " . $crlf . $crlf;
-        $lemessage .= $urlvalid . $crlf;
+            if (!$AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
+                if (strlen($msgerreur) < 10) {
+                    msg('Vous devez décrire l\'erreur observée');
+                    $ok = false;
+                }
+            }
+            if ($config->get('AUTO_CAPTCHA') and function_exists('imagettftext')) {
+                if (md5(getparam('captcha')) != $_SESSION['valeur_image']) {
+                    msg('Attention à bien recopier le code dissimulé dans l\'image !');
+                    $ok = false;
+                }
+            }
+            if ($ok) {
+                $missingargs = false;
+                $mes = "";
+                $log = "Signalmt erreur";
 
-        if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
-            list($msg_diff_acte, $nouveaux_champs) = search_acte($xid, $xty, 'diff_et_gen');
-            $lemessage .= $msg_diff_acte . $crlf;
+                $EA_Type_ActScript = array('N' => "acte_naiss.php", 'M' => "acte_mari.php", 'D' => "acte_deces.php", 'V' => "acte_bans.php");
+                $s4 = $EA_Type_ActScript[$xty];
 
-            $nouveaux_champs = str_replace(" ", "%20", $nouveaux_champs);
-            $nouveaux_champs = str_replace('"', "%22", $nouveaux_champs);
-            $nouveaux_champs = str_replace(".", "%2E", $nouveaux_champs);
-            $nouveaux_champs = str_replace("?", "%3F", $nouveaux_champs);
-            $nouveaux_champs = str_replace("!", "%21", $nouveaux_champs);
-            $nouveaux_champs = str_replace(")", "%29", $nouveaux_champs);
-            $nouveaux_champs = str_replace("\r", "%0D", $nouveaux_champs);
-            $nouveaux_champs = str_replace("\n", "%0A", $nouveaux_champs);
+                $urlvalid = $config->get('EA_URL_SITE') . $root . "/admin/" . $s4 . "?xid=" . $xid . "&amp;xct=" . $xct . $crlf . $crlf;
+                $lemessage = '';
 
-            $urlmodif = $config->get('EA_URL_SITE') . $root . "/admin/edit_acte.php?xid=" . $xid . "&amp;xtyp=" . $xty;
-            $lemessage .= $crlf . "Lien pour le responsable des modifications sur ExpoActes :" . $crlf . $crlf;
-            $lemessage .= $urlmodif . $nouveaux_champs . $crlf . $crlf;
-        }
+                if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
+                    $lemessage .= "Destinataire final (Vérificateur, ou releveur sinon) : " . $xdf . $crlf . $crlf;
+                }
+                $lemessage .= "Erreur signalée par " . $nompre . " (" . $email . ")." . $crlf . $crlf;
+                if ($AVEC_INFOS_SUGGESTION) {
+                    $lemessage .= "Description générale :" . $crlf;
+                    if ($msgerreur == '') {
+                        $msgerreur = 'Non remplie par le signaleur, voir champs individuels.';
+                    }
+                }
+                $lemessage .= $msgerreur . $crlf . $crlf;
 
-        $sujet = "Erreur signalée sur " . $config->get('SITENAME');
-        $sender = mail_encode($nompre) . ' <' . $email . ">";
+                $lemessage .= "Acte concerné (lien pour vérificateur) : " . $crlf . $crlf;
+                $lemessage .= $urlvalid . $crlf;
 
-        $dest = $config->get('EMAIL_SIGN_ERR');
-        if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
-            if ($xcc == "cc") {
-                $dest = $config->get('EMAIL_SIGN_ERR') . "," . $email;
-            } else {
+                if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
+                    list($msg_diff_acte, $nouveaux_champs) = search_acte($xid, $xty, 'diff_et_gen');
+                    $lemessage .= $msg_diff_acte . $crlf;
+
+                    $nouveaux_champs = str_replace(" ", "%20", $nouveaux_champs);
+                    $nouveaux_champs = str_replace('"', "%22", $nouveaux_champs);
+                    $nouveaux_champs = str_replace(".", "%2E", $nouveaux_champs);
+                    $nouveaux_champs = str_replace("?", "%3F", $nouveaux_champs);
+                    $nouveaux_champs = str_replace("!", "%21", $nouveaux_champs);
+                    $nouveaux_champs = str_replace(")", "%29", $nouveaux_champs);
+                    $nouveaux_champs = str_replace("\r", "%0D", $nouveaux_champs);
+                    $nouveaux_champs = str_replace("\n", "%0A", $nouveaux_champs);
+
+                    $urlmodif = $config->get('EA_URL_SITE') . $root . "/admin/edit_acte.php?xid=" . $xid . "&amp;xtyp=" . $xty;
+                    $lemessage .= $crlf . "Lien pour le responsable des modifications sur ExpoActes :" . $crlf . $crlf;
+                    $lemessage .= $urlmodif . $nouveaux_champs . $crlf . $crlf;
+                }
+
+                $sujet = "Erreur signalée sur " . $config->get('SITENAME');
+                $sender = mail_encode($nompre) . ' <' . $email . ">";
+
                 $dest = $config->get('EMAIL_SIGN_ERR');
+                if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
+                    if ($xcc == "cc") {
+                        $dest = $config->get('EMAIL_SIGN_ERR') . "," . $email;
+                    } else {
+                        $dest = $config->get('EMAIL_SIGN_ERR');
+                    }
+                }
+
+                $okmail = sendmail($sender, $dest, $sujet, $lemessage);
+                if ($okmail) {
+                    $log .= " + mail";
+                    $mes = "Un mail a été envoyé à l'administrateur.";
+                } else {
+                    $log .= " NO mail";
+                    $mes = "ERREUR : Le mail n'a pas pu être envoyé ! <br />Merci de contactez directement l'administrateur du site.";
+                }
+
+                $log .= ":" . $xty . "/" . $xid . "/" . $xct;
+                writelog($log, $nompre, 1);
+                echo '<p><b>' . $mes . '</b></p>';
+                $id = 0;
             }
         }
 
-        $okmail = sendmail($sender, $dest, $sujet, $lemessage);
-        if ($okmail) {
-            $log .= " + mail";
-            $mes = "Un mail a été envoyé à l'administrateur.";
+        //Si pas tous les arguments nécessaires, on affiche le formulaire
+        if (!$ok) {
+            echo "<h2>Signalement d'une erreur dans un acte</h2>" . "\n";
+            if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
+                echo "<p>Ce formulaire se décompose en deux parties&nbsp;:<ul><li>Tous les champs sont modifiables. Vous pouvez suggérer un remplacement, un ajout, une suppression…  L’acte apparaitra tel qu’il sera une fois vos modifications approuvées.</li><li>Une zone de texte libre dans laquelle vous pouvez, soit compléter votre saisie, soit expliquer ce qui vous paraît erroné, si les corrections individuelles ne suffisent pas à la compréhension.</li></ul></p>" . "\n";
+            }
+            echo '<form method="post"  action="">' . "\n";
+            echo '<table class="m-auto" summary="Formulaire">' . "\n";
+
+            if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
+                echo " <tr>\n";
+                echo '  <td colspan="2">' . "<h4>Modification des champs individuels : </h4><br />\n";
+                search_acte($xid, $xty, 'montre_formulaire_acte');
+                echo " </tr>\n";
+            }
+
+            echo " <tr>\n";
+            echo '  <td colspan="2">' . "<h4>Description de l'erreur observée si elle est générale : </h4><br />\n";
+            echo '  <textarea name="msgerreur" cols="80" rows="12">' . $msgerreur . '</textarea>' . "</td>\n";
+            echo " </tr>\n";
+            echo " <tr>\n";
+            echo '  <td>' . "Vos nom et prénom : </td>\n";
+            echo '  <td><input type="text" size="50" name="nompre" value="' . $nompre . '" />' . "</td>\n";
+            echo " </tr>\n";
+            echo " <tr>\n";
+            echo '  <td>' . "Votre e-mail : </td>\n";
+            echo '  <td><input type="text" name="email" size="50" value="' . $email . '" />' . "</td>\n";
+            echo " </tr>\n";
+            if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
+                echo " <tr>\n";
+                echo '  <td>' . "Copie Courriel : </td>\n";
+                echo '  <td><input type="checkbox" id="xcc" name="xcc" value="cc" checked>' . "</td>\n";
+                echo " </tr>\n";
+            } ?>
+
+            <?php if ($config->get('AUTO_CAPTCHA') && function_exists('imagettftext')) { ?>
+                <tr>
+                    <td><img src="<?= $root; ?>/tools/captchas/image.php" alt="captcha" id="captcha"></td>
+                    <td>
+                        Recopiez le code ci-contre : <br>
+                        <input type="text" name="captcha" size="6" maxlength="5" value="">
+                    </td>
+                </tr>
+            <?php } ?>
+
+        <?php if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
+
+                list($table, $ntype, $script) = set_table_type_script_acte($xty);
+                $request = "SELECT VERIFIEU, RELEVEUR, ID FROM " . $table . " WHERE ID=" . $xid . ";";
+                $result = EA_sql_query($request);
+                //echo $request;
+                $acte = EA_sql_fetch_array($result);
+                if ($acte['VERIFIEU'] != "") {
+                    $xdf = $acte['VERIFIEU'];
+                } else {
+                    $xdf = $acte['RELEVEUR'];
+                }
+            }
+
+            echo " <tr><td>\n";
+            echo '  <input type="hidden" name="xid" value="' . $xid . '">';
+            echo '  <input type="hidden" name="xty" value="' . $xty . '">';
+            echo '  <input type="hidden" name="xct" value="' . $xct . '">';
+            echo '  <input type="hidden" name="xdf" value="' . $xdf . '">';
+            //echo '  <input type="hidden" name="xcc" value="'.$xcc.'">';
+            echo '  <input type="hidden" name="action" value="submitted">';
+
+            if (!$AVEC_INFOS_SUGGESTION) { // CONDITIONNEL AVANT SIGNAL_ERREUR
+                echo ' <a href="' . $root . '/"">Revenir à l\'accueil</a></p>';
+            }
+
+            echo ' &nbsp; <input type="reset" value=" Effacer " />' . "\n";
+            echo " </td><td align=\"left\">\n";
+            echo ' &nbsp; <input type="submit" value=" >> Envoyer >> " />' . "\n";
+            echo " </td></tr>\n";
+            echo "</table>\n";
+            echo "</form>\n";
         } else {
-            $log .= " NO mail";
-            $mes = "ERREUR : Le mail n'a pas pu être envoyé ! <br />Merci de contactez directement l'administrateur du site.";
-        }
-
-        $log .= ":" . $xty . "/" . $xid . "/" . $xct;
-        writelog($log, $nompre, 1);
-        echo '<p><b>' . $mes . '</b></p>';
-        $id = 0;
-    }
-}
-
-//Si pas tous les arguments nécessaires, on affiche le formulaire
-if (!$ok) {
-    echo "<h2>Signalement d'une erreur dans un acte</h2>" . "\n";
-    if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
-        echo "<p>Ce formulaire se décompose en deux parties&nbsp;:<ul><li>Tous les champs sont modifiables. Vous pouvez suggérer un remplacement, un ajout, une suppression…  L’acte apparaitra tel qu’il sera une fois vos modifications approuvées.</li><li>Une zone de texte libre dans laquelle vous pouvez, soit compléter votre saisie, soit expliquer ce qui vous paraît erroné, si les corrections individuelles ne suffisent pas à la compréhension.</li></ul></p>" . "\n";
-    }
-    echo '<form method="post"  action="">' . "\n";
-    echo '<table cellspacing="0" cellpadding="1" border="0" summary="Formulaire">' . "\n";
-
-    if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
-        echo " <tr>\n";
-        echo '  <td colspan="2">' . "<h4>Modification des champs individuels : </h4><br />\n";
-        search_acte($xid, $xty, 'montre_formulaire_acte');
-        echo " </tr>\n";
-    }
-
-    echo " <tr>\n";
-    echo '  <td colspan="2">' . "<h4>Description de l'erreur observée si elle est générale : </h4><br />\n";
-    echo '  <textarea name="msgerreur" cols="80" rows="12">' . $msgerreur . '</textarea>' . "</td>\n";
-    echo " </tr>\n";
-    echo " <tr>\n";
-    echo '  <td>' . "Vos nom et prénom : </td>\n";
-    echo '  <td><input type="text" size="50" name="nompre" value="' . $nompre . '" />' . "</td>\n";
-    echo " </tr>\n";
-    echo " <tr>\n";
-    echo '  <td>' . "Votre e-mail : </td>\n";
-    echo '  <td><input type="text" name="email" size="50" value="' . $email . '" />' . "</td>\n";
-    echo " </tr>\n";
-    if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
-        echo " <tr>\n";
-        echo '  <td>' . "Copie Courriel : </td>\n";
-        echo '  <td><input type="checkbox" id="xcc" name="xcc" value="cc" checked/>' . "</td>\n";
-        echo " </tr>\n";
-    } ?>
-
-    <?php if ($config->get('AUTO_CAPTCHA') && function_exists('imagettftext')) { ?>
-        <tr>
-            <td><img src="<?= $root; ?>/tools/captchas/image.php" alt="captcha" id="captcha"></td>
-            <td>
-                Recopiez le code ci-contre : <br>
-                <input type="text" name="captcha" size="6" maxlength="5" value="">
-            </td>
-        </tr>
-    <?php } ?>
-
-<?php if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
-
-        list($table, $ntype, $script) = set_table_type_script_acte($xty);
-        $request = "SELECT VERIFIEU, RELEVEUR, ID FROM " . $table . " WHERE ID=" . $xid . ";";
-        $result = EA_sql_query($request);
-        //echo $request;
-        $acte = EA_sql_fetch_array($result);
-        if ($acte['VERIFIEU'] != "") {
-            $xdf = $acte['VERIFIEU'];
-        } else {
-            $xdf = $acte['RELEVEUR'];
-        }
-    }
-
-    echo " <tr><td>\n";
-    echo '  <input type="hidden" name="xid" value="' . $xid . '" />';
-    echo '  <input type="hidden" name="xty" value="' . $xty . '" />';
-    echo '  <input type="hidden" name="xct" value="' . $xct . '" />';
-    echo '  <input type="hidden" name="xdf" value="' . $xdf . '" />';
-    //echo '  <input type="hidden" name="xcc" value="'.$xcc.'" />';
-    echo '  <input type="hidden" name="action" value="submitted" />';
-
-    if (!$AVEC_INFOS_SUGGESTION) { // CONDITIONNEL AVANT SIGNAL_ERREUR
-        echo ' <a href="' . $root . '/"">Revenir à l\'accueil</a></p>';
-    }
-
-    echo ' &nbsp; <input type="reset" value=" Effacer " />' . "\n";
-    echo " </td><td align=\"left\">\n";
-    echo ' &nbsp; <input type="submit" value=" >> Envoyer >> " />' . "\n";
-    echo " </td></tr>\n";
-    echo "</table>\n";
-    echo "</form>\n";
-} else {
-    echo '<p align="center"><b>Merci de  votre aide.</b><br><a href="' . $root . '/"">Revenir à l\'accueil</a></p>';
-}
-echo '</div>';
-include(__DIR__ . '/templates/front/_footer.php');
+            echo '<p align="center"><b>Merci de  votre aide.</b><br><a href="' . $root . '/"">Revenir à l\'accueil</a></p>';
+        } ?>
+    </div>
+</div>
+<?php include(__DIR__ . '/templates/front/_footer.php');
 $response->setContent(ob_get_clean());
 $response->send();

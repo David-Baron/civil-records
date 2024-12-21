@@ -32,10 +32,13 @@ if (($xpatr == "" or mb_substr($xpatr, 0, 1) == "_")) {
         exit();
     }
     ob_start();
-    open_page($xcomm . " : " . $admtxt . "Naissances/Baptêmes", $root);
+    open_page($xcomm . " : " . $admtxt . "Naissances/Baptêmes", $root); ?>
+    <div class="main">
+        <?php zone_menu(ADM, $session->get('user')['level']); ?>
+        <div class="main-col-center text-center">
+            <?php 
     navigation($root, ADM + 2, 'N', $xcomm);
-    zone_menu(ADM, $session->get('user')['level']);
-    echo '<div id="col_main">' . "\n";
+
     liste_patro_1($program, $path, $xcomm, $xpatr, "Naissances / Baptêmes", $config->get('EA_DB') . "_nai3", $gid, $note);
 } else {
     // Lister les actes
@@ -46,11 +49,12 @@ if (($xpatr == "" or mb_substr($xpatr, 0, 1) == "_")) {
     }
 
     ob_start();
-    open_page($xcomm . " : " . $admtxt . "Table des naissances/baptêmes", $root);
+    open_page($xcomm . " : " . $admtxt . "Table des naissances/baptêmes", $root); ?>
+    <div class="main">
+        <?php zone_menu(ADM, $session->get('user')['level']); ?>
+        <div class="main-col-center text-center">
+            <?php 
     navigation($root, ADM + 3, 'N', $xcomm, $xpatr);
-    zone_menu(ADM, $session->get('user')['level']);
-
-    echo '<div id="col_main">' . "\n";
     echo '<h2>Actes de naissance/baptême</h2>';
     echo '<p>';
 
@@ -150,6 +154,7 @@ if (($xpatr == "" or mb_substr($xpatr, 0, 1) == "_")) {
         msg('Aucun acte trouvé');
     }
 }
+echo '</div>';
 echo '</div>';
 include(__DIR__ . '/../templates/front/_footer.php');
 $response->setContent(ob_get_clean());

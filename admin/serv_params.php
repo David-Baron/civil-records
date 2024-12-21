@@ -39,10 +39,13 @@ if ($action <> "") {
 
 $menu_software_active = 'E';
 ob_start();
-open_page("Paramètres serveur", $root);
+open_page("Paramètres serveur", $root); ?>
+<div class="main">
+    <?php zone_menu(ADM, $session->get('user')['level']); ?>
+    <div class="main-col-center text-center">
+        <?php 
 navadmin($root, "Paramètres serveur");
-zone_menu(ADM, $session->get('user')['level'], array());//ADMIN STANDARD
-echo '<div id="col_main">';
+
 require(__DIR__ . '/../templates/admin/_menu-software.php');
 
 $request = "SELECT valeur FROM " . $config->get('EA_DB') . "_params WHERE param = 'EA_MAINTENANCE'";
@@ -93,7 +96,7 @@ if (file_exists('serv_params_accents.inc.php')) {
 
 echo '<h2>Informations sur le géocodage (via Google Maps)</h2>';
 test_geocodage(true);
-
+echo '</div>';
 echo '</div>';
 include(__DIR__ . '/../templates/front/_footer.php');
 $response->setContent(ob_get_clean());
