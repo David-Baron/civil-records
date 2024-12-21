@@ -24,6 +24,7 @@ $emailfound = false;
 $oktype = false;
 $cptact = 0;
 $cptfil = 0;
+$T0 = time();
 
 $menu_actes = "";
 $menu_actes .= '<a href="' . $root . '/admin/maj_sums.php?xtyp=N&amp;mode=A&amp;com=">Naissances</a> | ';

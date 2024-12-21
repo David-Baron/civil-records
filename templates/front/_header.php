@@ -1,20 +1,8 @@
 <?php
 // global $path, $userlogin, $scriptname, $commune; // TODO: Need test, will be running without now
 $carcode = 'UTF-8';
-$meta_description = "";
-$meta_keywords = "";
-
-if ($scriptname == "") {
-    $scriptname = "index";
-}
-
-if (defined("META_DESCRIPTION")) {
-    $meta_description = META_DESCRIPTION;
-}
-
-if (defined("META_KEYWORDS")) {
-    $meta_keywords = META_KEYWORDS;
-}
+$meta_description = $config->get('META_DESCRIPTION', '');
+$meta_keywords = $config->get('META_KEYWORDS', '');
 
 header('Content-Type: text/html; charset=UTF-8');
 
@@ -91,7 +79,7 @@ header('Content-Type: text/html; charset=UTF-8');
 
     <?php
     /** TODO: All this part will be refacto */
-    echo INCLUDE_HEADER;
+    echo $config->get('INCLUDE_HEADER', '');
     if (!($addhead == null)) {
         echo $addhead;
     }
@@ -107,14 +95,14 @@ header('Content-Type: text/html; charset=UTF-8');
 
     /** TODO: All this part will be refacto */
     global $TIPmsg;  // message d'alerte pré-blocage IP
-    if ($TIPmsg <> "" && (TIP_MODE_ALERT % 2) == 1) {
+    if ($TIPmsg <> "" && ($config->get('TIP_MODE_ALERT') % 2) == 1) {
         echo '<h2><font color="#FF0000">' . $TIPmsg . "</font></h2>\n";
     }
     /** END TODO */
     ?>
     <div id="top" class="entete">
         <?php /** TODO: Useless, will be deleted. */
-        if (EA_MAINTENANCE == 1) { // TODO: Useless, will be deleted.
+        if ($config->get('EA_MAINTENANCE') == 1) { // TODO: Useless, will be deleted.
             echo '<font color="#FF0000"><b>!! MAINTENANCE !!</b></font>';
         }
         /**END TODO */

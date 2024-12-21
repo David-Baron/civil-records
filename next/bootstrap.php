@@ -25,6 +25,7 @@ $root = $_ENV['APP_ROOT'];
 
 require(__DIR__ . '/Engine/AppConfiguration.php');
 $config = new AppConfiguration();
+$lg = 'fr';
 
 if (isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'dev') {
 

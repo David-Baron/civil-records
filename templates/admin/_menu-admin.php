@@ -6,7 +6,7 @@
             <?php if ($userlevel >= 5) { ?>
                 <dt><a href="<?= $root ?>/admin/index.php">Inventaire des actes</a></dt>
             <?php } ?>
-            <?php if ($userlevel >= CHANGE_PW) { ?>
+            <?php if ($userlevel >= $config->get('CHANGE_PW')) { ?>
                 <dt><a href="<?= $root ?>/changepw.php">Changer le mot de passe</a></dt>
             <?php } ?>
             <?php if ($userlevel >= 5) { ?>

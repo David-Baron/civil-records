@@ -71,8 +71,6 @@ if(!empty($_FILES['Users']['tmp_name'])) { // fichier d'utilisateurs
                 $line = str_replace(chr(9), ';', $line);  // remplacement des TAB par des ;
                 $user = ads_explode(";", trim($line), 14);
 
-                //{ print '<pre>';  print_r($user); echo '</pre>'; }
-
                 $nom     = $user[0];
                 $pre     = $user[1];
                 $mail    = $user[2];
@@ -327,6 +325,7 @@ if($missingargs) {
         $xregime    = $chargeUSERparam[2];
         $message    = $config->get('MAIL_NEWUSER');
     }
+
     echo '<form method="post" enctype="multipart/form-data" action="">' . "\n";
     echo '<h2 align="center">Chargement de comptes utilisateurs</h2>';
     msg("Veillez à vérifier que le fichier votre fichier CSV respecte le "

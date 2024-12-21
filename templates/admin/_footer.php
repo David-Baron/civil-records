@@ -3,11 +3,11 @@
             <p class="totop2"><strong><a href="#top">Top</a></strong></p>
         </div>
         <div id="texte_pied2" class="texte_pied2">
-            <p class="texte_pied2"><?= PIED_PAGE; ?></p>
+            <p class="texte_pied2"><?= $config->get('PIED_PAGE'); ?></p>
         </div>
         <div id="copyright2" class="copyright2">
             <p class="copyright2">
-                <em><a href="">Civil-Records</a></em> version <?= EA_VERSION; ?>
+                <em><a href="">Civil-Records</a></em> version <?= $config->get('EA_VERSION'); ?>
             </p>
         </div>
     </div>
@@ -17,7 +17,7 @@
     }
 
     global $TIPmsg;  // message d'alerte pré-blocage IP
-    if ($TIPmsg <> "" && TIP_MODE_ALERT >= 2) {
+    if ($TIPmsg <> "" && $config->get('TIP_MODE_ALERT') >= 2) {
         echo '<script language="javascript">';
         echo 'alert("' . $TIPmsg . '")';
         echo '</script>';
