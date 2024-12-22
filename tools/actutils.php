@@ -9,15 +9,8 @@ function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = n
 
     header('Content-Type: text/html; charset=UTF-8');
 
-    $meta_description = $config->get('META_DESCRIPTION');
-    $meta_keywords = $config->get('META_KEYWORDS');
-
-  /*   if (defined("META_DESCRIPTION")) {
-        $meta_description = META_DESCRIPTION;
-    }
-    if (defined("META_KEYWORDS")) {
-        $meta_keywords = META_KEYWORDS;
-    } */
+    $meta_description = $config->get('META_DESCRIPTION', '');
+    $meta_keywords = $config->get('META_KEYWORDS', '');
 
     echo '<!DOCTYPE html>';
     echo '<html lang="fr">';
@@ -30,15 +23,15 @@ function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = n
     echo '<meta name="keywords" content="' . $meta_keywords . ', ' . $titre . '">';
     echo '<meta name="generator" content="Civil-Records">';
     echo "<title>$titre</title>";
-    echo '<link rel="shortcut icon" href="' . $root . '/themes/img/favicon.ico" type="image/x-icon">';
-    echo '<link rel="stylesheet" href="' . $root . '/themes/default.css" type="text/css">';
-    echo '<link rel="stylesheet" href="' . $root . '/themes/css/style.css" type="text/css">';
+    echo '<link rel="shortcut icon" href="' . $root . '/themes/default/img/favicon.ico" type="image/x-icon">';
+    echo '<link rel="stylesheet" href="' . $root . '/themes/default/css/default.css" type="text/css">';
+    echo '<link rel="stylesheet" href="' . $root . '/themes/default/css/style.css" type="text/css">';
 
     if (file_exists(__DIR__ . '/../_config/actes.css')) {
         echo '<link rel="stylesheet" href="' . $root . '/_config/actes.css" type="text/css">';
     }
 
-    // echo '<link rel="stylesheet" href="' . $root . '/assets/css/actes_print.css" type="text/css" media="print">';
+    echo '<link rel="stylesheet" href="' . $root . '/themes/default/css/print.css" type="text/css" media="print">';
 
     if (file_exists(__DIR__ . '/../_config/js_externe_header.inc.php')) {
         include(__DIR__ . '/../_config/js_externe_header.inc.php');
@@ -54,11 +47,12 @@ function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = n
         echo '</script>';
     }
 
-    // echo INCLUDE_HEADER;
-    echo $config->get('INCLUDE_HEADER');
+    echo $config->get('INCLUDE_HEADER', '');
+
     if ($addhead !== null) {
         echo $addhead;
     }
+
     echo "</head>\n";
     echo '<body>';
 
@@ -187,16 +181,16 @@ function statistiques($vue = "T")
         $crit_dates = "";
     }
 
-    $request = "SELECT TYPACT, sum(NB_TOT)"
+    $sql = "SELECT TYPACT, sum(NB_TOT)"
         . " FROM " . $config->get('EA_DB') . "_sums "
         . ' GROUP BY TYPACT'
         . " ORDER BY INSTR('NMDV',TYPACT)"     // cette ligne permet de trier dans l'ordre voulu
     ;
 
-    $result = EA_sql_query($request);
+    $result = EA_sql_query($sql);
     if (!$result) {
         $message  = '<p>Requête invalide : ' . EA_sql_error() . "\n";
-        $message  .= '<br>Requête : ' . $request . "\n";
+        $message  .= '<br>Requête : ' . $sql . "\n";
         echo ($message);
     }
 
@@ -510,7 +504,7 @@ function form_typeactes_communes($mode = '', $alldiv = 1)
     echo '  <td>';
     echo '  <select id="ComDep" name="ComDep">';
     echo '    <option value="">Choisir d\'abord le type d\'acte</option> ';
-    echo '  </select><img id="prl" src="../img/minispinner.gif" style="visibility:hidden;">';
+    echo '  </select><img id="prl" src="../themes/default/img/minispinner.gif" style="visibility:hidden;">';
     echo '  </td>';
     echo " </tr>\n";
 }
@@ -518,9 +512,9 @@ function form_typeactes_communes($mode = '', $alldiv = 1)
 function listbox_communes($fieldname, $default, $vide = 0)  // liste de toutes les communes ts actes confondus
 {
     global $config;
-    $request = "SELECT DISTINCT COMMUNE, DEPART FROM " . $config->get('EA_DB') . "_sums ORDER BY COMMUNE, DEPART ";
+    $sql = "SELECT DISTINCT COMMUNE, DEPART FROM " . $config->get('EA_DB') . "_sums ORDER BY COMMUNE, DEPART ";
 
-    if ($result = EA_sql_query($request)) {
+    if ($result = EA_sql_query($sql)) {
         $i = 1;
         echo '<select name="' . $fieldname . '" size="1">' . "\n";
         if ($vide == 1) {
@@ -642,9 +636,8 @@ function listbox_divers($fieldname, $default, $tous = 0)
 {
     global $config;
 
-    $request = "SELECT DISTINCT LIBELLE FROM " . $config->get('EA_DB') . "_sums WHERE length(LIBELLE)>0";
-    optimize($request);
-    if ($result = EA_sql_query($request)) {
+    $sql = "SELECT DISTINCT LIBELLE FROM " . $config->get('EA_DB') . "_sums WHERE length(LIBELLE)>0";
+    if ($result = EA_sql_query($sql)) {
         $i = 1;
         echo '<select name="' . $fieldname . '">' . "\n";
         if ($tous) {
@@ -720,13 +713,13 @@ function show_simple_item($retrait, $format, $info, $label, $info2 = "", $url = 
 function grp_label($gp, $tb, $lg, $sigle = '')
 {
     global $config;
-    $request = "SELECT GETIQ FROM " . $config->get('EA_DB') . "_mgrplg WHERE lg='" . $lg . "' AND dtable='" . $tb . "' AND grp='" . $gp . "' AND sigle=' '";
-    $result = EA_sql_query($request);
+    $sql = "SELECT GETIQ FROM " . $config->get('EA_DB') . "_mgrplg WHERE lg='" . $lg . "' AND dtable='" . $tb . "' AND grp='" . $gp . "' AND sigle=' '";
+    $result = EA_sql_query($sql);
     $row = EA_sql_fetch_array($result);
     $label = $row["GETIQ"];
     if ($sigle <> '') {  // on cherche le label spécifique s'il existe
-        $request = "SELECT GETIQ FROM " . $config->get('EA_DB') . "_mgrplg WHERE lg='" . $lg . "' AND dtable='" . $tb . "' AND grp='" . $gp . "' AND sigle='" . $sigle . "'";
-        $result = EA_sql_query($request);
+        $sql = "SELECT GETIQ FROM " . $config->get('EA_DB') . "_mgrplg WHERE lg='" . $lg . "' AND dtable='" . $tb . "' AND grp='" . $gp . "' AND sigle='" . $sigle . "'";
+        $result = EA_sql_query($sql);
         if (EA_sql_num_rows($result) > 0) {
             $row = EA_sql_fetch_array($result);
             $label = $row["GETIQ"];
@@ -878,9 +871,9 @@ function sexe($code)
     }
 }
 
-function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = "", $note = "")
 // liste_patro_1("tabnaiss.php",$root,$xcomm,$xpatr,"Naissances / baptêmes",EA_DB."_nai");
 // Liste des patronymes pour les actes à UN intervenant (naissance et décès)
+function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = "", $note = "")
 {
     global $config;
     $lgi = 1;
@@ -906,21 +899,19 @@ function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = ""
     }
 
     // Faut-il découper le fichier par initiales ?
-    $request = "SELECT count(*)"
+    $sql = "SELECT count(*)"
         . " FROM $table "
         . " WHERE COMMUNE = '" . sql_quote($Commune) . "'" . $condDep . $initiale;
-    optimize($request);
-    $result = EA_sql_query($request);
+    $result = EA_sql_query($sql);
     $ligne = EA_sql_fetch_row($result);
     $nbresu = $ligne[0];
 
     if ($nbresu > 0 && $nbresu <= iif((ADM > 0), $config->get('MAX_PATR_ADM'), $config->get('MAX_PATR'))) {
-        $request = "SELECT NOM, count(*), min(year(LADATE)),max(year(LADATE)) "
+        $sql = "SELECT NOM, count(*), min(year(LADATE)),max(year(LADATE)) "
             . " FROM $table "
             . " WHERE COMMUNE = '" . sql_quote($Commune) . "'" . $condDep . $initiale
             . " GROUP BY NOM ";
-        optimize($request);
-        $result = EA_sql_query($request);
+        $result = EA_sql_query($sql);
         $nblign = EA_sql_num_rows($result);
 
         $i = 1;
@@ -947,19 +938,19 @@ function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = ""
         echo '</table>' . "\n";
     }
     if ($nbresu > iif((ADM > 0), $config->get('MAX_PATR_ADM'), $config->get('MAX_PATR'))) { // Alphabet car trop de patronymes
-        $request = "SELECT left(NOM,$lgi), count(distinct NOM), min(NOM), max(NOM)"
+        $sql = "SELECT left(NOM,$lgi), count(distinct NOM), min(NOM), max(NOM)"
             . " FROM $table "
             . " WHERE COMMUNE = '" . sql_quote($Commune) . "'" . $condDep . $initiale
             . " GROUP BY left(NOM,$lgi)";
-        $result = EA_sql_query($request);
+        $result = EA_sql_query($sql);
         $nblign = EA_sql_num_rows($result);
 
         if ($nblign == 1 && $lgi > 3) { // Permet d'éviter un bouclage si le nom devient trop petit
-            $request = "SELECT NOM, count(distinct NOM), min(NOM), max(NOM)"
+            $sql = "SELECT NOM, count(distinct NOM), min(NOM), max(NOM)"
                 . " FROM $table "
                 . " WHERE COMMUNE = '" . sql_quote($Commune) . "'" . $condDep . $initiale
                 . " GROUP BY NOM";
-            $result = EA_sql_query($request);
+            $result = EA_sql_query($sql);
         }
 
         $i = 1;
@@ -992,8 +983,8 @@ function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = ""
     }
 }
 
-function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = "", $gid = "", $note = "")
 // Liste des patronymes pour les actes à DEUX intervenants (mariages et divers)
+function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = "", $gid = "", $note = "")
 {
     global $config;
     $lgi = 1;
@@ -1036,11 +1027,10 @@ function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = 
     }
 
     // Faut-il découper le fichier par initiales ?
-    $request = "SELECT count(*)"
+    $sql = "SELECT count(*)"
         . " FROM $table "
         . " WHERE COMMUNE = '" . sql_quote($Commune) . "'" . $condDep . $initdeux . $soustype;
-    optimize($request);
-    $result = EA_sql_query($request);
+    $result = EA_sql_query($sql);
     $ligne = EA_sql_fetch_row($result);
     $nbresu = $ligne[0];
 
@@ -1661,7 +1651,7 @@ function stats_1_comm($xtyp, $lacom)
             $libel = "'' AS LIBELLE,";
             break;
     }
-    $request = "SELECT COMMUNE, DEPART, " . $libel
+    $sql = "SELECT COMMUNE, DEPART, " . $libel
         . " count(*) AS ctot,"
         . "  DEPOSANT, max(DTDEPOT) AS ddepot,"
         . "  min(if(year(LADATE)>0,year(LADATE), null)) AS dmin,"  // null indispensabel pour que le tri élimine les 0
@@ -1672,11 +1662,7 @@ function stats_1_comm($xtyp, $lacom)
         . " WHERE COMMUNE='" . sql_quote($lacom) . "'"
         . " GROUP BY COMMUNE,DEPART,LIBELLE,DEPOSANT; ";
 
-    optimize($request);
-
-    //$listcomm .= ",'" . sql_quote($comm['COMMUNE'])."'";
-
-    $result = EA_sql_query($request);
+    $result = EA_sql_query($sql);
     $reqdel = "DELETE FROM " . $config->get('EA_DB') . "_sums WHERE TYPACT = '" . $xtyp . "' AND COMMUNE='" . sql_quote($lacom) . "'";
     $resdel = EA_sql_query($reqdel);
 
@@ -1937,8 +1923,8 @@ function set_last_backups($list_backups)
     foreach ($list_backups as $btyp => $bdate) {
         $laliste .= $btyp . ":" . $bdate . ";";
     }
-    $request = "UPDATE " . $config->get('EA_DB') . "_params SET valeur='" . $laliste . "' WHERE param='EA_LSTBACKUP'";
-    $result = EA_sql_query($request);
+    $sql = "UPDATE " . $config->get('EA_DB') . "_params SET valeur='" . $laliste . "' WHERE param='EA_LSTBACKUP'";
+    $result = EA_sql_query($sql);
     return $result;
 }
 

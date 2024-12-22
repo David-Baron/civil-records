@@ -98,10 +98,9 @@ $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
             }
 
             if ($xaction <> 'validated') {
-                $request = "SELECT count(*) FROM " . $table .
+                $sql = "SELECT count(*) FROM " . $table .
                     " WHERE " . $condcom . $conddep . $condtdiv . $condad . $condaf . " ;";
-                //echo $request;
-                $result = EA_sql_query($request);
+                $result = EA_sql_query($sql);
                 $ligne = EA_sql_fetch_row($result);
                 $nbrec = $ligne[0];
                 if ($nbrec == 0) {
@@ -156,8 +155,8 @@ $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
                 };
                 unset($t);
 
-                $request = "UPDATE " . $table . " SET " . $listmodif . " WHERE " . $condcom . $conddep . $condtdiv . $condad . $condaf . " ;";
-                $result = EA_sql_query($request);
+                $sql = "UPDATE " . $table . " SET " . $listmodif . " WHERE " . $condcom . $conddep . $condtdiv . $condad . $condaf . " ;";
+                $result = EA_sql_query($sql);
                 $nb = EA_sql_affected_rows();
                 if ($nb > 0) {
                     echo '<p>' . $nb . ' actes de ' . $ntype . $soustype . ' modifiés.</p>';

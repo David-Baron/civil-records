@@ -99,12 +99,11 @@ open_page("Paramétrage des étiquettes", $root); ?>
                     $paffi = getparam("affi_$i");
                     $petiq = htmlentities(getparam("etiq_$i"), ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
                     if ($petiq <> "") { // interdit de mettre à blanc
-                        $request = "UPDATE " . $config->get('EA_DB') . "_metadb SET affich = '" . sql_quote($paffi) . "' WHERE ZID = '" . $pzid . "'";
-                        //echo "<p>".$request;
-                        $result = EA_sql_query($request);
+                        $sql = "UPDATE " . $config->get('EA_DB') . "_metadb SET affich = '" . sql_quote($paffi) . "' WHERE ZID = '" . $pzid . "'";
+                        $result = EA_sql_query($sql);
                         $cpt += EA_sql_affected_rows();
-                        $request = "UPDATE " . $config->get('EA_DB') . "_metalg SET etiq = '" . sql_quote($petiq) . "' WHERE ZID = '" . $pzid . "' AND LG='" . $lg . "'";
-                        $result = EA_sql_query($request);
+                        $sql = "UPDATE " . $config->get('EA_DB') . "_metalg SET etiq = '" . sql_quote($petiq) . "' WHERE ZID = '" . $pzid . "' AND LG='" . $lg . "'";
+                        $result = EA_sql_query($sql);
                         $cpt += EA_sql_affected_rows();
                     }
                     $i++;
@@ -115,10 +114,9 @@ open_page("Paramétrage des étiquettes", $root); ?>
                     $grp  = getparam("grp_$j");
                     $getiq = htmlentities(getparam("group_$j"), ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
                     if ($getiq <> "") { // interdit de mettre à blanc
-                        $request = "UPDATE " . $config->get('EA_DB') . "_mgrplg SET getiq = '" . sql_quote($getiq) . "' WHERE grp = '" . $grp . "' AND LG='" . $lg . "' AND dtable='" . $xfile . "'";
-                        $result = EA_sql_query($request);
+                        $sql = "UPDATE " . $config->get('EA_DB') . "_mgrplg SET getiq = '" . sql_quote($getiq) . "' WHERE grp = '" . $grp . "' AND LG='" . $lg . "' AND dtable='" . $xfile . "'";
+                        $result = EA_sql_query($sql);
                         $tt = EA_sql_affected_rows();
-                        //if ($tt>0) echo '<p>'.$request;
                         $cpt += $tt;
                     }
                     $j++;
@@ -144,25 +142,24 @@ open_page("Paramétrage des étiquettes", $root); ?>
                         $lesigne_traite = '';
                     }
                     $libelle_reset_defaut = ($libelle_reset_defaut and ($lesigne_traite != ''));
-                    $request = "SELECT count(*) AS CPT FROM " . $config->get('EA_DB') . "_mgrplg WHERE lg='" . $lg . "' AND dtable='V' AND grp='" . $grp . "' AND sigle='" . $lesigne_traite . "'";
-                    $result = EA_sql_query($request);
+                    $sql = "SELECT count(*) AS CPT FROM " . $config->get('EA_DB') . "_mgrplg WHERE lg='" . $lg . "' AND dtable='V' AND grp='" . $grp . "' AND sigle='" . $lesigne_traite . "'";
+                    $result = EA_sql_query($sql);
                     $row = EA_sql_fetch_array($result);
-                    $request_exec = true;
+                    $stmt_exec = true;
                     if ($row["CPT"] > 0) {
                         if ($libelle_reset_defaut) {
-                            $request = "DELETE FROM " . $config->get('EA_DB') . "_mgrplg WHERE grp = '" . $grp . "' AND LG='" . $lg . "' AND dtable='V' AND sigle='" . $lesigne_traite . "'";
+                            $sql = "DELETE FROM " . $config->get('EA_DB') . "_mgrplg WHERE grp = '" . $grp . "' AND LG='" . $lg . "' AND dtable='V' AND sigle='" . $lesigne_traite . "'";
                         } else {
-                            $request = "UPDATE " . $config->get('EA_DB') . "_mgrplg SET getiq = '" . sql_quote($getiq) . "' WHERE grp = '" . $grp . "' AND LG='" . $lg . "' AND dtable='V' AND sigle='" . $lesigne_traite . "'";
+                            $sql = "UPDATE " . $config->get('EA_DB') . "_mgrplg SET getiq = '" . sql_quote($getiq) . "' WHERE grp = '" . $grp . "' AND LG='" . $lg . "' AND dtable='V' AND sigle='" . $lesigne_traite . "'";
                         }
                     } elseif ($libelle_reset_defaut) {
-                        $request_exec = false;
+                        $stmt_exec = false;
                     } else {
-                        $request = "INSERT into " . $config->get('EA_DB') . "_mgrplg (grp,dtable,lg,sigle,getiq) VALUE ('" . $grp . "','V','" . $lg . "','" . $lesigne_traite . "','" . sql_quote($getiq) . "')";
+                        $sql = "INSERT into " . $config->get('EA_DB') . "_mgrplg (grp,dtable,lg,sigle,getiq) VALUE ('" . $grp . "','V','" . $lg . "','" . $lesigne_traite . "','" . sql_quote($getiq) . "')";
                     }
-                    if ($request_exec) {
-                        $result = EA_sql_query($request);
+                    if ($stmt_exec) {
+                        $result = EA_sql_query($sql);
                         $tt = EA_sql_affected_rows();
-                        //echo '<p>'.$request;
                         $cpt += $tt;
                     }
                     $j++;
@@ -183,8 +180,8 @@ open_page("Paramétrage des étiquettes", $root); ?>
                         <td><b>Sigle des actes divers : </b></td>
                         <td>
                             <?php // COALESCE : traite les "null" comme vide
-                            $request = "SELECT DISTINCT COALESCE(SIGLE, '') AS SIGLE FROM " . $config->get('EA_DB') . "_div3 WHERE length(SIGLE)>0 ORDER BY SIGLE";
-                            if ($result = EA_sql_query($request)) {
+                            $sql = "SELECT DISTINCT COALESCE(SIGLE, '') AS SIGLE FROM " . $config->get('EA_DB') . "_div3 WHERE length(SIGLE)>0 ORDER BY SIGLE";
+                            if ($result = EA_sql_query($sql)) {
                                 $i = 1;
                                 echo '<select name="SIGLE" onchange="changesigle()">';
                                 echo '<option ' . selected_option($code_liste, $lesigle) . '>*** Liste ***</option>';
@@ -197,21 +194,21 @@ open_page("Paramétrage des étiquettes", $root); ?>
                             </select>
                         </td>
                     </tr>
-                    <?php $request = "SELECT DISTINCT LIBELLE, COALESCE(SIGLE, '') AS SIGLE FROM " . $config->get('EA_DB') . "_div3 WHERE COALESCE(SIGLE, '') = '" . $lesigle . "' ORDER BY LIBELLE";
+                    <?php $sql = "SELECT DISTINCT LIBELLE, COALESCE(SIGLE, '') AS SIGLE FROM " . $config->get('EA_DB') . "_div3 WHERE COALESCE(SIGLE, '') = '" . $lesigle . "' ORDER BY LIBELLE";
                     $format = ' %2$s '; // ' %1$s -> %2$s';
                     if ($lesigle == $code_liste) {
-                        $request = "SELECT DISTINCT LIBELLE, COALESCE(SIGLE, '') AS SIGLE FROM " . $config->get('EA_DB') . "_div3 ORDER BY LIBELLE, SIGLE";
+                        $sql = "SELECT DISTINCT LIBELLE, COALESCE(SIGLE, '') AS SIGLE FROM " . $config->get('EA_DB') . "_div3 ORDER BY LIBELLE, SIGLE";
                         $format .= '( %1$s )';
                     }
 
                     if ($lesigle == $sans_sigle_par_defaut) {
-                        $request = "SELECT DISTINCT LIBELLE, COALESCE(SIGLE, '') AS SIGLE FROM " . $config->get('EA_DB') . "_div3 WHERE COALESCE(SIGLE, '') = '' ORDER BY LIBELLE";
+                        $sql = "SELECT DISTINCT LIBELLE, COALESCE(SIGLE, '') AS SIGLE FROM " . $config->get('EA_DB') . "_div3 WHERE COALESCE(SIGLE, '') = '' ORDER BY LIBELLE";
                     } ?>
                     <tr>
                         <td>&nbsp;</td>
                         <td>
                             <?= sprintf($format, 'Sigle', '<b>Libellé concerné</b>') . '<br><br>';
-                            if ($result = EA_sql_query($request)) {
+                            if ($result = EA_sql_query($sql)) {
                                 $i = 1;
                                 while ($row = EA_sql_fetch_array($result)) {
                                     if ($row["SIGLE"] == '') {
@@ -260,8 +257,8 @@ open_page("Paramétrage des étiquettes", $root); ?>
                             } else {
                                 $notech = " AND affich<>'T' ";
                             }
-                            $request = "SELECT * FROM (" . $config->get('EA_DB') . "_metadb d JOIN " . $config->get('EA_DB') . "_metalg l) WHERE d.zid=l.zid AND LG='" . $lg . "' AND dtable='" . $xfile . "'" . $notech . " ORDER BY GROUPE, OV3";
-                            $result = EA_sql_query($request);
+                            $sql = "SELECT * FROM (" . $config->get('EA_DB') . "_metadb d JOIN " . $config->get('EA_DB') . "_metalg l) WHERE d.zid=l.zid AND LG='" . $lg . "' AND dtable='" . $xfile . "'" . $notech . " ORDER BY GROUPE, OV3";
+                            $result = EA_sql_query($sql);
                             $i = 0;
                             $j = 0;
 

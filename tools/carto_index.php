@@ -31,7 +31,7 @@ if ($xtyp != '' || $xtyp != "A") {
     $condit1 = " WHERE TYPACT='" . $xtyp . "'";
 }
 
-$request = "SELECT DEPART,COMMUNE,TYPACT,LIBELLE, sum(NB_TOT) AS NB_TOT "
+$sql = "SELECT DEPART,COMMUNE,TYPACT,LIBELLE, sum(NB_TOT) AS NB_TOT "
                 . " FROM " . $config->get('EA_DB') . "_sums " . $condit1
                 . " GROUP BY DEPART,COMMUNE,TYPACT,LIBELLE"
                 . " ORDER BY DEPART,COMMUNE,INSTR('NMDV',TYPACT),LIBELLE; ";
@@ -56,7 +56,7 @@ $carto->addIcon($imagePin . "4.png", '', $Xanchor, $Yanchor);
 $listTypes = '';
 $listSigles = '';
 $pre_type = "W";
-if ($result = EA_sql_query($request)) {
+if ($result = EA_sql_query($sql)) {
     $i = 1;
     while ($ligne = EA_sql_fetch_array($result)) {
         $i++;

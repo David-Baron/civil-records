@@ -24,12 +24,12 @@ if ($AffichageAdmin) $interface_path = '/admin';
 
 
 $baselink = $root . $interface_path . '/index.php';
-// $request = "SELECT DISTINCT upper(left(COMMUNE,1)) AS init FROM " . EA_DB . "_sums " . $condit1 . " ORDER BY init";
+// $sql = "SELECT DISTINCT upper(left(COMMUNE,1)) AS init FROM " . EA_DB . "_sums " . $condit1 . " ORDER BY init";
 // Sélectionner et grouper sur initiale de commune et ascii(initiale), ordonner code ascii ascendant pour avoir + grand code (accentué) en dernier
-$request = "SELECT alphabet.init FROM ( SELECT upper(left(COMMUNE,1)) AS init,ascii(upper(left(COMMUNE,1))) AS oo 
+$sql = "SELECT alphabet.init FROM ( SELECT upper(left(COMMUNE,1)) AS init,ascii(upper(left(COMMUNE,1))) AS oo 
     FROM " . $config->get('EA_DB') . "_sums " . $condit1 . " GROUP BY init,oo  ORDER BY init , oo ASC) AS alphabet GROUP BY init";
 
-$result = EA_sql_query($request);
+$result = EA_sql_query($sql);
 $alphabet = "";
 while ($row = EA_sql_fetch_row($result)) {
     if ($row[0] == $init) {
@@ -69,12 +69,12 @@ $liste_champs_select = " TYPACT, LIBELLE,COMMUNE,DEPART, min(AN_MIN) R_AN_MIN, m
 $groupby = " GROUP BY TYPACT,LIBELLE,COMMUNE,DEPART ";
 
 foreach ($needed_types as $needed_type) {
-    $request = "SELECT " . $liste_champs_select
+    $sql = "SELECT " . $liste_champs_select
         . " FROM " . $config->get('EA_DB') . "_sums "
         . " WHERE typact = '" . sql_quote($needed_type) . "'" . $condit2 . $groupby
         . " ORDER BY LIBELLE,COMMUNE,DEPART; ";
     $pre_libelle = "XXX";
-    if ($result = EA_sql_query($request)) {
+    if ($result = EA_sql_query($sql)) {
         $i = 1;
         while ($ligne = EA_sql_fetch_array($result)) {
             if ($ligne['TYPACT'] . $ligne['LIBELLE'] <> $pre_libelle) {

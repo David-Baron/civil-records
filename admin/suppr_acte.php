@@ -64,13 +64,12 @@ open_page("Suppression d'un acte", $root); ?>
             }
 
             if ($xconfirm == 'confirmed') {
-                $request = "SELECT NOM,PRE,DATETXT,COMMUNE,DEPART " . $conj . " FROM " . $table . " WHERE ID=" . $xid;
-                $result = EA_sql_query($request);
+                $sql = "SELECT NOM,PRE,DATETXT,COMMUNE,DEPART " . $conj . " FROM " . $table . " WHERE ID=" . $xid;
+                $result = EA_sql_query($sql);
                 $ligne = EA_sql_fetch_row($result);
-                $request = "DELETE FROM " . $table . " WHERE ID=" . $xid;
-                $result = EA_sql_query($request);
-                //echo $request;
-                $nb = EA_sql_affected_rows();
+                $sql = "DELETE FROM " . $table . " WHERE ID=" . $xid;
+                $result = EA_sql_query($sql);
+                 $nb = EA_sql_affected_rows();
                 if ($nb > 0) {
                     echo '<p>' . $nb . ' acte ' . $ntype . ' supprimé.</p>';
                     writelog('Suppression ' . $ntype . ' #' . $xid, $ligne[3], $nb);
@@ -86,8 +85,8 @@ open_page("Suppression d'un acte", $root); ?>
                     echo '<p>Aucun acte supprimé.</p>';
                 }
             } else {
-                $request = "SELECT NOM,PRE,DATETXT,COMMUNE,DEPART" . $conj . " FROM " . $table . " WHERE ID=" . $xid;
-                $result = EA_sql_query($request);
+                $sql = "SELECT NOM,PRE,DATETXT,COMMUNE,DEPART" . $conj . " FROM " . $table . " WHERE ID=" . $xid;
+                $result = EA_sql_query($sql);
                 if ($ligne = EA_sql_fetch_row($result)) {
                     echo '<form method="post" enctype="multipart/form-data" action="">' . "\n";
                     echo '<h2 align="center">Confirmation de la suppression</h2>';

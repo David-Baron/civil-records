@@ -91,12 +91,12 @@ open_page("Administration des actes", $root); ?>
         include(__DIR__ . '/../tools/tableau_index.php');
 
         // verification des statistiques
-        $request = "SELECT sum(NB_TOT) AS nb_sum FROM " . $config->get('EA_DB') . "_sums WHERE TYPACT='N'";
-        $result = EA_sql_query($request);
+        $sql = "SELECT sum(NB_TOT) AS nb_sum FROM " . $config->get('EA_DB') . "_sums WHERE TYPACT='N'";
+        $result = EA_sql_query($sql);
         $row = EA_sql_fetch_row($result);
         $nb_sum = $row[0];
-        $request = "SELECT count(*) AS nb_cnt FROM " . $config->get('EA_DB') . "_nai3";
-        $result = EA_sql_query($request);
+        $sql = "SELECT count(*) AS nb_cnt FROM " . $config->get('EA_DB') . "_nai3";
+        $result = EA_sql_query($sql);
         $row = EA_sql_fetch_row($result);
         $nb_cnt = $row[0];
         if ($nb_sum <> $nb_cnt and $nb_cnt > 0) {

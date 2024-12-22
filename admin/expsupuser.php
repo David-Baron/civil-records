@@ -100,8 +100,8 @@ if (! $missingargs) {
      * @deprecated Only the user himself can delete their account! Except and TODO: send an email to the user for the deleted account within 30 days if he does not log back in.
      */
     if ($suppr == 'Y') {
-        $request = "SELECT count(*) FROM " . $config->get('EA_UDB') . "_user3 WHERE " . $condlevel . $condreg . $condrem . $condsta . $condexp . $condpts . " ;";
-        $result = EA_sql_query($request, $u_db);
+        $sql = "SELECT count(*) FROM " . $config->get('EA_UDB') . "_user3 WHERE " . $condlevel . $condreg . $condrem . $condsta . $condexp . $condpts . " ;";
+        $result = EA_sql_query($sql, $u_db);
         $ligne = EA_sql_fetch_row($result);
         $nbrec = $ligne[0];
         if ($nbrec == 0) {
@@ -132,8 +132,8 @@ if (! $missingargs) {
     <?php }
     }
     if ($xaction == 'submitted' && $suppr <> "Y") {
-        $request = "SELECT * FROM " . $config->get('EA_UDB') . "_user3 WHERE " . $condlevel . $condreg . $condrem . $condsta . $condexp . $condpts . " ;";
-        $result = EA_sql_query($request, $u_db);
+        $sql = "SELECT * FROM " . $config->get('EA_UDB') . "_user3 WHERE " . $condlevel . $condreg . $condrem . $condsta . $condexp . $condpts . " ;";
+        $result = EA_sql_query($sql, $u_db);
         $nbdocs = EA_sql_num_rows($result);
         $fields_cnt = EA_sql_num_fields($result);
         if ($nbdocs == 0) {
@@ -220,8 +220,8 @@ if (! $missingargs) {
             }
             writelog($actie . ' de fiches utilisateur', "USERS", $nb);
             if ($suppr == "Oui") {
-                $request = "DELETE FROM " . $config->get('EA_UDB') . "_user3 WHERE level=" . $lelevel . $condreg . $condrem . $condsta . $condexp . $condpts . " ;";
-                $result = EA_sql_query($request, $u_db);
+                $sql = "DELETE FROM " . $config->get('EA_UDB') . "_user3 WHERE level=" . $lelevel . $condreg . $condrem . $condsta . $condexp . $condpts . " ;";
+                $result = EA_sql_query($sql, $u_db);
                 $nb = EA_sql_affected_rows($u_db);
                 if ($nb > 0) {
                     writelog('Suppression d\'utilisateurs', "USERS", $nb);

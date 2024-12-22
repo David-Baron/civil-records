@@ -48,14 +48,13 @@ open_page("Mise à jour des statistiques", $root); ?>
         echo '<p><b>' . $menu_actes . '</b></p>';
 
         if ($xtyp == "") {
-            $request = "SELECT TYPACT, max(DER_MAJ) AS DERMAJ, count(COMMUNE) AS CPTCOM "
+            $sql = "SELECT TYPACT, max(DER_MAJ) AS DERMAJ, count(COMMUNE) AS CPTCOM "
                 . " FROM " . $config->get('EA_DB') . "_sums"
                 . " GROUP BY TYPACT"
                 . " ORDER BY INSTR('NMDV',TYPACT)"     // cette ligne permet de trier dans l'ordre voulu
             ;
 
-            // echo $request;
-            if ($result = EA_sql_query($request)) {
+            if ($result = EA_sql_query($sql)) {
                 while ($ligne = EA_sql_fetch_array($result)) {
                     echo '<p><b>' . typact_txt($ligne['TYPACT']) . '</b> : ' . $ligne['CPTCOM'] . ' localités mises-à-jour le ' . $ligne['DERMAJ'] . '</p>';
                 }

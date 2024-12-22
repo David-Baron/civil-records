@@ -20,8 +20,8 @@ $ok = true;
 $JSheader = "";
 
 if ($id > 0) { // édition
-    $request = "SELECT * FROM " . $config->get('EA_DB') . "_geoloc WHERE ID =" . $id;
-    if ($result = EA_sql_query($request)) {
+    $sql = "SELECT * FROM " . $config->get('EA_DB') . "_geoloc WHERE ID =" . $id;
+    if ($result = EA_sql_query($sql)) {
         $row = EA_sql_fetch_array($result);
         $commune   = $row["COMMUNE"];
         $depart    = $row["DEPART"];
@@ -33,7 +33,7 @@ if ($id > 0) { // édition
         $noteD     = $row["NOTE_D"];
         $noteV     = $row["NOTE_V"];
 
-        $request = "SELECT TYPACT, LIBELLE, sum(NB_TOT) AS NB_TOT, COMMUNE, DEPART, max(DTDEPOT) AS DTDEPOT, min(AN_MIN) AS AN_MIN, max(AN_MAX) AS AN_MAX "
+        $sql = "SELECT TYPACT, LIBELLE, sum(NB_TOT) AS NB_TOT, COMMUNE, DEPART, max(DTDEPOT) AS DTDEPOT, min(AN_MIN) AS AN_MIN, max(AN_MAX) AS AN_MAX "
             . " FROM " . $config->get('EA_DB') . "_sums WHERE COMMUNE = '" . sql_quote($commune) . "' AND DEPART = '" . sql_quote($depart) . "'"
             . ' GROUP BY DEPART, COMMUNE, TYPACT, LIBELLE  '
             . " ORDER BY INSTR('NMDV',TYPACT),LIBELLE; ";
@@ -41,7 +41,7 @@ if ($id > 0) { // édition
         $cptN = $cptM = $cptD = $cptV = 0;
         $i = 0;
         $lasttyp = 'eye'; // default
-        if ($result = EA_sql_query($request)) {
+        if ($result = EA_sql_query($sql)) {
             while ($ligne = EA_sql_fetch_array($result)) {
                 if ($ligne['TYPACT'] <> $lasttyp) {
                     $i++;

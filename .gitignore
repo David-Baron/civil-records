@@ -3,3 +3,4 @@
 /setup/steps/install_x.php
 /setup/translations
 /.env.local.php
+/assets

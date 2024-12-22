@@ -20,8 +20,8 @@ $ctrlcod = $_REQUEST['xct'];
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
-$request = "SELECT * FROM " . $config->get('EA_DB') . "_div3 WHERE ID = " . $xid;
-if ($result = EA_sql_query($request) and EA_sql_num_rows($result) != 0) {
+$sql = "SELECT * FROM " . $config->get('EA_DB') . "_div3 WHERE ID = " . $xid;
+if ($result = EA_sql_query($sql) and EA_sql_num_rows($result) != 0) {
     $row = EA_sql_fetch_array($result);
 } else {
     $error = 1;

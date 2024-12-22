@@ -75,8 +75,8 @@ open_page("Paramétrage du logiciel", $root, $js_show_help); ?>
         <h2>Paramétrage du site <?= $config->get('SITENAME'); ?></h2>
         <p>
             <strong>Paramètres : </strong>
-            <?php $request = "SELECT distinct groupe FROM " . $config->get('EA_DB') . "_params WHERE NOT (groupe in ('Hidden','Deleted')) ORDER BY groupe";
-            $result = EA_sql_query($request);
+            <?php $sql = "SELECT distinct groupe FROM " . $config->get('EA_DB') . "_params WHERE NOT (groupe in ('Hidden','Deleted')) ORDER BY groupe";
+            $result = EA_sql_query($sql);
             $barre = false;
             while ($row = EA_sql_fetch_array($result)) {
                 show_grp($row["groupe"], $xgroupe, $barre);
@@ -96,15 +96,15 @@ open_page("Paramétrage du logiciel", $root, $js_show_help); ?>
                     $parname = getparam("parname$i");
                     $parvalue = htmlentities(getparam("parvalue$i"), ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
                     if ($parvalue == "") {
-                        $request = "SELECT * FROM " . $config->get('EA_DB') . "_params WHERE param = '" . $parname . "'";
-                        $result = EA_sql_query($request);
+                        $sql = "SELECT * FROM " . $config->get('EA_DB') . "_params WHERE param = '" . $parname . "'";
+                        $result = EA_sql_query($sql);
                         $row = EA_sql_fetch_array($result);
                         if ($row["type"] == "B") {
                             $parvalue = 0;
                         }
                     }
-                    $request = "UPDATE " . $config->get('EA_DB') . "_params SET valeur = '" . sql_quote($parvalue) . "' WHERE param = '" . $parname . "'";
-                    $result = EA_sql_query($request);
+                    $sql = "UPDATE " . $config->get('EA_DB') . "_params SET valeur = '" . sql_quote($parvalue) . "' WHERE param = '" . $parname . "'";
+                    $result = EA_sql_query($sql);
                     $cpt += EA_sql_affected_rows();
                     $i++;
                 }
@@ -114,8 +114,8 @@ open_page("Paramétrage du logiciel", $root, $js_show_help); ?>
             }
         }
 
-        $request = "SELECT * FROM " . $config->get('EA_DB') . "_params WHERE groupe='" . $xgroupe . "' ORDER BY ordre";
-        $result = EA_sql_query($request);
+        $sql = "SELECT * FROM " . $config->get('EA_DB') . "_params WHERE groupe='" . $xgroupe . "' ORDER BY ordre";
+        $result = EA_sql_query($sql);
         ?>
         <h2><?= $xgroupe; ?></h2>
         <?php if ($xgroupe == "Mail") { ?>

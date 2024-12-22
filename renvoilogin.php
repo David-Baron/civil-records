@@ -21,8 +21,8 @@ open_page("ExpoActes : Renvoi codes d'accès", $root, null, null, null, '../inde
                 msg('Vous devez fournir votre adresse email');
             } else {
                 $missingargs = false;
-                $request = "SELECT nom, prenom,login,email,level FROM " . $config->get('EA_UDB') . "_user3 WHERE email = '" . getparam('email') . "'; ";
-                $result = EA_sql_query($request, $u_db);
+                $sql = "SELECT nom, prenom,login,email,level FROM " . $config->get('EA_UDB') . "_user3 WHERE email = '" . getparam('email') . "'; ";
+                $result = EA_sql_query($sql, $u_db);
                 $nb = EA_sql_num_rows($result);
                 if ($nb == 1) {
                     $user = EA_sql_fetch_array($result);

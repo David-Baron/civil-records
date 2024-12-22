@@ -38,11 +38,11 @@ open_page($config->get('SITENAME') . " : Liste des utilisateurs enregistrés", $
             msg('ATTENTION : Base des utilisateurs déportée sur ' . $udbaddr . "/" . $udbuser . "/" . $udbname . "/" . $config->get('EA_UDB') . "</p>", 'info');
         }
 
-        //$request = "SELECT DISTINCT upper(left(NOM,1)) AS init FROM ".EA_UDB."_user3 ORDER BY init";
+        //$sql = "SELECT DISTINCT upper(left(NOM,1)) AS init FROM ".EA_UDB."_user3 ORDER BY init";
         // Sélectionner et grouper sur initiale utilisateur et ascii(initiale), ordonner code ascii ascendant pour avoir + grand code (accentué) en dernier
-        $request = "SELECT  alphabet.init  FROM ( SELECT upper(left(NOM,1)) AS init,ascii(upper(left(NOM,1)))  AS oo FROM " . $config->get('EA_UDB') . "_user3 GROUP BY init,oo  ORDER BY init , oo ASC) AS alphabet GROUP BY init";
+        $sql = "SELECT  alphabet.init  FROM ( SELECT upper(left(NOM,1)) AS init,ascii(upper(left(NOM,1)))  AS oo FROM " . $config->get('EA_UDB') . "_user3 GROUP BY init,oo  ORDER BY init , oo ASC) AS alphabet GROUP BY init";
 
-        $result = EA_sql_query($request, $u_db);
+        $result = EA_sql_query($sql, $u_db);
         $alphabet = "";
         while ($row = EA_sql_fetch_row($result)) {
             if ($row[0] == $init) {
@@ -111,12 +111,11 @@ open_page($config->get('SITENAME') . " : Liste des utilisateurs enregistrés", $
         }
 
 
-        $request = "SELECT NOM, PRENOM, LOGIN, LEVEL, ID, EMAIL, REGIME, SOLDE, MAJ_SOLDE, if(STATUT='N',if(dtexpiration<'" . date("Y-m-d", time()) . "','X',STATUT),STATUT) AS STATUT, PT_CONSO"
+        $sql = "SELECT NOM, PRENOM, LOGIN, LEVEL, ID, EMAIL, REGIME, SOLDE, MAJ_SOLDE, if(STATUT='N',if(dtexpiration<'" . date("Y-m-d", time()) . "','X',STATUT),STATUT) AS STATUT, PT_CONSO"
             . " FROM " . $config->get('EA_UDB') . "_user3 "
             . $condit
             . " ORDER BY " . $order;
-        //echo $request;
-        $result = EA_sql_query($request, $u_db);
+        $result = EA_sql_query($sql, $u_db);
         $nbtot = EA_sql_num_rows($result);
 
         $limit = "";
@@ -124,8 +123,8 @@ open_page($config->get('SITENAME') . " : Liste des utilisateurs enregistrés", $
         pagination($nbtot, $page, $baselink, $listpages, $limit);
 
         if ($limit <> "") {
-            $request = $request . $limit;
-            $result = EA_sql_query($request, $u_db);
+            $sql = $sql . $limit;
+            $result = EA_sql_query($sql, $u_db);
             $nb = EA_sql_num_rows($result);
         } else {
             $nb = $nbtot;

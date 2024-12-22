@@ -55,11 +55,10 @@ if ($xaction == 'submitted') {
     if ($regime >= 0) {
         $condreg = " AND regime =" . $regime;
     }
-    $request = "SELECT nom, prenom, email, level, statut"
+    $sql = "SELECT nom, prenom, email, level, statut"
         . " FROM " . $config->get('EA_UDB') . "_user3 "
         . " WHERE (1=1) " . $condlevel . $condreg . $condrem . " ;";
-    //echo $request1;
-    $sites = EA_sql_query($request, $u_db);
+    $sites = EA_sql_query($sql, $u_db);
     $nbsites = EA_sql_num_rows($sites);
     $nbsend = 0;
     $missingargs = false;

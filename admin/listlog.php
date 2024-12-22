@@ -40,8 +40,8 @@ require(__DIR__ . '/../templates/admin/_menu-software.php');
 
 // Suppression des informations anciennes
 if ($xdel > 31) {
-    $request = "DELETE FROM " . $config->get('EA_DB') . "_log WHERE datediff(curdate(),DATE)>" . $xdel;
-    $result = EA_sql_query($request);
+    $sql = "DELETE FROM " . $config->get('EA_DB') . "_log WHERE datediff(curdate(),DATE)>" . $xdel;
+    $result = EA_sql_query($sql);
     $nb = EA_sql_affected_rows();
     echo $nb . " ligne(s) suprimée(s)."; // .$datedel;
 }
@@ -76,27 +76,27 @@ if ($xord == "N") {
 }
 $baselink .= "&amp;xfilter=" . $xfilter;
 
-$request = "CREATE TEMPORARY TABLE temp_user3 (ID int(11), nom varchar(30), prenom varchar(30), PRIMARY KEY (ID))";
-$result = EA_sql_query($request);
+$sql = "CREATE TEMPORARY TABLE temp_user3 (ID int(11), nom varchar(30), prenom varchar(30), PRIMARY KEY (ID))";
+$result = EA_sql_query($sql);
 
-$request = "SELECT ID,NOM,PRENOM FROM " . $config->get('EA_UDB') . "_user3";
-$result = EA_sql_query($request, $u_db);
+$sql = "SELECT ID,NOM,PRENOM FROM " . $config->get('EA_UDB') . "_user3";
+$result = EA_sql_query($sql, $u_db);
 while ($ligne = EA_sql_fetch_row($result)) {
     $treq = "INSERT INTO temp_user3 VALUES (" . sql_quote($ligne[0]) . ",'" . sql_quote($ligne[1]) . "','" . sql_quote($ligne[2]) . "')";
     $tres = EA_sql_query($treq);
     //echo "<br>".$treq;
 }
 
-$request = "SELECT NOM, PRENOM, ID, DATE, ACTION, COMMUNE, NB_ACTES"
+$sql = "SELECT NOM, PRENOM, ID, DATE, ACTION, COMMUNE, NB_ACTES"
             . " FROM " . $config->get('EA_DB') . "_log left JOIN temp_user3 ON (temp_user3.id=" . $config->get('EA_DB') . "_log.user)";
 if ($xfilter <> "") {
-    $request .= " WHERE COMMUNE LIKE '%" . $xfilter . "%' or ACTION LIKE '%" . $xfilter . "%' or NOM LIKE '%" . $xfilter . "%'";
+    $sql .= " WHERE COMMUNE LIKE '%" . $xfilter . "%' or ACTION LIKE '%" . $xfilter . "%' or NOM LIKE '%" . $xfilter . "%'";
 }
-$request .= " ORDER BY " . $order;
+$sql .= " ORDER BY " . $order;
 
-optimize($request);
+optimize($sql);
 
-$result = EA_sql_query($request);
+$result = EA_sql_query($sql);
 $nbtot = EA_sql_num_rows($result);
 
 $limit = "";
@@ -104,8 +104,8 @@ $listpages = "";
 pagination($nbtot, $page, $baselink, $listpages, $limit);
 
 if ($limit <> "") {
-    $request = $request . $limit;
-    $result = EA_sql_query($request);
+    $sql = $sql . $limit;
+    $result = EA_sql_query($sql);
     $nb = EA_sql_num_rows($result);
 } else {
     $nb = $nbtot;

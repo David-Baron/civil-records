@@ -35,15 +35,15 @@ open_page("Activer mon compte utilisateur", $root); ?>
             msg('Vous devez inscrire la clé qui vous été envoyée par mail');
             $ok = false;
         }
-        $res = EA_sql_query("SELECT * FROM " . $config->get('EA_UDB') . "_user3 WHERE login='" . sql_quote($_REQUEST['login'])
+        $sql = EA_sql_query("SELECT * FROM " . $config->get('EA_UDB') . "_user3 WHERE login='" . sql_quote($_REQUEST['login'])
             . "' and  rem='" . sql_quote($_REQUEST['key'])
             . "' and  statut='W'", $u_db);
-        if (EA_sql_num_rows($res) != 1) {
+        if (EA_sql_num_rows($sql) != 1) {
             msg('Pas/Plus de compte à activer avec ces valeurs. Vérifiez vos codes.');
             $ok = false;
         }
         if ($ok) {
-            $row = EA_sql_fetch_array($res);
+            $row = EA_sql_fetch_array($sql);
             // $login = $row['login'];
             $id = $row['ID'];
             $nomprenom = $row['prenom'] . ' ' . $row['nom'];
@@ -55,8 +55,8 @@ open_page("Activer mon compte utilisateur", $root); ?>
                 $statut = 'A';
             }
 
-            $reqmaj = "UPDATE " . $config->get('EA_UDB') . "_user3 SET statut='" . $statut . "', rem=' ' WHERE id=" . $id . ";";
-            if ($result = EA_sql_query($reqmaj, $u_db)) {
+            $sql = "UPDATE " . $config->get('EA_UDB') . "_user3 SET statut='" . $statut . "', rem=' ' WHERE id=" . $id . ";";
+            if ($result = EA_sql_query($sql, $u_db)) {
                 $crlf = chr(10) . chr(13);
                 $log = "Activation compte";
                 if ($config->get('USER_AUTO_DEF') == 1) {

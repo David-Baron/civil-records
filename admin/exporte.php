@@ -186,18 +186,16 @@ if (! $missingargs) {
         }
 
         if ($xaction == 'go') {
-            $request = "SELECT count(*) FROM " . $table .
+            $sql = "SELECT count(*) FROM " . $table .
                                  " WHERE " . $condcom . $condad . $condaf . $conddep . $condtdiv . ";";
-            //echo $request;
-            $result = EA_sql_query($request);
+            $result = EA_sql_query($resqlquest);
             $row = EA_sql_fetch_row($result);
             $nbdocs = $row[0];
 
             /* INUTILISE SANS DOUTE RESIDU ANCIENNE VERSION avec $nofiltre = 18,18,18,21 pour NMDV
-            $request = "SELECT * FROM ".$table.
+            $sql = "SELECT * FROM ".$table.
                                  " WHERE ".$condcom.$condad.$condaf.$conddep.$condtdiv." LIMIT 0,1 ;";
-            optimize($request);
-            $result = EA_sql_query($request);
+            $result = EA_sql_query($sql);
             $fields_cnt = EA_sql_num_fields($result);
             */
             if (($Destin <> "B") and ($nbdocs > $max_select_rec)) {
@@ -264,14 +262,13 @@ if (! $missingargs) {
                 } // switch
 
                 $stop = 0;
-                $request = "SELECT * FROM " . $table .
+                $sql = "SELECT * FROM " . $table .
                                      " WHERE " . $condcom . $condad . $condaf . $conddep . $condtdiv;
                 if ($Destin <> "B") {
-                    $request .= ' ORDER BY ladate, nom, pre';
+                    $sql .= ' ORDER BY ladate, nom, pre';
                 }
-                $request .= " LIMIT " . $skip . "," . $max_select_rec . " ;";
-                optimize($request);
-                $result = EA_sql_query($request);
+                $sql .= " LIMIT " . $skip . "," . $max_select_rec . " ;";
+                $result = EA_sql_query($sql);
                 $nb = $skip;
                 $nbzone = count($mdb);
                 while ($row = EA_sql_fetch_assoc($result) and $stop == 0) {

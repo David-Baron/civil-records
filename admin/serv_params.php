@@ -28,12 +28,12 @@ pathroot($root, $path, $xcomm, $xpatr, $page);
 $action = getparam('maint');
 if ($action <> "") {
     if ($action == "SET") {
-        $request = "UPDATE " . $config->get('EA_DB') . "_params SET valeur = '1' WHERE param = 'EA_MAINTENANCE'";
-        $result = EA_sql_query($request);
+        $sql = "UPDATE " . $config->get('EA_DB') . "_params SET valeur = '1' WHERE param = 'EA_MAINTENANCE'";
+        $result = EA_sql_query($sql);
     }
     if ($action == "UNSET") {
-        $request = "UPDATE " . $config->get('EA_DB') . "_params SET valeur = '0' WHERE param = 'EA_MAINTENANCE'";
-        $result = EA_sql_query($request);
+        $sql = "UPDATE " . $config->get('EA_DB') . "_params SET valeur = '0' WHERE param = 'EA_MAINTENANCE'";
+        $result = EA_sql_query($sql);
     }
 }
 
@@ -48,8 +48,8 @@ navadmin($root, "Paramètres serveur");
 
 require(__DIR__ . '/../templates/admin/_menu-software.php');
 
-$request = "SELECT valeur FROM " . $config->get('EA_DB') . "_params WHERE param = 'EA_MAINTENANCE'";
-$result = EA_sql_query($request);
+$sql = "SELECT valeur FROM " . $config->get('EA_DB') . "_params WHERE param = 'EA_MAINTENANCE'";
+$result = EA_sql_query($sql);
 $row = EA_sql_fetch_array($result);
 if ($row[0] == 1) {
     echo '<p><font color="#FF0000"><b>Mode MAINTENANCE : l\'accès limité aux administrateurs.</b></font></p>';

@@ -89,12 +89,12 @@ open_page($title, $root); ?>
                 ajuste_date(getparam("DATETXT"), $ladate, $MauvaiseDate);
 
                 if ($xid < 0) {
-                    $request = "INSERT INTO " . $table . " ";
+                    $sql = "INSERT INTO " . $table . " ";
                     $zlist = "(";
                     $vlist = "(";
                     $txt = "ajouté";
                 } else {
-                    $request = "UPDATE " . $table . " SET ";
+                    $sql = "UPDATE " . $table . " SET ";
                     $txt = "modifié";
                     $logtxt = "Edition";
                 }
@@ -112,18 +112,17 @@ open_page($title, $root); ?>
                         $zlist .= $mdb[$i]['ZONE'] . ",";
                         $vlist .= "'" . sql_quote($valeurlue) . "', ";
                     } else {
-                        $request .= $mdb[$i]['ZONE'] . " = '" . sql_quote($valeurlue) . "', ";
+                        $sql .= $mdb[$i]['ZONE'] . " = '" . sql_quote($valeurlue) . "', ";
                     } // modif
                 }
                 if ($xid < 0) {
-                    $request .= $zlist . "LADATE,DTDEPOT,DTMODIF,TYPACT,IDNIM) VALUES " . $vlist . "'" . $ladate . "','" . $today . "','" . $today . "','" . $xtyp . "',0)";
+                    $sql .= $zlist . "LADATE,DTDEPOT,DTMODIF,TYPACT,IDNIM) VALUES " . $vlist . "'" . $ladate . "','" . $today . "','" . $today . "','" . $xtyp . "',0)";
                 } else {
-                    $request .= "LADATE= '" . $ladate . "', " . "DTMODIF= '" . $today . "' WHERE ID=" . $xid . ";";
+                    $sql .= "LADATE= '" . $ladate . "', " . "DTMODIF= '" . $today . "' WHERE ID=" . $xid . ";";
                 }
                 if ($ok) {
                     // *** si tout est ok : sauvegarde de l acte modifié
-                    $result = EA_sql_query($request);
-                    // echo $request;
+                    $result = EA_sql_query($sql);
                     $nb = EA_sql_affected_rows();
                     if ($nb > 0) {
                         echo '<p>' . sprintf('%1$s acte %2$s %3$s', $nb, $ntype, $txt) . '</p>';
@@ -147,9 +146,8 @@ open_page($title, $root); ?>
                         $champs .= $mdb[$i]['ZONE'] . ", ";
                     }
                 }
-                $request = "SELECT " . $champs . " ID FROM " . $table . " WHERE ID=" . $xid;
-                $result = EA_sql_query($request);
-                //echo $request;
+                $sql = "SELECT " . $champs . " ID FROM " . $table . " WHERE ID=" . $xid;
+                $result = EA_sql_query($sql);
                 if ($acte = EA_sql_fetch_array($result) or $xid == -1) {
                     // lecture des tailles effective des zones
                     $qColumnNames = EA_sql_query("SHOW COLUMNS FROM " . $table);

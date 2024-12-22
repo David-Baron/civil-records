@@ -36,8 +36,8 @@ echo '<body>';
 
 if (($xcom == "") or ($xtyp == "")) {
     // Lise des communes
-    $request = "SELECT TYPACT AS TYP, sum(NB_TOT) AS CPT, COMMUNE, DEPART FROM " . $config->get('EA_DB') . "_sums GROUP BY COMMUNE, DEPART, TYP";
-    $result = EA_sql_query($request);
+    $sql = "SELECT TYPACT AS TYP, sum(NB_TOT) AS CPT, COMMUNE, DEPART FROM " . $config->get('EA_DB') . "_sums GROUP BY COMMUNE, DEPART, TYP";
+    $result = EA_sql_query($sql);
     $nblign = EA_sql_num_rows($result);
 
     echo "<p>LISTE-URL</p>";
@@ -79,10 +79,10 @@ if (($xcom == "") or ($xtyp == "")) {
         $cond .= " AND NOM LIKE '" . $xini . "%'";
     }
 
-    $request  = "SELECT year(LADATE), " . $zones . " 
+    $sql = "SELECT year(LADATE), " . $zones . " 
         FROM " . $table . " 
         WHERE COMMUNE='" . sql_quote($xcom) . "'" . $cond;
-    $result = EA_sql_query($request);
+    $result = EA_sql_query($sql);
     $cptrow = EA_sql_num_rows($result);
 
     if ($cptrow > $config->get('ECLAIR_MAX_ROW')) {
@@ -93,21 +93,21 @@ if (($xcom == "") or ($xtyp == "")) {
             $initiale = " AND left(NOM,$lgi-1)= '" . sql_quote($xini) . "'";
         }
 
-        $request = "SELECT left(NOM, $lgi), count(*) 
+        $sql = "SELECT left(NOM, $lgi), count(*) 
             FROM $table 
             WHERE COMMUNE='" . sql_quote($xcom) . "' 
             AND DEPART='" . sql_quote($xdep) . "'" . $initiale . " 
             GROUP BY left(NOM, $lgi)";
-        $result = EA_sql_query($request);
+        $result = EA_sql_query($sql);
         $nblign = EA_sql_num_rows($result);
 
         if ($nblign == 1 and $lgi > 3) { // Permet d'éviter un bouclage si le nom devient trop petit
-            $request = "SELECT NOM, count(NOM), min(NOM), max(NOM) 
+            $sql = "SELECT NOM, count(NOM), min(NOM), max(NOM) 
                 FROM $table 
                 WHERE COMMUNE = '" . sql_quote($xcom) . "' 
                 AND DEPART = '" . sql_quote($xdep) . "'" . $initiale . " 
                 GROUP BY NOM";
-            $result = EA_sql_query($request);
+            $result = EA_sql_query($sql);
         }
         echo "<p>LISTE-URL</p>";
         echo "<ul>";
@@ -121,11 +121,11 @@ if (($xcom == "") or ($xtyp == "")) {
         echo '</ul>';
     } else {
         // Liste éclair Creation table temporaire
-        $request = "CREATE TEMPORARY TABLE  tmp_eclair (ANNEE varchar(4), PATRO varchar(25)) DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci";
-        $res = EA_sql_query($request);
+        $sql = "CREATE TEMPORARY TABLE  tmp_eclair (ANNEE varchar(4), PATRO varchar(25)) DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci";
+        $res = EA_sql_query($sql);
         if (!($res === true)) {
             echo '<font color="#FF0000"> Erreur </font>';
-            echo '<p>' . EA_sql_error() . '<br>' . $request . '</p>';
+            echo '<p>' . EA_sql_error() . '<br>' . $sql . '</p>';
             die();
         }
         // Insertion des patronymes dans la table temporaire
@@ -156,8 +156,8 @@ if (($xcom == "") or ($xtyp == "")) {
             }
         }
         // Extraction du décompte des patronymes
-        $request = "SELECT count(*), min(ANNEE), max(ANNEE), PATRO FROM tmp_eclair GROUP BY PATRO";
-        $result = EA_sql_query($request);
+        $sql = "SELECT count(*), min(ANNEE), max(ANNEE), PATRO FROM tmp_eclair GROUP BY PATRO";
+        $result = EA_sql_query($sql);
 
         echo "<p>LISTE-ECLAIR</p>";
         echo "<p>Attention : cette liste comprend les patronymes des interessés et des témoins (père, mère, ancien conjoint, parrain,..).</p>";

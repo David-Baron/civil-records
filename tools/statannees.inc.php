@@ -96,10 +96,9 @@ if (! $missingargs) {
 
         echo '<h2>' . $title . '</h2>';
 
-        $request = "SELECT year(ladate) AS ANNEE,count(*) AS CPT FROM " . $table .
+        $sql = "SELECT year(ladate) AS ANNEE,count(*) AS CPT FROM " . $table .
             " WHERE COMMUNE='" . sql_quote($Commune) . "' AND DEPART='" . sql_quote($Depart) . "'" . $condtdiv . " GROUP BY year(ladate) ;";
-        //echo $request;
-        $result = EA_sql_query($request);
+        $result = EA_sql_query($sql);
         $k = 0;
         $annee = array(0);
         $cptan = array(0);

@@ -39,13 +39,13 @@ function ea_utf8_decode($text)
     return $text;
 }
 
-function optimize($request)  // pour détection des optimisations à faire
+function optimize($sql)  // pour détection des optimisations à faire
 {
     if (defined("OPTIMIZE") or getparam('OPTIMIZE') == "YES") {
-        if (isin(strtoupper($request), 'SELECT') >= 0) {
-            $optim = EA_sql_query("EXPLAIN " . $request);
-            echo '<p>' . preg_replace('/union/', '<br /><b>UNION</b><br />', $request) . '</p>';
-            if (strtoupper(mb_substr($request, 0, 1)) == 'S') {
+        if (isin(strtoupper($sql), 'SELECT') >= 0) {
+            $optim = EA_sql_query("EXPLAIN " . $sql);
+            echo '<p>' . preg_replace('/union/', '<br /><b>UNION</b><br />', $sql) . '</p>';
+            if (strtoupper(mb_substr($sql, 0, 1)) == 'S') {
                 $nbres = EA_sql_num_rows($optim);
                 if ($nbres > 0) {
                     print '<pre> OPTIMISATION : <p> ';
@@ -56,7 +56,7 @@ function optimize($request)  // pour détection des optimisations à faire
                 }
             }
         } else {
-            print '<p>REQUETE MAJ : ' . $request . '<p> ';
+            print '<p>REQUETE MAJ : ' . $sql . '<p> ';
         }
     }
 }

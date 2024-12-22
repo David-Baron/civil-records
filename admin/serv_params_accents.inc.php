@@ -20,30 +20,30 @@ function init_page_EL_GENERALE($head = "", $ajax = "", $affiche = '') // SOURCE 
 function get_collation_infos_table($table)
 {
     global $dbname;
-    $requete = "SELECT T.TABLE_COLLATION,CCSA.COLLATION_NAME, CCSA.character_set_name  FROM information_schema.`TABLES` T,
+    $sql = "SELECT T.TABLE_COLLATION,CCSA.COLLATION_NAME, CCSA.character_set_name  FROM information_schema.`TABLES` T,
 		information_schema.`COLLATION_CHARACTER_SET_APPLICABILITY` CCSA WHERE CCSA.collation_name = T.table_collation
 		AND T.table_schema = '" . $dbname . "'  AND T.table_name = '" . $table . "'";
     if ($GLOBALS['MODE_DEBUG']) {
-        echo 'Multibase infos table ' . $requete . '<br>';
+        echo 'Multibase infos table ' . $sql . '<br>';
     }
-    $result = EA_sql_query($requete);
+    $result = EA_sql_query($sql);
     if ($row = EA_sql_fetch_assoc($result)) { // MULTIBASE mais pas chez FREE !
         $TAB_character_set_name = $row['character_set_name'];
         $TAB_collation_name = $row['TABLE_COLLATION'];
     } else { // MONOBASE
-        $requete = "SHOW TABLE STATUS FROM " . $dbname . " LIKE '" . $table . "';";
+        $sql = "SHOW TABLE STATUS FROM " . $dbname . " LIKE '" . $table . "';";
         if ($GLOBALS['MODE_DEBUG']) {
-            echo 'Monobase infos collation table  ' . $requete . '<br>';
+            echo 'Monobase infos collation table  ' . $sql . '<br>';
         }
-        $result = EA_sql_query($requete);
+        $result = EA_sql_query($sql);
         $row = EA_sql_fetch_assoc($result);
         $TAB_collation_name = $row['Collation'];
         // POUR PRECISER LA BASE :  "use ".$dbname.";" .   NE FONCTIONNE PAS CHEZ FREE
-        $requete = "SELECT CHARACTER_SET_NAME FROM information_schema.`COLLATION_CHARACTER_SET_APPLICABILITY` WHERE collation_name = '" . $TAB_collation_name . "';";
+        $sql = "SELECT CHARACTER_SET_NAME FROM information_schema.`COLLATION_CHARACTER_SET_APPLICABILITY` WHERE collation_name = '" . $TAB_collation_name . "';";
         if ($GLOBALS['MODE_DEBUG']) {
-            echo 'Monobase infos character table ' . $requete . '<br>';
+            echo 'Monobase infos character table ' . $sql . '<br>';
         }
-        $result = EA_sql_query($requete);
+        $result = EA_sql_query($sql);
         $row = EA_sql_fetch_assoc($result);
         $TAB_character_set_name = $row['CHARACTER_SET_NAME'];
     }
@@ -116,14 +116,14 @@ function check_collation($mes_variables_divers, $Trt_accents = 'N')
                     $v = $new_collation;
                 } // INHIBE EN MODE DEBUG
                 if ($v != $new_collation) {
-                    $requete = "ALTER TABLE `" . $value . "` CONVERT TO CHARACTER SET latin1 COLLATE " . $new_collation . ";";
+                    $sql = "ALTER TABLE `" . $value . "` CONVERT TO CHARACTER SET latin1 COLLATE " . $new_collation . ";";
                     if ($GLOBALS['MODE_DEBUG']) {
-                        echo 'Changement collation ' . $requete . '<br>';
+                        echo 'Changement collation ' . $sql . '<br>';
                     }
-                    $r = EA_sql_query($requete);   //      si OK $i++ et  refresh avec param $i;
+                    $r = EA_sql_query($sql);   //      si OK $i++ et  refresh avec param $i;
                 }
                 if (!$r) {
-                    echo '<p>' . EA_sql_error() . '<br />' . $requete . '</p>';
+                    echo '<p>' . EA_sql_error() . '<br />' . $sql . '</p>';
                     $Total_etapes++;
                     exit;
                 } else {
@@ -224,8 +224,8 @@ $tableau_cle = array(
 );
 foreach ($GLOBALS['Type_Table'] as $k => $v) {
     $t = array();
-    $requete = "SHOW INDEX FROM `" . $v . "` FROM `" . $dbname . "` ";
-    if ($result = EA_sql_query($requete)) {
+    $sql = "SHOW INDEX FROM `" . $v . "` FROM `" . $dbname . "` ";
+    if ($result = EA_sql_query($sql)) {
         $row = EA_sql_fetch_assoc($result);
         while ($row = EA_sql_fetch_assoc($result)) {
             $t[$row['Key_name']] = $row['Key_name'];
@@ -256,41 +256,41 @@ if ($defaut_index) {
 echo '<h3>Paramètres de codage des tables</h3>';
 
 //DONNEES
-$requete = "SHOW FULL COLUMNS FROM `" . $table_control . "` FROM `" . $dbname . "` WHERE `Field`= '" . $champ_control . "';";
+$sql = "SHOW FULL COLUMNS FROM `" . $table_control . "` FROM `" . $dbname . "` WHERE `Field`= '" . $champ_control . "';";
 if ($GLOBALS['MODE_DEBUG']) {
-    echo 'Collation données ' . $requete . '<br>';
+    echo 'Collation données ' . $sql . '<br>';
 }
-$result = EA_sql_query($requete);
+$result = EA_sql_query($sql);
 $row = EA_sql_fetch_assoc($result);
 $mes_variables_divers['actuel_collation_donnees'] = $row['Collation'];
 
 // SQL : Que pour la session
-$requete = "SHOW SESSION VARIABLES WHERE Variable_Name LIKE " . "'character_set%'" . " or Variable_Name LIKE " . "'collation%'";
+$sql = "SHOW SESSION VARIABLES WHERE Variable_Name LIKE " . "'character_set%'" . " or Variable_Name LIKE " . "'collation%'";
 if ($GLOBALS['MODE_DEBUG']) {
-    echo 'Variables SQL ' . $requete . '<br>';
+    echo 'Variables SQL ' . $sql . '<br>';
 }
-$result = EA_sql_query($requete);
+$result = EA_sql_query($sql);
 while ($row = EA_sql_fetch_assoc($result)) {
     $mes_variables_sql[$row['Variable_name']] = $row['Value'];
 }
 
 // BASE DE DONNEES
-$requete = "SELECT * FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '" . $dbname . "';";
+$sql = "SELECT * FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '" . $dbname . "';";
 if ($GLOBALS['MODE_DEBUG']) {
-    echo 'Multibase infos BD ' . $requete . '<br>';
+    echo 'Multibase infos BD ' . $sql . '<br>';
 }
-$result = EA_sql_query($requete);
+$result = EA_sql_query($sql);
 if ($row = EA_sql_fetch_assoc($result)) { // MULTIBASE mais pas chez FREE !
     $Multibase = true;
     $mes_variables_divers['actuel_character_set_database'] = $row['DEFAULT_CHARACTER_SET_NAME'];
     $mes_variables_divers['actuel_collation_database'] = $row['DEFAULT_COLLATION_NAME'];
 } else { // MONOBASE
     $Multibase = false;
-    $requete = "SELECT @@character_set_database AS L_DEF_CHARACTER_SET_NAME, @@collation_database AS L_DEF_COLLATION_NAME;";
+    $sql = "SELECT @@character_set_database AS L_DEF_CHARACTER_SET_NAME, @@collation_database AS L_DEF_COLLATION_NAME;";
     if ($GLOBALS['MODE_DEBUG']) {
-        echo 'Monobase infos BD ' . $requete . '<br>';
+        echo 'Monobase infos BD ' . $sql . '<br>';
     }
-    $result = EA_sql_query($requete);
+    $result = EA_sql_query($sql);
     $row = EA_sql_fetch_assoc($result); // show variables LIKE "character_set_database";
     $mes_variables_divers['actuel_character_set_database'] = $row['L_DEF_CHARACTER_SET_NAME']; // $mes_variables_sql['character_set_database'];
     $mes_variables_divers['actuel_collation_database'] = $row['L_DEF_COLLATION_NAME']; // $mes_variables_sql['collation_database'];

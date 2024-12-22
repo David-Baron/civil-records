@@ -779,9 +779,8 @@ if ($ok) {
                             if ($lignvalide) {
                                 // Dédoublonnage
                                 if ($Dedoublon <> 'A' and $NewId == 0) {
-                                    $request = "SELECT ID FROM " . $table . " WHERE " . $condit . ";";
-                                    //echo '<p>'.$no_ligne." -> ".$request.'</p>';
-                                    $result = EA_sql_query($request);
+                                    $sql = "SELECT ID FROM " . $table . " WHERE " . $condit . ";";
+                                    $result = EA_sql_query($sql);
                                     $nb = EA_sql_num_rows($result);
                                 } else {
                                     $nb = 0;

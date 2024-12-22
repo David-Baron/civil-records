@@ -395,22 +395,22 @@ open_page("Recherches dans les tables", $root); ?>
         if (trim($critN . $critM . $critD) == "") {
             msg('Aucun critère de recherche n\'a été spécifié.');
         } else {
-            $request = "";
+            $sql = "";
             $listactes = "";
             $listtyps = "";
             $listcrit = "";
             if ($xtypM) {  // M en premier pour taille zones C_NOM et C_PRE
                 $listzones = "ID, TYPACT, DATETXT, COMMUNE, NOM, PRE, C_NOM, C_PRE, LADATE, 'Mariage' AS LIBELLE ";
                 if ($compmode == "F") {  // full scan
-                    $request .= "(SELECT " . $listzones
+                    $sql .= "(SELECT " . $listzones
                         . " FROM " . $config->get('EA_DB') . "_mar3 "
                         . " WHERE  " . $critM . ") ";
                 } else { // indexed
-                    $request .= "(SELECT " . $listzones
+                    $sql .= "(SELECT " . $listzones
                         . " FROM " . $config->get('EA_DB') . "_mar3 "
                         . " WHERE  " . $critM1 . ") ";
-                    $request .= ' union ';
-                    $request .= "(SELECT " . $listzones
+                    $sql .= ' union ';
+                    $sql .= "(SELECT " . $listzones
                         . " FROM " . $config->get('EA_DB') . "_mar3 "
                         . " WHERE  " . $critM2 . ") ";
                 }
@@ -418,20 +418,20 @@ open_page("Recherches dans les tables", $root); ?>
                 $listtyps .= "N";
             }
             if ($xtypV) {
-                if (strlen($request) > 0) {
-                    $request .= ' union ';
+                if (strlen($sql) > 0) {
+                    $sql .= ' union ';
                 }
                 $listzones = "ID, TYPACT, DATETXT, COMMUNE, NOM, PRE, C_NOM, C_PRE, LADATE, LIBELLE ";
                 if ($compmode == "F") {
-                    $request .= "(SELECT " . $listzones
+                    $sql .= "(SELECT " . $listzones
                         . " FROM " . $config->get('EA_DB') . "_div3 "
                         . " WHERE  " . $critV . ") ";
                 } else {
-                    $request .= "(SELECT " . $listzones
+                    $sql .= "(SELECT " . $listzones
                         . " FROM " . $config->get('EA_DB') . "_div3 "
                         . " WHERE  " . $critV1 . ") ";
-                    $request .= ' union ';
-                    $request .= "(SELECT " . $listzones
+                    $sql .= ' union ';
+                    $sql .= "(SELECT " . $listzones
                         . " FROM " . $config->get('EA_DB') . "_div3 "
                         . " WHERE  " . $critV2 . ") ";
                 }
@@ -442,10 +442,10 @@ open_page("Recherches dans les tables", $root); ?>
                 $listtyps .= "N";
             }
             if ($xtypD) {
-                if (strlen($request) > 0) {
-                    $request .= ' union ';
+                if (strlen($sql) > 0) {
+                    $sql .= ' union ';
                 }
-                $request .= "(SELECT ID, TYPACT, DATETXT, COMMUNE, NOM, PRE, 'X' AS C_NOM, 'Y' AS C_PRE, LADATE,'Décès' AS LIBELLE "
+                $sql .= "(SELECT ID, TYPACT, DATETXT, COMMUNE, NOM, PRE, 'X' AS C_NOM, 'Y' AS C_PRE, LADATE,'Décès' AS LIBELLE "
                     . " FROM " . $config->get('EA_DB') . "_dec3 "
                     . " WHERE  " . $critD . ") ";
                 if (strlen($listactes) > 0) {
@@ -455,10 +455,10 @@ open_page("Recherches dans les tables", $root); ?>
                 $listtyps .= "N";
             }
             if ($xtypN and !empty($critN)) {
-                if (strlen($request) > 0) {
-                    $request .= ' union ';
+                if (strlen($sql) > 0) {
+                    $sql .= ' union ';
                 }
-                $request .= "(SELECT ID, TYPACT, DATETXT, COMMUNE, NOM, PRE, 'X' AS C_NOM, 'Y' AS C_PRE, LADATE,'Naissance' AS LIBELLE "
+                $sql .= "(SELECT ID, TYPACT, DATETXT, COMMUNE, NOM, PRE, 'X' AS C_NOM, 'Y' AS C_PRE, LADATE,'Naissance' AS LIBELLE "
                     . " FROM " . $config->get('EA_DB') . "_nai3 "
                     . " WHERE  " . $critN . ") ";
                 if (strlen($listactes) > 0) {
@@ -467,16 +467,14 @@ open_page("Recherches dans les tables", $root); ?>
                 $listactes = "naissances" . $listactes;
                 $listtyps .= "N";
             }
-            $request .= " ORDER BY LADATE";
+            $sql .= " ORDER BY LADATE";
             $listactes = "<li>Actes de " . $listactes . "</li>\n";
-
-            //	echo $request;
             $reqbigs = "set sql_big_selects=1";
             $resbase = EA_sql_query($reqbigs);
 
-            optimize($request);
+            optimize($sql);
 
-            $result = EA_sql_query($request);
+            $result = EA_sql_query($sql);
             $nbtot = EA_sql_num_rows($result);
 
             $baselink = $path . '/chercher.php?achercher=' . $xach . '&amp;zone=' . $xzone . '&amp;prenom=' . $xpre . '&amp;comp=' . $xcomp;
@@ -491,8 +489,8 @@ open_page("Recherches dans les tables", $root); ?>
             pagination($nbtot, $page, $baselink, $listpages, $limit);
 
             if ($limit <> "") {
-                $request = $request . $limit;
-                $result = EA_sql_query($request);
+                $sql = $sql . $limit;
+                $result = EA_sql_query($sql);
                 $nb = EA_sql_num_rows($result);
             } else {
                 $nb = $nbtot;

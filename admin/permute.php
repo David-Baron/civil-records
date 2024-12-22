@@ -55,13 +55,12 @@ open_page("Permutation d'un acte", $root); ?>
             }
 
             if ($xconfirm == 'confirmed' and $oktype) {
-                $request = "SELECT NOM, PRE, ORI, DNAIS, AGE, PRO, EXCON, EXC_PRE, EXC_COM, COM, " . $sexe
+                $sql = "SELECT NOM, PRE, ORI, DNAIS, AGE, PRO, EXCON, EXC_PRE, EXC_COM, COM, " . $sexe
                     . "P_NOM, P_PRE, P_COM, P_PRO, M_NOM, M_PRE, M_COM, M_PRO, "
                     . "C_NOM, C_PRE, C_ORI, C_DNAIS, C_AGE, C_PRO, C_EXCON, C_X_PRE, C_X_COM, C_COM, "
                     . "CP_NOM, CP_PRE, CP_COM, CP_PRO, CM_NOM, CM_PRE, CM_COM, CM_PRO, "
                     . "DATETXT,COMMUNE,DEPART FROM " . $table . " WHERE ID=" . $xid;
-                $result = EA_sql_query($request);
-                //echo $request;
+                $result = EA_sql_query($sql);
                 if ($acte = EA_sql_fetch_array($result)) {
                     permuter($acte["NOM"], $acte["C_NOM"]);
                     permuter($acte["PRE"], $acte["C_PRE"]);
@@ -82,7 +81,7 @@ open_page("Permutation d'un acte", $root); ?>
                     permuter($acte["M_COM"], $acte["CM_COM"]);
                     permuter($acte["M_PRO"], $acte["CM_PRO"]);
                 }
-                $request = "UPDATE " . $table . " SET " .
+                $sql = "UPDATE " . $table . " SET " .
                     "NOM    = '" . sql_quote($acte["NOM"]) . "', " .
                     "PRE    = '" . sql_quote($acte["PRE"]) . "', " .
                     "ORI    = '" . sql_quote($acte["ORI"]) . "', " .
@@ -120,15 +119,14 @@ open_page("Permutation d'un acte", $root); ?>
                     "CM_COM = '" . sql_quote($acte["CM_COM"]) . "', " .
                     "CM_PRO = '" . sql_quote($acte["CM_PRO"]) . "', ";
                 if ($xtyp == "V") {
-                    $request .=
+                    $sql .=
                         "SEXE   = '" . sql_quote($acte["SEXE"]) . "', " .
                         "C_SEXE = '" . sql_quote($acte["C_SEXE"]) . "', ";
                 }
-                $request .=
+                $sql .=
                     "DTMODIF= '" . $today . "' " .
                     " WHERE ID=" . $xid . ";";
-                $result = EA_sql_query($request);
-                //echo $request;
+                $result = EA_sql_query($sql);
                 $nb = EA_sql_affected_rows();
                 if ($nb > 0) {
                     echo '<p>' . $nb . ' acte de ' . $ntype . ' modifié.</p>';
@@ -141,8 +139,8 @@ open_page("Permutation d'un acte", $root); ?>
                     echo '<p>Aucun acte modifié.</p>';
                 }
             } else {
-                $request = "SELECT NOM,PRE, C_NOM, C_PRE, DATETXT,COMMUNE,DEPART FROM " . $table . " WHERE ID=" . $xid;
-                $result = EA_sql_query($request);
+                $sql = "SELECT NOM,PRE, C_NOM, C_PRE, DATETXT,COMMUNE,DEPART FROM " . $table . " WHERE ID=" . $xid;
+                $result = EA_sql_query($sql);
                 if ($acte = EA_sql_fetch_array($result)) {
                     if ($acte["C_NOM"] <> '') {
                         echo '<form method="post" enctype="multipart/form-data" action="">' . "\n";

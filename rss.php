@@ -18,7 +18,6 @@ $xcomm = $xpatr = $page = "";
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
-$request = "";
 if ($xall == "") {
     $limit = ' LIMIT ' . $max;
 } else {
@@ -32,14 +31,14 @@ if ($xtyp == "" or $xtyp == "A") {
     $condit = " WHERE TYPACT = '" . $xtyp . "'";
 }
 
-$request = "SELECT TYPACT AS TYP, sum(NB_TOT) AS CPT, COMMUNE, DEPART, max(DTDEPOT) AS DTE, min(AN_MIN) AS DEB, max(AN_MAX) AS FIN "
+$sql = "SELECT TYPACT AS TYP, sum(NB_TOT) AS CPT, COMMUNE, DEPART, max(DTDEPOT) AS DTE, min(AN_MIN) AS DEB, max(AN_MAX) AS FIN "
     . " FROM " . $config->get('EA_DB') . "_sums AS a "
     . $condit
     . ' GROUP BY COMMUNE, DEPART, TYP  '
     . ' ORDER BY DTE desc, COMMUNE, DEPART '
     . $limit;
 
-$result = EA_sql_query($request);
+$result = EA_sql_query($sql);
 
 /* CHARGEMENT DU GENERATEUR */
 $rss = new GenRSS();

@@ -97,14 +97,11 @@ if (($xpatr == "" or mb_substr($xpatr, 0, 1) == "_")) {
         $condDep = "";
     }
 
-    $request = "SELECT act.NOM, act.PRE, DATETXT, act.ID, act.DEPOSANT"
+    $sql = "SELECT act.NOM, act.PRE, DATETXT, act.ID, act.DEPOSANT"
                 . " FROM " . $config->get('EA_DB') . "_nai3 AS act"
                 . " WHERE COMMUNE = '" . sql_quote($Commune) . "'" . $condDep
                 . $condit . " ORDER BY " . $order;
-
-    //echo $request;
-    optimize($request);
-    $result = EA_sql_query($request);
+    $result = EA_sql_query($sql);
     $nbtot = EA_sql_num_rows($result);
 
     $limit = "";
@@ -112,8 +109,8 @@ if (($xpatr == "" or mb_substr($xpatr, 0, 1) == "_")) {
     pagination($nbtot, $page, $baselink, $listpages, $limit);
 
     if ($limit <> "") {
-        $request = $request . $limit;
-        $result = EA_sql_query($request);
+        $sql = $sql . $limit;
+        $result = EA_sql_query($sql);
         $nb = EA_sql_num_rows($result);
     } else {
         $nb = $nbtot;

@@ -37,11 +37,11 @@ open_page($config->get('SITENAME') . " : Liste des localités (communes et paroi
         echo '<h2>Localités connues du site ' . $config->get('SITENAME') . '</h2>';
 
         $baselink = $root . '/admin/listgeolocs.php';
-        // $request = "SELECT DISTINCT upper(left(COMMUNE,1)) AS init FROM ".EA_DB."_geoloc ORDER BY init";
+        // $sql = "SELECT DISTINCT upper(left(COMMUNE,1)) AS init FROM ".EA_DB."_geoloc ORDER BY init";
         // Sélectionner et grouper sur initiale de commune et ascii(initiale), ordonner code ascii ascendant pour avoir + grand code (accentué) en dernier
-        $request = "SELECT  alphabet.init  FROM ( SELECT upper(left(COMMUNE,1)) AS init,ascii(upper(left(COMMUNE,1)))  AS oo FROM " . $config->get('EA_DB') . "_geoloc GROUP BY init,oo  ORDER BY init , oo ASC) AS alphabet GROUP BY init";
+        $sql = "SELECT  alphabet.init  FROM ( SELECT upper(left(COMMUNE,1)) AS init,ascii(upper(left(COMMUNE,1)))  AS oo FROM " . $config->get('EA_DB') . "_geoloc GROUP BY init,oo  ORDER BY init , oo ASC) AS alphabet GROUP BY init";
 
-        $result = EA_sql_query($request);
+        $result = EA_sql_query($sql);
         $alphabet = "";
         while ($row = EA_sql_fetch_row($result)) {
             if ($row[0] == $init) {
@@ -83,12 +83,11 @@ open_page($config->get('SITENAME') . " : Liste des localités (communes et paroi
         }
 
 
-        $request = "SELECT ID,COMMUNE,DEPART,LON,LAT,STATUT"
+        $sql = "SELECT ID,COMMUNE,DEPART,LON,LAT,STATUT"
             . " FROM " . $config->get('EA_DB') . "_geoloc "
             . $condit
             . " ORDER BY " . $order;
-        //echo $request;
-        $result = EA_sql_query($request);
+        $result = EA_sql_query($sql);
         $nbtot = EA_sql_num_rows($result);
 
         $limit = "";
@@ -96,8 +95,8 @@ open_page($config->get('SITENAME') . " : Liste des localités (communes et paroi
         pagination($nbtot, $page, $baselink, $listpages, $limit);
 
         if ($limit <> "") {
-            $request = $request . $limit;
-            $result = EA_sql_query($request, $a_db);
+            $sql = $sql . $limit;
+            $result = EA_sql_query($sql, $a_db);
             $nb = EA_sql_num_rows($result);
         } else {
             $nb = $nbtot;

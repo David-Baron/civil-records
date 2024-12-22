@@ -110,8 +110,8 @@ function search_acte($xid, $xtyp, $TYPE_TRT)
     for ($i = 0; $i < count($mdb); $i++) {
         $champs .= $mdb[$i]['ZONE'] . ", ";
     }
-    $request = "SELECT " . $champs . " ID FROM " . $table . " WHERE ID=" . $xid;
-    $result = EA_sql_query($request);
+    $sql = "SELECT " . $champs . " ID FROM " . $table . " WHERE ID=" . $xid;
+    $result = EA_sql_query($sql);
     if ($acte = EA_sql_fetch_array($result) or $xid == -1) {
         // lecture des tailles effective des zones
         $qColumnNames = EA_sql_query("SHOW COLUMNS FROM " . $table);
@@ -394,9 +394,8 @@ open_page("Signaler une erreur dans un acte", $root); ?>
         <?php if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
 
                 list($table, $ntype, $script) = set_table_type_script_acte($xty);
-                $request = "SELECT VERIFIEU, RELEVEUR, ID FROM " . $table . " WHERE ID=" . $xid . ";";
-                $result = EA_sql_query($request);
-                //echo $request;
+                $sql = "SELECT VERIFIEU, RELEVEUR, ID FROM " . $table . " WHERE ID=" . $xid . ";";
+                $result = EA_sql_query($sql);
                 $acte = EA_sql_fetch_array($result);
                 if ($acte['VERIFIEU'] != "") {
                     $xdf = $acte['VERIFIEU'];

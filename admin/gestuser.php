@@ -235,11 +235,10 @@ open_page("Gestion des utilisateurs", $root); ?>
 
         if ($id > 0) {  //
             $action = 'Modification';
-            $request = "SELECT NOM, PRENOM, EMAIL, LEVEL, LOGIN, REGIME, SOLDE, MAJ_SOLDE, STATUT, DTCREATION, DTEXPIRATION, PT_CONSO, REM, LIBRE"
+            $sql = "SELECT NOM, PRENOM, EMAIL, LEVEL, LOGIN, REGIME, SOLDE, MAJ_SOLDE, STATUT, DTCREATION, DTEXPIRATION, PT_CONSO, REM, LIBRE"
                 . " FROM " . $config->get('EA_UDB') . "_user3 "
                 . " WHERE ID =" . $id;
-            //echo '<P>'.$request;
-            if ($result = EA_sql_query($request, $u_db)) {
+            if ($result = EA_sql_query($sql, $u_db)) {
                 $row = EA_sql_fetch_array($result);
                 $nom       = $row["NOM"];
                 $prenom    = $row["PRENOM"];

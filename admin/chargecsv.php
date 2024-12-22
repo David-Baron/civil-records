@@ -395,11 +395,10 @@ if (!$missingargs) { // fichier d'actes
                                 if ($TypeActes == 'V') {
                                     $condit .= " AND LIBELLE='" . sql_quote($typedoc) . "'";
                                 }
-                                $request = "SELECT ID FROM " . $table .
+                                $sql = "SELECT ID FROM " . $table .
                                     " WHERE COMMUNE='" . sql_quote($commune) . "' AND DEPART='" . sql_quote($depart) . "' AND " . $condit . ";";
 
-                                //echo '<p>'.$request;
-                                $result = EA_sql_query($request);
+                                $result = EA_sql_query($sql);
                                 $nbx = EA_sql_num_rows($result);
                                 if ($nbx > 0) {
                                     //echo ' ** INVERSE DETECTE **';
@@ -419,10 +418,9 @@ if (!$missingargs) { // fichier d'actes
                                 if ($TypeActes == 'V') {
                                     $condit .= " AND LIBELLE='" . sql_quote($typedoc) . "'";
                                 }
-                                $request = "SELECT ID FROM " . $table .
+                                $sql = "SELECT ID FROM " . $table .
                                     " WHERE COMMUNE='" . sql_quote($commune) . "' AND DEPART='" . sql_quote($depart) . "' AND " . $condit . ";";
-                                $result = EA_sql_query($request);
-                                //echo '<p>'.$request;
+                                $result = EA_sql_query($sql);
                                 $nb = EA_sql_num_rows($result);
                             } else {
                                 $nb = 0;

@@ -80,32 +80,32 @@ if (getparam('action') == 'submitted') {
 
     if ($ok) {
         if ($oper == "E") { // ==== ajustement de la date d'expiration
-            $request = "UPDATE " . $config->get('EA_UDB') . "_user3 SET"
+            $sql = "UPDATE " . $config->get('EA_UDB') . "_user3 SET"
                     . " dtexpiration='" . $sqlnewdt . "'"
                     . " WHERE level=" . $xdroits . $condreg . $condrem . " ;";
-            $result = EA_sql_query($request, $u_db);
-            //echo $request;
+            $result = EA_sql_query($sql, $u_db);
+
             $nb = EA_sql_affected_rows($u_db);
             echo "<p>Modification de la date d'expiration de " . $nb . " comptes utilisateurs.</p>";
             writelog('Modif. dates expiration', "USERS", $nb);
             $missingargs = false;
         } elseif ($oper == "R") { //==== remise à 0 des points consommés
-            $request = "UPDATE " . $config->get('EA_UDB') . "_user3 SET"
+            $sql = "UPDATE " . $config->get('EA_UDB') . "_user3 SET"
                 . " pt_conso=0"
                 . " WHERE level=" . $xdroits . $condreg . $condrem . " ;";
-            $result = EA_sql_query($request, $u_db);
-            //echo $request;
+            $result = EA_sql_query($sql, $u_db);
+
             $nb = EA_sql_affected_rows($u_db);
             echo "<p>Remise à zéro des points consommés de " . $nb . " comptes utilisateurs.</p>";
             writelog('RAZ des points consommés', "USERS", $nb);
             $missingargs = false;
         } elseif ($oper == "A" or $oper == "F") {
             // modification des points disponibles
-            $request = "SELECT id, nom, prenom, solde, pt_conso"
+            $sql = "SELECT id, nom, prenom, solde, pt_conso"
                 . " FROM " . $config->get('EA_UDB') . "_user3 "
                 . " WHERE level=" . $xdroits . $condreg . $condrem . " ;";
-            //echo $request;
-            $sites = EA_sql_query($request, $u_db);
+
+            $sites = EA_sql_query($sql, $u_db);
             $nbsites = EA_sql_num_rows($sites);
             $nbsend = 0;
             $missingargs = false;
@@ -120,11 +120,11 @@ if (getparam('action') == 'submitted') {
                 } else {
                     $newsolde = $nbrepts;
                 }
-                $request = "UPDATE " . $config->get('EA_UDB') . "_user3 SET"
+                $sql = "UPDATE " . $config->get('EA_UDB') . "_user3 SET"
                     . " solde=" . $newsolde . ", maj_solde='" . $today . "'"
                     . " WHERE id=" . $idsit . " ;";
-                $result = EA_sql_query($request, $u_db);
-                // echo $request;
+                $result = EA_sql_query($sql, $u_db);
+
                 $nb = EA_sql_affected_rows($u_db);
 
                 if ($nb == 1) {

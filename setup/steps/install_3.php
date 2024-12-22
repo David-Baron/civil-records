@@ -52,8 +52,8 @@ if ($request->getMethod() === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Civil-Records | Installer</title>
-    <link rel="stylesheet" href="/assets/css/cosmo.css">
-    <script src="/assets/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="/setup/themes/css/cosmo.css">
+    <script src="/setup/themes/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body>

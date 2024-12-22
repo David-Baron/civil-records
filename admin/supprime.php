@@ -70,12 +70,9 @@ $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
             list($table, $ntype, $soustype, $condcom, $condad, $condaf, $condtdiv, $conddep) = set_cond_select_actes($params);
 
             if ($xaction <> 'validated') {
-                $request = "SELECT count(*) FROM " . $table .
+                $sql = "SELECT count(*) FROM " . $table .
                     " WHERE " . $condcom . $condad . $condaf . $conddep . $condtdiv . " ;";
-
-                // echo $request;
-                optimize($request);
-                $result = EA_sql_query($request);
+                $result = EA_sql_query($sql);
                 $ligne = EA_sql_fetch_row($result);
                 $nbrec = $ligne[0];
                 if ($nbrec == 0) {
@@ -98,11 +95,9 @@ $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
                     echo "</form>\n";
                 }
             } else {
-                $request = "DELETE FROM " . $table .
+                $sql = "DELETE FROM " . $table .
                     " WHERE " . $condcom . $condad . $condaf . $conddep . $condtdiv . " ;";
-                // echo $request;
-                $result = EA_sql_query($request);
-                optimize($request);
+                $result = EA_sql_query($sql);
                 $nb = EA_sql_affected_rows();
                 if ($nb > 0) {
                     echo '<p>' . $nb . ' actes de ' . $ntype . $soustype . ' supprimés.</p>';

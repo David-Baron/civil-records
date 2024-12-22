@@ -30,9 +30,9 @@ $JSheader = "";
 
 if ($id > 0) {  // édition
     $action = 'Modification';
-    $request = "SELECT * FROM " . $config->get('EA_DB') . "_geoloc WHERE ID =" . $id;
+    $sql = "SELECT * FROM " . $config->get('EA_DB') . "_geoloc WHERE ID =" . $id;
 
-    if ($result = EA_sql_query($request)) {
+    if ($result = EA_sql_query($sql)) {
         $row = EA_sql_fetch_array($result);
         $commune   = $row["COMMUNE"];
         $depart    = $row["DEPART"];
