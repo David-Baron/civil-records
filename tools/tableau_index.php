@@ -88,7 +88,7 @@ foreach ($needed_types as $needed_type) {
                     case "V":
                         $typel = "Divers : " . $ligne['LIBELLE'];
                         $prog = "/tab_bans.php";
-                        $linkdiv = ';' . $ligne['LIBELLE'];
+                        $linkdiv = '&stype=' . $ligne['LIBELLE'];
                         break;
                     case "M":
                         $typel = "Mariages";
@@ -104,7 +104,7 @@ foreach ($needed_types as $needed_type) {
                 echo '</tr>';
             }
             echo '<tr class="row' . (fmod($i, 2)) . '">';
-            echo '<td><a href="' . mkurl($root . $interface_path . $prog, $ligne['COMMUNE'] . ' [' . $ligne['DEPART'] . ']' . $linkdiv) . '">' . $ligne['COMMUNE'] . '</a>';
+            echo '<td><a href="' . $root . $interface_path . $prog . '?xcomm=' . $ligne['COMMUNE'] . ' [' . $ligne['DEPART'] . ']' . $linkdiv . '">' . $ligne['COMMUNE'] . '</a>';
             if ($ligne['DEPART'] <> "") {
                 echo ' [' . $ligne['DEPART'] . ']';
             }

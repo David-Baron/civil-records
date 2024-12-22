@@ -212,6 +212,7 @@ function messageFinChargement()
     }
 }
 
+$T0 = time();
 $delaireload = 10;
 $MT0 = microtime_float();
 $Max_time = min(ini_get("max_execution_time") - 3, $config->get('MAX_EXEC_TIME'));

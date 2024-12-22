@@ -2,26 +2,25 @@
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-$xcomm = "";
-$xpatr = "";
-$page = 1;
-$program = "tab_mari.php";
+$xcomm = $request->get('xcomm');
+$xpatr = $request->get('xpatr', '');
+$xord  = $request->get('xord', 'D'); // N = Nom, D = dates, F = Femme
+$page = $request->get('page', 1);
+
 $comdep  = html_entity_decode($xcomm, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
 $Commune = communede($comdep);
 $Depart  = departementde($comdep);
-$xord  = getparam('xord', 'D'); // N = Nom, D = dates, F = Femme
-$pg = getparam('pg');
-if ($pg <> "") {
-    $page = $pg;
-}
+
+
 $xannee = "";
 if (mb_substr($xpatr, 0, 1) == "!") {
     $xannee = mb_substr($xpatr, 1);
 }
+
 $gid = 0;
 $note = geoNote($Commune, $Depart, 'M');
 
-pathroot($root, $path, $xcomm, $xpatr, $page);
+// pathroot($root, $path, $xcomm, $xpatr, $page);
 
 if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
     // Lister les patronymes avec groupements si trop nombreux
@@ -39,7 +38,7 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
             <?php 
     navigation($root, ADM + 2, 'M', $xcomm);
 
-    liste_patro_2($program, $path, $xcomm, $xpatr, "Mariages", $config->get('EA_DB') . "_mar3", "", $gid, $note);
+    liste_patro_2('tab_mari.php', $path, $xcomm, $xpatr, "Mariages", $config->get('EA_DB') . "_mar3", "", $gid, $note);
 } else {
     if (!$userAuthorizer->isGranted(3)) {
         $response = new RedirectResponse("$root/");
@@ -54,12 +53,10 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
         <div class="main-col-center text-center">
             <?php 
     navigation($root, ADM + 3, 'M', $xcomm, $xpatr);
-
-    // **** Lister la table des actes
     echo '<h2>Actes de mariage</h2>';
 
     echo '<p>';
-    echo 'Commune/Paroisse : <a href="' . mkurl($path . '/' . $program, $xcomm) . '"><b>' . $xcomm . '</b></a>' . geoUrl($gid) . '<br />';
+    echo 'Commune/Paroisse : <a href="' . $path . '/tab_mari.php?xcomm=' . $xcomm . '"><b>' . $xcomm . '</b></a>' . geoUrl($gid) . '<br />';
     if ($note <> '') {
         echo "</p><p>" . $note . "</p><p>";
     }
@@ -74,25 +71,25 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
     }
     echo '</p>';
 
-    $baselink = $path . '/' . $program . '/' . urlencode($xcomm) . '/' . urlencode($xpatr);
+    // $baselink = $path . '/tab_mari.php?xcomm=' . $xcomm . '&xpatr=' . $xpatr;
     if ($xord == "N") {
         $order = "act.NOM, PRE, LADATE";
-        $hdate = '<a href="' . mkurl($path . '/' . $program, $xcomm, $xpatr, 'xord=D') . '">Dates</a>';
+        $hdate = '<a href="' . $path . '/tab_mari.php?xcomm=' . $xcomm . '&xpatr=' . $xpatr . '&xord=D">Dates</a>';
         $hnoms = '<b>Epoux</b>';
-        $hfemm = '<a href="' . mkurl($path . '/' . $program, $xcomm, $xpatr, 'xord=F') . '">Epouses</a>';
-        $baselink = mkurl($path . '/' . $program, $xcomm, $xpatr, 'xord=N');
+        $hfemm = '<a href="' . $path . '/tab_mari.php?xcomm=' . $xcomm . '&xpatr=' . $xpatr . '&xord=F">Epouses</a>';
+        $baselink = $path . '/tab_mari.php?xcomm=' . $xcomm . '&xpatr=' . $xpatr . '&xord=N';
     } elseif ($xord == "F") {
         $order = "C_NOM, C_PRE, LADATE";
-        $hnoms = '<a href="' . mkurl($path . '/' . $program, $xcomm, $xpatr, 'xord=N') . '">Epoux</a>';
-        $hdate = '<a href="' . mkurl($path . '/' . $program, $xcomm, $xpatr, 'xord=D') . '">Dates</a>';
+        $hnoms = '<a href="' . $path . '/tab_mari.php?xcomm=' . $xcomm . '&xpatr=' . $xpatr . '&xord=N">Epoux</a>';
+        $hdate = '<a href="' . $path . '/tab_mari.php?xcomm=' . $xcomm . '&xpatr=' . $xpatr . '&xord=D">Dates</a>';
         $hfemm = '<b>Epouses</b>';
-        $baselink = mkurl($path . '/' . $program, $xcomm, $xpatr, 'xord=F');
+        $baselink = $path . '/tab_mari.php?xcomm=' . $xcomm . '&xpatr=' . $xpatr . '&xord=F';
     } else {
         $order = "LADATE, act.NOM, C_NOM";
-        $hnoms = '<a href="' . mkurl($path . '/' . $program, $xcomm, $xpatr, 'xord=N') . '">Epoux</a>';
+        $hnoms = '<a href="' . $path . '/tab_mari.php?xcomm=' . $xcomm . '&xpatr=' . $xpatr . '&xord=N">Epoux</a>';
         $hdate = '<b>Dates</b>';
-        $hfemm = '<a href="' . mkurl($path . '/' . $program, $xcomm, $xpatr, 'xord=F') . '">Epouses</a>';
-        $baselink = mkurl($path . '/' . $program, $xcomm, $xpatr, 'xord=D');
+        $hfemm = '<a href="' . $path . '/tab_mari.php?xcomm=' . $xcomm . '&xpatr=' . $xpatr . '&xord=F">Epouses</a>';
+        $baselink =$path . '/tab_mari.php?xcomm=' . $xcomm . '&xpatr=' . $xpatr . '&xord=D';
     }
     if ($xannee <> "") {
         $condit = " AND year(act.LADATE)=" . $xannee;
@@ -130,7 +127,7 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
             echo '<p>' . $listpages . '</p>';
         }
         $i = 1 + ($page - 1) * iif((ADM > 0), $config->get('MAX_PAGE_ADM'), $config->get('MAX_PAGE'));
-        echo '<table summary="Liste des patronymes">';
+        echo '<table class="m-auto" summary="Liste des patronymes">';
         echo '<tr class="rowheader">';
         echo '<th> Tri : </th>';
         echo '<th>' . $hdate . '</th>';

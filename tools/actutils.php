@@ -172,8 +172,8 @@ function prechecked($typrech)
 function statistiques($vue = "T")
 {
     global $root, $config, $xtyp, $show_alltypes;
-    echo '<div class="box">' . "\n";
-    echo '<div class="box-title">Statistiques</div>' . "\n";
+    echo '<div class="box">';
+    echo '<div class="box-title">Statistiques</div>';
 
     if ($config->get('SHOW_DATES')) {
         $crit_dates = " WHERE year(LADATE) > 0 ";
@@ -189,8 +189,8 @@ function statistiques($vue = "T")
 
     $result = EA_sql_query($sql);
     if (!$result) {
-        $message  = '<p>Requête invalide : ' . EA_sql_error() . "\n";
-        $message  .= '<br>Requête : ' . $sql . "\n";
+        $message  = '<p>Requête invalide : ' . EA_sql_error();
+        $message  .= '<br>Requête : ' . $sql;
         echo ($message);
     }
 
@@ -228,7 +228,7 @@ function statistiques($vue = "T")
                 if ($config->get('SHOW_ALLTYPES') == 0) {
                     $texte .= '</a>';
                 }
-                $texte .= '</dd>' . "\n";
+                $texte .= '</dd>';
             }
             $tot += $ligne[1];
         }
@@ -242,8 +242,8 @@ function statistiques($vue = "T")
         }
     }
 
-    echo '<div class="box-body p-2"><dl>' . "\n";
-    echo '<dt><strong>' . entier($tot) . ' actes</strong> dont :</dt>' . "\n" . $texte;
+    echo '<div class="box-body p-2"><dl>';
+    echo '<dt><strong>' . entier($tot) . ' actes</strong> dont :</dt>' . $texte;
     if ($config->get('SHOW_RSS') <> 0) {
         $urlrss = $root . '/rss.php';
         $mesrss = 'Résumé de la base en RSS';
@@ -251,11 +251,11 @@ function statistiques($vue = "T")
             $urlrss .= "?type=" . $xtyp;
             $mesrss .= " (" . typact_txt($xtyp) . ")";
         }
-        echo '<dt><a href="' . $urlrss . '" title="' . $mesrss . '"><img src="' . $root . '/tools/MakeRss/feed-icon-16x16.gif" border="0" alt="' . $mesrss . '" /></a></dt>' . "\n";
+        echo '<dt><a href="' . $urlrss . '" title="' . $mesrss . '"><img src="' . $root . '/tools/MakeRss/feed-icon-16x16.gif" border="0" alt="' . $mesrss . '" /></a></dt>';
     }
-    echo '</dl></div>' . "\n";
+    echo '</dl></div>';
 
-    echo '</div>' . "\n";
+    echo '</div>';
     return $menu_actes;
 }
 
@@ -303,8 +303,8 @@ function menu_public()
     if ($userAuthorizer->isGranted(6)) {
         echo '<a href="' . $root . '/admin/aide/aide.html">Aide</a>';
     }
-    echo '</nav></div>' . "\n";
-    echo '</div>' . "\n";
+    echo '</nav></div>';
+    echo '</div>';
 }
 
 /**
@@ -351,10 +351,12 @@ function zone_menu($admin, int $userlevel, $pp = array())
     return $menu_actes;
 }
 
-function navigation($root = "", $level = 1, $type = "", $commune = null, $patronyme = null, $prenom = null)
+function navigation($root = "", $level = 1, $type = 'A', $commune = null, $patronyme = null, $prenom = null)
 {
     global $config;
 
+    $xtyp = "?xtyp=$type";
+    $xcomm = null != $commune ? "&xcomm=$commune" : '';
     $signe = "";
     $s2 = "";
     switch ($type) {
@@ -396,7 +398,7 @@ function navigation($root = "", $level = 1, $type = "", $commune = null, $patron
             $level = $level - 10;
         } else {
             if ($config->get('SHOW_ALLTYPES') == 0) {
-                echo ' :: <a href="' . mkurl($root . '/' . "index.php", $type) . '">Communes et paroisses</a>';
+                echo ' :: <a href="' . $root . '/index.php?xtyp='.$type.'">Communes et paroisses</a>';
             } else {
                 echo ' :: <a href="' . $root . '/index.php">Communes et paroisses</a>';
             }
@@ -408,7 +410,7 @@ function navigation($root = "", $level = 1, $type = "", $commune = null, $patron
         }
     }
     if ($level > 2) {
-        echo ' &gt; <a href="' . mkurl($path . '/' . $s2, $commune) . '">' . $commune . $signe . '</a>';
+        echo ' &gt; <a href="' . $path . '/' . $s2 . $xtyp . $xcomm . '">' . $commune . $signe . '</a>';
     } else {
         if ($level == 2) {
             echo ' &gt; ' . $commune . $signe;
@@ -418,11 +420,11 @@ function navigation($root = "", $level = 1, $type = "", $commune = null, $patron
         echo ' &gt; <a href="' . mkurl($path . '/' . $s2, $commune, $patronyme) . '">' . $patronyme . '</a>';
     } else {
         if ($level == 3) {
-            echo ' &gt; ' . $patronyme . "\n";
+            echo ' &gt; ' . $patronyme;
         }
     }
     if ($level == 4) {
-        echo ' &gt; ' . $prenom . "\n";
+        echo ' &gt; ' . $prenom;
     }
     echo '</div>';
     ?>
@@ -487,7 +489,7 @@ function form_typeactes_communes($mode = '', $alldiv = 1)
 {
     // Tableau avec choix du type + choix d'une commune existante
     echo " <tr>\n";
-    echo '  <td>Type des actes : &nbsp;</td>' . "\n";
+    echo '  <td>Type des actes : &nbsp;</td>';
     echo '  <td>';
     $ajaxcommune = ' onClick="' . "getCommunes(this.value, {'content_type': 'json', 'target': 'ComDep', 'preloader': 'prl'})" . '" ';
     echo '  			<input type="hidden" name="TypeActes" value="X" />';
@@ -500,7 +502,7 @@ function form_typeactes_communes($mode = '', $alldiv = 1)
     echo '  </td>';
     echo " </tr>\n";
     echo " <tr>\n";
-    echo '  <td>Commune / Paroisse : &nbsp;</td>' . "\n";
+    echo '  <td>Commune / Paroisse : &nbsp;</td>';
     echo '  <td>';
     echo '  <select id="ComDep" name="ComDep">';
     echo '    <option value="">Choisir d\'abord le type d\'acte</option> ';
@@ -516,16 +518,16 @@ function listbox_communes($fieldname, $default, $vide = 0)  // liste de toutes l
 
     if ($result = EA_sql_query($sql)) {
         $i = 1;
-        echo '<select name="' . $fieldname . '" size="1">' . "\n";
+        echo '<select name="' . $fieldname . '" size="1">';
         if ($vide == 1) {
-            echo '<option>*** Toutes ***</option>' . "\n";
+            echo '<option>*** Toutes ***</option>';
         }
         if ($vide == 2) {
-            echo '<option>*** Backup complet (par type) ***</option>' . "\n";
+            echo '<option>*** Backup complet (par type) ***</option>';
         }
         while ($row = EA_sql_fetch_array($result)) {
             $comdep = $row["COMMUNE"] . " [" . $row["DEPART"] . "]";
-            echo '<option ' . selected_option(htmlentities($comdep, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET), $default) . '>' . htmlentities($comdep, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET) . '</option>' . "\n";
+            echo '<option ' . selected_option(htmlentities($comdep, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET), $default) . '>' . htmlentities($comdep, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET) . '</option>';
             $i++;
         }
     }
@@ -639,12 +641,12 @@ function listbox_divers($fieldname, $default, $tous = 0)
     $sql = "SELECT DISTINCT LIBELLE FROM " . $config->get('EA_DB') . "_sums WHERE length(LIBELLE)>0";
     if ($result = EA_sql_query($sql)) {
         $i = 1;
-        echo '<select name="' . $fieldname . '">' . "\n";
+        echo '<select name="' . $fieldname . '">';
         if ($tous) {
-            echo '<option>*** Tous ***</option>' . "\n";
+            echo '<option>*** Tous ***</option>';
         }
         while ($row = EA_sql_fetch_array($result)) {
-            echo '<option ' . selected_option($row["LIBELLE"], $default) . '>' . $row["LIBELLE"] . '</option>' . "\n";
+            echo '<option ' . selected_option($row["LIBELLE"], $default) . '>' . $row["LIBELLE"] . '</option>';
             $i++;
         }
     }
@@ -707,7 +709,7 @@ function show_simple_item($retrait, $format, $info, $label, $info2 = "", $url = 
     echo '<tr>';
     echo '<td class="' . $claslab . '">' . $sp . $label . '&nbsp;:&nbsp;</td>';
     echo '<td class="' . $clasinf . '">' . $url1 . $info . $url2 . $info2 . '</td>';
-    echo '</tr>' . "\n";
+    echo '</tr>';
 }
 
 function grp_label($gp, $tb, $lg, $sigle = '')
@@ -886,8 +888,8 @@ function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = ""
         $initiale = " AND left(NOM,($lgi-1))= '" . sql_quote(mb_substr($xpatr, 1)) . "'";
     }
 
-    echo '<h2>' . $titre . '</h2>' . "\n";
-    echo '<p>Commune/Paroisse : <a href="' . mkurl($root . '/' . $script, $xcomm) . '"><strong>' . $xcomm . '</strong></a>' . geoUrl($gid) . '</p>' . "\n";
+    echo '<h2>' . $titre . '</h2>';
+    echo '<p>Commune/Paroisse : <a href="' . $root . '/' . $script .'?xcomm='. $xcomm . '"><strong>' . $xcomm . '</strong></a>' . geoUrl($gid) . '</p>';
     if ($note <> '') {
         echo "<p>" . $note . "</p>";
     }
@@ -915,27 +917,27 @@ function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = ""
         $nblign = EA_sql_num_rows($result);
 
         $i = 1;
-        echo '<table summary="Liste alphabétique">' . "\n";
-        echo '<tr class="rowheader">' . "\n";
-        echo '<th>&nbsp;</th>' . "\n";
-        echo '<th>&nbsp;Patronymes&nbsp;</th>' . "\n";
-        echo '<th>&nbsp;Périodes&nbsp;</th>' . "\n";
-        echo '<th>&nbsp;Actes&nbsp;</th>' . "\n";
+        echo '<table summary="Liste alphabétique">';
+        echo '<tr class="rowheader">';
+        echo '<th></th>';
+        echo '<th>Patronymes</th>';
+        echo '<th>Périodes</th>';
+        echo '<th>Actes</th>';
         echo '</tr>';
         while ($ligne = EA_sql_fetch_row($result)) {
-            echo '<tr class="row' . (fmod($i, 2)) . '">' . "\n";
-            echo '<td>&nbsp;' . $i . '.</td>' . "\n";
-            echo '<td>&nbsp;<a href="' . mkurl($root . '/' . $script, $xcomm, $ligne[0]) . '">' . $ligne[0] . '</a></td>' . "\n";
+            echo '<tr class="row' . (fmod($i, 2)) . '">';
+            echo '<td>' . $i . '.</td>';
+            echo '<td><a href="' . mkurl($root . '/' . $script, $xcomm, $ligne[0]) . '">' . $ligne[0] . '</a></td>';
             echo '<td align="center">' . $ligne[2];
             if ($ligne[2] <> $ligne[3]) {
                 echo '-' . $ligne[3];
             }
-            echo '</td>' . "\n";
-            echo '<td align="center">' . $ligne[1] . '</td>' . "\n";
-            echo '</tr>' . "\n";
+            echo '</td>';
+            echo '<td align="center">' . $ligne[1] . '</td>';
+            echo '</tr>';
             $i++;
         }
-        echo '</table>' . "\n";
+        echo '</table>';
     }
     if ($nbresu > iif((ADM > 0), $config->get('MAX_PATR_ADM'), $config->get('MAX_PATR'))) { // Alphabet car trop de patronymes
         $sql = "SELECT left(NOM,$lgi), count(distinct NOM), min(NOM), max(NOM)"
@@ -954,32 +956,32 @@ function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = ""
         }
 
         $i = 1;
-        echo '<table summary="Liste alphabétique">' . "\n";
-        echo '<tr class="rowheader">' . "\n";
-        echo '<th>Initiales</th>' . "\n";
-        echo '<th>Patronymes</th>' . "\n";
-        echo '<th>&nbsp;Noms&nbsp;</th>' . "\n";
+        echo '<table class="m-auto" summary="Liste alphabétique">';
+        echo '<tr class="rowheader">';
+        echo '<th>Initiales</th>';
+        echo '<th>Patronymes</th>';
+        echo '<th>Noms</th>';
         echo '</tr>';
         while ($ligne = EA_sql_fetch_row($result)) {
-            echo '<tr class="row' . (fmod($i, 2)) . '">' . "\n";
-            echo '<td align="center"><strong>' . $ligne[0] . '</strong></td>' . "\n";
+            echo '<tr class="row' . (fmod($i, 2)) . '">';
+            echo '<td align="center"><strong>' . $ligne[0] . '</strong></td>';
             if ($ligne[1] == 1) {
-                echo '<td align="center">' . $ligne[1] . '</td>' . "\n";
-                echo '<td>&nbsp;<a href="' . mkurl($root . '/' . $script, $xcomm, $ligne[2]) . '">' . $ligne[2] . '</a></td>' . "\n";
+                echo '<td align="center">' . $ligne[1] . '</td>';
+                echo '<td><a href="' . mkurl($root . '/' . $script, $xcomm, $ligne[2]) . '">' . $ligne[2] . '</a></td>';
             } else {
-                echo '<td align="center">' . $ligne[1] . '</td>' . "\n";
+                echo '<td align="center">' . $ligne[1] . '</td>';
                 while (mb_strlen($ligne[0]) < $lgi) {
                     $ligne[0] = $ligne[0] . ' ';
                 }
-                echo '<td>&nbsp;<a href="' . mkurl($root . '/' . $script, $xcomm, '_' . $ligne[0]) . '">' . $ligne[2] . ' à ' . $ligne[3] . '</a></td>' . "\n";
+                echo '<td><a href="' . mkurl($root . '/' . $script, $xcomm, '_' . $ligne[0]) . '">' . $ligne[2] . ' à ' . $ligne[3] . '</a></td>';
             }
-            echo '</tr>' . "\n";
+            echo '</tr>';
             $i++;
         }
-        echo '</table>' . "\n";
+        echo '</table>';
     }
     if ($nbresu == 0) {
-        echo 'Aucun patronyme trouvé' . "\n";
+        echo 'Aucun patronyme trouvé';
     }
 }
 
@@ -1006,7 +1008,7 @@ function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = 
 
     if ($stype <> "") {
         $soustype = " AND LIBELLE = '" . sql_quote($stype) . "'";
-        $sousurl  = ";" . $stype;
+        $sousurl  = "&stype=" . $stype;
         $stitre   = " (" . $stype . ")";
     } else {
         $soustype = "";
@@ -1014,8 +1016,8 @@ function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = 
         $stitre   = "";
     }
 
-    echo '<h2>' . $titre . '</h2>' . "\n";
-    echo '<p>Commune/Paroisse : <a href="' . mkurl($root . '/' . $script, $xcomm . $sousurl) . '"><strong>' . $xcomm . '</strong></a>' . geoUrl($gid) . '</p>' . "\n";
+    echo '<h2>' . $titre . '</h2>';
+    echo '<p>Commune/Paroisse : <a href="' . $root . '/' . $script . '?xcomm=' . $xcomm . $sousurl . '"><strong>' . $xcomm . '</strong></a>' . geoUrl($gid) . '</p>';
     if ($note <> '') {
         echo "<p>" . $note . "</p>";
     }
@@ -1063,11 +1065,10 @@ function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = 
         while ($neof2 and remove_accent($ligne2[0]) == "") {
             $neof2 = ($ligne2 = EA_sql_fetch_row($result2));
         }
-
-        echo '<table summary="Liste alphabétique">' . "\n";
-        echo '<tr class="rowheader">' . "\n";
-        echo '<th>Initiales</th>' . "\n";
-        echo '<th>Patronymes</th>' . "\n";
+        echo '<table class="m-auto" summary="Liste alphabétique">';
+        echo '<tr class="rowheader">';
+        echo '<th>Initiales</th>';
+        echo '<th>Patronymes</th>';
         echo '</tr>';
         $code = 250;
         $code_arret = chr($code);
@@ -1111,14 +1112,14 @@ function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = 
                     $lire1 = 1;
                     $lire2 = 1;
                 }
-                echo '<td align="center"><strong>' . $lenom . '</strong></td>' . "\n";
+                echo '<td align="center"><strong>' . $lenom . '</strong></td>';
                 while (mb_strlen($lenom) < $lgi) {
                     $lenom = $lenom . ' ';
                 }
                 if ($lemin == $lemax) {
-                    echo '<td><a href="' . mkurl($root . '/' . $script, $xcomm . $sousurl, $lemin) . '">' . $lemin . '</a></td>' . "\n";
+                    echo '<td><a href="' . $root . '/' . $script . '?$xcomm='. $xcomm . $sousurl, $lemin . '">' . $lemin . '</a></td>';
                 } else {
-                    echo '<td><a href="' . mkurl($root . '/' . $script, $xcomm . $sousurl, '_' . $lenom) . '">' . $lemin . ' à ' . $lemax . '</a></td>' . "\n";
+                    echo '<td><a href="' . $root . '/' . $script . '?$xcomm='. $xcomm . $sousurl . '&xpatr' . $lenom . '">' . $lemin . ' à ' . $lemax . '</a></td>';
                 }
                 echo '</tr>';
                 if ($lire1 == 1) { //and $neof1)
@@ -1132,7 +1133,7 @@ function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = 
                 $i++;
             }
         }
-        echo '</table>' . "\n";
+        echo '</table>';
     } elseif ($nbresu > 0) {
         $req1 = "SELECT distinct NOM, count(*), min(year(LADATE)),max(year(LADATE))"
             . " FROM $table "
@@ -1157,17 +1158,17 @@ function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = 
         $fini = 0;
         $lire1 = 0;
         $lire2 = 0;
-        echo '<table summary="Liste alphabétique">' . "\n";
-        echo '<tr class="rowheader">' . "\n";
-        echo '<th> </th>';
-        echo '<th align="left">Patronymes</th>' . "\n";
-        echo '<th>Périodes</th>' . "\n";
-        if ($table == $config->get('EA_DB') . "_mar") {
-            echo '<th>Epoux</th>' . "\n";
-            echo '<th>Epouses</th>' . "\n";
+        echo '<table class="m-auto" summary="Liste alphabétique">';
+        echo '<tr class="rowheader">';
+        echo '<th></th>';
+        echo '<th>Patronymes</th>';
+        echo '<th>Périodes</th>';
+        if ($table == $config->get('EA_DB') . "_mar3") {
+            echo '<th>Epoux</th>';
+            echo '<th>Epouses</th>';
         } else {
-            echo '<th>Intervenant 1</th>' . "\n";
-            echo '<th>Intervenant 2</th>' . "\n";
+            echo '<th>Person 1</th>';
+            echo '<th>Person 2</th>';
         }
 
         echo '</tr>';
@@ -1199,27 +1200,27 @@ function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = 
                 echo '<tr class="row' . (fmod($i, 2)) . '">';
                 echo '<td>' . $i . '. </td>';
                 if ($mari < $femm) {
-                    echo '<td>&nbsp;<a href="' . mkurl($root . '/' . $script, $xcomm . $sousurl, $ligne1[0]) . '">' . $ligne1[0] . '</a></td>' . "\n";
-                    echo '<td align="center"> ' . fourchette_dates($ligne1[2], $ligne1[3]) . '</td>' . "\n";
-                    echo '<td align="center"> ' . $ligne1[1] . '</td>' . "\n";
-                    echo '<td align="center"> ' . '-' . '</td>' . "\n";
+                    echo '<td><a href="' . $root . '/' . $script .'?xcomm='. $xcomm . $sousurl . '&xpatr=' . $ligne1[0] . '">' . $ligne1[0] . '</a></td>';
+                    echo '<td align="center"> ' . fourchette_dates($ligne1[2], $ligne1[3]) . '</td>';
+                    echo '<td align="center"> ' . $ligne1[1] . '</td>';
+                    echo '<td align="center"> ' . '-' . '</td>';
                     $lire1 = 1;
                 } elseif ($mari > $femm) {
-                    echo '<td>&nbsp;<a href="' . mkurl($root . '/' . $script, $xcomm . $sousurl, $ligne2[0]) . '">' . $ligne2[0] . '</a></td>' . "\n";
-                    echo '<td align="center"> ' . fourchette_dates($ligne2[2], $ligne2[3]) . '</td>' . "\n";
-                    echo '<td align="center"> ' . '-' . '</td>' . "\n";
-                    echo '<td align="center"> ' . $ligne2[1] . '</td>' . "\n";
+                    echo '<td><a href="' . $root . '/' . $script .'?xcomm='. $xcomm . $sousurl . '&xpatr=' . $ligne2[0] . '">' . $ligne2[0] . '</a></td>';
+                    echo '<td align="center"> ' . fourchette_dates($ligne2[2], $ligne2[3]) . '</td>';
+                    echo '<td align="center"> ' . '-' . '</td>';
+                    echo '<td align="center"> ' . $ligne2[1] . '</td>';
                     $lire2 = 1;
                 } else {
                     // alors =
-                    echo '<td>&nbsp;<a href="' . mkurl($root . '/' . $script, $xcomm . $sousurl, $ligne1[0]) . '">' . $ligne1[0] . '</a></td>' . "\n";
-                    echo '<td align="center"> ' . fourchette_dates($ligne1[2], $ligne1[3], $ligne2[2], $ligne2[3]) . '</td>' . "\n";
-                    echo '<td align="center"> ' . $ligne1[1] . '</td>' . "\n";
-                    echo '<td align="center"> ' . $ligne2[1] . '</td>' . "\n";
+                    echo '<td><a href="' . $root . '/' . $script .'?xcomm='. $xcomm . $sousurl . '&xpatr=' . $ligne1[0] . '">' . $ligne1[0] . '</a></td>';
+                    echo '<td align="center"> ' . fourchette_dates($ligne1[2], $ligne1[3], $ligne2[2], $ligne2[3]) . '</td>';
+                    echo '<td align="center"> ' . $ligne1[1] . '</td>';
+                    echo '<td align="center"> ' . $ligne2[1] . '</td>';
                     $lire1 = 1;
                     $lire2 = 1;
                 }
-                echo '</tr>' . "\n";
+                echo '</tr>';
             }
             if ($lire1 == 1) { //and $neof1)
                 $neof1 = ($ligne1 = EA_sql_fetch_row($result1));
@@ -1241,9 +1242,9 @@ function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = 
             }
             $i++;
         }
-        echo '</table>' . "\n";
+        echo '</table>';
     } else {
-        echo 'Aucun patronyme trouvé' . "\n";
+        echo 'Aucun patronyme trouvé';
     }
 }
 
@@ -1303,9 +1304,9 @@ function pagination($nbtot, &$page, $href, &$listpages, &$limit)
                 if (($p <= $debut) || ($p > ($totpages - $debut)) || ($p >= ($page - $autour) && $p <= ($page + $autour))) {
                     if ($p == $page) {
                         $pp = false;
-                        $listpages = $listpages . "<strong> " . $p . "</strong>" . "\n";
+                        $listpages = $listpages . "<strong> " . $p . "</strong>";
                     } else {
-                        $listpages = $listpages . ' <a href="' . $href . '&amp;pg=' . $p . '">' . $p . "</a>" . "\n";
+                        $listpages = $listpages . ' <a href="' . $href . '&amp;pg=' . $p . '">' . $p . "</a>";
                     }
                 } else {
                     if (!$pp) {
@@ -1314,7 +1315,7 @@ function pagination($nbtot, &$page, $href, &$listpages, &$limit)
                     $pp = true;
                 }
             }
-            $listpages = "<strong>Pages :</strong>" . $listpages . "\n";
+            $listpages = "<strong>Pages :</strong>" . $listpages;
         }
         $limit = " LIMIT " . ($page - 1) * $maxpage . "," . $maxpage;
     } else {
@@ -1336,18 +1337,18 @@ function actions_deposant($userid, $depid, $actid, $typact)  // version graphiqu
         $depinfo = "#" . $depid;
     }
     if ($userid == $depid or $session->get('user')['level'] >= 8) {
-        echo '<td align="center">&nbsp;' . "\n";
+        echo '<td align="center">&nbsp;';
         echo $depinfo . ' ';
         if ($typact == 'M' or $typact == 'V') {
             echo '<a href="' . $path . '/permute.php?xid=' . $actid . '&amp;xtyp=' . $typact . '"><img width="11" hspace="7" height="13" title="Permuter" alt="Permuter" src="' . $root . '/assets/img/permuter.gif"></a> - ';
         }
         echo '<a href="' . $path . '/edit_acte.php?xid=' . $actid . '&amp;xtyp=' . $typact . '"><img width="11" hspace="7" height="13" title="Modifier" alt="Modifier" src="' . $root . '/assets/img/modifier.gif"></a>';
         echo ' - <a href="' . $path . '/suppr_acte.php?xid=' . $actid . '&amp;xtyp=' . $typact . '"><img width="11" hspace="7" height="13" title="Supprimer" alt="Supprimer" src="' . $root . '/assets/img/supprimer.gif"></a>';
-        echo '&nbsp;</td>' . "\n";
+        echo '&nbsp;</td>';
     } else {
         echo '<td align="center">&nbsp;';
         echo $depinfo; //iif(($depnom==""),"#".$depid,$depnom.' '.$deppre);
-        echo '&nbsp;</td>' . "\n";
+        echo '&nbsp;</td>';
     }
 }
 
@@ -1498,7 +1499,7 @@ function recharger_solde()
                     $avertissement .= 'Votre compte a été automatiquement crédité de ' . $config->get('PTS_PAR_PER') . ' points<br />'; // passé par variable globale
                 } else {
                     echo 'Erreur dans gestion des points ';
-                    echo '<p>' . EA_sql_error() . '<br />' . $reqmaj . '</p>' . "\n";
+                    echo '<p>' . EA_sql_error() . '<br />' . $reqmaj . '</p>';
                 }
             }
         }
@@ -1563,21 +1564,21 @@ function annee_seulement($date_txt)  // affichage date simplifié à l'annee si 
 function lb_droits_user($lelevel, $all = 0)  //
 {
     echo '<select name="lelevel" size="1">';
-    echo '<option ' . selected_option(0, $lelevel) . '>0 : ** Aucun accès **</option>' . "\n";
-    echo '<option ' . selected_option(1, $lelevel) . '>1 : Liste des communes</option>' . "\n";
-    echo '<option ' . selected_option(2, $lelevel) . '>2 : Liste des patronymes</option>' . "\n";
-    echo '<option ' . selected_option(3, $lelevel) . '>3 : Table des actes</option>' . "\n";
-    echo '<option ' . selected_option(4, $lelevel) . '>4 : Détails des actes (avec limites)</option>' . "\n";
-    echo '<option ' . selected_option(5, $lelevel) . '>5 : Détails sans limitation</option>' . "\n";
-    echo '<option ' . selected_option(6, $lelevel) . '>6 : Chargement NIMEGUE et CSV</option>' . "\n";
-    echo '<option ' . selected_option(7, $lelevel) . '>7 : Ajout d\'actes</option>' . "\n";
-    echo '<option ' . selected_option(8, $lelevel) . '>8 : Administration tous actes</option>' . "\n";
-    echo '<option ' . selected_option(9, $lelevel) . '>9 : !! Gestion des utilisateurs !!</option>' . "\n";
+    echo '<option ' . selected_option(0, $lelevel) . '>0 : ** Aucun accès **</option>';
+    echo '<option ' . selected_option(1, $lelevel) . '>1 : Liste des communes</option>';
+    echo '<option ' . selected_option(2, $lelevel) . '>2 : Liste des patronymes</option>';
+    echo '<option ' . selected_option(3, $lelevel) . '>3 : Table des actes</option>';
+    echo '<option ' . selected_option(4, $lelevel) . '>4 : Détails des actes (avec limites)</option>';
+    echo '<option ' . selected_option(5, $lelevel) . '>5 : Détails sans limitation</option>';
+    echo '<option ' . selected_option(6, $lelevel) . '>6 : Chargement NIMEGUE et CSV</option>';
+    echo '<option ' . selected_option(7, $lelevel) . '>7 : Ajout d\'actes</option>';
+    echo '<option ' . selected_option(8, $lelevel) . '>8 : Administration tous actes</option>';
+    echo '<option ' . selected_option(9, $lelevel) . '>9 : !! Gestion des utilisateurs !!</option>';
     if ($all == 1) {
-        echo '<option ' . selected_option(10, $lelevel) . '>A : *** Tous >>> Backup ***</option>' . "\n";
+        echo '<option ' . selected_option(10, $lelevel) . '>A : *** Tous >>> Backup ***</option>';
     }
     if ($all == 2) {
-        echo '<option ' . selected_option(10, $lelevel) . '>A : *** Envoi à tous ***</option>' . "\n";
+        echo '<option ' . selected_option(10, $lelevel) . '>A : *** Envoi à tous ***</option>';
     }
     echo "</select>\n";
 }
@@ -1586,15 +1587,15 @@ function lb_statut_user($statut, $vide = 0)  //
 {
     echo '<select name="statut" size="1">';
     if (($vide % 2) == 1) {
-        echo '<option ' . selected_option("0", $statut) . '>- Pas de condition -</option>' . "\n";
+        echo '<option ' . selected_option("0", $statut) . '>- Pas de condition -</option>';
     }
-    echo '<option ' . selected_option("W", $statut) . '>W : Attente d\'activation</option>' . "\n";
-    echo '<option ' . selected_option("A", $statut) . '>A : Attente d\'approbation</option>' . "\n";
-    echo '<option ' . selected_option("N", $statut) . '>N : Accès autorisé</option>' . "\n";
-    echo '<option ' . selected_option("B", $statut) . '>B : Accès bloqué</option>' . "\n";
+    echo '<option ' . selected_option("W", $statut) . '>W : Attente d\'activation</option>';
+    echo '<option ' . selected_option("A", $statut) . '>A : Attente d\'approbation</option>';
+    echo '<option ' . selected_option("N", $statut) . '>N : Accès autorisé</option>';
+    echo '<option ' . selected_option("B", $statut) . '>B : Accès bloqué</option>';
     /* @deprecated
     if (($vide % 4) == 3) {
-        echo '<option ' . selected_option("X", $statut) . '>X : Compte expiré de ' . DUREE_EXPIR . ' jrs</option>' . "\n";
+        echo '<option ' . selected_option("X", $statut) . '>X : Compte expiré de ' . DUREE_EXPIR . ' jrs</option>';
     } */
     echo "</select>\n";
 }
@@ -1603,11 +1604,11 @@ function lb_regime_user($regime, $vide = 0)  //
 {
     echo '<select name="regime" size="1">';
     if ($vide == 1) {
-        echo '<option ' . selected_option(-1, $regime) . '>- Pas de condition -' . "\n";
+        echo '<option ' . selected_option(-1, $regime) . '>- Pas de condition -';
     }
-    echo '<option ' . selected_option(0, $regime) . '>0 : Accès libre</option>' . "\n";
-    echo '<option ' . selected_option(1, $regime) . '>1 : Recharge manuelle</option>' . "\n";
-    echo '<option ' . selected_option(2, $regime) . '>2 : Recharge automatique</option>' . "\n";
+    echo '<option ' . selected_option(0, $regime) . '>0 : Accès libre</option>';
+    echo '<option ' . selected_option(1, $regime) . '>1 : Recharge manuelle</option>';
+    echo '<option ' . selected_option(2, $regime) . '>2 : Recharge automatique</option>';
     echo "</select>\n";
 }
 
@@ -1688,7 +1689,7 @@ function stats_1_comm($xtyp, $lacom)
             // ajout ok
         } else {
             echo "Insertion non réalisée";
-            echo '<p>' . EA_sql_error() . '<br />' . $reqins . '</p>' . "\n";
+            echo '<p>' . EA_sql_error() . '<br />' . $reqins . '</p>';
         }
     }
 }
@@ -1887,16 +1888,16 @@ function geoNote($Commune, $Depart, $atyp)
  */
 function ctrlxid($nom, $pre)
 {
+    $c1 = 13;
+    $c2 = 19;
     if (!empty($nom)) {
         $c1 = (ord($nom[0]) + 3);
-    } else {
-        $c1 = 13;
-    }
+    } 
+    
     if (!empty($pre)) {
         $c2 = (ord($pre[0]) + 7);
-    } else {
-        $c2 = 19;
     }
+
     return $c1 * $c2;
 }
 

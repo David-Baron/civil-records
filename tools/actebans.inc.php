@@ -48,7 +48,7 @@ if ($error == 0) {
         $sigle = $row["SIGLE"];
 
         echo '<h2>' . $row["LIBELLE"] . '</h2>';
-        echo '<table summary="Fiche détaillée">';
+        echo '<table class="m-auto" summary="Fiche détaillée">';
 
         show_item3($row, 0, 5, 4003, mkurl('tab_bans.php', $xcomm));  // Commune
         show_item3($row, 1, 0, 4002);  // Code INSEE

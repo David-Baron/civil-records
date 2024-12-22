@@ -114,7 +114,7 @@ if (! $missingargs) {
         $nban = $k;
         $annee_limite_coherence = 1010;
 
-        echo '<table border="0">' . "\n";
+        echo '<table class="m-auto">' . "\n";
         echo "<tr><th>Années</th><th>Nombres d'actes</th></tr>";
         for ($k = 1; $k <= $nban; $k++) {
             //echo $k."-".$annee[$k]."-".$cptan[$k];

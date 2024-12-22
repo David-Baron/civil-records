@@ -121,7 +121,7 @@ if (($xpatr == "" or mb_substr($xpatr, 0, 1) == "_")) {
             echo '<p>' . $listpages . '</p>';
         }
         $i = 1 + ($page - 1) * iif((ADM > 0), $config->get('MAX_PAGE_ADM'), $config->get('MAX_PAGE'));
-        echo '<table summary="Liste des patronymes">';
+        echo '<table class="m-auto" summary="Liste des patronymes">';
         echo '<tr class="rowheader">';
         echo '<th> Tri : </th>';
         echo '<th>' . $hdate . '</th>';

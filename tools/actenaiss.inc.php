@@ -47,7 +47,7 @@ if ($error == 0) {
         // Afficher l acte
         echo '<h2>Acte de naissance/baptême</h2>';
 
-        echo '<table summary="Fiche détaillée">';
+        echo '<table class="m-auto" summary="Fiche détaillée">';
         show_item3($row, 0, 5, 1003, mkurl('tab_naiss.php', $xcomm));  // Commune
         show_item3($row, 1, 0, 1002);  // Code INSEE
         show_item3($row, 0, 4, 1005);  // Departement

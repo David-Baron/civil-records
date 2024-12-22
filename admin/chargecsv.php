@@ -43,7 +43,7 @@ function listbox_cols($fieldname, $default)
 $Max_time = min(ini_get("max_execution_time") - 3, $config->get('MAX_EXEC_TIME'));
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
-
+$T0 = time();
 $AnneeVide  = getparam('AnneeVide', 0); // for checked
 $SuprRedon  = getparam('SuprRedon', 0); // for checked
 $SuprPatVid = getparam('SuprPatVid', 0); // for checked

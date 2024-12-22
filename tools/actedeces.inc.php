@@ -46,7 +46,7 @@ if ($error == 0) {
         // Afficher l acte
         echo '<h2>Acte de décès/sépulture</h2>';
 
-        echo '<table summary="Fiche détaillée">';
+        echo '<table class="m-auto" summary="Fiche détaillée">';
 
         show_item3($row, 0, 5, 3003, mkurl('tab_deces.php', $xcomm));  // Commune
         show_item3($row, 1, 0, 3002);  // Code INSEE
