@@ -16,6 +16,7 @@ function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = n
     echo '<html lang="fr">';
     echo "<head>";
     echo '<meta charset="UTF-8">';
+    echo '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
     echo '<meta name="expires" content="never">';
     echo '<meta name="revisit-after" content="15 days">';
     echo '<meta name="robots" content="index, nofollow">';
@@ -24,13 +25,12 @@ function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = n
     echo '<meta name="generator" content="Civil-Records">';
     echo "<title>$titre</title>";
     echo '<link rel="shortcut icon" href="' . $root . '/themes/default/img/favicon.ico" type="image/x-icon">';
+    
     echo '<link rel="stylesheet" href="' . $root . '/themes/default/css/default.css" type="text/css">';
     echo '<link rel="stylesheet" href="' . $root . '/themes/default/css/style.css" type="text/css">';
-
     if (file_exists(__DIR__ . '/../_config/actes.css')) {
         echo '<link rel="stylesheet" href="' . $root . '/_config/actes.css" type="text/css">';
     }
-
     echo '<link rel="stylesheet" href="' . $root . '/themes/default/css/print.css" type="text/css" media="print">';
 
     if (file_exists(__DIR__ . '/../_config/js_externe_header.inc.php')) {
@@ -172,26 +172,22 @@ function prechecked($typrech)
 function statistiques($vue = "T")
 {
     global $root, $config, $xtyp, $show_alltypes;
+    
+    $crit_dates = "";
+
     echo '<div class="box">';
     echo '<div class="box-title">Statistiques</div>';
 
     if ($config->get('SHOW_DATES')) {
         $crit_dates = " WHERE year(LADATE) > 0 ";
-    } else {
-        $crit_dates = "";
     }
 
-    $sql = "SELECT TYPACT, sum(NB_TOT)"
-        . " FROM " . $config->get('EA_DB') . "_sums "
-        . ' GROUP BY TYPACT'
-        . " ORDER BY INSTR('NMDV',TYPACT)"     // cette ligne permet de trier dans l'ordre voulu
-    ;
-
+    $sql = "SELECT TYPACT, sum(NB_TOT) FROM " . $config->get('EA_DB') . "_sums GROUP BY TYPACT ORDER BY INSTR('NMDV',TYPACT)";
     $result = EA_sql_query($sql);
     if (!$result) {
         $message  = '<p>Requête invalide : ' . EA_sql_error();
         $message  .= '<br>Requête : ' . $sql;
-        echo ($message);
+        // echo ($message); TODO: Will be a log
     }
 
     $tot = 0;
@@ -324,18 +320,14 @@ function show_pub_menu()
 
 function zone_menu($admin, int $userlevel, $pp = array())
 {
-    //affice les menus standardises
     global $root;
     $menu_actes = '';
     echo '<div class="main-col-left">';
-    if (!isset($pp['f']) or ($pp['f'] != 'N')) {
-        // form_recherche($root);
-        require(__DIR__ . '/../templates/front/_search-form.php');
-    }
+    require(__DIR__ . '/../templates/front/_search-form.php');
     if (isset($pp['s'])) {
         $menu_actes = statistiques($pp['s']);
     }
-    if ($admin <> 10) {
+    if ($userlevel < 6) {
         menu_public();
         show_pub_menu();
         /** 

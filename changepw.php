@@ -31,13 +31,11 @@ if ($request->getMethod() === 'POST') {
         $form_errors['actual_password'] = 'Votre ancien mot de passe n\'est pas correct';
     }
 
-    // dd($form_errors);
-    // TODO HERE
     if (empty($form_errors)) {
         $new_password = sha1($request->request->get('new_password'));
         $sql = "UPDATE " . $config->get('EA_UDB') . "_user3 SET hashpass='" . $new_password . "' WHERE id=" . $session->get('user')['ID'] . ";";
         $result = EA_sql_query($sql);
-        // TODO: add flash: 'Veuillez vous reconnecter avec le nouveau mot de passe'
+        $session->getFlashBag()->add('info', 'Veuillez vous reconnecter avec le nouveau mot de passe');
         $response = new RedirectResponse("$root/login.php");
         $response->send();
         exit();
@@ -65,9 +63,7 @@ open_page("Changement de mot de passe", $root); ?>
                     </td>
                     <td>
                         <?php if (isset($form_errors['actual_password'])) { ?>
-                            <div class="erreur">
-                                <?= $form_errors['actual_password']; ?>
-                            </div>
+                            <div class="erreur"> <?= $form_errors['actual_password']; ?></div>
                         <?php } else { ?>
                             <img onmouseover="seetext(EApwdverif)" onmouseout="seeasterisk(EApwdverif)"
                                 src="<?= $root; ?>/assets/img/eye-16-16.png"
@@ -82,9 +78,7 @@ open_page("Changement de mot de passe", $root); ?>
                     </td>
                     <td>
                         <?php if (isset($form_errors['new_password'])) { ?>
-                            <div class="erreur">
-                                <?= $form_errors['new_password']; ?>
-                            </div>
+                            <div class="erreur"><?= $form_errors['new_password']; ?></div>
                         <?php } else { ?>
                             <img onmouseover="seetext(EApwdverif)" onmouseout="seeasterisk(EApwdverif)"
                                 src="<?= $root; ?>/assets/img/eye-16-16.png"
@@ -99,9 +93,7 @@ open_page("Changement de mot de passe", $root); ?>
                     </td>
                     <td>
                         <?php if (isset($form_errors['new_password_confirm'])) { ?>
-                            <div class="erreur">
-                                <?= $form_errors['new_password_confirm']; ?>
-                            </div>
+                            <div class="erreur"><?= $form_errors['new_password_confirm']; ?></div>
                         <?php } else { ?>
                             <img onmouseover="seetext(EApwdverif)" onmouseout="seeasterisk(EApwdverif)"
                                 src="<?= $root; ?>/assets/img/eye-16-16.png"

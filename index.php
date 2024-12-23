@@ -20,18 +20,15 @@ if ($request->get('act') && $request->get('act') === 'logout') {
     exit();
 }
 
-$xtyp = getparam('xtyp', 'N');
-// $act = getparam('act'); useless now
-$init = getparam('init');
+$xtyp = $request->get('xtyp', 'A');
+$init = $request->get('init', '');
 $vue = $request->get('vue', 'T'); // T = Tableau / C = Carte
 $xpatr = "";
 $page = "";
+
 $JSheader = "";
 
 if ($config->get('SHOW_ALLTYPES') != 1) $xtyp = 'N';
-
-
-// pathroot($root, $path, $xtyp, $xpatr, $page);
 
 if ($config->get('GEO_MODE_PUBLIC') == 5 || $vue == 'C') { // si pas localité isolée et avec carte
 
@@ -45,7 +42,7 @@ if ($config->get('GEO_MODE_PUBLIC') == 5 || $vue == 'C') { // si pas localité i
     $carto = new GoogleMapAPI();
     $carto->_minify_js = isset($_REQUEST["min"]) ? false : true;
     require(__DIR__ . '/tools/carto_index.php');
-    //$carto->addMarkerByAddress("Bievre, Namur","Bièvre", "Texte de la bulle");
+    // $carto->addMarkerByAddress("Bievre, Namur","Bièvre", "Texte de la bulle");
     $carto->setMapType("terrain");
     $carto->setTypeControlsStyle("dropdown");
     $carto->setHeight($geo_haut_carte);
@@ -81,7 +78,7 @@ open_page($config->get('SITENAME') . " : Dépouillement d'actes de l'état-civil
         if (null !== $config->get('AVERTISMT')) {
             echo '<p>' . $config->get('AVERTISMT') . '</p>';
         }
-
+        require(__DIR__ . '/templates/front/_flash-message.php');
         echo '<h2>Communes et paroisses';
         if ($config->get('GEO_MODE_PUBLIC') >= 3 && $config->get('GEO_MODE_PUBLIC') < 5) {
             echo " : ";
@@ -109,10 +106,10 @@ open_page($config->get('SITENAME') . " : Dépouillement d'actes de l'état-civil
             require(__DIR__ . '/tools/tableau_index.php');
         }
 
-        include(__DIR__ . "/templates/front/_commentaire.php");
-
-        echo '</div>';
-        echo '</div>';
-        include(__DIR__ . '/templates/front/_footer.php');
-        $response->setContent(ob_get_clean());
-        $response->send();
+        include(__DIR__ . "/templates/front/_commentaire.php"); ?>
+    </div>
+</div>
+</div>
+<?php include(__DIR__ . '/templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

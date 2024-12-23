@@ -46,7 +46,7 @@ if ($request->getMethod() === 'POST') {
         $form_errors['antiflood'] = 'Vous avez dépasser le nombre d\'essai! Vous pourrez réessayer dans 24 heures.';
     }
 
-    if ($request->request->get('login') && $request->request->get('passwd')) {
+    if (empty($form_errors) && $request->request->get('login') && $request->request->get('passwd')) {
         $appUserAuthenticator = new AppUserAuthenticator($session);
         if ($appUserAuthenticator->authenticate($request->request->get('login'), $request->request->get('passwd'))) {
             $response = new RedirectResponse('.');
@@ -58,9 +58,6 @@ if ($request->getMethod() === 'POST') {
     }
 }
 
-
-// pathroot($root, $path, $xcomm, $xpatr, $page); Useless now.
-
 ob_start();
 open_page("ExpoActes : Login", $root, null, null, null, '../index.htm'); ?>
 <div class="main">
@@ -68,6 +65,9 @@ open_page("ExpoActes : Login", $root, null, null, null, '../index.htm'); ?>
     <div class="main-col-center text-center">
         <?php navigation($root, 2, 'A', "Connexion"); ?>
         <h2>Vous devez vous identifier : </h2>
+        <?php foreach ($form_errors as $key => $value) { ?>
+           <div class="danger"><?= $value; ?></div>
+        <?php } ?>
 
         <form method="post">
             <table class="m-auto">

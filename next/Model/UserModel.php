@@ -72,11 +72,11 @@ class UserModel extends DatabaseConnection
             ':level' => $user['level'],
             ':regime' => $user['regime'],
             ':solde' => $user['solde'],
-            ':maj_solde' => $user['maj_solde'],
+            ':maj_solde' => $date,
             ':statut' => $user['statut'],
             ':dtcreation' => $date,
             ':dtexpiration' => $expire_on,
-            ':pt_conso' => $user['pt_conso'],
+            ':pt_conso' => 0,
             ':REM' => $user['REM'],
             ':libre' => $user['libre']
         ]);

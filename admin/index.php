@@ -15,15 +15,16 @@ if (!$userAuthorizer->isGranted(6)) {
     exit();
 }
 
-pathroot($root, $path, $xtyp, $xpatr, $page);
+// pathroot($root, $path, $xtyp, $xpatr, $page);
 
-$init  = getparam('init');
+$xtyp  = $request->get('xtyp', 'A');
+$init  = $request->get('init', '');
 $missingargs = true;
 $emailfound = false;
 $oktype = false;
 $cptact = 0;
 $cptfil = 0;
-$xtyp  = getparam('xtyp', 'A');
+
 
 $menu_actes = "";
 $menu_actes .= '<a href="' . $root . '/admin/index.php?xtyp=N"' . ($xtyp == "N" ? ' class="bolder"' : '') . '>' . "Naissances" . "</a>";

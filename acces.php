@@ -7,16 +7,6 @@ $admtxt = ''; // Compatibility only
 require(__DIR__ . '/next/bootstrap.php');
 require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
-if ($config->get('PUBLIC_LEVEL') < 4 && !$userAuthorizer->isGranted(1)) {
-    $response = new RedirectResponse("$root/login.php");
-    $response->send();
-    exit();
-}
-
-$xcomm = $xpatr = $page = "";
-
-pathroot($root, $path, $xcomm, $xpatr, $page);
-
 ob_start();
 open_page(
     $config->get('SITENAME') . " : Dépouillement d'actes de l'état-civil et des registres paroissiaux",
