@@ -69,7 +69,7 @@ if ($config->get('GEO_MODE_PUBLIC') == 5 || $vue == 'C') { // si pas localité i
 }
 
 ob_start();
-open_page($config->get('SITENAME') . " : Dépouillement d'actes de l'état-civil et des registres paroissiaux", $root, null, null, $JSheader, '../index.htm', 'rss.php'); ?>
+open_page("Dépouillement d'actes de l'état-civil et des registres paroissiaux", $root, null, null, $JSheader, '../index.htm', 'rss.php'); ?>
 <div class="main">
     <?php $menu_actes = zone_menu(0, 0); ?>
     <div class="main-col-center text-center">

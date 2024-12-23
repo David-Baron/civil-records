@@ -35,7 +35,7 @@ if ($request->getMethod() === 'POST') {
         $new_password = sha1($request->request->get('new_password'));
         $sql = "UPDATE " . $config->get('EA_UDB') . "_user3 SET hashpass='" . $new_password . "' WHERE id=" . $session->get('user')['ID'] . ";";
         $result = EA_sql_query($sql);
-        $session->getFlashBag()->add('info', 'Veuillez vous reconnecter avec le nouveau mot de passe');
+        $session->getFlashBag()->add('info', 'Veuillez vous reconnecter avec le nouveau mot de passe.');
         $response = new RedirectResponse("$root/login.php");
         $response->send();
         exit();

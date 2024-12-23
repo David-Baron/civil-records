@@ -1,22 +1,12 @@
 <?php
 
-use Symfony\Component\HttpFoundation\RedirectResponse;
-
 define('ADM', 0); // Compatibility only
 $admtxt = ''; // Compatibility only
 require(__DIR__ . '/next/bootstrap.php');
 require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
 ob_start();
-open_page(
-    $config->get('SITENAME') . " : Dépouillement d'actes de l'état-civil et des registres paroissiaux",
-    $root,
-    null,
-    null,
-    null,
-    '../index.htm',
-    'rss.php'
-); ?>
+open_page('Conditions d\'acces', $root); ?>
 <div class="main">
     <?php zone_menu(0, 0); ?>
     <div class="main-col-center text-center">

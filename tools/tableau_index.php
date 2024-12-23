@@ -18,12 +18,6 @@ if ($init != '') {
     $condit2 = " AND upper(left(COMMUNE," . $leninit . "))='" . sql_quote($init) . "'";
 }
 
-$AffichageAdmin = (ADM <> 0); // EN THEORIE ADM == 10
-$interface_path = '';
-if ($AffichageAdmin) $interface_path = '/admin';
-
-
-$baselink = $root . $interface_path . '/index.php';
 // $sql = "SELECT DISTINCT upper(left(COMMUNE,1)) AS init FROM " . EA_DB . "_sums " . $condit1 . " ORDER BY init";
 // Sélectionner et grouper sur initiale de commune et ascii(initiale), ordonner code ascii ascendant pour avoir + grand code (accentué) en dernier
 $sql = "SELECT alphabet.init FROM ( SELECT upper(left(COMMUNE,1)) AS init,ascii(upper(left(COMMUNE,1))) AS oo 
@@ -35,7 +29,7 @@ while ($row = EA_sql_fetch_row($result)) {
     if ($row[0] == $init) {
         $alphabet .= '<b>' . $row[0] . '</b> ';
     } else {
-        $alphabet .= '<a href="' . $baselink . '?xtyp=' . $xtyp . '&init=' . $row[0] . '">' . $row[0] . '</a> ';
+        $alphabet .= '<a href="' . $root . '/index.php?xtyp=' . $xtyp . '&init=' . $row[0] . '">' . $row[0] . '</a> ';
     }
 }
 echo '<p align="center">' . $alphabet . '</p>';
@@ -44,21 +38,20 @@ echo '<tr class="rowheader">';
 echo '<th>Localité</th>';
 $nbcol = 3;
 $cols = 1;  // pour graphique de répartition
-if ($AffichageAdmin or $config->get('SHOW_DATES') == 1) {
-    if ($AffichageAdmin or $config->get('SHOW_DISTRIBUTION') == 1) {
+if ($userAuthorizer->isGranted(6) || $config->get('SHOW_DATES') == 1) {
+    if ($config->get('SHOW_DISTRIBUTION') == 1) {
         $cols = 2;
     }
     echo '<th colspan="' . $cols . '">Période</th>';
     $nbcol++;
 }
 echo '<th>Actes</th>';
-if ($AffichageAdmin) {
+if ($userAuthorizer->isGranted(6)) {
     echo '<th>Datés</th>';
     $nbcol++;
 }
 echo '<th>Filiatifs</th>';
 echo '</tr>';
-
 
 $nbcol += $cols;
 $cptact = 0;
@@ -104,20 +97,20 @@ foreach ($needed_types as $needed_type) {
                 echo '</tr>';
             }
             echo '<tr class="row' . (fmod($i, 2)) . '">';
-            echo '<td><a href="' . $root . $interface_path . $prog . '?xcomm=' . $ligne['COMMUNE'] . ' [' . $ligne['DEPART'] . ']' . $linkdiv . '">' . $ligne['COMMUNE'] . '</a>';
+            echo '<td><a href="' . $root . $prog . '?xcomm=' . $ligne['COMMUNE'] . ' [' . $ligne['DEPART'] . ']' . $linkdiv . '">' . $ligne['COMMUNE'] . '</a>';
             if ($ligne['DEPART'] <> "") {
                 echo ' [' . $ligne['DEPART'] . ']';
             }
             echo '</td>';
             $imgtxt = "Distribution par années";
-            if ($AffichageAdmin or $config->get('SHOW_DATES') == 1) {
-                if ($AffichageAdmin or $config->get('SHOW_DISTRIBUTION') == 1) {
-                    echo '<td><a href="' . $root . $interface_path . '/stat_annees.php?comdep=' . urlencode($ligne['COMMUNE'] . ' [' . $ligne['DEPART'] . ']' . $linkdiv) . '&amp;xtyp=' . $needed_type . '"><img src="' . $root . '/img/histo.gif" border="0" alt="' . $imgtxt . '" title="' . $imgtxt . '"></a></td>';
+            if ($userAuthorizer->isGranted(6) or $config->get('SHOW_DATES') == 1) {
+                if ($config->get('SHOW_DISTRIBUTION') == 1) {
+                    echo '<td><a href="' . $root . '/stat_annees.php?comdep=' . urlencode($ligne['COMMUNE'] . ' [' . $ligne['DEPART'] . ']' . $linkdiv) . '&amp;xtyp=' . $needed_type . '"><img src="' . $root . '/img/histo.gif" border="0" alt="' . $imgtxt . '" title="' . $imgtxt . '"></a></td>';
                 }
                 echo '<td> (' . $ligne['R_AN_MIN'] . '-' . $ligne['R_AN_MAX'] . ') </td>';
             }
             echo '<td> ' . entier($ligne['S_NB_TOT']) . '</td>';
-            if ($AffichageAdmin) {
+            if ($userAuthorizer->isGranted(6)) {
                 echo '<td> ' . entier($ligne['S_NB_N_NUL']) . '</td>';
             }
             echo '<td> ' . entier($ligne['S_NB_FIL']) . '</td>';
@@ -131,11 +124,11 @@ foreach ($needed_types as $needed_type) {
 }
 echo '<tr class="rowheader">';
 echo '<td><b>Totaux :</b></td>';
-if ($AffichageAdmin || $config->get('SHOW_DATES') == 1) {
+if ($userAuthorizer->isGranted(6) || $config->get('SHOW_DATES') == 1) {
     echo '<td colspan="' . $cols . '">  </td>';
 }
 echo '<td> ' . entier($cptact) . '</td>';
-if ($AffichageAdmin) {
+if ($userAuthorizer->isGranted(6)) {
     echo '<td> ' . entier($cptnnul) . '</td>';
 }
 echo '<td> ' . entier($cptfil) . '</td>';

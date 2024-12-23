@@ -59,7 +59,7 @@ if ($request->getMethod() === 'POST') {
 }
 
 ob_start();
-open_page("ExpoActes : Login", $root, null, null, null, '../index.htm'); ?>
+open_page("Login", $root, null, null, null, '../index.htm'); ?>
 <div class="main">
     <?php zone_menu(0, 0); ?>
     <div class="main-col-center text-center">

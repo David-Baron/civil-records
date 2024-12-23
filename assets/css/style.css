@@ -135,6 +135,7 @@ th {
 .entete {
     position: relative;
     display: block;
+    min-height: 80px;
     padding: 10px;
     border: 1px dotted var(--ea-primary-dark);
     background-color: transparent;
@@ -345,6 +346,10 @@ dt {
 
 .p-2 {
     padding: 5px;
+}
+
+.mt-4 {
+    margin-top: 20px;
 }
 
 .m-auto {

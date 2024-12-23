@@ -7,8 +7,9 @@ $admtxt = ''; // Compatibility only
 require(__DIR__ . '/next/bootstrap.php');
 require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
-if (!$userAuthorizer->isGranted(3)) {
-    $response = new RedirectResponse("$root/login.php");
+if (!$userAuthorizer->isGranted(3) && $config->get('RECH_ZERO_PTS') == 0) {
+    $session->getFlashBag()->add('warning', 'Vous n\'êtes pas connecté ou vous n\'avez pas les autorisations nécessaires!');
+    $response = new RedirectResponse("$root/");
     $response->send();
     exit();
 }
@@ -21,14 +22,17 @@ $page = "";
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
 ob_start();
-open_page($config->get('SITENAME') . " : Dépouillement d'actes de l'état-civil et des registres paroissiaux", $root, null, null, null, '../index.htm', 'rss.php'); ?>
+open_page("Recherche avancée", $root, null, null, null, null, 'rss.php'); ?>
 <div class="main">
     <?php zone_menu(0, 0); ?>
     <div class="main-col-center text-center">
         <?php navigation($root, 2, 'A', "Recherche avancée"); ?>
         <h2>Recherche avancée</h2>
 
-        <?php if (($config->get('RECH_LEVENSHTEIN') == 1) && (max($session->get('user')['level'], $config->get('PUBLIC_LEVEL')) >= $config->get('LEVEL_LEVENSHTEIN'))) { ?>
+        <?php if (
+                $config->get('PUBLIC_LEVEL') >= 3
+                || $userAuthorizer->isAuthenticated() && ($config->get('RECH_LEVENSHTEIN') == 1 && $session->get('user')['level'] >= $config->get('LEVEL_LEVENSHTEIN'))
+            ) { ?>
             <div>
                 <a href="<?= $root; ?>/rechlevenshtein.php">Recherche Levenshtein</a>
             </div>

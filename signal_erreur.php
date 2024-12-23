@@ -143,16 +143,16 @@ function search_acte($xid, $xtyp, $TYPE_TRT)
             //{ print '<pre>';  print_r($col); echo '</pre>'; }
 
             //echo '<form method="post" action="">'."\n";
-            echo '<h3 align="center">' . $logtxt . ' ' . $ntype . '</h3>' . "\n";
+            echo '<h3 align="center">' . $logtxt . ' ' . $ntype . '</h3>';
             //echo '<h3 align="center">Commune/paroisse : '.$acte["COMMUNE"].'</h3>';
-            echo '<table class="m-auto" summary="Formulaire">' . "\n";
+            echo '<table class="m-auto" summary="Formulaire">';
             $grp = "";
             for ($i = 0; $i < count($mdb); $i++) {
                 if ($mdb[$i]['GROUPE'] <> $grp) {
                     $grp = $mdb[$i]['GROUPE'];
-                    echo ' <tr>' . "\n";
-                    echo '  <td align="left"><b>&nbsp; ' . $mdb[$i]['GETIQ'] . "  </b></td>\n";
-                    echo '  <td> </td>' . "\n";
+                    echo ' <tr>';
+                    echo '  <td align="left"><b>' . $mdb[$i]['GETIQ'] . "  </b></td>";
+                    echo '  <td> </td>';
                     echo ' </tr>';
                 }
                 // parametres : $name,$size,$value,$caption
@@ -192,7 +192,7 @@ function search_acte($xid, $xtyp, $TYPE_TRT)
                 echo '  </td>';
                 echo " </tr>";
             } // for
-            echo ' <tr><td>' . "\n";
+            echo ' <tr><td>';
             echo "</td></tr></table>\n";
             // return
         } else { //CAS 2  diff_acte et CAS 3  gen_modif  FUSION EN 1 SEUL APPEL
@@ -221,11 +221,9 @@ function search_acte($xid, $xtyp, $TYPE_TRT)
 }
 
 
-
-global $loc_mail;
-
 if (!$userAuthorizer->isGranted(1)) {
-    $response = new RedirectResponse("$root/login.php");
+    $session->getFlashBag()->add('warning', 'Vous n\'êtes pas connecté ou vous n\'avez pas les autorisations nécessaires!');
+    $response = new RedirectResponse("$root/");
     $response->send();
     exit();
 }
@@ -237,14 +235,13 @@ $nompre = getparam('nompre', $session->get('user')['nom'] . ", " . $session->get
 $msgerreur = getparam('msgerreur');
 $email = getparam('email', $session->get('user')['email']);
 $xid   = getparam('xid');
-$xct   = getparam('xct');
 $xty   = getparam('xty');
 $xdf   = getparam('xdf');
 $xcc   = getparam('xcc');
 $ok = false;
 
 ob_start();
-open_page("Signaler une erreur dans un acte", $root); ?>
+open_page("Signalement d'une erreur", $root); ?>
 <div class="main">
     <?php zone_menu(0, 0); ?>
     <div class="main-col-center text-center">
@@ -282,7 +279,7 @@ open_page("Signaler une erreur dans un acte", $root); ?>
                 $EA_Type_ActScript = array('N' => "acte_naiss.php", 'M' => "acte_mari.php", 'D' => "acte_deces.php", 'V' => "acte_bans.php");
                 $s4 = $EA_Type_ActScript[$xty];
 
-                $urlvalid = $config->get('EA_URL_SITE') . $root . "/admin/" . $s4 . "?xid=" . $xid . "&amp;xct=" . $xct . $crlf . $crlf;
+                $urlvalid = $config->get('EA_URL_SITE') . $root . "/admin/" . $s4 . "?xid=" . $xid . $crlf . $crlf;
                 $lemessage = '';
 
                 if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
@@ -339,7 +336,7 @@ open_page("Signaler une erreur dans un acte", $root); ?>
                     $mes = "ERREUR : Le mail n'a pas pu être envoyé ! <br />Merci de contactez directement l'administrateur du site.";
                 }
 
-                $log .= ":" . $xty . "/" . $xid . "/" . $xct;
+                $log .= ":" . $xty . "/" . $xid;
                 writelog($log, $nompre, 1);
                 echo '<p><b>' . $mes . '</b></p>';
                 $id = 0;
@@ -348,12 +345,12 @@ open_page("Signaler une erreur dans un acte", $root); ?>
 
         //Si pas tous les arguments nécessaires, on affiche le formulaire
         if (!$ok) {
-            echo "<h2>Signalement d'une erreur dans un acte</h2>" . "\n";
+            echo "<h2>Signalement d'une erreur dans un acte</h2>";
             if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
-                echo "<p>Ce formulaire se décompose en deux parties&nbsp;:<ul><li>Tous les champs sont modifiables. Vous pouvez suggérer un remplacement, un ajout, une suppression…  L’acte apparaitra tel qu’il sera une fois vos modifications approuvées.</li><li>Une zone de texte libre dans laquelle vous pouvez, soit compléter votre saisie, soit expliquer ce qui vous paraît erroné, si les corrections individuelles ne suffisent pas à la compréhension.</li></ul></p>" . "\n";
+                echo "<p>Ce formulaire se décompose en deux parties&nbsp;:<ul><li>Tous les champs sont modifiables. Vous pouvez suggérer un remplacement, un ajout, une suppression…  L’acte apparaitra tel qu’il sera une fois vos modifications approuvées.</li><li>Une zone de texte libre dans laquelle vous pouvez, soit compléter votre saisie, soit expliquer ce qui vous paraît erroné, si les corrections individuelles ne suffisent pas à la compréhension.</li></ul></p>";
             }
-            echo '<form method="post"  action="">' . "\n";
-            echo '<table class="m-auto" summary="Formulaire">' . "\n";
+            echo '<form method="post"  action="">';
+            echo '<table class="m-auto" summary="Formulaire">';
 
             if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
                 echo " <tr>\n";
@@ -407,7 +404,6 @@ open_page("Signaler une erreur dans un acte", $root); ?>
             echo " <tr><td>\n";
             echo '  <input type="hidden" name="xid" value="' . $xid . '">';
             echo '  <input type="hidden" name="xty" value="' . $xty . '">';
-            echo '  <input type="hidden" name="xct" value="' . $xct . '">';
             echo '  <input type="hidden" name="xdf" value="' . $xdf . '">';
             //echo '  <input type="hidden" name="xcc" value="'.$xcc.'">';
             echo '  <input type="hidden" name="action" value="submitted">';
@@ -416,9 +412,9 @@ open_page("Signaler une erreur dans un acte", $root); ?>
                 echo ' <a href="' . $root . '/"">Revenir à l\'accueil</a></p>';
             }
 
-            echo ' &nbsp; <input type="reset" value=" Effacer " />' . "\n";
+            echo ' &nbsp; <input type="reset" value=" Effacer " />';
             echo " </td><td align=\"left\">\n";
-            echo ' &nbsp; <input type="submit" value=" >> Envoyer >> " />' . "\n";
+            echo ' &nbsp; <input type="submit" value=" >> Envoyer >> " />';
             echo " </td></tr>\n";
             echo "</table>\n";
             echo "</form>\n";

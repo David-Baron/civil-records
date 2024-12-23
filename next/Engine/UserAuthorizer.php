@@ -11,12 +11,12 @@ class UserAuthorizer
         $this->session = $session;
     }
 
-    public function isAuthenticated()
+    public function isAuthenticated(): bool
     {
         return $this->session->get('user') ? true : false;
     }
 
-    public function isGranted(int $level)
+    public function isGranted(int $level): bool
     {
         if ($this->isAuthenticated() && $this->session->get('user')['level'] >= $level) {
             return true;

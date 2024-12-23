@@ -24,7 +24,7 @@ $xcomm = $xpatr = $page = "";
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
 ob_start();
-open_page($config->get('SITENAME') . " : Dépouillement d'actes de l'état-civil et des registres paroissiaux", $root, null, null, null, '../index.htm', 'rss.php'); ?>
+open_page("Recherche Levenshtein", $root, null, null, null, null, 'rss.php'); ?>
 <div class="main">
     <?php zone_menu(0, 0); ?>
     <div class="main-col-center text-center">

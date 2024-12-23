@@ -9,6 +9,7 @@ $lvl = 2;
 if (ADM == 10) $lvl = 5;
 
 if (!$userAuthorizer->isGranted($lvl)) {
+    $session->getFlashBag()->add('warning', 'Vous n\'êtes pas connecté ou vous n\'avez pas les autorisations nécessaires!');
     $response = new RedirectResponse("$root/");
     $response->send();
     exit();
@@ -85,7 +86,7 @@ if (! $missingargs) {
     ob_start();
     open_page($title, $root); ?>
     <div class="main">
-        <?php zone_menu(ADM, $session->get('user')['level']); ?>
+        <?php zone_menu(ADM, $session->get('user', ['level' => 0])['level']); ?>
         <div class="main-col-center text-center">
         <?php
         if (ADM < 10) {

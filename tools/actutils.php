@@ -3,14 +3,11 @@
 if (function_exists("date_default_timezone_set")) date_default_timezone_set('Europe/Paris'); // For compatibility only
 $db  = con_db(); // For compatibility only
 
-function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = null, $index = null, $rss = null)
+function open_page($title, $root = "", $js = null, $addbody = null, $addhead = null, $index = null, $rss = null)
 {
     global $path, $config, $scriptname, $commune, $TIPmsg;
 
     header('Content-Type: text/html; charset=UTF-8');
-
-    $meta_description = $config->get('META_DESCRIPTION', '');
-    $meta_keywords = $config->get('META_KEYWORDS', '');
 
     echo '<!DOCTYPE html>';
     echo '<html lang="fr">';
@@ -20,25 +17,26 @@ function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = n
     echo '<meta name="expires" content="never">';
     echo '<meta name="revisit-after" content="15 days">';
     echo '<meta name="robots" content="index, nofollow">';
-    echo '<meta name="description" content="' . $meta_description . ' ' . $titre . '">';
-    echo '<meta name="keywords" content="' . $meta_keywords . ', ' . $titre . '">';
+    echo '<title>' . $config->get('SITENAME') . ' | ' . $title . '</title>';
+    echo '<meta name="description" content="' . $config->get('META_DESCRIPTION', '') . '">';
+    echo '<meta name="keywords" content="' . $config->get('META_KEYWORDS', '') . '">';
     echo '<meta name="generator" content="Civil-Records">';
-    echo "<title>$titre</title>";
-    echo '<link rel="shortcut icon" href="' . $root . '/themes/default/img/favicon.ico" type="image/x-icon">';
     
-    echo '<link rel="stylesheet" href="' . $root . '/themes/default/css/default.css" type="text/css">';
-    echo '<link rel="stylesheet" href="' . $root . '/themes/default/css/style.css" type="text/css">';
+    echo '<link rel="shortcut icon" href="' . $root . '/assets/img/favicon.ico" type="image/x-icon">';
+    
+    echo '<link rel="stylesheet" href="' . $root . '/themes/olive.css" type="text/css">';
+    echo '<link rel="stylesheet" href="' . $root . '/assets/css/style.css" type="text/css">';
     if (file_exists(__DIR__ . '/../_config/actes.css')) {
         echo '<link rel="stylesheet" href="' . $root . '/_config/actes.css" type="text/css">';
     }
-    echo '<link rel="stylesheet" href="' . $root . '/themes/default/css/print.css" type="text/css" media="print">';
+    // echo '<link rel="stylesheet" href="' . $root . '/themes/olive-print.css" type="text/css" media="print">';
 
     if (file_exists(__DIR__ . '/../_config/js_externe_header.inc.php')) {
         include(__DIR__ . '/../_config/js_externe_header.inc.php');
     }
 
     if ($rss <> "") {
-        echo '<link rel="alternate" type="application/rss+xml" title="' . $titre . '" href="' . $root . '/' . $rss . '">';
+        echo '<link rel="alternate" type="application/rss+xml" title="' . $config->get('SITENAME') . ' | ' .$title . '" href="' . $root . '/' . $rss . '">';
     }
 
     if ($js !== null) {
@@ -72,8 +70,8 @@ function open_page($titre, $root = "", $js = null, $addbody = null, $addhead = n
     if ($TIPmsg <> "" && ($config->get('TIP_MODE_ALERT') % 2) == 1) {
         echo '<h2><font color="#FF0000">' . $TIPmsg . "</font></h2>";
     } */
-    echo '<div id="top" class="entete">';
-    include(__DIR__ . '/../templates/front/_bandeau.php');
+    echo '<div class="entete">';
+        include(__DIR__ . '/../templates/front/_bandeau.php');
     echo "</div>";
 }
 
@@ -1513,11 +1511,11 @@ function current_user_solde()
     return $session->get('user')['solde'];
 }
 
-function show_signal_erreur($typ, $xid, $ctrlcod)
+function show_signal_erreur($typ, $xid)
 {
     global $root, $config;
     if (strlen($config->get('EMAIL_SIGN_ERR')) > 0) {
-        show_simple_item(0, 1, '<a href="' . $root . '/signal_erreur.php?xty=' . $typ . '&amp;xid=' . $xid . '&amp;xct=' . $ctrlcod . '" target="_blank">Cliquez ici pour la signaler</a>', 'Trouvé une erreur ?');
+        show_simple_item(0, 1, '<a href="' . $root . '/signal_erreur.php?xty=' . $typ . '&xid=' . $xid . '" target="_blank">Cliquez ici pour la signaler</a>', 'Trouvé une erreur ?');
     }
 }
 

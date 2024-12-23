@@ -71,7 +71,7 @@ if ($request->getMethod() === 'POST') {
 }
 
 ob_start();
-open_page("Activer mon compte utilisateur", $root); ?>
+open_page("Activer compte utilisateur", $root); ?>
 <div class="main">
     <?php zone_menu(0, 0); ?>
     <div class="main-col-center text-center">

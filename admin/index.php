@@ -15,8 +15,6 @@ if (!$userAuthorizer->isGranted(6)) {
     exit();
 }
 
-// pathroot($root, $path, $xtyp, $xpatr, $page);
-
 $xtyp  = $request->get('xtyp', 'A');
 $init  = $request->get('init', '');
 $missingargs = true;

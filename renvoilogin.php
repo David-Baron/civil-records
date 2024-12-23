@@ -11,7 +11,7 @@ $uri = getparam('uri', $root . '/login.php');
 $ok = false;
 
 ob_start();
-open_page("ExpoActes : Renvoi codes d'accès", $root, null, null, null, '../index.htm'); ?>
+open_page("Renvoi codes d'accès", $root); ?>
 <div class="main">
     <?php zone_menu(0, 0); ?>
     <div class="main-col-center text-center">
