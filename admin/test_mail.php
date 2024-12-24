@@ -21,7 +21,7 @@ $missingargs = true;
 ob_start();
 open_page("Test e-mail", $root);
 navadmin($root, "Test du mail");
-zone_menu(ADM, $session->get('user')['level'], array());//ADMIN STANDARD
+zone_menu(10, $session->get('user')['level'], array());//ADMIN STANDARD
 echo '<div id="col_main_adm">';
 echo "<h1>Test de l'envoi d'un mail</h1> \n";
 

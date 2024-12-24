@@ -39,7 +39,7 @@ if (getparam('action') == 'submitted') {
 ob_start();
 open_page("Gestion des utilisateurs", $root); ?>
 <div class="main">
-    <?php zone_menu(ADM, $session->get('user')['level']); ?>
+    <?php zone_menu(10, $session->get('user')['level']); ?>
     <div class="main-col-center text-center">
         <?php
         navadmin($root, "Gestion des utilisateurs");

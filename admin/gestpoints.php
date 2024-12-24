@@ -39,7 +39,7 @@ $menu_user_active = 'S';
 ob_start();
 open_page($ptitle, $root); ?>
 <div class="main">
-    <?php zone_menu(ADM, $session->get('user')['level'], array()); ?>
+    <?php zone_menu(10, $session->get('user')['level'], array()); ?>
     <div class="main-col-center text-center">
         <?php 
 navadmin($root, $ptitle);

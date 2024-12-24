@@ -19,7 +19,7 @@ function init_page()
 
     open_page("Export d'une série d'utilisateur", $root); ?>
     <div class="main">
-        <?php zone_menu(ADM, $session->get('user')['level'], array()); ?>
+        <?php zone_menu(10, $session->get('user')['level'], array()); ?>
         <div class="main-col-center text-center">
             <?php 
     navadmin($root, "Export d'utilisateurs");

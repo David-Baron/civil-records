@@ -41,7 +41,7 @@ $menu_software_active = 'E';
 ob_start();
 open_page("Paramètres serveur", $root); ?>
 <div class="main">
-    <?php zone_menu(ADM, $session->get('user')['level']); ?>
+    <?php zone_menu(10, $session->get('user')['level']); ?>
     <div class="main-col-center text-center">
         <?php 
 navadmin($root, "Paramètres serveur");

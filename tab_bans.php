@@ -191,7 +191,7 @@ if ($xpatr == "" || mb_substr($xpatr, 0, 1) == "_") {
             } ?>
                 </div>
             </div>
-            <?php include(__DIR__ . '/../templates/front/_footer.php');
+            <?php include(__DIR__ . '/templates/front/_footer.php');
             $response->setContent(ob_get_clean());
             $response->send();
 

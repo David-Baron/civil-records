@@ -51,21 +51,21 @@ open_page("Changement de mot de passe", $root); ?>
 
         <h2>Modification de votre mot de passe</h2>
         <form method="post">
-            <table cellspacing="0" cellpadding="1" summary="Formulaire">
+            <table class="m-auto" summary="Formulaire">
                 <tr>
                     <td>Code utilisateur : </td>
-                    <td><?= $userlogin; ?></td>
+                    <td><?= $session->get('user')['login']; ?></td>
                 </tr>
                 <tr>
                     <td>Ancien mot de passe : </td>
                     <td>
-                        <input type="password" name="actual_password" <?= isset($form_errors['actual_password']) ? ' erreur' : ''; ?>>
+                        <input type="password" name="actual_password" id="actual_password" <?= isset($form_errors['actual_password']) ? ' erreur' : ''; ?>>
                     </td>
                     <td>
                         <?php if (isset($form_errors['actual_password'])) { ?>
                             <div class="erreur"> <?= $form_errors['actual_password']; ?></div>
                         <?php } else { ?>
-                            <img onmouseover="seetext(EApwdverif)" onmouseout="seeasterisk(EApwdverif)"
+                            <img onmouseover="seetext(actual_password)" onmouseout="seeasterisk(actual_password)"
                                 src="<?= $root; ?>/assets/img/eye-16-16.png"
                                 alt="Voir mot de passe" width="16" height="16">
                         <?php } ?>
@@ -74,13 +74,13 @@ open_page("Changement de mot de passe", $root); ?>
                 <tr>
                     <td>Nouveau mot de passe : </td>
                     <td>
-                        <input type="password" name="new_password">
+                        <input type="password" name="new_password" id="new_password">
                     </td>
                     <td>
                         <?php if (isset($form_errors['new_password'])) { ?>
                             <div class="erreur"><?= $form_errors['new_password']; ?></div>
                         <?php } else { ?>
-                            <img onmouseover="seetext(EApwdverif)" onmouseout="seeasterisk(EApwdverif)"
+                            <img onmouseover="seetext(new_password)" onmouseout="seeasterisk(new_password)"
                                 src="<?= $root; ?>/assets/img/eye-16-16.png"
                                 alt="Voir mot de passe" width="16" height="16">
                         <?php } ?>
@@ -89,13 +89,13 @@ open_page("Changement de mot de passe", $root); ?>
                 <tr>
                     <td>Nouveau mot de passe (vérif.) : </td>
                     <td>
-                        <input type="password" name="new_password_confirm">
+                        <input type="password" name="new_password_confirm" id="new_password_confirm">
                     </td>
                     <td>
                         <?php if (isset($form_errors['new_password_confirm'])) { ?>
                             <div class="erreur"><?= $form_errors['new_password_confirm']; ?></div>
                         <?php } else { ?>
-                            <img onmouseover="seetext(EApwdverif)" onmouseout="seeasterisk(EApwdverif)"
+                            <img onmouseover="seetext(new_password_confirm)" onmouseout="seeasterisk(new_password_confirm)"
                                 src="<?= $root; ?>/assets/img/eye-16-16.png"
                                 alt="Voir mot de passe" width="16" height="16">
                         <?php } ?>

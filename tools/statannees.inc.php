@@ -115,44 +115,44 @@ if (! $missingargs) {
         $nban = $k;
         $annee_limite_coherence = 1010;
 
-        echo '<table class="m-auto">' . "\n";
+        echo '<table class="m-auto">';
         echo "<tr><th>Années</th><th>Nombres d'actes</th></tr>";
         for ($k = 1; $k <= $nban; $k++) {
             //echo $k."-".$annee[$k]."-".$cptan[$k];
             if ($annee[$k] <= $annee_limite_coherence) {
-                echo '<tr>' . "\n";
-                echo '<td>' . '<b><a href="' . mkurl($path . '/' . $program, $xcomm, '!' . $annee[$k]) . '">Improbable</a></b>' . '</td>' . "\n";
-                echo '<td>' . barre($cptan[$k], $max) . '</td>' . "\n";
-                echo '</tr">' . "\n";
+                echo '<tr>';
+                echo '<td><b><a href="' . mkurl($path . '/' . $program, $xcomm, '!' . $annee[$k]) . '">Improbable</a></b></td>';
+                echo '<td>' . barre($cptan[$k], $max) . '</td>';
+                echo '</tr>';
                 continue;
-            } elseif ($annee[$k] > $annee[$k - 1] + 3 and $annee[$k - 1] > $annee_limite_coherence) {
+            } elseif ($annee[$k] > $annee[$k - 1] + 3 && $annee[$k - 1] > $annee_limite_coherence) {
                 echo '<tr><td>...</td><td></td></tr>';
                 echo '<tr><td>' . ($annee[$k] - $annee[$k - 1] - 1) . ' années</td><td></td></tr>';
                 echo '<tr><td>...</td><td></td></tr>';
-            } elseif ($annee[$k] > $annee[$k - 1] + 1 and $annee[$k - 1] > $annee_limite_coherence) {
+            } elseif ($annee[$k] > $annee[$k - 1] + 1 && $annee[$k - 1] > $annee_limite_coherence) {
                 for ($kk = 1; $kk <= ($annee[$k] - $annee[$k - 1] - 1); $kk++) {
-                    echo '<tr>' . "\n";
+                    echo '<tr>';
                     $anneezero = ($annee[$k - 1] + $kk);
                     if ($anneezero % 10 == 0) {
-                        echo '<td><b>' . $anneezero . '</b></td>' . "\n";
+                        echo '<td><b>' . $anneezero . '</b></td>';
                     } else {
-                        echo '<td>' . $anneezero . '</td>' . "\n";
+                        echo '<td>' . $anneezero . '</td>';
                     }
                     //echo '<tr><td>'.($annee[$k-1]+$kk).'</td>';
                     echo '<td>' . barre(0, $max) . '</td><td></td></tr>';
                 }
             }
-            echo '<tr>' . "\n";
+            echo '<tr>';
             $link = '<a href="' . mkurl($path . '/' . $program, $xcomm, '!' . $annee[$k]) . '">' . $annee[$k] . '</a>';
             if ($annee[$k] % 10 == 0) {
-                echo '<td><b>' . $link . '</b></td>' . "\n";
+                echo '<td><b>' . $link . '</b></td>';
             } else {
-                echo '<td>' . $link . '</td>' . "\n";
+                echo '<td>' . $link . '</td>';
             }
-            echo '<td>' . barre($cptan[$k], $max) . '</td>' . "\n";
-            echo '</tr>' . "\n";
+            echo '<td>' . barre($cptan[$k], $max) . '</td>';
+            echo '</tr>';
         }
-        echo '</table>' . "\n";
+        echo '</table>';
     }
     echo '</div>';
     echo '</div>';

@@ -1,5 +1,6 @@
 <?php
 
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 define('ADM', 0); // Compatibility only
@@ -7,11 +8,8 @@ $admtxt = ''; // Compatibility only
 require(__DIR__ . '/next/bootstrap.php');
 require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
-
-$lvl = 4;
-if (ADM == 10) $lvl = 5;
-
-if (!$userAuthorizer->isGranted($lvl)) {
+if ($config->get('PUBLIC_LEVEL') < 4 && !$userAuthorizer->isGranted(4)) {
+    // TODO: need to log error here
     $session->getFlashBag()->add('warning', 'Vous n\'êtes pas connecté ou vous n\'avez pas les autorisations nécessaires!');
     $response = new RedirectResponse("$root/");
     $response->send();
@@ -21,35 +19,37 @@ if (!$userAuthorizer->isGranted($lvl)) {
 $TIPlevel = 1;
 $error = 0;
 $xcomm = $xpatr = $page = "";
-$xid = $_REQUEST['xid'];
-$ctrlcod = $_REQUEST['xct'];
-
-pathroot($root, $path, $xcomm, $xpatr, $page);
+$xid = $request->get('xid');
+$ctrlcod = $request->get('xct');
 
 $sql = "SELECT * FROM " . $config->get('EA_DB') . "_nai3 WHERE ID = " . $xid;
-if ($result = EA_sql_query($sql) and EA_sql_num_rows($result) != 0) {
-    $row = EA_sql_fetch_array($result);
-} else {
-    $error = 1;
+if ($stmt = EA_sql_query($sql)) {
+    $row = EA_sql_fetch_array($stmt);
+}  else {
+    // TODO: need to log error here and This will be a new Response 404
+    $session->getFlashBag()->add('danger', 'Le document auquel vous tentez d\'acceder n\'est pas ou plus disponible sur ce serveur!');
+    $response = new RedirectResponse("$root/");
+    $response->send();
+    exit();
 }
 
 if (($error == 1) or !($ctrlcod == ctrlxid($row["NOM"], $row["PRE"]))) {
     $error = 1;
     $title = "Erreur";
 } else {
-    $title = "Naissance : " . $row["NOM"] . " " . $row["PRE"];
+    
 }
 $avertissement = "";
-if ($error == 0) {
-    $xcomm = $row['COMMUNE'] . ' [' . $row['DEPART'] . ']';
+$title = "Naissance : " . $row["NOM"] . " " . $row["PRE"];
+$xcomm = $row['COMMUNE'] . ' [' . $row['DEPART'] . ']';   
     if (solde_ok(1, $row["DEPOSANT"], 'N', $xid) > 0) {
         ob_start();
         open_page($title, $root); ?>
         <div class="main">
-            <?php zone_menu(ADM, $session->get('user')['level']); ?>
+            <?php zone_menu(0, $session->get('user', ['level' => 0])['level']); ?>
             <div class="main-col-center text-center">
         <?php
-        navigation($root, ADM + 4, 'N', $xcomm, $row["NOM"], $row["PRE"]);
+        navigation($root, 4, 'N', $xcomm, $row["NOM"], $row["PRE"]);
 
         // Afficher l acte
         echo '<h2>Acte de naissance/baptême</h2>';
@@ -114,14 +114,9 @@ if ($error == 0) {
         open_page($title, $root);
         msg($avertissement);
     }
-} else {
-    ob_start();
-    open_page($title, $root);
-    msg('Identifiant incorrect');
-}
 echo '</div>';
 echo '</div>';
-include(__DIR__ . '/../templates/front/_footer.php');
+include(__DIR__ . '/templates/front/_footer.php');
 $response->setContent(ob_get_clean());
 $response->send();
 

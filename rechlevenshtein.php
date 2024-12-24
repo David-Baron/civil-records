@@ -9,7 +9,8 @@ require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 include("tools/cree_table_levenshtein.php");
 
 if (!$userAuthorizer->isGranted($config->get('LEVEL_LEVENSHTEIN'))) {
-    $response = new RedirectResponse("$root/login.php");
+    $session->getFlashBag()->add('warning', 'Vous n\'êtes pas connecté ou vous n\'avez pas les autorisations nécessaires!');
+    $response = new RedirectResponse("$root/");
     $response->send();
     exit();
 }

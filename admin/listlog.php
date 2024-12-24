@@ -31,7 +31,7 @@ $menu_software_active = 'J';
 ob_start();
 open_page($config->get('SITENAME') . " : Activité du site", $root); ?>
 <div class="main">
-    <?php zone_menu(ADM, $session->get('user')['level']); ?>
+    <?php zone_menu(10, $session->get('user')['level']); ?>
     <div class="main-col-center text-center">
         <?php 
 navadmin($root, "Activité du site");

@@ -272,11 +272,7 @@ function menu_public()
     }
     echo '<div class="box">';
     // traite le cas ou le niveau PUBLIC autre que 4 et 5, on affiche l'accès administration au dela d'un niveau 5 de l'utilisateur
-    if ($userAuthorizer->isGranted(6)) {
-        echo '<div class="box-title">Administration</div>';
-    } else {
-        echo '<div class="box-title">Accès membre</div>';
-    }
+    echo '<div class="box-title">Accès membre</div>';
     echo '<div class="box-body">';
     echo '<nav class="nav">';
     if (!$userAuthorizer->isAuthenticated()) {
@@ -285,17 +281,14 @@ function menu_public()
             echo '<a href="' . $root . '/acces.php">Conditions d\'accès</a>';
         }
     } else {
-        if ($userAuthorizer->isGranted(6)) {
-            echo '<a href="' . $root . '/admin/index.php">Gérer les actes</a>';
+        if ($userAuthorizer->isGranted($config->get('CHANGE_PW'))) {
+            $changepw = '<a href="' . $root . '/changepw.php">Changer le mot de passe</a>';
         }
         echo $changepw;
         echo '<a href="' . $root . '/index.php?act=logout">Déconnexion</a>';
     }
     if ($config->get('EMAIL_CONTACT') <> "") {
         echo '<a href="' . $root . '/form_contact.php">Contact</a>';
-    }
-    if ($userAuthorizer->isGranted(6)) {
-        echo '<a href="' . $root . '/admin/aide/aide.html">Aide</a>';
     }
     echo '</nav></div>';
     echo '</div>';
@@ -325,15 +318,9 @@ function zone_menu($admin, int $userlevel, $pp = array())
     if (isset($pp['s'])) {
         $menu_actes = statistiques($pp['s']);
     }
+    menu_public();
     if ($userlevel < 6) {
-        menu_public();
         show_pub_menu();
-        /** 
-         * @deprecated 
-         * if (isset($pp['c']) and ($pp['c'] == 'O') ) {
-         *  show_certifications();
-         * } 
-         */
     } else {
         require(__DIR__ . '/../templates/admin/_menu-admin.php');
     }
@@ -657,21 +644,21 @@ function listbox_users($fieldname, $default, int $minUserlevel, $txtzero = '')
     echo " </select>";
 }
 
-function show_simple_item($retrait, $format, $info, $label, $info2 = "", $url = "")
 // format : somme de 1= label gras, 2 label italique, 4 info gras, 8 info italique
+function show_simple_item($retrait, $format, $info, $label, $info2 = '', $url = '')
 {
-    $sp = "";
-    $url1 = "";
-    $url2 = "";
-    $claslab = "fich0";
-    $clasinf = "fich1";
+    // $sp = "";
+    $url1 = '';
+    $url2 = '';
+    $claslab = 'fich0';
+    $clasinf = 'fich1';
 
-    for ($i = 0; $i < $retrait; $i++) {
+    /* for ($i = 0; $i < $retrait; $i++) {
         $sp .= "&nbsp;&nbsp;&nbsp;";
-    }
+    } */
+
     if (fmod($format, 2) == 1) {
-        $label = '<strong>' . $label . '</strong>';
-        $claslab = "fich2";
+        $claslab = 'fich2 bolder';
     }
 
     if (div($format, 2) == 1) {
@@ -693,12 +680,11 @@ function show_simple_item($retrait, $format, $info, $label, $info2 = "", $url = 
         $info2 = " " . $info2;
     }
     if ($url <> "") {
-        $url1 = '<a href="' . $url . '">';
-        $url2 = '</a>';
+        $info = '<a href="' . $url . '">' . $info . '</a> ';
     }
     echo '<tr>';
-    echo '<td class="' . $claslab . '">' . $sp . $label . '&nbsp;:&nbsp;</td>';
-    echo '<td class="' . $clasinf . '">' . $url1 . $info . $url2 . $info2 . '</td>';
+    echo '<td class="' . $claslab . '">' . $label . '</td>';
+    echo '<td class="' . $clasinf . '">' . $info . $info2 . '</td>';
     echo '</tr>';
 }
 
@@ -753,8 +739,8 @@ function show_grouptitle3($row, $retrait, $format, $type, $group, $sigle = '')
     }
 }
 
-function show_item3($row, $retrait, $format, $zidinfo, $url = "", $zidinfo2 = "", $activelink = 0)
 // format : somme de 1= label gras, 2 label italique, 4 info gras, 8 info italique
+function show_item3($row, $retrait, $format, $zidinfo, $url = "", $zidinfo2 = "", $activelink = 0)
 {
     global $config;
     
@@ -764,7 +750,7 @@ function show_item3($row, $retrait, $format, $zidinfo, $url = "", $zidinfo2 = ""
     $res1 = EA_sql_fetch_assoc(EA_sql_query($req1));
 
     $info  = $row[$res1["ZONE"]];
-    $oblig = $res1["AFFICH"];  // F = Facultatif, O = Obligatoire, A=Adminstration seulmt
+    $oblig = $res1["AFFICH"];  // F = Facultatif, O = Obligatoire, A= Adminstration seulmt
     $label = $res1["ETIQ"];
     $info2 = "";
     if ($zidinfo2 != "") {
@@ -774,7 +760,7 @@ function show_item3($row, $retrait, $format, $zidinfo, $url = "", $zidinfo2 = ""
         $info2 = $row[$res2["ZONE"]];
     }
 
-    if ((trim($info) . trim($info2) != "" and $oblig == "F") or $oblig == 'O' or (ADM == 10 and $oblig == "A")) {
+    if ((trim($info) . trim($info2) != "" && $oblig == "F") || $oblig == 'O' || (ADM == 10 && $oblig == "A")) {
 
         switch ($res1["TYP"]) {
             case "TXT":

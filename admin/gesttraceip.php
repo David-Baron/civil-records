@@ -27,7 +27,7 @@ $menu_software_active = 'F';
 ob_start();
 open_page("Gestion du filtrage IP", $root); ?>
 <div class="main">
-    <?php zone_menu(ADM, $session->get('user')['level']); ?>
+    <?php zone_menu(10, $session->get('user')['level']); ?>
     <div class="main-col-center text-center">
         <?php
         navadmin($root, "Gestion du filtrage IP");

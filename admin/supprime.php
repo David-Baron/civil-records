@@ -36,7 +36,7 @@ $ajax = new PHPLiveX(array("getCommunes"));
 $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
 ?>
 <div class="main">
-    <?php zone_menu(ADM, $session->get('user')['level']); ?>
+    <?php zone_menu(10, $session->get('user')['level']); ?>
     <div class="main-col-center text-center">
         <?php
         navadmin($root, "Suppression d'actes");

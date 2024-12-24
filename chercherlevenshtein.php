@@ -51,7 +51,7 @@ function cree_table_temp_sup($nom, $original)
 //--------------------------------------------------------
 
 if (!$userAuthorizer->isGranted($config->get('LEVEL_LEVENSHTEIN'))) {
-    $response = new RedirectResponse("$root/login.php");
+    $response = new RedirectResponse("$root/");
     $response->send();
     exit();
 }

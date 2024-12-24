@@ -150,7 +150,7 @@ $missingargs = true;
 my_ob_start_affichage_continu();
 open_page("Chargement des actes (CSV)", $root); ?>
 <div class="main">
-    <?php zone_menu(ADM, $session->get('user')['level'], array()); ?>
+    <?php zone_menu(10, $session->get('user')['level'], array()); ?>
     <div class="main-col-center text-center">
         <?php 
 navadmin($root, "Chargement des actes CSV");

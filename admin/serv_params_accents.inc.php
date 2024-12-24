@@ -9,7 +9,7 @@ function init_page_EL_GENERALE($head = "", $ajax = "", $affiche = '') // SOURCE 
 
     open_page($titre, $root, null, null, $head); ?>
     <div class="main">
-        <?php zone_menu(ADM, $session->get('user')['level']); ?>
+        <?php zone_menu(10, $session->get('user')['level']); ?>
         <div class="main-col-center text-center">
             <?php 
     navadmin($root, $titre);

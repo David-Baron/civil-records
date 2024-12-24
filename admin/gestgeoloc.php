@@ -88,7 +88,7 @@ $menu_data_active = 'L';
 ob_start();
 open_page("Gestion des localités", $root, null, null, $JSheader); ?>
 <div class="main">
-    <?php zone_menu(ADM, $session->get('user')['level'], array()); ?>
+    <?php zone_menu(10, $session->get('user')['level'], array()); ?>
     <div class="main-col-center text-center">
         <?php
         if ($id > 0) {

@@ -180,20 +180,24 @@ th {
     text-align: center;
 }
 
+.bolder {
+    font-weight: bolder;
+}
+
 .fich0 {
-    background-color: rgb(255, 246, 143);
+    background-color: var(--ea-primary-light);
     text-align: left;
     padding: 1px 5px 1px 5px;
 }
 
 .fich1 {
-    background-color: rgb(255, 255, 204);
+    background-color: var(--ea-primary-light);
     text-align: left;
     padding: 1px 5px 1px 5px;
 }
 
 .fich2 {
-    background-color: rgb(255, 204, 102);
+    background-color: var(--ea-primary);
     text-align: left;
     padding: 1px 5px 1px 5px;
 }

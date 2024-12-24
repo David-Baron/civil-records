@@ -40,27 +40,18 @@
 </head>
 
 <body>
-
-    <?php /*     if (getparam(EL) == 'O') {
-        echo $ExpoActes_Charset;
-    } */
-
-    /* global $TIPmsg;  // message d'alerte pré-blocage IP
-    if ($TIPmsg <> "" && (TIP_MODE_ALERT % 2) == 1) {
-        echo '<h2><font color="#FF0000">' . $TIPmsg . "</font></h2>";
-    }
-    echo '<div id="top" class="entete">';
-    if (EA_MAINTENANCE == 1) {
-        echo '<font color="#FF0000"><b>!! MAINTENANCE !!</b></font>';
-    }
-
-    if ($TIPmsg <> "" && ($config->get('TIP_MODE_ALERT') % 2) == 1) {
-        echo '<h2><font color="#FF0000">' . $TIPmsg . "</font></h2>";
-    } */ ?>
     <div class="entete">
         <?php include(__DIR__ . '/_bandeau.php'); ?>
     </div>
-    <?= $content; ?>
+
+    <div class="main">
+        <?php zone_menu(0, 0); ?>
+        <div class="main-col-center text-center">
+            <?php navigation($root, 2, 'A', "Conditions d'accès"); ?>
+            <?= $content; ?>
+        </div>
+    </div>
+
     <div class="footer">
         <div class="text-right"><a href="#top"><strong>Top</strong></a></div>
         <div class="text-center">
@@ -75,13 +66,6 @@
 
     <?php if (file_exists(__DIR__ . '/../../_config/js_externe_footer.inc.php')) {
         include(__DIR__ . '/../../_config/js_externe_footer.inc.php');
-    }
-
-    global $TIPmsg;  // message d'alerte pré-blocage IP
-    if ($TIPmsg <> "" && $config->get('TIP_MODE_ALERT') >= 2) {
-        echo '<script language="javascript">';
-        echo 'alert("' . $TIPmsg . '")';
-        echo '</script>';
     } ?>
 
 </body>

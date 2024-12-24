@@ -48,7 +48,7 @@ $ajax = new PHPLiveX(array("getCommunes"));
 $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
 ?>
 <div class="main">
-    <?php zone_menu(ADM, $session->get('user')['level'], array()); ?>
+    <?php zone_menu(10, $session->get('user')['level'], array()); ?>
     <div class="main-col-center text-center">
         <?php
         navadmin($root, $title);

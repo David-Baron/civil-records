@@ -42,7 +42,7 @@ $menu_user_active = 'I';
 ob_start();
 open_page("Chargement des utilisateurs (CSV)", $root); ?>
 <div class="main">
-    <?php zone_menu(ADM, $session->get('user')['level']); ?>
+    <?php zone_menu(10, $session->get('user')['level']); ?>
     <div class="main-col-center text-center">
         <?php
         navadmin($root, "Chargement des utilisateurs CSV");

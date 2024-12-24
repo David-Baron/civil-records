@@ -21,7 +21,7 @@ $missingargs = true;
 ob_start();
 open_page("Approbation d'un compte utilisateur", $root); ?>
 <div class="main">
-    <?php zone_menu(ADM, $session->get('user')['level'], array('f' => 'N')); ?>
+    <?php zone_menu(10, $session->get('user')['level'], array('f' => 'N')); ?>
     <div class="main-col-center text-center">
         <?php 
 navadmin($root, "Approbation d'un compte utilisateur");

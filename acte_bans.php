@@ -1,5 +1,6 @@
 <?php
 
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 define('ADM', 0); // Compatibility only
@@ -7,8 +8,7 @@ $admtxt = ''; // Compatibility only
 require(__DIR__ . '/next/bootstrap.php');
 require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
-
-if (!$userAuthorizer->isGranted(4)) {
+if ($config->get('PUBLIC_LEVEL') < 4 && !$userAuthorizer->isGranted(4)) {
     $session->getFlashBag()->add('warning', 'Vous n\'êtes pas connecté ou vous n\'avez pas les autorisations nécessaires!');
     $response = new RedirectResponse("$root/");
     $response->send();
@@ -24,12 +24,12 @@ $sql = "SELECT * FROM " . $config->get('EA_DB') . "_div3 WHERE ID=" . $xid;
 if ($stmt = EA_sql_query($sql)) {
     $row = EA_sql_fetch_array($stmt);
 } else {
+    // TODO: need to log error here and This will be a new Response 404
     $session->getFlashBag()->add('danger', 'Le document auquel vous tentez d\'acceder n\'est pas ou plus disponible sur ce serveur!');
-    $response = new RedirectResponse("$root/tab_bans.php");
+    $response = new RedirectResponse("$root/");
     $response->send();
     exit();
 }
-
 
 $title = $row["LIBELLE"] . " : " . $row["NOM"] . " " . $row["PRE"];
 $xcomm = $row['COMMUNE'] . ' [' . $row['DEPART'] . ']';
@@ -37,10 +37,10 @@ if (solde_ok(1, $row["DEPOSANT"], 'V', $xid) > 0) {
     ob_start();
     open_page($title, $root); ?>
     <div class="main">
-        <?php zone_menu(ADM, $session->get('user')['level']); ?>
+        <?php zone_menu(0, $session->get('user', ['level' => 0])['level']); ?>
         <div class="main-col-center text-center">
         <?php
-        navigation($root, ADM + 4, 'V', $xcomm, $row["NOM"], $row["PRE"]);
+        navigation($root, 4, 'V', $xcomm, $row["NOM"], $row["PRE"]);
 
         $sigle = $row["SIGLE"];
 
@@ -140,7 +140,7 @@ if (solde_ok(1, $row["DEPOSANT"], 'V', $xid) > 0) {
 
     echo '</div>';
     echo '</div>';
-    include(__DIR__ . '/../templates/front/_footer.php');
+    include(__DIR__ . '/templates/front/_footer.php');
     $response->setContent(ob_get_clean());
     $response->send();
 

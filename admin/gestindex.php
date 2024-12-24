@@ -26,7 +26,7 @@ $menu_software_active = 'I';
 ob_start();
 open_page("Gestion des index", $root); ?>
 <div class="main">
-    <?php zone_menu(ADM, $session->get('user')['level'], array()); ?>
+    <?php zone_menu(10, $session->get('user')['level'], array()); ?>
     <div class="main-col-center text-center">
         <?php
         navadmin($root, "Gestion des index");

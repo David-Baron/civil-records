@@ -24,7 +24,7 @@ $xconfirm = getparam('xconfirm');
 ob_start();
 open_page("Suppression d'un acte", $root); ?>
 <div class="main">
-    <?php zone_menu(ADM, $session->get('user')['level']); ?>
+    <?php zone_menu(10, $session->get('user')['level']); ?>
     <div class="main-col-center text-center">
         <?php
         navadmin($root, "Suppression d'un acte");

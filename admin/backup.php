@@ -30,7 +30,7 @@ pathroot($root, $path, $xcomm, $xpatr, $page);
 my_ob_start_affichage_continu();
 open_page("Backup de votre base de données", $root); ?>
 <div class="main">
-    <?php zone_menu(0, 0); ?>
+    <?php zone_menu(10, 0); ?>
     <div class="main-col-center text-center">
         <?php
         navadmin($root, "Backup de la base");
