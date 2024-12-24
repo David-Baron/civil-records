@@ -4,6 +4,15 @@ require_once(__DIR__ . '/../Engine/DatabaseConnection.php');
 
 class UserModel extends DatabaseConnection
 {
+    public function findAll($limit = 50, $offset = 0)
+    {
+        $sql = "SELECT * FROM " . $this->table_prefix . "_user3 LIMIT $limit OFFSET $offset";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
     public function findAllByCriteria(array $criteria)
     {
         $params = '';

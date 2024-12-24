@@ -73,7 +73,7 @@ if ($request->getMethod() === 'POST') {
 ob_start();
 open_page("Activer compte utilisateur", $root); ?>
 <div class="main">
-    <?php zone_menu(0, 0); ?>
+    <?php zone_menu(0, $session->get('user', ['level' => 0])['level']); ?>
     <div class="main-col-center text-center">
         <?php navigation($root, 2, "", "Activation de mon compte"); ?>
 

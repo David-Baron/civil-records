@@ -1,3 +1,6 @@
 <?php
-//js_externe_footer.inc.php
-//-------------------------
+/** 
+ * Local Javascript features that implement Civil-Records
+ * 
+ * Rendered in the <body> Tag
+ */

@@ -13,7 +13,7 @@ $ok = false;
 ob_start();
 open_page("Renvoi codes d'accès", $root); ?>
 <div class="main">
-    <?php zone_menu(0, 0); ?>
+    <?php zone_menu(0, $session->get('user', ['level' => 0])['level']); ?>
     <div class="main-col-center text-center">
         <?php navigation($root, 2, "R", "Renvoi des codes d'accès"); ?>
         <?php if (getparam('submit') <> '') {

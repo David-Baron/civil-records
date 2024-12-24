@@ -45,7 +45,7 @@ if ($request->getMethod() === 'POST') {
 ob_start();
 open_page("Changement de mot de passe", $root); ?>
 <div class="main">
-    <?php zone_menu(0, 0); ?>
+    <?php zone_menu(0, $session->get('user', ['level' => 0])['level']); ?>
     <div class="main-col-center text-center">
         <?php navigation($root, 2, 'A', "Changement de mot de passe"); ?>
 

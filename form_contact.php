@@ -19,7 +19,7 @@ $ok = false;
 ob_start();
 open_page("Formulaire de contact", $root); ?>
 <div class="main">
-    <?php zone_menu(0, 0); ?>
+    <?php zone_menu(0, $session->get('user', ['level' => 0])['level']); ?>
 
     <div class="main-col-center text-center">
         <?php navigation($root, 2, "", "Formulaire de contact");

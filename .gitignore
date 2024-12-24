@@ -4,3 +4,11 @@
 /setup/translations
 /.env.local.php
 /admin.txt
+/templates/next_front
+/templates/next_admin
+/next/Controller
+/next/Engine/AbstractController.php
+/next/Engine/PhpRenderer.php
+/assets/js/bootstrap.bundle.min.js
+/assets/css/cosmo.css
+/admin/users.php

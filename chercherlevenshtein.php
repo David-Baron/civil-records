@@ -105,7 +105,7 @@ $page  = getparam('pg');
 ob_start();
 open_page("Recherches dans les tables", $root); ?>
 <div class="main">
-    <?php zone_menu(0, 0);
+    <?php zone_menu(0, $session->get('user', ['level' => 0])['level']);
     if (current_user_solde() > 0 or $config->get('RECH_ZERO_PTS') == 1) {
 
         $nav = "";

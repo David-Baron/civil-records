@@ -108,7 +108,7 @@ $localite = $commune . " [" . $depart . "]";
 ob_start();
 open_page($localite, $root, null, null, $JSheader); ?>
 <div class="main">
-    <?php zone_menu(0, $userlevel); ?>
+    <?php zone_menu(0, $session->get('user', ['level' => 0])['level']); ?>
     <div class="main-col-center text-center">
         <?php navigation($root, 2, "A", "Localisation d'une commune ou paroisse");
         $carto->printOnLoad();

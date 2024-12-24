@@ -27,7 +27,7 @@ pathroot($root, $path, $xcomm, $xpatr, $page);
 ob_start();
 open_page("Recherche Levenshtein", $root, null, null, null, null, 'rss.php'); ?>
 <div class="main">
-    <?php zone_menu(0, 0); ?>
+    <?php zone_menu(0, $session->get('user', ['level' => 0])['level']); ?>
     <div class="main-col-center text-center">
         <?php navigation($root, 2, 'A', "Recherche  Levenshtein"); ?>
         <h2>Recherche Levenshtein</h2>

@@ -303,7 +303,7 @@ if (
 ob_start();
 open_page("Recherches dans les tables", $root); ?>
 <div class="main">
-    <?php zone_menu(0, 0);
+    <?php zone_menu(0, $session->get('user', ['level' => 0])['level']);
 
     $nav = "";
     if ($xcomp != "") {

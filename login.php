@@ -61,7 +61,7 @@ if ($request->getMethod() === 'POST') {
 ob_start();
 open_page("Login", $root, null, null, null, '../index.htm'); ?>
 <div class="main">
-    <?php zone_menu(0, 0); ?>
+    <?php zone_menu(0, $session->get('user', ['level' => 0])['level']); ?>
     <div class="main-col-center text-center">
         <?php navigation($root, 2, 'A', "Connexion"); ?>
         <h2>Vous devez vous identifier : </h2>

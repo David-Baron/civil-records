@@ -8,7 +8,7 @@ require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 ob_start();
 open_page('Conditions d\'acces', $root); ?>
 <div class="main">
-    <?php zone_menu(0, 0); ?>
+    <?php zone_menu(0, $session->get('user', ['level' => 0])['level']); ?>
     <div class="main-col-center text-center">
         <?php navigation($root, 2, 'A', "Conditions d'accès"); ?>
         <h2>Conditions d'accès aux détails des données</h2>

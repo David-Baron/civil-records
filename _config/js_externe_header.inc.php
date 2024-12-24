@@ -1,6 +1,10 @@
 <?php
-//js_externe_header.inc.php
-//-------------------------
+/** 
+ * Local Javascript features that implement Civil-Records
+ * 
+ * Rendered in the <head> Tag
+ */
+
 function google_analytics4(string $Code) {
 	echo <<<AAA
 <!-- Google tag (gtag.js) -->
