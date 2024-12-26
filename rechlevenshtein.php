@@ -13,14 +13,7 @@ if (!$userAuthorizer->isGranted($config->get('LEVEL_LEVENSHTEIN'))) {
     exit();
 }
 
-$CRIT_RECH_COUPLES = 2;
-if (defined("CRIT_RECH_COUPLES")) {
-    $CRIT_RECH_COUPLES = $config->get('CRIT_RECH_COUPLES');
-}
-
-$xcomm = $xpatr = $page = "";
-
-pathroot($root, $path, $xcomm, $xpatr, $page);
+$CRIT_RECH_COUPLES = $config->get('CRIT_RECH_COUPLES', 2);
 
 ob_start();
 open_page("Recherche Levenshtein", $root, null, null, null, null, 'rss.php'); ?>

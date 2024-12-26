@@ -129,7 +129,7 @@ if (($xpatr == "" or mb_substr($xpatr, 0, 1) == "_")) {
         echo '<th>' . $hdate . '</th>';
         echo '<th>' . $hnoms . '</th>';
         if ($userAuthorizer->isGranted(6)) {
-            echo '<th>Déposant</th>';
+            echo '<th>Déposant</th><th></th>';
         }
         echo '</tr>';
 
@@ -148,7 +148,6 @@ if (($xpatr == "" or mb_substr($xpatr, 0, 1) == "_")) {
         if ($listpages <> "") {
             echo '<p>' . $listpages . '</p>';
         }
-        show_solde();
     } else {
         msg('Aucun acte trouvé');
     }

@@ -21,9 +21,9 @@ function open_page($title, $root = "", $js = null, $addbody = null, $addhead = n
     echo '<meta name="description" content="' . $config->get('META_DESCRIPTION', '') . '">';
     echo '<meta name="keywords" content="' . $config->get('META_KEYWORDS', '') . '">';
     echo '<meta name="generator" content="Civil-Records">';
-    
+
     echo '<link rel="shortcut icon" href="' . $root . '/assets/img/favicon.ico" type="image/x-icon">';
-    
+
     echo '<link rel="stylesheet" href="' . $root . '/themes/olive.css" type="text/css">';
     echo '<link rel="stylesheet" href="' . $root . '/assets/css/style.css" type="text/css">';
     if (file_exists(__DIR__ . '/../_config/actes.css')) {
@@ -36,7 +36,7 @@ function open_page($title, $root = "", $js = null, $addbody = null, $addhead = n
     }
 
     if ($rss <> "") {
-        echo '<link rel="alternate" type="application/rss+xml" title="' . $config->get('SITENAME') . ' | ' .$title . '" href="' . $root . '/' . $rss . '">';
+        echo '<link rel="alternate" type="application/rss+xml" title="' . $config->get('SITENAME') . ' | ' . $title . '" href="' . $root . '/' . $rss . '">';
     }
 
     if ($js !== null) {
@@ -54,7 +54,7 @@ function open_page($title, $root = "", $js = null, $addbody = null, $addhead = n
     echo "</head>\n";
     echo '<body>';
 
-/*     if (getparam(EL) == 'O') {
+    /*     if (getparam(EL) == 'O') {
         echo $ExpoActes_Charset;
     } */
 
@@ -71,7 +71,7 @@ function open_page($title, $root = "", $js = null, $addbody = null, $addhead = n
         echo '<h2><font color="#FF0000">' . $TIPmsg . "</font></h2>";
     } */
     echo '<div class="entete">';
-        include(__DIR__ . '/../templates/front/_bandeau.php');
+    include(__DIR__ . '/../templates/front/_bandeau.php');
     echo "</div>";
 }
 
@@ -170,7 +170,7 @@ function prechecked($typrech)
 function statistiques($vue = "T")
 {
     global $root, $config, $xtyp, $show_alltypes;
-    
+
     $crit_dates = "";
 
     echo '<div class="box">';
@@ -374,37 +374,32 @@ function navigation($root = "", $level = 1, $type = 'A', $commune = null, $patro
             $level = $level - 10;
         } else {
             if ($config->get('SHOW_ALLTYPES') == 0) {
-                echo ' :: <a href="' . $root . '/index.php?xtyp='.$type.'">Communes et paroisses</a>';
+                echo ' :: <a href="' . $root . '/index.php?xtyp=' . $type . '">Communes et paroisses</a>';
             } else {
                 echo ' :: <a href="' . $root . '/index.php">Communes et paroisses</a>';
             }
             $path = $root;
         }
-    } else {
-        if ($level == 1) {
-            echo ' :: Communes et paroisses';
-        }
+    } elseif ($level == 1) {
+        echo ' :: Communes et paroisses';
     }
     if ($level > 2) {
         echo ' &gt;&gt; <a href="' . $path . $s2 . $xtyp . $xcomm . '">' . $commune . '</a> &gt;&gt; ' . $signe;
-    } else {
-        if ($level == 2) {
-            echo ' &gt;&gt; ' . $commune . ' &gt;&gt; ' . $signe;
-        }
+    } elseif ($level == 2) {
+        echo ' &gt;&gt; ' . $commune . ' &gt;&gt; ' . $signe;
     }
     if ($level > 3) {
         echo ' &gt;&gt; <a href="' . $path . $s2 . $xtyp . $xcomm . $xpatr . '">' . $patronyme . '</a>';
-    } else {
-        if ($level == 3) {
-            echo ' &gt;&gt; ' . $patronyme;
-        }
+    } elseif ($level == 3) {
+        echo ' &gt;&gt; ' . $patronyme;
     }
-    if ($level == 4) {
-        echo ' ' . $prenom;
-    }
+    if ($level == 4) echo ' ' . $prenom;
     echo '</div>';
-    ?>
+?>
     <div class="tool">
+        <ul>
+            <li><?= show_solde(); ?></li>
+        </ul>
         <!-- <select name="theme-menu" id="theme-menu">
             <option data-ea-theme-value="default" aria-pressed="false">Thème jaune</option>
             <option data-ea-theme-value="olive" aria-pressed="false">Thème olive</option>
@@ -462,29 +457,29 @@ function getCommunes($params)   // Utilisée pour remplir dynamiquement une list
 }
 
 function form_typeactes_communes($mode = '', $alldiv = 1)
-{
+{ global $root;
     // Tableau avec choix du type + choix d'une commune existante
-    echo " <tr>\n";
-    echo '  <td>Type des actes : &nbsp;</td>';
-    echo '  <td>';
+    echo "<tr>";
+    echo '<td>Type des actes : </td>';
+    echo '<td>';
     $ajaxcommune = ' onClick="' . "getCommunes(this.value, {'content_type': 'json', 'target': 'ComDep', 'preloader': 'prl'})" . '" ';
-    echo '  			<input type="hidden" name="TypeActes" value="X" />';
-    echo '        <input type="radio" name="TypeActes" value="N' . $mode . '" ' . $ajaxcommune . '/>Naissances<br />';
-    echo '        <input type="radio" name="TypeActes" value="M' . $mode . '" ' . $ajaxcommune . '/>Mariages<br />';
-    echo '        <input type="radio" name="TypeActes" value="D' . $mode . '" ' . $ajaxcommune . '/>Décès<br />';
-    echo '        <input type="radio" name="TypeActes" value="V' . $mode . '" ' . $ajaxcommune . '/>Actes divers : &nbsp;';
+    echo '<input type="hidden" name="xtyp" value="X">';
+    echo '<input type="radio" name="xtyp" value="N' . $mode . '" ' . $ajaxcommune . '>Naissances<br>';
+    echo '<input type="radio" name="xtyp" value="M' . $mode . '" ' . $ajaxcommune . '>Mariages<br>';
+    echo '<input type="radio" name="xtyp" value="D' . $mode . '" ' . $ajaxcommune . '>Décès<br>';
+    echo '<input type="radio" name="xtyp" value="V' . $mode . '" ' . $ajaxcommune . '>Actes divers : ';
     listbox_divers("typdivers", "***Tous***", $alldiv);
-    echo '        <br />&nbsp;<br />';
-    echo '  </td>';
-    echo " </tr>\n";
-    echo " <tr>\n";
-    echo '  <td>Commune / Paroisse : &nbsp;</td>';
-    echo '  <td>';
-    echo '  <select id="ComDep" name="ComDep">';
-    echo '    <option value="">Choisir d\'abord le type d\'acte</option> ';
-    echo '  </select><img id="prl" src="../themes/default/img/minispinner.gif" style="visibility:hidden;">';
-    echo '  </td>';
-    echo " </tr>\n";
+    echo '<br><br>';
+    echo '</td>';
+    echo "</tr>";
+    echo "<tr>";
+    echo '<td>Commune / Paroisse : </td>';
+    echo '<td>';
+    echo '<select id="ComDep" name="ComDep">';
+    echo '<option value="">Choisir d\'abord le type d\'acte</option> ';
+    echo '</select><img id="prl" src="'. $root.'/themes/default/img/minispinner.gif" style="visibility:hidden;">';
+    echo '</td>';
+    echo " </tr>";
 }
 
 function listbox_communes($fieldname, $default, $vide = 0)  // liste de toutes les communes ts actes confondus
@@ -516,7 +511,7 @@ function listbox_communes($fieldname, $default, $vide = 0)  // liste de toutes l
  * @return array ['commune' => $commune, 'departement' => $departement]
  */
 function decompose_comm_dep(string $communeAndDepartement): array
-{ 
+{
     $commune = $communeAndDepartement;
     $departement = '';
     $croch = mb_strrpos($communeAndDepartement, "[");
@@ -524,7 +519,7 @@ function decompose_comm_dep(string $communeAndDepartement): array
         $commune = mb_substr($communeAndDepartement, 0, $croch - 1);
         $departement = mb_substr($communeAndDepartement, $croch + 1, mb_strlen($communeAndDepartement) - $croch - 2);
     }
-    
+
     return ['commune' => $commune, 'departement' => $departement];
 }
 
@@ -742,7 +737,7 @@ function show_grouptitle3($row, $retrait, $format, $type, $group, $sigle = '')
 function show_item3($row, $retrait, $format, $zidinfo, $url = "", $zidinfo2 = "", $activelink = 0)
 {
     global $config, $userAuthorizer;
-    
+
     $lg = $GLOBALS['lg'];
     $req1 = "SELECT ZONE, GROUPE, TYP, TAILLE, OBLIG, AFFICH, ETIQ, AIDE FROM (" . $config->get('EA_DB') . "_metadb d JOIN " . $config->get('EA_DB') . "_metalg l)"
         . " WHERE ((d.ZID=l.ZID) AND (l.LG='" . $lg . "') AND d.ZID=" . $zidinfo . ")";
@@ -864,7 +859,7 @@ function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = ""
     }
 
     echo '<h2>' . $titre . '</h2>';
-    echo '<p>Commune/Paroisse : <a href="' . $root . '/' . $script .'?xcomm='. $xcomm . '"><strong>' . $xcomm . '</strong></a>' . geoUrl($gid) . '</p>';
+    echo '<p>Commune/Paroisse : <a href="' . $root . '/' . $script . '?xcomm=' . $xcomm . '"><strong>' . $xcomm . '</strong></a>' . geoUrl($gid) . '</p>';
     if ($note <> '') {
         echo "<p>" . $note . "</p>";
     }
@@ -1092,9 +1087,9 @@ function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = 
                     $lenom = $lenom . ' ';
                 }
                 if ($lemin == $lemax) {
-                    echo '<td><a href="' . $root . '/' . $script . '?$xcomm='. $xcomm . $sousurl, $lemin . '">' . $lemin . '</a></td>';
+                    echo '<td><a href="' . $root . '/' . $script . '?$xcomm=' . $xcomm . $sousurl, $lemin . '">' . $lemin . '</a></td>';
                 } else {
-                    echo '<td><a href="' . $root . '/' . $script . '?$xcomm='. $xcomm . $sousurl . '&xpatr' . $lenom . '">' . $lemin . ' à ' . $lemax . '</a></td>';
+                    echo '<td><a href="' . $root . '/' . $script . '?$xcomm=' . $xcomm . $sousurl . '&xpatr' . $lenom . '">' . $lemin . ' à ' . $lemax . '</a></td>';
                 }
                 echo '</tr>';
                 if ($lire1 == 1) { //and $neof1)
@@ -1175,20 +1170,20 @@ function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = 
                 echo '<tr class="row' . (fmod($i, 2)) . '">';
                 echo '<td>' . $i . '. </td>';
                 if ($mari < $femm) {
-                    echo '<td><a href="' . $root . '/' . $script .'?xcomm='. $xcomm . $sousurl . '&xpatr=' . $ligne1[0] . '">' . $ligne1[0] . '</a></td>';
+                    echo '<td><a href="' . $root . '/' . $script . '?xcomm=' . $xcomm . $sousurl . '&xpatr=' . $ligne1[0] . '">' . $ligne1[0] . '</a></td>';
                     echo '<td align="center"> ' . fourchette_dates($ligne1[2], $ligne1[3]) . '</td>';
                     echo '<td align="center"> ' . $ligne1[1] . '</td>';
                     echo '<td align="center"> ' . '-' . '</td>';
                     $lire1 = 1;
                 } elseif ($mari > $femm) {
-                    echo '<td><a href="' . $root . '/' . $script .'?xcomm='. $xcomm . $sousurl . '&xpatr=' . $ligne2[0] . '">' . $ligne2[0] . '</a></td>';
+                    echo '<td><a href="' . $root . '/' . $script . '?xcomm=' . $xcomm . $sousurl . '&xpatr=' . $ligne2[0] . '">' . $ligne2[0] . '</a></td>';
                     echo '<td align="center"> ' . fourchette_dates($ligne2[2], $ligne2[3]) . '</td>';
                     echo '<td align="center"> ' . '-' . '</td>';
                     echo '<td align="center"> ' . $ligne2[1] . '</td>';
                     $lire2 = 1;
                 } else {
                     // alors =
-                    echo '<td><a href="' . $root . '/' . $script .'?xcomm='. $xcomm . $sousurl . '&xpatr=' . $ligne1[0] . '">' . $ligne1[0] . '</a></td>';
+                    echo '<td><a href="' . $root . '/' . $script . '?xcomm=' . $xcomm . $sousurl . '&xpatr=' . $ligne1[0] . '">' . $ligne1[0] . '</a></td>';
                     echo '<td align="center"> ' . fourchette_dates($ligne1[2], $ligne1[3], $ligne2[2], $ligne2[3]) . '</td>';
                     echo '<td align="center"> ' . $ligne1[1] . '</td>';
                     echo '<td align="center"> ' . $ligne2[1] . '</td>';
@@ -1302,28 +1297,32 @@ function pagination($nbtot, &$page, $href, &$listpages, &$limit)
 
 function actions_deposant($userid, $depid, $actid, $typact)  // version graphique
 {
-    global $root, $path, $session, $config;
+    global $root, $userAuthorizer, $config;
+
+    $depinfo = "#" . $depid;
+
     $req = "SELECT NOM,PRENOM FROM " . $config->get('EA_DB') . "_user3 WHERE (ID=" . $depid . ")";
     $curs = EA_sql_query($req);
     if (EA_sql_num_rows($curs) == 1) {
         $res = EA_sql_fetch_assoc($curs);
         $depinfo = $res["NOM"] . " " . $res["PRENOM"];
-    } else {
-        $depinfo = "#" . $depid;
     }
-    if ($userid == $depid or $session->get('user')['level'] >= 8) {
-        echo '<td align="center">&nbsp;';
+
+    if ($userid == $depid || $userAuthorizer->isGranted(8)) {
+        echo '<td>';
         echo $depinfo . ' ';
-        if ($typact == 'M' or $typact == 'V') {
-            echo '<a href="' . $path . '/permute.php?xid=' . $actid . '&amp;xtyp=' . $typact . '"><img width="11" hspace="7" height="13" title="Permuter" alt="Permuter" src="' . $root . '/assets/img/permuter.gif"></a> - ';
+        echo '</td>';
+        echo '<td>';
+        if ($typact == 'M' || $typact == 'V') {
+            echo '<a href="' . $root . '/admin/permute.php?xid=' . $actid . '&xtyp=' . $typact . '"><img width="16" height="16" title="Permuter" alt="Permuter" src="' . $root . '/assets/img/permuter.gif"></a>';
         }
-        echo '<a href="' . $path . '/edit_acte.php?xid=' . $actid . '&amp;xtyp=' . $typact . '"><img width="11" hspace="7" height="13" title="Modifier" alt="Modifier" src="' . $root . '/assets/img/modifier.gif"></a>';
-        echo ' - <a href="' . $path . '/suppr_acte.php?xid=' . $actid . '&amp;xtyp=' . $typact . '"><img width="11" hspace="7" height="13" title="Supprimer" alt="Supprimer" src="' . $root . '/assets/img/supprimer.gif"></a>';
-        echo '&nbsp;</td>';
+        echo ' <a href="' . $root . '/admin/edit_acte.php?xid=' . $actid . '&xtyp=' . $typact . '"><img width="16" height="16" title="Modifier" alt="Modifier" src="' . $root . '/assets/img/modifier.gif"></a>';
+        echo ' <a href="' . $root . '/admin/suppr_acte.php?xid=' . $actid . '&xtyp=' . $typact . '"><img width="16" height="16" title="Supprimer" alt="Supprimer" src="' . $root . '/assets/img/supprimer.gif"></a>';
+        echo '</td>';
     } else {
-        echo '<td align="center">&nbsp;';
+        echo '<td>';
         echo $depinfo; //iif(($depnom==""),"#".$depid,$depnom.' '.$deppre);
-        echo '&nbsp;</td>';
+        echo '</td><td></td>';
     }
 }
 
@@ -1487,12 +1486,12 @@ function current_user_solde()
 
     if ($config->get('GEST_POINTS') == 0) {
         return 9999;
-    } 
-    
+    }
+
     if ($session->get('user')['level'] >= 8 || $session->get('user')['regime'] == 0) {
         return 9999;
-    } 
-    
+    }
+
     return $session->get('user')['solde'];
 }
 
@@ -1506,15 +1505,18 @@ function show_signal_erreur($typ, $xid)
 
 function show_solde()
 {
+    $html_li = '';
     $solde = current_user_solde();
+
     if ($solde < 9999) {
         if ($solde > 0) {
-            $mess = 'Vous avez encore <b>' . $solde . ' points</b> pour consulter le détail des actes.';
+            $html_li = '<li>Solde : ' . $solde . 'pts</li>';
         } else {
-            $mess = '<font color="#FF0000"><b>Votre solde de points est épuisé pour consulter le détail des actes.</b></font>';
+            $html_li = '<li class="danger">Solde : ' . $solde . 'pts</li>';
         }
-        echo '<p>' . $mess . '</p>';
     }
+
+    return $html_li;
 }
 
 function annee_seulement($date_txt)  // affichage date simplifié à l'annee si droits limités
@@ -1522,17 +1524,17 @@ function annee_seulement($date_txt)  // affichage date simplifié à l'annee si 
     global $session, $config;
 
     if (
-        ($config->get('ANNEE_TABLE') >= 3) 
-        || ($config->get('ANNEE_TABLE') >= 1 && $session->has('user')['ID'] == 0) 
-        || ($config->get('ANNEE_TABLE') >= 2 && $session->get('user')['level'] < 5) 
-        || (current_user_solde() == 0)) 
-    {
+        ($config->get('ANNEE_TABLE') >= 3)
+        || ($config->get('ANNEE_TABLE') >= 1 && $session->has('user')['ID'] == 0)
+        || ($config->get('ANNEE_TABLE') >= 2 && $session->get('user')['level'] < 5)
+        || (current_user_solde() == 0)
+    ) {
         $dtsql = "";
         $bad = 0;
         $date_txt = ajuste_date($date_txt, $dtsql, $bad);
         return mb_substr($date_txt, strrpos($date_txt, "/") + 1);
-    } 
-    
+    }
+
     return $date_txt; // date complète
 }
 
@@ -1867,8 +1869,8 @@ function ctrlxid($nom, $pre)
     $c2 = 19;
     if (!empty($nom)) {
         $c1 = (ord($nom[0]) + 3);
-    } 
-    
+    }
+
     if (!empty($pre)) {
         $c2 = (ord($pre[0]) + 7);
     }
@@ -1880,7 +1882,7 @@ function ctrlxid($nom, $pre)
 function get_last_backups(): array
 {
     global $config;
-    
+
     $temp = explode(';', $config->get('EA_LSTBACKUP'));
     $list_backups = [];
     foreach ($temp as $tp) {

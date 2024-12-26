@@ -21,8 +21,8 @@ if ($request->get('act') && $request->get('act') === 'logout') {
 $xtyp = $request->get('xtyp', 'A');
 $init = $request->get('init', '');
 $vue = $request->get('vue', 'T'); // T = Tableau / C = Carte
-$xpatr = "";
-$page = "";
+$xpatr = $request->get('xpatr', '');
+$page = $request->get('page', 1);
 
 $JSheader = "";
 

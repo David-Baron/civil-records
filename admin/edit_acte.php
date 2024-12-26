@@ -14,24 +14,24 @@ if (!$userAuthorizer->isGranted(6)) {
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
 $lg = $GLOBALS['lg'];
-$xid      = getparam('xid');
-$xtyp     = strtoupper(getparam('xtyp'));
-if ($xtyp == "") {
-    $xtyp = getparam('TypeActes');
-}
-$xconfirm = getparam('xconfirm');
+$xid    = $request->get('xid', null);
+$xtyp   = $request->get('xtyp');
+$xcomm  = $request->get('xcomm', '');
+$xtdiv  = $request->get('typdivers', '');
 
-if ($xid < 0) {
+$xconfirm = $request->get('xconfirm');
+
+$title = "Modification d'un acte";
+$logtxt = "Modification";
+
+if ($xid === null) {
     $title = "Ajout d'un acte";
     $logtxt = "Ajout";
-    $comdep  = html_entity_decode(getparam('ComDep'), ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
+    $comdep  = html_entity_decode($xcomm, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
     $Commune = communede($comdep);
     $Depart  = departementde($comdep);
-    $xtdiv    = getparam('typdivers');
-} else {
-    $title = "Edition d'un acte";
-    $logtxt = "Edition";
 }
+
 $ok = false;
 $missingargs = false;
 $oktype = false;
@@ -45,7 +45,7 @@ open_page($title, $root); ?>
         <?php
         navadmin($root, $title);
 
-        if ($xid == '' or $xtyp == '' or $xtyp == 'X') {
+        if ($xid == '' || $xtyp == '' || $xtyp == 'X') {
             // Données postées
             msg("Vous devez préciser le numéro et le type de l'acte.");
             $missingargs = true;  // par défaut
@@ -56,22 +56,22 @@ open_page($title, $root); ?>
                 case "N":
                     $ntype = "de naissance";
                     $table = $config->get('EA_DB') . "_nai3";
-                    $script = "tab_naiss.php";
+                    $script = "/tab_naiss.php";
                     break;
                 case "D":
                     $ntype = "de décès";
                     $table = $config->get('EA_DB') . "_dec3";
-                    $script = "tab_deces.php";
+                    $script = "/tab_deces.php";
                     break;
                 case "V":
                     $ntype = "divers";
                     $table = $config->get('EA_DB') . "_div3";
-                    $script = "tab_bans.php";
+                    $script = "/tab_bans.php";
                     break;
                 case "M":
                     $ntype = "de mariage";
                     $table = $config->get('EA_DB') . "_mar3";
-                    $script = "tab_mari.php";
+                    $script = "/tab_mari.php";
                     break;
                 default:
                     $oktype = false;
@@ -126,9 +126,9 @@ open_page($title, $root); ?>
                         echo '<p>' . sprintf('%1$s acte %2$s %3$s', $nb, $ntype, $txt) . '</p>';
                         writelog($logtxt . ' ' . $ntype . ' #' . $xid, getparam("COMMUNE"), $nb);
                         echo '<p>Retourner à la liste des actes ';
-                        echo '<a href="' . mkurl($script, getparam("COMMUNE") . " [" . getparam("DEPART") . "]", getparam("NOM")) . '"><b>' . getparam("NOM") . '</b></a>';
+                        echo '<a href="' . mkurl($root . $script, getparam("COMMUNE") . " [" . getparam("DEPART") . "]", getparam("NOM")) . '"><b>' . getparam("NOM") . '</b></a>';
                         if (strpos("MV", $xtyp) !== false) {
-                            echo ' ou <a href="' . mkurl($script, getparam("COMMUNE") . " [" . getparam("DEPART") . "]", getparam("C_NOM")) . '"><b>' . getparam("C_NOM") . '</b></a>';
+                            echo ' ou <a href="' . mkurl($root . $script, getparam("COMMUNE") . " [" . getparam("DEPART") . "]", getparam("C_NOM")) . '"><b>' . getparam("C_NOM") . '</b></a>';
                         }
                         echo '</p>';
                         maj_stats($xtyp, $T0, $path, "C", getparam("COMMUNE"), getparam("DEPART"));
@@ -170,12 +170,11 @@ open_page($title, $root); ?>
                         $col[$colname[0]] = $xt;
                         $xx++;
                     }
-                    //{ print '<pre>';  print_r($col); echo '</pre>'; }
 
-                    echo '<form method="post" action="">' . "\n";
-                    echo '<h2 align="center">' . sprintf('%1$s %2$s', $logtxt, $ntype) . '</h2>';
+                    echo '<form method="post">';
+                    echo '<h2>' . sprintf('%1$s %2$s', $logtxt, $ntype) . '</h2>';
                     //echo '<h3 align="center">Commune/paroisse : '.$acte["COMMUNE"].'</h3>';
-                    echo '<table cellspacing="0" cellpadding="1" border="0" summary="Formulaire">' . "\n";
+                    echo '<table class="m-auto" summary="Formulaire">';
 
                     $grp = "";
                     for ($i = 0; $i < count($mdb); $i++) {
@@ -189,15 +188,14 @@ open_page($title, $root); ?>
                             } // $tb = 'V';
                             $etiq_courant = grp_label($mdb[$i]['GROUPE'], $tb, $lg, $sigle);
                         }
-                        //print_r($acte); exit;
                         if ($grp_courant <> $grp) {
                             $grp = $grp_courant;
-                            echo ' <tr class="row0">' . "\n";
-                            echo '  <td align="left"><b>&nbsp; ' . $etiq_courant . "  </b></td>\n";
-                            echo '  <td> </td>' . "\n";
-                            echo ' </tr>';
+                            echo '<tr class="row0">';
+                            echo '<td><b>' . $etiq_courant . "  </b></td>";
+                            echo '<td></td>';
+                            echo '</tr>';
                         }
-                        // parametres : $name,$size,$value,$caption
+                        // parametres : $name, $size, $value, $caption
                         $value = getparam($mdb[$i]['ZONE']);
                         if ($value == "") {  // premier affichage
                             if ($xid < 0) {
@@ -221,9 +219,9 @@ open_page($title, $root); ?>
                                 $value = $acte[$mdb[$i]['ZONE']];
                             }
                         }
-                        echo ' <tr class="row1">';
-                        echo "  <td align=right>" . $mdb[$i]['ETIQ'] . " : </td>";
-                        echo '  <td>';
+                        echo '<tr class="row1">';
+                        echo "<td>" . $mdb[$i]['ETIQ'] . " : </td>";
+                        echo '<td>';
                         if ($col[$mdb[$i]['ZONE']] <= 70) {
                             $value = str_replace('"', '&quot;', $value);
 
@@ -231,30 +229,24 @@ open_page($title, $root); ?>
                         } else {
                             echo '<textarea name="' . $mdb[$i]['ZONE'] . '" cols=70 rows=' . (min(4, $col[$mdb[$i]['ZONE']] / 70)) . '>' . $value . '</textarea>';
                         }
-                        echo '  </td>';
-                        echo " </tr>";
+                        echo '</td>';
+                        echo "</tr>";
                     }
-                    echo ' <tr class="row0"><td>' . "\n";
-                    echo '<input type="hidden" name="xtyp" value="' . $xtyp . '" />' . "\n";
-                    echo '<input type="hidden" name="xid"  value="' . $xid . '" />' . "\n";
-                    echo '<input type="hidden" name="xconfirm" value="confirmed" />' . "\n";
-                    echo '<td><input type="submit" value=" >> ENREGISTRER >> " />' . "\n";
-                    if ($xid < 0) {
-                        $url = "ajout_1acte.php";
-                    } else {
-                        $comdep = $acte["COMMUNE"] . ' [' . $acte["DEPART"] . ']';
-                        $url = mkurl($script, stripslashes($comdep), $acte["NOM"]);
-                    }
-                    echo '&nbsp; &nbsp; &nbsp; <a href="' . $url . '">Annuler</a>' . "\n";
-                    echo "</td></tr></table>\n";
-                    echo "</form>\n";
+                    echo '<tr class="row0"><td>';
+                    echo '<input type="hidden" name="xtyp" value="' . $xtyp . '">';
+                    echo '<input type="hidden" name="xid"  value="' . $xid . '">';
+                    echo '<input type="hidden" name="xconfirm" value="confirmed">';
+                    echo '<td><button type="submit">Enregistrer</button>';
+                    echo ' <a href="' . $session->get('previous_url', "$root/") . '">Annuler</a>';
+                    echo "</td></tr></table>";
+                    echo "</form>";
                 } else {
                     msg('Impossible de trouver cet acte !');
                 }
-            } // confirmed ??
-        }
-        echo '</div>';
-        echo '</div>';
-        include(__DIR__ . '/../templates/front/_footer.php');
-        $response->setContent(ob_get_clean());
-        $response->send();
+            }
+        } ?>
+    </div>
+</div>
+<?php include(__DIR__ . '/../templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();

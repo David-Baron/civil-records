@@ -7,15 +7,12 @@ require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
 $session->set('previous_url', $request->server->get('REQUEST_URI')); // Usefull for redirecting user
 
-$xcomm = "";
-$xpatr = "";
-$xord  = getparam('xord', 'D');  // N = Nom, D = dates, F = Femme
+$xcomm = $request->get('xcomm', '');
+$xpatr = $request->get('xpatr', '');
+$xannee = $request->get('xyear', '');
+$xord  = $request->get('xord', 'D');  // N = Nom, D = dates, F = Femme
 $page = getparam('page', 1);
 
-$xannee = "";
-if (mb_substr($xpatr, 0, 1) == "!") {
-    $xannee = mb_substr($xpatr, 1);
-}
 $p = isin($xcomm, ";");
 $stype = "";
 $stitre = "";
@@ -153,7 +150,7 @@ if ($xpatr == "" || mb_substr($xpatr, 0, 1) == "_") {
                     echo '<th>' . $htype . '</th>';
                     echo '<th></th>';
                     if ($userAuthorizer->isGranted(6)) {
-                        echo '<th>Déposant</th>';
+                        echo '<th>Déposant</th><th></th>';
                     }
                     echo '</tr>';
 
@@ -184,7 +181,6 @@ if ($xpatr == "" || mb_substr($xpatr, 0, 1) == "_") {
                     if ($listpages <> "") {
                         echo '<p>' . $listpages . '</p>';
                     }
-                    show_solde();
                 } else {
                     msg('Aucun acte trouvé');
                 }

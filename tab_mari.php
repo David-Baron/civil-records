@@ -61,7 +61,7 @@ if ($xpatr == "" || mb_substr($xpatr, 0, 1) == "_") {
     echo '<h2>Actes de mariage</h2>';
 
     echo '<p>';
-    echo 'Commune/Paroisse : <a href="' . $path . '/tab_mari.php?xcomm=' . $xcomm . '"><b>' . $xcomm . '</b></a>' . geoUrl($gid) . '<br />';
+    echo 'Commune/Paroisse : <a href="' . $path . '/tab_mari.php?xcomm=' . $xcomm . '"><b>' . $xcomm . '</b></a>' . geoUrl($gid) . '<br>';
     if ($note <> '') {
         echo "</p><p>" . $note . "</p><p>";
     }
@@ -138,9 +138,9 @@ if ($xpatr == "" || mb_substr($xpatr, 0, 1) == "_") {
         echo '<th>' . $hdate . '</th>';
         echo '<th>' . $hnoms . '</th>';
         echo '<th>' . $hfemm . '</th>';
-        echo '<th>&nbsp;</th>';
+        echo '<th></th>';
         if ($userAuthorizer->isGranted(6)) {
-            echo '<th>Déposant</th>';
+            echo '<th>Déposant</th><th></th>';
         }
         echo '</tr>';
 
@@ -171,7 +171,6 @@ if ($xpatr == "" || mb_substr($xpatr, 0, 1) == "_") {
         if ($listpages <> "") {
             echo '<p>' . $listpages . '</p>';
         }
-        show_solde();
     } else {
         msg('Aucun acte trouvé');
     }

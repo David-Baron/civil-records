@@ -7,23 +7,18 @@ require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
 $session->set('previous_url', $request->server->get('REQUEST_URI')); // Usefull for redirecting user
 
-$xcomm = "";
-$xpatr = "";
-$page = getparam('page', 1);
-$program = "tab_deces.php";
+$xcomm = $request->get('xcomm', '');
+$xpatr = $request->get('xpatr', '');
+$xord  = $request->get('xord', 'D'); // N = Nom, D = date
+$xannee = $request->get('xannee', null);
+$page = $request->get('page', 1);
+
 $comdep  = html_entity_decode($xcomm, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
 $Commune = communede($comdep);
 $Depart  = departementde($comdep);
-$xord  = getparam('xord', 'D'); // N = Nom, D = dates
 
-$xannee = "";
-if (mb_substr($xpatr, 0, 1) == "!") {
-    $xannee = mb_substr($xpatr, 1);
-}
 $gid = 0;
 $note = geoNote($Commune, $Depart, 'D');
-
-pathroot($root, $path, $xcomm, $xpatr, $page);
 
 if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
     // Lister les patronymes avec groupements si trop nombreux
@@ -41,7 +36,7 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
         <div class="main-col-center text-center">
         <?php
         navigation($root, 2, 'D', $xcomm);
-        liste_patro_1($program, $path, $xcomm, $xpatr, "Décès / Sépultures", $config->get('EA_DB') . "_dec3", $gid, $note);
+        liste_patro_1('tab_deces.php', $path, $xcomm, $xpatr, "Décès / Sépultures", $config->get('EA_DB') . "_dec3", $gid, $note);
     } else {
         if (!$config->get('PUBLIC_LEVEL') >= 3 || !$userAuthorizer->isGranted(3)) {
             $session->getFlashBag()->add('warning', 'Vous n\'êtes pas connecté ou vous n\'avez pas les autorisations nécessaires!');
@@ -61,7 +56,7 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
                 echo '<h2>Actes de décès/sépulture</h2>';
 
                 echo '<p>';
-                echo 'Commune/Paroisse : <a href="' . mkurl($path . '/' . $program, $xcomm) . '"><b>' . $xcomm . '</b></a>' . geoUrl($gid) . '<br />';
+                echo 'Commune/Paroisse : <a href="' . $root . '/tab_deces.php?xcomm=' . $xcomm . '"><b>' . $xcomm . '</b></a>' . geoUrl($gid) . '<br>';
                 if ($note <> '') {
                     echo "</p><p>" . $note . "</p><p>";
                 }
@@ -76,16 +71,16 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
                 }
                 echo '</p>';
 
-                $baselink = $path . '/' . $program . '/' . urlencode($xcomm) . '/' . urlencode($xpatr);
+                $baselink = $root . '/tab_deces.php?xcomm=' . $xcomm . '&xpatr=' . $xpatr;
                 if ($xord == "N") {
                     $order = $preorder . ", LADATE";
-                    $hdate = '<a href="' . mkurl($path . '/' . $program, $xcomm, $xpatr, 'xord=D') . '">Dates</a>';
-                    $baselink = mkurl($path . '/' . $program, $xcomm, $xpatr, 'xord=N');
+                    $hdate = '<a href="' . $root . '/tab_deces.php?xcomm=' . $xcomm . '&xpatr=' . $xpatr . 'xord=D">Dates</a>';
+                    $baselink = $root . '/tab_deces.php?xcomm=' . $xcomm . '&xpatr=' . $xpatr .'xord=N';
                     $hnoms = '<b>' . $nameorder . '</b>';
                 } else {
                     $order = "LADATE, " . $preorder;
-                    $hnoms = '<a href="' . mkurl($path . '/' . $program, $xcomm, $xpatr, 'xord=N') . '">' . $nameorder . '</a>';
-                    $baselink = mkurl($path . '/' . $program, $xcomm, $xpatr, 'xord=D');
+                    $hnoms = '<a href="' . $root . '/tab_deces.php?xcomm=' . $xcomm . '&xpatr=' . $xpatr . 'xord=N' . '">' . $nameorder . '</a>';
+                    $baselink = $root . '/tab_deces.php?xcomm=' . $xcomm . '&xpatr=' . $xpatr . 'xord=D';
                     $hdate = '<b>Dates</b>';
                 }
                 if ($xannee <> "") {
@@ -131,7 +126,7 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
                     echo '<th>' . $hdate . '</th>';
                     echo '<th>' . $hnoms . '</th>';
                     if ($userAuthorizer->isGranted(6)) {
-                        echo '<th>Déposant</th>';
+                        echo '<th>Déposant</th><th></th>';
                     }
                     echo '</tr>';
 
@@ -139,7 +134,7 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
                         echo '<tr class="row' . (fmod($i, 2)) . '">';
                         echo '<td>' . $i . '. </td>';
                         echo '<td>&nbsp;' . annee_seulement($ligne[2]) . '&nbsp;</td>';
-                        echo '<td>&nbsp;<a href="' . $path . '/acte_deces.php?xid=' . $ligne[3] . '&amp;xct=' . ctrlxid($ligne[0], $ligne[1]) . '$xcomm=' .$xcomm.'&xpatr=' . $xpatr . '">' . $ligne[0] . ' ' . $ligne[1] . '</a></td>';
+                        echo '<td>&nbsp;<a href="' . $root . '/acte_deces.php?xid=' . $ligne[3] . '&xct=' . ctrlxid($ligne[0], $ligne[1]) . '&xcomm=' .$xcomm.'&xpatr=' . $xpatr . '">' . $ligne[0] . ' ' . $ligne[1] . '</a></td>';
                         if ($userAuthorizer->isGranted(6)) {
                             actions_deposant($userid, $ligne[4], $ligne[3], 'D');
                         }
@@ -150,7 +145,6 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
                     if ($listpages <> "") {
                         echo '<p>' . $listpages . '</p>';
                     }
-                    show_solde();
                 } else {
                     msg('Aucun acte trouvé');
                 }

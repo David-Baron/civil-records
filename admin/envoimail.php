@@ -15,22 +15,62 @@ if (!$userAuthorizer->isGranted(9)) {
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
 $T0 = time();
-$sujet    = getparam('sujet');
-$message  = getparam('message');
-$xdroits  = getparam('lelevel');
+$sujet    = '';
+$message  = '';
+$xdroits  = 0;
+$condit   = '0';
+
 $regime   = getparam('regime');
 $rem      = getparam('rem');
-$condit   = getparam('condit');
-$xaction  = getparam('action');
-$missingargs = true;
+
 $emailfound = false;
 $cptok = 0;
 $cptko = 0;
 $today = today();
-$condrem = "";
-$condlevel = "";
 
+$form_errors = [];
+$form_success = false;
 $menu_user_active = 'M';
+
+if ($request->getMethod() === 'POST') {
+    $condrem = '';
+    $condlevel = '';
+    $condreg = '';
+
+    $xdroits  = $request->request->get('lelevel', 0);
+    $condit   = $request->request->get('condit', 0);
+    $regime = $request->request->get('regime', -1);
+
+    if ($xdroits <> 10) $condlevel = " AND level=" . $xdroits;
+    if ($condit <> '0') $condrem = " AND " . comparerSQL('REM', $rem, $condit);
+    if ($regime >= 0) $condreg = " AND regime =" . $regime;
+
+    $sql = "SELECT nom, prenom, email, level, statut FROM " . $config->get('EA_UDB') . "_user3 WHERE (1=1) " . $condlevel . $condreg . $condrem . " ;";
+    $users = EA_sql_query($sql, $u_db);
+    $nbsites = EA_sql_num_rows($users);
+    $nbsend = 0;
+
+    while ($user = EA_sql_fetch_array($users)) {
+        if ($user['statut'] == 'N') {
+            $urlsite = $config->get('EA_URL_SITE') . $root . "/";
+            $codes = array("#URLSITE#", "#NOM#", "#PRENOM#");
+            $decodes = array($urlsite, $user['nom'], $user['prenom']);
+            $bon_message = str_replace($codes, $decodes, $message);
+            $sender = mail_encode($config->get('SITENAME')) . ' <' . $config->get('LOC_MAIL') . ">";
+            $okmail = sendmail($sender, $user['email'], $sujet, $bon_message);
+            // TODO: will be a streaming response
+            echo "<p>Envoi à " . $user['prenom'] . " " . $user['nom'] . " (" . $user['email'] . ") ";
+            if (!$okmail) {
+                echo ' -> Mail PAS envoyé.';
+                $cptko++;
+            } else {
+                echo ' -> Mail ENVOYE.';
+                $cptok++;
+            }
+        }
+    }
+    $form_success = true;
+}
 
 ob_start();
 open_page("Envoi d'un mail circulaire", $root); ?>
@@ -42,118 +82,60 @@ navadmin($root, "Envoi d'un mail circulaire");
 
 require(__DIR__ . '/../templates/admin/_menu-user.php');
 
-if ($xaction == 'submitted') {
-    if ($xdroits <> "10") {
-        $condlevel = " AND level=" . $xdroits;
-    }
-    if ($condit <> "0") {
-        $condrem = " AND " . comparerSQL('REM', $rem, $condit);
-    }
-    $condreg = "";
-    if ($regime >= 0) {
-        $condreg = " AND regime =" . $regime;
-    }
-    $sql = "SELECT nom, prenom, email, level, statut"
-        . " FROM " . $config->get('EA_UDB') . "_user3 "
-        . " WHERE (1=1) " . $condlevel . $condreg . $condrem . " ;";
-    $sites = EA_sql_query($sql, $u_db);
-    $nbsites = EA_sql_num_rows($sites);
-    $nbsend = 0;
-    $missingargs = false;
-
-    while ($site = EA_sql_fetch_array($sites)) {
-        if ($site['statut'] == 'N') {
-            $mail = $site['email'];
-            $nom = $site['nom'];
-            $prenom = $site['prenom'];
-
-            $urlsite = $config->get('EA_URL_SITE') . $root . "/index.php";
-            $codes = array("#URLSITE#", "#NOM#", "#PRENOM#");
-            $decodes = array($urlsite, $nom, $prenom);
-            $bon_message = str_replace($codes, $decodes, $message);
-            $sender = mail_encode($config->get('SITENAME')) . ' <' . $config->get('LOC_MAIL') . ">";
-            $okmail = sendmail($sender, $mail, $sujet, $bon_message);
-            //$okmail=false;
-            echo "<p>Envoi à " . $prenom . " " . $nom . " (" . $mail . ") ";
-            if (!$okmail) {
-                echo ' -> Mail PAS envoyé.';
-                $cptko++;
-            } else {
-                echo ' -> Mail ENVOYE.';
-                $cptok++;
-            }
-        }
-    }
-} // fichier d'actes
-
-//Si pas tout les arguments nécessaire, on affiche le formulaire
-if ($missingargs) {
-    if ($xaction == '') {  // parametres par défaut
-        if (isset($_COOKIE['chargeUSERlogs'])) {
-            $logOk = $_COOKIE['chargeUSERlogs'][0];
-        } else {
-            $logOk = "1";
-        }
-    }
-
-    echo '<form method="post" enctype="multipart/form-data" action="">' . "\n";
+    echo '<form method="post" enctype="multipart/form-data">';
     echo '<h2 align="center">Envoi d\'un mail circulaire</h2>';
-    echo '<table class="m-auto">' . "\n";
+    echo '<table class="m-auto">';
 
-    echo " <tr><td colspan=\"2\"><b>Destinataires</b></td></tr>\n";
-    echo " <tr>\n";
-    echo "  <td align=right>Droits d'accès : </td>\n";
-    echo '  <td>';
+    echo "<tr><td colspan=\"2\"><b>Destinataires</b></td></tr>";
+
+    echo "<tr>";
+    echo "<td>Droits d'accès : </td>";
+    echo '<td>';
     lb_droits_user($xdroits, 2);
-    echo '  </td>';
-    echo " </tr>\n";
+    echo '</td>';
+    echo "</tr>";
+
     if ($config->get('GEST_POINTS') > 0) {
-        echo " <tr><td align=right>ET</td><td>&nbsp;</td></tr>\n";
-        echo " <tr>\n";
-        echo "  <td align=right>Régime (points) : </td>\n";
-        echo '  <td>';
+        echo "<tr><td>ET</td><td></td></tr>";
+        echo "<tr>";
+        echo "<td>Régime (points) : </td>";
+        echo '<td>';
         lb_regime_user($regime, 1);
-        echo '  </td>';
-        echo " </tr>\n";
+        echo '</td>';
+        echo "</tr>";
     } else {
-        echo ' <tr><td colspan="2">';
-        echo '<input type="hidden" name="regime" value="-1" />';
-        echo "</td></tr>\n";
+        echo '<tr><td colspan="2"><input type="hidden" name="regime" value="-1"></td></tr>';
     }
 
-    echo " <tr><td align=right>ET</td><td>&nbsp;</td></tr>\n";
-    echo " <tr>\n";
-    echo "  <td align=right>Commentaire : </td>\n";
-    echo '  <td>';
+    echo "<tr>";
+    echo "<td>Commentaire : </td>";
+    echo '<td>';
     listbox_trait('condit', "TST", $condit);
+    echo '<input type="text" name="rem" size="50" value="' . $rem . '">';
+    echo "</td>";
+    echo "</tr>";
 
-    echo ' <input type="text" name="rem" size="50" value="' . $rem . '" />';
-    echo "</td>\n";
-    echo " </tr>\n";
+    echo "<tr><td colspan=\"2\"><b>Message</b></td></tr>";
 
-    echo " <tr><td colspan=\"2\"><b>Message</b></td></tr>\n";
-    echo " <tr>\n";
-    echo "  <td align=right>Sujet : </td>\n";
-    echo '  <td><input type="text" name="sujet" size="60" value="' . $sujet . '">' . "</td>\n";
-    echo " </tr>\n";
+    echo "<tr>";
+    echo "<td>Sujet : </td>";
+    echo '<td><input type="text" name="sujet" size="60" value="' . $sujet . '"></td>';
+    echo "</tr>";
 
-    echo ' <tr>' . "\n";
-    echo "  <td align=right>Texte du mail : </td>\n";
-    echo '  <td>';
-    echo '<textarea name="message" cols=60 rows=10>' . $message . '</textarea>';
-    echo '  </td>';
-    echo " </tr>\n";
+    echo '<tr>';
+    echo "<td>Texte du mail : </td>";
+    echo '<td><textarea name="message" cols="60" rows="10">' . $message . '</textarea></td>';
+    echo "</tr>";
 
-    echo " </tr>\n";
-    echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";
-    echo " <tr><td colspan=\"2\" align=\"center\">\n<br>";
-    echo '  <input type="hidden" name="action" value="submitted">';
-    echo '  <input type="reset" value="Effacer">' . "\n";
-    echo '  <input type="submit" value=" >> ENVOYER >> ">' . "\n";
-    echo " </td></tr>\n";
-    echo "</table>\n";
-    echo "</form>\n";
-} else {
+    echo "<tr><td colspan=\"2\"></td></tr>";
+    
+    echo "<tr><td></td><td>";
+    echo '<button type="reset">Effacer</button>';
+    echo '<button type="submit">Envoyer</button>';
+    echo "</td></tr>";
+    echo "</table>";
+    echo "</form>";
+if($form_success === true) {
     echo '<hr>';
     if ($cptok > 0) {
         echo '<p>Mails envoyés  : ' . $cptok;

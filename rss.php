@@ -9,24 +9,18 @@ function antispam($email)
     return str_replace(array("@"), array("@anti.spam.com@"), $email);
 }
 
-$max = 10;
-$xtyp = getparam('type');
-$xall = getparam('all');
-$xcomm = $xpatr = $page = "";
+$xtyp = $request->get('type', 'N');
+$xall = $request->get('all', '');
 
+$limit = '';
+$max = 1E4;
+$condit = "";
 
-pathroot($root, $path, $xcomm, $xpatr, $page);
-
-if ($xall == "") {
-    $limit = ' LIMIT ' . $max;
-} else {
-    $limit = '';
-    $max = 1E4;
+if (empty($xall)) {
+    $limit = ' LIMIT 10';
 }
 
-if ($xtyp == "" or $xtyp == "A") {
-    $condit = "";
-} else {
+if ($xtyp != 'A') {
     $condit = " WHERE TYPACT = '" . $xtyp . "'";
 }
 

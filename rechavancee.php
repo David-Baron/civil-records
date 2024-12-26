@@ -12,13 +12,6 @@ if (!$userAuthorizer->isGranted(3) && $config->get('RECH_ZERO_PTS') == 0) {
     exit();
 }
 
-
-$xcomm = "";
-$xpatr = "";
-$page = "";
-
-pathroot($root, $path, $xcomm, $xpatr, $page);
-
 ob_start();
 open_page("Recherche avancée", $root, null, null, null, null, 'rss.php'); ?>
 <div class="main">
