@@ -2,10 +2,10 @@
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-define('ADM', 0); // Compatibility only
-$admtxt = ''; // Compatibility only
 require(__DIR__ . '/next/bootstrap.php');
 require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
+
+$session->set('previous_url', $request->server->get('REQUEST_URI')); // Usefull for redirecting user
 
 $xcomm = "";
 $xpatr = "";
@@ -35,7 +35,7 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
     }
 
     ob_start();
-    open_page($xcomm . " : " . $admtxt . "Décès/Sépultures", $root); ?>
+    open_page($xcomm . " : Décès/Sépultures", $root); ?>
     <div class="main">
         <?php zone_menu(0, $session->get('user', ['level' => 0])['level']); ?>
         <div class="main-col-center text-center">
@@ -51,12 +51,12 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
         }
 
         ob_start();
-        open_page($xcomm . " : " . $admtxt . "Table des décès/sépultures", $root); ?>
+        open_page($xcomm . " : Table des décès/sépultures", $root); ?>
             <div class="main">
                 <?php zone_menu(0, $session->get('user', ['level' => 0])['level']); ?>
                 <div class="main-col-center text-center">
                 <?php
-                navigation($root, 2, 'D', $xcomm, $xpatr);
+                navigation($root, 3, 'D', $xcomm, $xpatr);
                 // Lister les actes
                 echo '<h2>Actes de décès/sépulture</h2>';
 
@@ -124,13 +124,13 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
                     if ($listpages <> "") {
                         echo '<p>' . $listpages . '</p>';
                     }
-                    $i = 1 + ($page - 1) * iif((ADM > 0), $config->get('MAX_PAGE_ADM'), $config->get('MAX_PAGE'));
+                    $i = 1 + ($page - 1) * $config->get('MAX_PAGE');
                     echo '<table class="m-auto" summary="Liste des patronymes">';
                     echo '<tr class="rowheader">';
                     echo '<th> Tri : </th>';
                     echo '<th>' . $hdate . '</th>';
                     echo '<th>' . $hnoms . '</th>';
-                    if (ADM == 10) {
+                    if ($userAuthorizer->isGranted(6)) {
                         echo '<th>Déposant</th>';
                     }
                     echo '</tr>';
@@ -139,8 +139,8 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
                         echo '<tr class="row' . (fmod($i, 2)) . '">';
                         echo '<td>' . $i . '. </td>';
                         echo '<td>&nbsp;' . annee_seulement($ligne[2]) . '&nbsp;</td>';
-                        echo '<td>&nbsp;<a href="' . $path . '/acte_deces.php?xid=' . $ligne[3] . '&amp;xct=' . ctrlxid($ligne[0], $ligne[1]) . '">' . $ligne[0] . ' ' . $ligne[1] . '</a></td>';
-                        if (ADM == 10) {
+                        echo '<td>&nbsp;<a href="' . $path . '/acte_deces.php?xid=' . $ligne[3] . '&amp;xct=' . ctrlxid($ligne[0], $ligne[1]) . '$xcomm=' .$xcomm.'&xpatr=' . $xpatr . '">' . $ligne[0] . ' ' . $ligne[1] . '</a></td>';
+                        if ($userAuthorizer->isGranted(6)) {
                             actions_deposant($userid, $ligne[4], $ligne[3], 'D');
                         }
                         echo '</tr>';

@@ -2,11 +2,10 @@
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-define('ADM', 0); // Compatibility only
-$admtxt = ''; // Compatibility only
 require(__DIR__ . '/next/bootstrap.php');
 require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
+$session->set('previous_url', $request->server->get('REQUEST_URI')); // Usefull for redirecting user
 
 $xcomm = $request->get('xcomm');
 $xpatr = $request->get('xpatr', '');
@@ -25,6 +24,7 @@ if (mb_substr($xpatr, 0, 1) == "!") {
 $gid = 0;
 $note = geoNote($Commune, $Depart, 'M');
 
+
 if ($xpatr == "" || mb_substr($xpatr, 0, 1) == "_") {
     // Lister les patronymes avec groupements si trop nombreux
     if ($config->get('PUBLIC_LEVEL') < 3 && !$userAuthorizer->isGranted(2)) {
@@ -35,7 +35,7 @@ if ($xpatr == "" || mb_substr($xpatr, 0, 1) == "_") {
     }
 
     ob_start();
-    open_page($xcomm . " : " . $admtxt . "Mariages", $root); ?>
+    open_page($xcomm . " : Mariages", $root); ?>
     <div class="main">
         <?php zone_menu(0, $session->get('user', ['level' => 0])['level']); ?>
         <div class="main-col-center text-center">
@@ -52,12 +52,12 @@ if ($xpatr == "" || mb_substr($xpatr, 0, 1) == "_") {
     }
 
     ob_start();
-    open_page($xcomm . " : " . $admtxt . "Table des mariages", $root); ?>
+    open_page($xcomm . " : Table des mariages", $root); ?>
     <div class="main">
         <?php zone_menu(0, $session->get('user', ['level' => 0])['level']); ?>
         <div class="main-col-center text-center">
             <?php 
-    navigation($root, 2, 'M', $xcomm, $xpatr);
+    navigation($root, 3, 'M', $xcomm, $xpatr);
     echo '<h2>Actes de mariage</h2>';
 
     echo '<p>';
@@ -131,7 +131,7 @@ if ($xpatr == "" || mb_substr($xpatr, 0, 1) == "_") {
         if ($listpages <> "") {
             echo '<p>' . $listpages . '</p>';
         }
-        $i = 1 + ($page - 1) * iif((ADM > 0), $config->get('MAX_PAGE_ADM'), $config->get('MAX_PAGE'));
+        $i = 1 + ($page - 1) * $config->get('MAX_PAGE');
         echo '<table class="m-auto" summary="Liste des patronymes">';
         echo '<tr class="rowheader">';
         echo '<th> Tri : </th>';
@@ -139,7 +139,7 @@ if ($xpatr == "" || mb_substr($xpatr, 0, 1) == "_") {
         echo '<th>' . $hnoms . '</th>';
         echo '<th>' . $hfemm . '</th>';
         echo '<th>&nbsp;</th>';
-        if (ADM == 10) {
+        if ($userAuthorizer->isGranted(6)) {
             echo '<th>Déposant</th>';
         }
         echo '</tr>';
@@ -148,20 +148,20 @@ if ($xpatr == "" || mb_substr($xpatr, 0, 1) == "_") {
         while ($ligne = EA_sql_fetch_row($result)) {
             echo '<tr class="row' . (fmod($i, 2)) . '">';
             echo '<td>' . $i . '. </td>';
-            echo '<td>&nbsp;' . annee_seulement($ligne[4]) . '&nbsp;</td>';
+            echo '<td>' . annee_seulement($ligne[4]) . '</td>';
             if (remove_accent($ligne[0]) == $xpatr) {
-                echo '<td>&nbsp;<b>' . $ligne[0] . ' ' . $ligne[1] . '</b></td>';
+                echo '<td><b>' . $ligne[0] . ' ' . $ligne[1] . '</b></td>';
             } else {
-                echo '<td>&nbsp;' . $ligne[0] . ' ' . $ligne[1] . '</td>';
+                echo '<td>' . $ligne[0] . ' ' . $ligne[1] . '</td>';
             }
             if (remove_accent($ligne[2]) == $xpatr) {
-                echo '<td>&nbsp;<b>' . $ligne[2] . ' ' . $ligne[3] . '</b></td>';
+                echo '<td><b>' . $ligne[2] . ' ' . $ligne[3] . '</b></td>';
             } else {
-                echo '<td>&nbsp;' . $ligne[2] . ' ' . $ligne[3] . '</td>';
+                echo '<td>' . $ligne[2] . ' ' . $ligne[3] . '</td>';
             }
 
-            echo '<td>&nbsp;<a href="' . $path . '/acte_mari.php?xid=' . $ligne[5] . '&amp;xct=' . ctrlxid($ligne[0], $ligne[1]) . '">' . "Détails" . '</a>&nbsp;</td>';
-            if (ADM == 10) {
+            echo '<td><a href="' . $path . '/acte_mari.php?xid=' . $ligne[5] . '&xct=' . ctrlxid($ligne[0], $ligne[1]) . '$xcomm=' .$xcomm.'&xpatr=' . $xpatr . '">Détails</a></td>';
+            if ($userAuthorizer->isGranted(6)) {
                 actions_deposant($session->get('user')['ID'], $ligne[6], $ligne[5], 'M');
             }
             echo '</tr>';

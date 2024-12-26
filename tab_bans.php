@@ -2,10 +2,10 @@
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-define('ADM', 0); // Compatibility only
-$admtxt = ''; // Compatibility only
 require(__DIR__ . '/next/bootstrap.php');
 require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
+
+$session->set('previous_url', $request->server->get('REQUEST_URI')); // Usefull for redirecting user
 
 $xcomm = "";
 $xpatr = "";
@@ -46,7 +46,7 @@ if ($xpatr == "" || mb_substr($xpatr, 0, 1) == "_") {
     }
 
     ob_start();
-    open_page($xcomm . " : " . $admtxt . "Divers" . $stitre, $root); ?>
+    open_page($xcomm . " : Divers" . $stitre, $root); ?>
     <div class="main">
         <?php zone_menu(0, $session->get('user', ['level' => 0])['level']); ?>
         <div class="main-col-center text-center">
@@ -64,12 +64,12 @@ if ($xpatr == "" || mb_substr($xpatr, 0, 1) == "_") {
         }
 
         ob_start();
-        open_page($xcomm . " : " . $admtxt . "Divers" . $stitre, $root); ?>
+        open_page($xcomm . " : Divers" . $stitre, $root); ?>
             <div class="main">
                 <?php zone_menu(0, $session->get('user', ['level' => 0])['level']); ?>
                 <div class="main-col-center text-center">
                 <?php
-                navigation($root, 2, 'V', $xcomm, $xpatr);
+                navigation($root, 3, 'V', $xcomm, $xpatr);
                 echo '<h2>Divers' . $stitre . '</h2>';
                 echo '<p>';
                 echo 'Commune/Paroisse : <a href="' . $root . '/tab_bans.php?xcomm=' . $xcomm . '&sousurl' . $sousurl . '"><b>' . $xcomm . '</b></a>' . geoUrl($gid) . '<br>';
@@ -143,7 +143,7 @@ if ($xpatr == "" || mb_substr($xpatr, 0, 1) == "_") {
                     if ($listpages <> "") {
                         echo '<p>' . $listpages . '</p>';
                     }
-                    $i = 1 + ($page - 1) * iif((ADM > 0), $config->get('MAX_PAGE_ADM'), $config->get('MAX_PAGE'));
+                    $i = 1 + ($page - 1) * $config->get('MAX_PAGE');
                     echo '<table class="m-auto" summary="Liste des patronymes">';
                     echo '<tr class="rowheader">';
                     echo '<th> Tri : </th>';

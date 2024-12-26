@@ -2,8 +2,6 @@
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-define('ADM', 10); // Compatibility only
-$admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
@@ -45,9 +43,7 @@ $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
                         </select><img id="prl" src="<?= $root; ?>/assets/img/minispinner.gif" style="visibility:hidden;">
                     </td>
                 </tr>
-                <tr>
-                    <td colspan="2">&nbsp;</td>
-                </tr>
+                <tr><td colspan="2">&nbsp;</td></tr>
                 <tr>
                     <td>Type de l'acte : </td>
                     <td>
@@ -60,9 +56,7 @@ $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
                         <?php listbox_divers("typdivers", "***Tous***", 0); ?>
                     </td>
                 </tr>
-                <tr>
-                    <td colspan="2">&nbsp;</td>
-                </tr>
+                <tr><td colspan="2">&nbsp;</td></tr>
                 <tr>
                     <td></td>
                     <td>
@@ -74,7 +68,6 @@ $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
             <input type="hidden" name="action" value="submitted">
             <input type="hidden" name="xid" value="-1">
         </form>
-
     </div>
 </div>
 <?php include(__DIR__ . '/../templates/front/_footer.php');

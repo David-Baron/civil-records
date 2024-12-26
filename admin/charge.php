@@ -2,8 +2,6 @@
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-define('ADM', 10); // Compatibility only
-$admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 require(__DIR__ . '/../next/Model/UserModel.php');
@@ -83,7 +81,7 @@ function init_page($head = "")
         $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
 ?>
         <div class="main">
-            <?php zone_menu(ADM, $session->get('user')['level'], array()); ?>
+            <?php zone_menu(10, $session->get('user')['level'], array()); ?>
             <div class="main-col-center text-center">
                 <script type="text/javascript">
                     function ShowSpinner() {

@@ -3,8 +3,6 @@
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /** TODO: origin param system... Need to build a DTO and delete this code */
-define('ADM', 10); // Compatibility only
-$admtxt = 'Gestion '; // Compatibility only
 require(__DIR__ . '/../next/bootstrap.php');
 require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 

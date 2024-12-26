@@ -334,35 +334,34 @@ function navigation($root = "", $level = 1, $type = 'A', $commune = null, $patro
 
     $xtyp = "?xtyp=$type";
     $xcomm = null != $commune ? "&xcomm=$commune" : '';
+    $xpatr = null != $patronyme ? "&xpatr=$patronyme" : '';
     $signe = "";
     $s2 = "";
     switch ($type) {
         case "N":
-            $s2 = "tab_naiss.php";
-            $signe = "o";
+            $s2 = "/tab_naiss.php";
+            $signe = "Naissances";
             break;
         case "M":
-            $s2 = "tab_mari.php";
-            $signe = "X";
+            $s2 = "/tab_mari.php";
+            $signe = "Mariages";
             break;
         case "D":
-            $s2 = "tab_deces.php";
-            $signe = "+";
+            $s2 = "/tab_deces.php";
+            $signe = "Décès";
             break;
         case "V":
-            $s2 = "tab_bans.php";
+            $s2 = "/tab_bans.php";
             $signe = "Divers";
             break;
         case "A":
-            $signe = "Distribution selon les années";
+            $signe = "";
             break;
         case "R":  // recherche
             $signe = "";
             break;
     }
-    if ($signe <> "") {
-        $signe = " (" . $signe . ")";
-    }
+
     echo '<div class="box">';
     echo '<div class="box-title">';
     echo '<div class="breadcrumb">';
@@ -387,21 +386,21 @@ function navigation($root = "", $level = 1, $type = 'A', $commune = null, $patro
         }
     }
     if ($level > 2) {
-        echo ' &gt; <a href="' . $path . '/' . $s2 . $xtyp . $xcomm . '">' . $commune . $signe . '</a>';
+        echo ' &gt;&gt; <a href="' . $path . $s2 . $xtyp . $xcomm . '">' . $commune . '</a> &gt;&gt; ' . $signe;
     } else {
         if ($level == 2) {
-            echo ' &gt; ' . $commune . $signe;
+            echo ' &gt;&gt; ' . $commune . ' &gt;&gt; ' . $signe;
         }
     }
     if ($level > 3) {
-        echo ' &gt; <a href="' . mkurl($path . '/' . $s2, $commune, $patronyme) . '">' . $patronyme . '</a>';
+        echo ' &gt;&gt; <a href="' . $path . $s2 . $xtyp . $xcomm . $xpatr . '">' . $patronyme . '</a>';
     } else {
         if ($level == 3) {
-            echo ' &gt; ' . $patronyme;
+            echo ' &gt;&gt; ' . $patronyme;
         }
     }
     if ($level == 4) {
-        echo ' &gt; ' . $prenom;
+        echo ' ' . $prenom;
     }
     echo '</div>';
     ?>
@@ -709,11 +708,11 @@ function grp_label($gp, $tb, $lg, $sigle = '')
 // format : somme de 1= label gras, 2 label italique, 4 info gras, 8 info italique
 function show_grouptitle3($row, $retrait, $format, $type, $group, $sigle = '')
 {
-    global $config;
+    global $config, $userAuthorizer;
 
     $listvals = "";
     $cas = "'O'";
-    if (ADM == 10) {
+    if ($userAuthorizer->isGranted(6)) {
         $cas .= ",'A'";
     }
     $req1 = "SELECT count(ZONE) AS CPT FROM " . $config->get('EA_DB') . "_metadb"
@@ -742,7 +741,7 @@ function show_grouptitle3($row, $retrait, $format, $type, $group, $sigle = '')
 // format : somme de 1= label gras, 2 label italique, 4 info gras, 8 info italique
 function show_item3($row, $retrait, $format, $zidinfo, $url = "", $zidinfo2 = "", $activelink = 0)
 {
-    global $config;
+    global $config, $userAuthorizer;
     
     $lg = $GLOBALS['lg'];
     $req1 = "SELECT ZONE, GROUPE, TYP, TAILLE, OBLIG, AFFICH, ETIQ, AIDE FROM (" . $config->get('EA_DB') . "_metadb d JOIN " . $config->get('EA_DB') . "_metalg l)"
@@ -760,7 +759,7 @@ function show_item3($row, $retrait, $format, $zidinfo, $url = "", $zidinfo2 = ""
         $info2 = $row[$res2["ZONE"]];
     }
 
-    if ((trim($info) . trim($info2) != "" && $oblig == "F") || $oblig == 'O' || (ADM == 10 && $oblig == "A")) {
+    if ((trim($info) . trim($info2) != "" && $oblig == "F") || $oblig == 'O' || ($userAuthorizer->isGranted(6) && $oblig == "A")) {
 
         switch ($res1["TYP"]) {
             case "TXT":
@@ -796,7 +795,7 @@ function show_deposant3($row, $retrait, $format, $zidinfo, $xid, $tact)
 // accessoirement affiche la possibilité de proposer une correction
 // format : somme de 1= label gras, 2 label italique, 4 info gras, 8 info italique
 {
-    global $config, $u_db;
+    global $config, $userAuthorizer, $u_db;
     $lg = $GLOBALS['lg'];
     $req1 = "SELECT ZONE, GROUPE, TYP, TAILLE, OBLIG, AFFICH, ETIQ, AIDE FROM (" . $config->get('EA_DB') . "_metadb d JOIN " . $config->get('EA_DB') . "_metalg l)"
         . " WHERE ((d.ZID=l.ZID) AND (l.LG='" . $lg . "') AND d.ZID=" . $zidinfo . ")";
@@ -815,7 +814,7 @@ function show_deposant3($row, $retrait, $format, $zidinfo, $xid, $tact)
         $info = "#" . $depid;
     }
 
-    if (ADM == 10) {
+    if ($userAuthorizer->isGranted(6)) {
         global $path, $session;
         show_simple_item($retrait, $format, $info, $label);
         if ($session->get('user')['ID'] == $depid or $session->get('user')['level'] >= 8) {
@@ -884,7 +883,7 @@ function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = ""
     $ligne = EA_sql_fetch_row($result);
     $nbresu = $ligne[0];
 
-    if ($nbresu > 0 && $nbresu <= iif((ADM > 0), $config->get('MAX_PATR_ADM'), $config->get('MAX_PATR'))) {
+    if ($nbresu <= $config->get('MAX_PATR')) {
         $sql = "SELECT NOM, count(*), min(year(LADATE)),max(year(LADATE)) "
             . " FROM $table "
             . " WHERE COMMUNE = '" . sql_quote($Commune) . "'" . $condDep . $initiale
@@ -915,7 +914,7 @@ function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = ""
         }
         echo '</table>';
     }
-    if ($nbresu > iif((ADM > 0), $config->get('MAX_PATR_ADM'), $config->get('MAX_PATR'))) { // Alphabet car trop de patronymes
+    if ($nbresu > $config->get('MAX_PATR')) { // Alphabet car trop de patronymes
         $sql = "SELECT left(NOM,$lgi), count(distinct NOM), min(NOM), max(NOM)"
             . " FROM $table "
             . " WHERE COMMUNE = '" . sql_quote($Commune) . "'" . $condDep . $initiale
@@ -1012,7 +1011,7 @@ function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = 
     $ligne = EA_sql_fetch_row($result);
     $nbresu = $ligne[0];
 
-    if ($nbresu > iif((ADM > 0), $config->get('MAX_PATR_ADM'), $config->get('MAX_PATR'))) { // Alphabet car trop de patronymes
+    if ($nbresu > $config->get('MAX_PATR')) { // Alphabet car trop de patronymes
         $req1 = "SELECT left(NOM,$lgi), count(distinct NOM), min(NOM), max(NOM)"
             . " FROM $table "
             . " WHERE COMMUNE = '" . sql_quote($Commune) . "'" . $condDep . $initiale . $soustype
@@ -1265,7 +1264,7 @@ function pagination($nbtot, &$page, $href, &$listpages, &$limit)
 
     $debut = 3;
     $autour = 4;
-    $maxpage = iif((ADM > 0), $config->get('MAX_PAGE_ADM'), $config->get('MAX_PAGE'));
+    $maxpage = $config->get('MAX_PAGE');
     if ($nbtot > $maxpage) {
         // Plus d'une page
         $totpages = intval(($nbtot - 1) / $maxpage) + 1;
@@ -1371,7 +1370,7 @@ function typact_txt($typact)
 }
 
 // Vérification du solde des points et décompte de la consommation ($cout)
-function solde_ok($cout = 0, $dep_id = "", $typact = "", $xid = "")
+function solde_ok($cout = 0, $dep_id = "", $typact = "", $xid = ""): int
 {
     global $session, $config, $avertissement, $u_db;
 

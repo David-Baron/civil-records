@@ -3,58 +3,55 @@
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-define('ADM', 0); // Compatibility only
-$admtxt = ''; // Compatibility only
 require(__DIR__ . '/next/bootstrap.php');
 require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
 if ($config->get('PUBLIC_LEVEL') < 4 && !$userAuthorizer->isGranted(4)) {
     // TODO: need to log error here
     $session->getFlashBag()->add('warning', 'Vous n\'êtes pas connecté ou vous n\'avez pas les autorisations nécessaires!');
-    $response = new RedirectResponse("$root/");
+    $response = new RedirectResponse($session->get('previous_url', "$root/"));
     $response->send();
     exit();
 }
 
 $TIPlevel = 1;
-$error = 0;
-$xcomm = $xpatr = $page = "";
 $xid = $request->get('xid');
 $ctrlcod = $request->get('xct');
+$xcomm = $request->get('xcomm');
+$xpatr = $request->get('xpatr');
 
 $sql = "SELECT * FROM " . $config->get('EA_DB') . "_nai3 WHERE ID = " . $xid;
 if ($stmt = EA_sql_query($sql)) {
     $row = EA_sql_fetch_array($stmt);
-}  else {
+} else {
     // TODO: need to log error here and This will be a new Response 404
     $session->getFlashBag()->add('danger', 'Le document auquel vous tentez d\'acceder n\'est pas ou plus disponible sur ce serveur!');
-    $response = new RedirectResponse("$root/");
+    $response = new RedirectResponse($session->get('previous_url', "$root/"));
     $response->send();
     exit();
 }
 
-if (($error == 1) or !($ctrlcod == ctrlxid($row["NOM"], $row["PRE"]))) {
-    $error = 1;
-    $title = "Erreur";
-} else {
-    
+if (solde_ok(1, $row["DEPOSANT"], 'V', $xid) == 0) {
+    $session->getFlashBag()->add('danger', 'Votre solde de points est épuisé!');
+    $response = new RedirectResponse($session->get('previous_url', "$root/"));
+    $response->send();
+    exit();
 }
-$avertissement = "";
+
 $title = "Naissance : " . $row["NOM"] . " " . $row["PRE"];
-$xcomm = $row['COMMUNE'] . ' [' . $row['DEPART'] . ']';   
-    if (solde_ok(1, $row["DEPOSANT"], 'N', $xid) > 0) {
-        ob_start();
-        open_page($title, $root); ?>
-        <div class="main">
-            <?php zone_menu(0, $session->get('user', ['level' => 0])['level']); ?>
-            <div class="main-col-center text-center">
+$xcomm = $row['COMMUNE'] . ' [' . $row['DEPART'] . ']';
+
+ob_start();
+open_page($title, $root); ?>
+<div class="main">
+    <?php zone_menu(0, $session->get('user', ['level' => 0])['level']); ?>
+    <div class="main-col-center text-center">
         <?php
         navigation($root, 4, 'N', $xcomm, $row["NOM"], $row["PRE"]);
 
-        // Afficher l acte
         echo '<h2>Acte de naissance/baptême</h2>';
-
         echo '<table class="m-auto" summary="Fiche détaillée">';
+
         show_item3($row, 0, 5, 1003, mkurl('tab_naiss.php', $xcomm));  // Commune
         show_item3($row, 1, 0, 1002);  // Code INSEE
         show_item3($row, 0, 4, 1005);  // Departement
@@ -101,22 +98,13 @@ $xcomm = $row['COMMUNE'] . ' [' . $row['DEPART'] . ']';
             show_item3($row, 0, 2, 1038);  // Date modif
         }
 
-        if (ADM <> 10) {
+        if ($userAuthorizer->isGranted(6)) {
             show_signal_erreur('N', $xid);
-        }
-
-        echo '</table>';
-        if ($avertissement <> "") {
-            echo '<p><b>' . $avertissement . '</b></p>' . "\n";
-        }
-    } else {
-        ob_start();
-        open_page($title, $root);
-        msg($avertissement);
-    }
-echo '</div>';
-echo '</div>';
+        } ?>
+        </table>
+    </div>
+</div>
+<?php
 include(__DIR__ . '/templates/front/_footer.php');
 $response->setContent(ob_get_clean());
 $response->send();
-

@@ -3,7 +3,7 @@
         <div class="text-center"><p><?= $config->get('PIED_PAGE'); ?></p></div>
         <div class="text-center">
             <p>
-                Ce site est propulsé par <em><a href="">Civil-Records</a></em>
+                Ce site est propulsé par <em><a href="https://github.com/David-Baron/civil-records" target="_blank">Civil-Records</a></em>
             </p>
         </div>
     </div>

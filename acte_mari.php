@@ -3,14 +3,12 @@
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-define('ADM', 0); // Compatibility only
-$admtxt = ''; // Compatibility only
 require(__DIR__ . '/next/bootstrap.php');
 require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
 if ($config->get('PUBLIC_LEVEL') < 4 && !$userAuthorizer->isGranted(4)) {
     $session->getFlashBag()->add('warning', 'Vous n\'êtes pas connecté ou vous n\'avez pas les autorisations nécessaires!');
-    $response = new RedirectResponse("$root/");
+    $response = new RedirectResponse($session->get('previous_url', "$root/"));
     $response->send();
     exit();
 }
@@ -18,7 +16,8 @@ if ($config->get('PUBLIC_LEVEL') < 4 && !$userAuthorizer->isGranted(4)) {
 $TIPlevel = 1;
 $xid = $request->get('xid');
 $ctrlcod = $request->get('xct');
-$xcomm = $xpatr = $page = "";
+$xcomm = $request->get('xcomm');
+$xpatr = $request->get('xpatr');
 
 $sql = "SELECT * FROM " . $config->get('EA_DB') . "_mar3 WHERE ID=" . $xid;
 
@@ -27,34 +26,40 @@ if ($stmt = EA_sql_query($sql)) {
 } else {
     // TODO: need to log error here and This will be a new Response 404
     $session->getFlashBag()->add('danger', 'Le document auquel vous tentez d\'acceder n\'est pas ou plus disponible sur ce serveur!');
-    $response = new RedirectResponse("$root/");
+    $response = new RedirectResponse($session->get('previous_url', "$root/"));
     $response->send();
     exit();
 }
 
-$avertissement = "";
+if (solde_ok(1, $row["DEPOSANT"], 'V', $xid) == 0) {
+    $session->getFlashBag()->add('danger', 'Votre solde de points est épuisé!');
+    $response = new RedirectResponse($session->get('previous_url', "$root/"));
+    $response->send();
+    exit();
+}
+
 $title = "Mariage : " . $row["NOM"] . " " . $row["PRE"] . " x " . $row["C_NOM"] . " " . $row["C_PRE"];
 $xcomm = $row['COMMUNE'] . ' [' . $row['DEPART'] . ']';
 
-if (solde_ok(1, $row["DEPOSANT"], 'M', $xid) > 0) {
-    ob_start();
-    open_page($title, $root); ?>
-    <div class="main">
-        <?php zone_menu(0, $session->get('user', ['level' => 0])['level']); ?>
-        <div class="main-col-center text-center">
+ob_start();
+open_page($title, $root); ?>
+<div class="main">
+    <?php zone_menu(0, $session->get('user', ['level' => 0])['level']); ?>
+    <div class="main-col-center text-center">
         <?php
         navigation($root, 4, 'M', $xcomm, $row["NOM"], $row["PRE"]);
 
         echo '<h2>Acte de mariage</h2>';
-        echo '<table class="m-auto" summary="Fiche détaillée">'; 
-        show_item3($row, 0, 5, 2003, $root .'/tab_mari.php?xcomm=' . $xcomm);  // Commune COMMUNE
+        echo '<table class="m-auto" summary="Fiche détaillée">';
+
+        show_item3($row, 0, 5, 2003, $root . '/tab_mari.php?xcomm=' . $xcomm);  // Commune COMMUNE
         show_item3($row, 1, 0, 2002);  // Code INSEE CODCOM
         show_item3($row, 0, 4, 2005);  // Departement DEPART
         show_item3($row, 1, 0, 2004);  // Code Departement CODDEP
         show_item3($row, 1, 4, 2007);  // date de l'acte DATETXT
 
         show_grouptitle3($row, 0, 5, 'M', 'D1'); // Epoux NOM + PRE
-        show_item3($row, 1, 4, 2011, $root .'/tab_mari.php?xcomm=' . $xcomm. '&xpatr='. $row["NOM"], 2012); // Nom et prénom de l'époux
+        show_item3($row, 1, 4, 2011, $root . '/tab_mari.php?xcomm=' . $xcomm . '&xpatr=' . $row["NOM"], 2012); // Nom et prénom de l'époux
 
         show_item3($row, 1, 0, 2013);  // Origine ORI
         show_item3($row, 1, 0, 2014);  // Date naiss DNAIS
@@ -74,7 +79,7 @@ if (solde_ok(1, $row["DEPOSANT"], 'M', $xid) > 0) {
         show_item3($row, 3, 0, 2027);  // Commentaire
 
         show_grouptitle3($row, 0, 5, 'M', 'F1');  // Epouse
-        show_item3($row, 1, 4, 2029, $root . '/tab_mari.php?xcomm=' . $xcomm . '&xpatr='. $row["C_NOM"], 2030); // Nom et prénom de l'épouse
+        show_item3($row, 1, 4, 2029, $root . '/tab_mari.php?xcomm=' . $xcomm . '&xpatr=' . $row["C_NOM"], 2030); // Nom et prénom de l'épouse
         show_item3($row, 1, 0, 2031);  // Origine
         show_item3($row, 1, 0, 2032);  // Date naiss
         show_item3($row, 1, 0, 2033);  // Age
@@ -120,23 +125,14 @@ if (solde_ok(1, $row["DEPOSANT"], 'M', $xid) > 0) {
         if ($row["DTDEPOT"] <> $row["DTMODIF"]) {
             show_item3($row, 0, 2, 2068);  // Date modif
         }
-        if (ADM <> 10) {
+
+        if ($userAuthorizer->isGranted(6)) {
             show_signal_erreur('M', $xid);
-        }
-
-        echo '</table>';
-        if ($avertissement <> "") {
-            echo '<p><b>' . $avertissement . '</b></p>';
-        }
-    } else {
-        ob_start();
-        open_page($title, $root);
-        msg($avertissement);
-    }
-
-    echo '</div>';
-    echo '</div>';
-    include(__DIR__ . '/templates/front/_footer.php');
-    $response->setContent(ob_get_clean());
-    $response->send();
-
+        } ?>
+        </table>
+    </div>
+</div>
+<?php
+include(__DIR__ . '/templates/front/_footer.php');
+$response->setContent(ob_get_clean());
+$response->send();
