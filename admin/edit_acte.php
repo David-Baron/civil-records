@@ -126,9 +126,9 @@ open_page($title, $root); ?>
                         echo '<p>' . sprintf('%1$s acte %2$s %3$s', $nb, $ntype, $txt) . '</p>';
                         writelog($logtxt . ' ' . $ntype . ' #' . $xid, getparam("COMMUNE"), $nb);
                         echo '<p>Retourner à la liste des actes ';
-                        echo '<a href="' . mkurl($root . $script, getparam("COMMUNE") . " [" . getparam("DEPART") . "]", getparam("NOM")) . '"><b>' . getparam("NOM") . '</b></a>';
+                        echo '<a href="' . $root . $script . '?xcomm=' . getparam("COMMUNE") . " [" . getparam("DEPART") . "]" . '&xpatr=' . getparam("NOM") . '"><b>' . getparam("NOM") . '</b></a>';
                         if (strpos("MV", $xtyp) !== false) {
-                            echo ' ou <a href="' . mkurl($root . $script, getparam("COMMUNE") . " [" . getparam("DEPART") . "]", getparam("C_NOM")) . '"><b>' . getparam("C_NOM") . '</b></a>';
+                            echo ' ou <a href="' . $root . $script . '?xcomm=' . getparam("COMMUNE") . " [" . getparam("DEPART") . "]" . '&xpatr=' . getparam("C_NOM") . '"><b>' . getparam("C_NOM") . '</b></a>';
                         }
                         echo '</p>';
                         maj_stats($xtyp, $T0, $path, "C", getparam("COMMUNE"), getparam("DEPART"));
@@ -236,8 +236,8 @@ open_page($title, $root); ?>
                     echo '<input type="hidden" name="xtyp" value="' . $xtyp . '">';
                     echo '<input type="hidden" name="xid"  value="' . $xid . '">';
                     echo '<input type="hidden" name="xconfirm" value="confirmed">';
-                    echo '<td><button type="submit">Enregistrer</button>';
-                    echo ' <a href="' . $session->get('previous_url', "$root/") . '">Annuler</a>';
+                    echo '<td><button type="submit" class="btn">Enregistrer</button>';
+                    echo ' <a href="' . $session->get('previous_url', "$root/") . '" class="btn">Annuler</a>';
                     echo "</td></tr></table>";
                     echo "</form>";
                 } else {

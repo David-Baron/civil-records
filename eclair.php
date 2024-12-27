@@ -14,13 +14,13 @@ $MT0 = microtime_float();
 $cptrec = 0;
 $cptper = 0;
 
-$xcom = getparam('xcom');
-$xdep = getparam('xdep');
-$xtyp = getparam('xtyp');
-$xini = getparam('xini');
-
-$xcomm = $xpatr = $page = "";
-pathroot($root, $path, $xcomm, $xpatr, $page);
+$xcom = $request->get('xcom');
+$xdep = $request->get('xdep');
+$xtyp = $request->get('xtyp');
+$xini = $request->get('xini');
+$xcomm = $request->get('xcomm');
+$xpatr = $request->get('xpatr');
+$page = $request->get('page', 1);
 
 header('Content-Type: text/html; charset=UTF-8');
 ob_start();

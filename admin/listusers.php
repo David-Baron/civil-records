@@ -38,7 +38,7 @@ open_page($config->get('SITENAME') . " : Liste des utilisateurs enregistrés", $
 
         //$sql = "SELECT DISTINCT upper(left(NOM,1)) AS init FROM ".EA_UDB."_user3 ORDER BY init";
         // Sélectionner et grouper sur initiale utilisateur et ascii(initiale), ordonner code ascii ascendant pour avoir + grand code (accentué) en dernier
-        $sql = "SELECT  alphabet.init  FROM ( SELECT upper(left(NOM,1)) AS init,ascii(upper(left(NOM,1)))  AS oo FROM " . $config->get('EA_UDB') . "_user3 GROUP BY init,oo  ORDER BY init , oo ASC) AS alphabet GROUP BY init";
+        $sql = "SELECT alphabet.init FROM (SELECT upper(left(NOM,1)) AS init,ascii(upper(left(NOM,1))) AS oo FROM " . $config->get('EA_UDB') . "_user3 GROUP BY init,oo  ORDER BY init , oo ASC) AS alphabet GROUP BY init";
 
         $result = EA_sql_query($sql, $u_db);
         $alphabet = "";

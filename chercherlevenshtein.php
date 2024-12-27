@@ -21,7 +21,7 @@ function makecritjlc($xmin, $xmax, $xcomm, $xdepa, $pre, $c_pre, $xpre, $xc_pre)
         $crit = sql_and($crit) . $critx;
     }
     if (mb_substr($xcomm, 0, 2) != "**") {
-        $critx = " (COMMUNE = '" . sql_quote($xcomm) . "' and DEPART= '" . sql_quote($xdepa) . "')";
+        $critx = " (COMMUNE = '" . sql_quote($xcomm) . "' AND DEPART= '" . sql_quote($xdepa) . "')";
         $crit = sql_and($crit) . $critx;
     }
     $critx = "(" . $pre . "  LIKE '" . $xpre . "%')  ";
@@ -45,8 +45,6 @@ function cree_table_temp_sup($nom, $original)
 
     return "ok";
 }
-
-//--------------------------------------------------------
 
 if (!$userAuthorizer->isGranted($config->get('LEVEL_LEVENSHTEIN'))) {
     $response = new RedirectResponse("$root/");
@@ -108,7 +106,7 @@ open_page("Recherches dans les tables", $root); ?>
 
         $nav = "";
         if ($xcomp != "") {
-            $nav = '<a href="rechlevenshtein.php">Recherche Levenshtein</a> &gt; ';
+            $nav = '<a href="'.$root.'/rechlevenshtein.php">Recherche Levenshtein</a> &gt; ';
         }
 
         echo '<div class="main-col-center text-center">';

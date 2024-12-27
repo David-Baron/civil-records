@@ -29,13 +29,13 @@ function listbox_cols($fieldname, $default)
 {
     global $acte;
     $i = 1;
-    echo '<select name="' . $fieldname . '" size="1">' . "\n";
-    echo '<option ' . selected_option(0, $default) . '> -- </option>' . "\n";
+    echo '<select name="' . $fieldname . '" size="1">';
+    echo '<option ' . (0 == $default ? 'selected' : '') . '> -- </option>';
     foreach ($acte as $zone) {
-        echo '<option ' . selected_option($i, $default) . '>Col. ' . nomcolonne($i) . '-' . $i . ' (' . $zone . ')</option>' . "\n";
+        echo '<option ' . ($i == $default ? 'selected' : '') . '>Col. ' . nomcolonne($i) . '-' . $i . ' (' . $zone . ')</option>';
         $i++;
     }
-    echo " </select>\n";
+    echo " </select>";
 }
 
 $Max_time = min(ini_get("max_execution_time") - 3, $config->get('MAX_EXEC_TIME'));
@@ -524,59 +524,56 @@ if (!$missingargs) { // fichier d'actes
             }
         }
 
-        //{ print '<pre>';  echo $cookname." : ".$_COOKIE[$cookname].'<br>'; print_r($presets); echo '</pre>'; }
-
-
-        echo '<form method="post" enctype="multipart/form-data" action="">' . "\n";
-        echo '<input type="hidden" name="fileuploaded" value="' . $uploadfile . '" />' . "\n";
-        echo '<input type="hidden" name="TypeActes" value="' . $TypeActes . '" />' . "\n";
-        echo '<input type="hidden" name="Commune" value="' . htmlentities($commune, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET) . '" />' . "\n";
+        echo '<form method="post" enctype="multipart/form-data">';
+        echo '<input type="hidden" name="fileuploaded" value="' . $uploadfile . '">';
+        echo '<input type="hidden" name="TypeActes" value="' . $TypeActes . '">';
+        echo '<input type="hidden" name="Commune" value="' . htmlentities($commune, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET) . '">';
         echo '<input type="hidden" name="CommuneCsv" value="' . $communecsv . '" />';
-        echo '<input type="hidden" name="Depart" value="' . htmlentities($depart, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET) . '" />' . "\n";
-        echo '<input type="hidden" name="DepartCsv" value="' . $departcsv . '" />';
-        echo '<input type="hidden" name="deposant" value="' . $deposant . '" />' . "\n";
-        echo '<input type="hidden" name="AnneeVide" value="' . getparam('AnneeVide', 0) . '" />' . "\n";
-        echo '<input type="hidden" name="SuprRedon" value="' . getparam('SuprRedon', 0) . '" />' . "\n";
-        echo '<input type="hidden" name="SuprPatVid" value="' . getparam('SuprPatVid', 0) . '" />' . "\n";
-        echo '<input type="hidden" name="LogOk"  value="' . getparam('LogOk', 0) . '" />' . "\n";
-        echo '<input type="hidden" name="LogKo"  value="' . getparam('LogKo', 0) . '" />' . "\n";
-        echo '<input type="hidden" name="LogRed" value="' . getparam('LogRed', 0) . '" />' . "\n";
+        echo '<input type="hidden" name="Depart" value="' . htmlentities($depart, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET) . '">';
+        echo '<input type="hidden" name="DepartCsv" value="' . $departcsv . '">';
+        echo '<input type="hidden" name="deposant" value="' . $deposant . '">';
+        echo '<input type="hidden" name="AnneeVide" value="' . getparam('AnneeVide', 0) . '">';
+        echo '<input type="hidden" name="SuprRedon" value="' . getparam('SuprRedon', 0) . '">';
+        echo '<input type="hidden" name="SuprPatVid" value="' . getparam('SuprPatVid', 0) . '">';
+        echo '<input type="hidden" name="LogOk"  value="' . getparam('LogOk', 0) . '">';
+        echo '<input type="hidden" name="LogKo"  value="' . getparam('LogKo', 0) . '">';
+        echo '<input type="hidden" name="LogRed" value="' . getparam('LogRed', 0) . '">';
 
-        echo '<table cellspacing="2" cellpadding="0" border="0" align="center" summary="Formulaire">' . "\n";
+        echo '<table class="m-auto" summary="Formulaire">';
         echo '<tr>';
-        echo '<td align="right"><strong>Type d\'actes :</strong></td>';
+        echo '<td><strong>Type d\'actes :</strong></td>';
         echo '<td colspan="2">' . $ntype . '</td>';
         echo '</tr>';
         if (!$communecsv) {
             echo '<tr>';
-            echo '<td align="right"><strong>Origine :</strong></td>';
+            echo '<td><strong>Origine :</strong></td>';
             echo '<td colspan="2">' . $commune . ' [' . $depart . ']' . '</td>';
             echo '</tr>';
         }
         if (isset($_FILES['Actes']['name'])) {
             echo '<tr>';
-            echo '<td align="right"><strong>Fichier téléchargé :</strong></td>';
+            echo '<td><strong>Fichier téléchargé :</strong></td>';
             echo '<td colspan="2">' . $_FILES['Actes']['name'] . '</td>';
             echo '</tr>';
         }
         echo '<tr>';
-        echo '<td align="right"><strong>Lignes à passer :</strong></td>';
-        echo '<td colspan="2"><input type="text" name="passlign" value="' . $passlign . '" size="5" /> (au chargement effectif)</td>';
+        echo '<td><strong>Lignes à passer :</strong></td>';
+        echo '<td colspan="2"><input type="text" name="passlign" value="' . $passlign . '" size="5"> (au chargement effectif)</td>';
         echo '</tr>';
         if ($TypeActes == "V") {
             if ($submit <> 'C') {
                 echo '<tr>';
-                echo '<td align="right"><strong>Type de document :</strong></td>';
-                echo '<td colspan="2"><input type="text" name="typedoc" value="' . $typedoc . '" size="30" /></td>';
+                echo '<td><strong>Type de document :</strong></td>';
+                echo '<td colspan="2"><input type="text" name="typedoc" value="' . $typedoc . '" size="30"></td>';
                 echo '</tr>';
             } else {
-                echo '<input type="hidden" name="typedoc" value="' . $typedoc . '" />';
+                echo '<input type="hidden" name="typedoc" value="' . $typedoc . '">';
             }
         }
 
         if ($submit <> 'C') {
             if (getparam('ModeleL') !== '') { // Affiche le nom du modèle chargé
-                echo '<tr><td align="right"><strong>Modèle : </strong></td><td colspan="2">' . getparam('ModeleL') . '</td></tr>';
+                echo '<tr><td><strong>Modèle : </strong></td><td colspan="2">' . getparam('ModeleL') . '</td></tr>';
             }
             echo '<tr><td colspan="3">&nbsp;</td></tr>';
             echo '<tr class="rowheader">';
@@ -636,11 +633,11 @@ if (!$missingargs) { // fichier d'actes
                     $letrait = 0;
                 }
 
-                echo '<input type="hidden" name="ZID' . $i . '" value="' . $zone['ZID'] . '" />';
+                echo '<input type="hidden" name="ZID' . $i . '" value="' . $zone['ZID'] . '">';
                 if ($submit == 'C') {
                     // Chargement : on n'affiche plus les mapping de zones
-                    echo '<input type="hidden" name="Zone' . $i . '" value="' . $_REQUEST['Zone' . $i] . '" />';
-                    echo '<input type="hidden" name="Trait' . $i . '" value="' . $_REQUEST['Trait' . $i] . '" />' . "\n";
+                    echo '<input type="hidden" name="Zone' . $i . '" value="' . $_REQUEST['Zone' . $i] . '">';
+                    echo '<input type="hidden" name="Trait' . $i . '" value="' . $_REQUEST['Trait' . $i] . '">';
                 } else {
                     // Affichage ud mapping des zones et traitements
                     echo '<tr class="row' . (fmod($i, 2)) . '">';
@@ -651,7 +648,7 @@ if (!$missingargs) { // fichier d'actes
                     echo '<td>';
                     listbox_trait('Trait' . $i, $zone['TYP'], $letrait);
                     echo '</td>';
-                    echo '</tr>' . "\n";
+                    echo '</tr>';
                 }
                 $i++;
             }
@@ -660,9 +657,9 @@ if (!$missingargs) { // fichier d'actes
         if ($submit == 'C') {
             echo '<input type="hidden" name="Filtre" value="' . $Filtre . '" />';
             echo '<input type="hidden" name="Condition" value="' . $Condition . '" />';
-            echo '<input type="hidden" name="Compare" value="' . $Compare . '" />' . "\n";
+            echo '<input type="hidden" name="Compare" value="' . $Compare . '" />';
         } else {
-            echo '<tr><td colspan="3"><br /><strong>Filtre éventuel sur le fichier CSV</strong></td></tr>';
+            echo '<tr><td colspan="3"><br><strong>Filtre éventuel sur le fichier CSV</strong></td></tr>';
             echo '<tr class="row0">';
             echo '<td>';
             listbox_cols('Filtre', $Filtre);
@@ -670,9 +667,9 @@ if (!$missingargs) { // fichier d'actes
             echo '<td align="center">';
             listbox_trait('Condition', "TST", $Condition);
             echo '</td>';
-            echo '<td><input type="text" name="Compare" value="' . $Compare . '" size="20" />';
+            echo '<td><input type="text" name="Compare" value="' . $Compare . '" size="20">';
             echo '</td>';
-            echo '</tr>' . "\n";
+            echo '</tr>';
         }
 
         if (($submit == 'S') and (getparam('ModeleS') !== '')) { // Sauvegarde modèle
@@ -707,9 +704,9 @@ if (!$missingargs) { // fichier d'actes
                 }
             }
             // Affichage de la fiche exemple
-            echo '<tr><td colspan="3">&nbsp;<input type="hidden" name="nofiche" value="' . $nofiche . '" /></td></tr>';
+            echo '<tr><td colspan="3">&nbsp;<input type="hidden" name="nofiche" value="' . $nofiche . '"></td></tr>';
             echo '<tr><td colspan="3">';
-            echo '<table cellspacing="2" cellpadding="0" border="0" width="80%" summary="Fiche exemple">';
+            echo '<table class="m-auto" summary="Fiche exemple">';
             echo '<tr class="rowheader">';
             echo '<th>Fiche exemple</th>';
             echo '<th>Données de la ligne ' . $nofiche . '</th>';
@@ -769,34 +766,34 @@ if (!$missingargs) { // fichier d'actes
             echo '</table>';
             echo '</td></tr>';
         }
-        echo " <tr><td colspan=\"2\" align=\"center\">\n<br />";
-        echo '  <input type="hidden" name="photo" value="' . htmlentities($photo, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET) . '" />';
-        echo '  <input type="hidden" name="trans" value="' . htmlentities($trans, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET) . '" />';
-        echo '  <input type="hidden" name="verif" value="' . htmlentities($verif, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET) . '" />';
-        echo '  <input type="hidden" name="photocsv" value="' . $photocsv . '" />';
-        echo '  <input type="hidden" name="transcsv" value="' . $transcsv . '" />';
-        echo '  <input type="hidden" name="verifcsv" value="' . $verifcsv . '" />';
-        echo '  <input type="hidden" name="action" value="phase_2" />';
+        echo " <tr><td colspan=\"2\">";
+        echo '<input type="hidden" name="photo" value="' . htmlentities($photo, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET) . '">';
+        echo '<input type="hidden" name="trans" value="' . htmlentities($trans, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET) . '">';
+        echo '<input type="hidden" name="verif" value="' . htmlentities($verif, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET) . '">';
+        echo '<input type="hidden" name="photocsv" value="' . $photocsv . '">';
+        echo '<input type="hidden" name="transcsv" value="' . $transcsv . '">';
+        echo '<input type="hidden" name="verifcsv" value="' . $verifcsv . '">';
+        echo '<input type="hidden" name="action" value="phase_2">';
 
         if ($submit == 'C') {
-            echo '  <input type="submit" name="submitC" value=" Relancer le chargement " />' . "\n";
+            echo '<input type="submit" name="submitC" value=" Relancer le chargement ">';
         } else {
-            echo '  <input type="submit" name="submitR" value=" Remise à blanc " />' . "\n";
-            echo '  <input type="submit" name="submitV" value=" VOIR un exemple " />' . "\n";
-            echo '  <input type="submit" name="submitC" value=" CHARGER maintenant " />' . "\n";
+            echo '<input type="submit" name="submitR" value=" Remise à blanc ">';
+            echo '<input type="submit" name="submitV" value=" VOIR un exemple ">';
+            echo '<input type="submit" name="submitC" value=" CHARGER maintenant ">';
             echo '<br><br>';
             echo '<select name="ModeleL" size="1"><option value="" selected="selected">--</option>';
             foreach (glob($config->get('UPLOAD_DIR') . '/' . $TypeActes . '-*.m_csv') as $v) {
                 echo '<option value="' . $v . '">' . $v . '</option>';
             }
             echo '</select>';
-            echo '  <input type="submit" name="submitL" value=" Charger Modèle " />' . "\n";
-            echo '  <input type="texte" name="ModeleS" value="" />' . "\n";
-            echo '  <input type="submit" name="submitS" value=" Sauver Modèle " />' . "\n";
+            echo '<input type="submit" name="submitL" value=" Charger Modèle ">';
+            echo '<input type="texte" name="ModeleS" value="">';
+            echo '<input type="submit" name="submitS" value=" Sauver Modèle ">';
         }
-        echo " </td></tr>\n";
-        echo "</table>\n";
-        echo "</form>\n";
+        echo "</td></tr>";
+        echo "</table>";
+        echo "</form>";
     } // 1er chargement
 
 } // fichier d'actes
@@ -817,102 +814,102 @@ if ($missingargs) {
         $logRed     = $chargeCSV[5];
     }
 
-    echo '<form method="post" enctype="multipart/form-data" action="">' . "\n";
+    echo '<form method="post" enctype="multipart/form-data">';
     echo '<h2 align="center">Chargement de données CSV</h2>';
-    echo '<table class="m-auto" summary="Formulaire">' . "\n";
-    echo " <tr>\n";
-    echo '  <td align="right">Type des actes : </td>' . "\n";
-    echo '  <td>';
-    echo '        <input type="radio" name="TypeActes" value="N" />Naissances<br />';
-    echo '        <input type="radio" name="TypeActes" value="M" />Mariages<br />';
-    echo '        <input type="radio" name="TypeActes" value="D" />Décès<br />';
-    echo '        <input type="radio" name="TypeActes" value="V" />Actes divers <br />';
-    echo '  </td>';
-    echo " </tr>\n";
-    echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";
-    echo " <tr>\n";
-    echo '  <td align="right">Fichier CSV : </td>' . "\n";
-    echo '  <td><input type="file" size="62" name="Actes" />' . "</td>";
-    echo " </tr>\n";
-    echo " <tr>\n";
-    echo '  <td align="right">' . metadata('ETIQ', 'COMMUNE') . ' : </td>';
-    echo '  <td><input type="text" size="40" name="Commune" value="' . $commune . '">';
-    echo '   ou <input type="checkbox" name="CommuneCsv" value="1" ' . ($communecsv == 1 ? ' checked' : '') . '> Lu dans le CSV ';
-    echo "  </td>\n";
-    echo " </tr>\n";
-    echo " <tr>\n";
-    echo '  <td align="right">' . metadata('ETIQ', 'DEPART') . ' : </td>';
-    echo '  <td><input type="text" size="40" name="Depart" value="' . $depart . '">';
-    echo '   ou <input type="checkbox" name="DepartCsv" value="1" ' . ($departcsv == 1 ? ' checked' : '') . '> Lu dans le CSV ';
-    echo "  </td>\n";
-    echo " </tr>\n";
+    echo '<table class="m-auto" summary="Formulaire">';
+    echo "<tr>";
+    echo '<td>Type des actes : </td>';
+    echo '<td>';
+    echo '<input type="radio" name="TypeActes" value="N">Naissances<br>';
+    echo '<input type="radio" name="TypeActes" value="M">Mariages<br>';
+    echo '<input type="radio" name="TypeActes" value="D">Décès<br>';
+    echo '<input type="radio" name="TypeActes" value="V">Actes divers <br>';
+    echo '</td>';
+    echo "</tr>";
+    echo "<tr><td colspan=\"2\">&nbsp;</td></tr>";
+    echo "<tr>";
+    echo '<td>Fichier CSV : </td>';
+    echo '<td><input type="file" size="62" name="Actes">' . "</td>";
+    echo "</tr>";
+    echo "<tr>";
+    echo '<td>' . metadata('ETIQ', 'COMMUNE') . ' : </td>';
+    echo '<td><input type="text" size="40" name="Commune" value="' . $commune . '">';
+    echo ' ou <input type="checkbox" name="CommuneCsv" value="1" ' . ($communecsv == 1 ? ' checked' : '') . '> Lu dans le CSV ';
+    echo "</td>";
+    echo "</tr>";
+    echo "<tr>";
+    echo '<td>' . metadata('ETIQ', 'DEPART') . ' : </td>';
+    echo '<td><input type="text" size="40" name="Depart" value="' . $depart . '">';
+    echo ' ou <input type="checkbox" name="DepartCsv" value="1" ' . ($departcsv == 1 ? ' checked' : '') . '> Lu dans le CSV ';
+    echo "</td>";
+    echo "</tr>";
 
     if (isin('OFA', metadata('AFFICH', 'PHOTOGRA')) >= 0) {
-        echo " <tr>\n";
-        echo '  <td align="right">' . metadata('ETIQ', 'PHOTOGRA') . ' : </td>';
-        echo '  <td><input type="text" size="40" name="photo" value="' . $photo . '">';
-        echo '   ou <input type="checkbox" name="photocsv" value="1" ' . ($photocsv == 1 ? ' checked' : '') . '> Lu dans le CSV ';
-        echo "  </td>\n";
-        echo " </tr>\n";
-        echo " <tr>\n";
+        echo "<tr>";
+        echo '<td>' . metadata('ETIQ', 'PHOTOGRA') . ' : </td>';
+        echo '<td><input type="text" size="40" name="photo" value="' . $photo . '">';
+        echo ' ou <input type="checkbox" name="photocsv" value="1" ' . ($photocsv == 1 ? ' checked' : '') . '> Lu dans le CSV ';
+        echo "</td>";
+        echo "</tr>";
+        echo "<tr>";
     }
     if (isin('OFA', metadata('AFFICH', 'RELEVEUR')) >= 0) {
-        echo " <tr>\n";
-        echo '  <td align="right">' . metadata('ETIQ', 'RELEVEUR') . ' : </td>' . "\n";
-        echo '  <td><input type="text" size="40" name="trans" value="' . $trans . '" />';
-        echo '   ou <input type="checkbox" name="transcsv" value="1" ' . ($transcsv == 1 ? ' checked' : '') . '> Lu dans le CSV ';
-        echo "  </td>\n";
-        echo " </tr>\n";
-        echo " <tr>\n";
+        echo "<tr>";
+        echo '<td>' . metadata('ETIQ', 'RELEVEUR') . ' : </td>';
+        echo '<td><input type="text" size="40" name="trans" value="' . $trans . '">';
+        echo ' ou <input type="checkbox" name="transcsv" value="1" ' . ($transcsv == 1 ? ' checked' : '') . '> Lu dans le CSV ';
+        echo "</td>";
+        echo "</tr>";
+        echo "<tr>";
     }
     if (isin('OFA', metadata('AFFICH', 'VERIFIEU')) >= 0) {
-        echo " <tr>\n";
-        echo '  <td align="right">' . metadata('ETIQ', 'VERIFIEU') . ' : </td>' . "\n";
-        echo '  <td><input type="text" size="40" name="verif" value="' . $verif . '">';
-        echo '   ou <input type="checkbox" name="verifcsv" value="1" ' . ($verifcsv == 1 ? ' checked' : '') . '/> Lu dans le CSV ';
-        echo "  </td>\n";
-        echo " </tr>\n";
-        echo " <tr>\n";
+        echo "<tr>";
+        echo '<td>' . metadata('ETIQ', 'VERIFIEU') . ' : </td>';
+        echo '<td><input type="text" size="40" name="verif" value="' . $verif . '">';
+        echo 'ou <input type="checkbox" name="verifcsv" value="1" ' . ($verifcsv == 1 ? ' checked' : '') . '> Lu dans le CSV ';
+        echo "</td>";
+        echo "</tr>";
+        echo "<tr>";
     }
-    echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";
-    echo " <tr>\n";
-    echo '  <td align="right">Filtrage des données : </td>' . "\n";
-    echo '  <td>';
-    echo '        <input type="checkbox" name="AnneeVide" value="1"' . ($AnneeVide == 1 ? ' checked' : '') . ' />Eliminer les actes dont l\'année est incomplète (ex. 17??)<br />';
-    echo '        <input type="checkbox" name="SuprRedon" value="1"' . ($SuprRedon == 1 ? ' checked' : '') . ' />Eliminer les actes ayant mêmes noms et prénoms<br />';
-    echo '        <input type="checkbox" name="SuprPatVid" value="1"' . ($SuprPatVid == 1 ? ' checked' : '') . ' />Eliminer les actes dont le patronyme est vide<br />';
-    echo '  </td>';
-    echo " </tr>\n";
-    echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";
-    echo " <tr>\n";
-    echo '  <td align="right">Contrôle des résultats : </td>' . "\n";
-    echo '  <td>';
-    echo '    <input type="checkbox" name="LogOk" value="1"' . ($logOk == 1 ? ' checked' : '') . ' />Actes chargés &nbsp; ';
-    echo '    <input type="checkbox" name="LogKo" value="1"' . ($logKo == 1 ? ' checked' : '') . ' />Actes erronés &nbsp; ';
-    echo '    <input type="checkbox" name="LogRed" value="1"' . ($logRed == 1 ? ' checked' : '') . ' />Actes redondants<br />';
-    echo '  </td>';
-    echo " </tr>\n";
+    echo "<tr><td colspan=\"2\">&nbsp;</td></tr>";
+    echo "<tr>";
+    echo '<td>Filtrage des données : </td>';
+    echo '<td>';
+    echo '<input type="checkbox" name="AnneeVide" value="1"' . ($AnneeVide == 1 ? ' checked' : '') . '>Eliminer les actes dont l\'année est incomplète (ex. 17??)<br>';
+    echo '<input type="checkbox" name="SuprRedon" value="1"' . ($SuprRedon == 1 ? ' checked' : '') . '>Eliminer les actes ayant mêmes noms et prénoms<br>';
+    echo '<input type="checkbox" name="SuprPatVid" value="1"' . ($SuprPatVid == 1 ? ' checked' : '') . '>Eliminer les actes dont le patronyme est vide<br>';
+    echo '</td>';
+    echo "</tr>";
+    echo "<tr><td colspan=\"2\">&nbsp;</td></tr>";
+    echo "<tr>";
+    echo '<td>Contrôle des résultats : </td>';
+    echo '<td>';
+    echo '<input type="checkbox" name="LogOk" value="1"' . ($logOk == 1 ? ' checked' : '') . '>Actes chargés';
+    echo '<input type="checkbox" name="LogKo" value="1"' . ($logKo == 1 ? ' checked' : '') . '>Actes erronés';
+    echo '<input type="checkbox" name="LogRed" value="1"' . ($logRed == 1 ? ' checked' : '') . '>Actes redondants<br>';
+    echo '</td>';
+    echo "</tr>";
 
     if ($session->get('user')['level'] >= 8) {
-        echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";
-        echo " <tr>\n";
-        echo '  <td align="right">Déposant : </td>' . "\n";
-        echo '  <td>';
+        echo "<tr><td colspan=\"2\">&nbsp;</td></tr>";
+        echo "<tr>";
+        echo '<td>Déposant : </td>';
+        echo '<td>';
         listbox_users("deposant", $session->get('user')['ID'], $config->get('DEPOSANT_LEVEL'));
-        echo '  </td>';
-        echo " </tr>\n";
+        echo '</td>';
+        echo "</tr>";
     } else {
-        echo '  <input type="hidden" name="deposant" value="' . $session->get('user')['ID'] . '" />';
+        echo '<input type="hidden" name="deposant" value="' . $session->get('user')['ID'] . '">';
     }
-    echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";
-    echo " <tr><td colspan=\"2\" align=\"center\">\n<br />";
-    echo '  <input type="hidden" name="action" value="phase_1" />';
-    echo '  <a href="aide/chargecsv.html" target="_blank">Aide</a>&nbsp;';
-    echo '  <input type="reset" value="Effacer" />' . "\n";
-    echo '  <input type="submit" name="submitD" value=" >> CHARGER >> " />' . "\n";
-    echo " </td></tr>\n";
-    echo "</table>\n";
-    echo "</form>\n";
+    echo "<tr><td colspan=\"2\">&nbsp;</td></tr>";
+    echo "<tr><td></td>";
+    echo '<input type="hidden" name="action" value="phase_1">';
+    echo '<td><button type="reset" class="btn">Effacer</button>';
+    echo '<button type="submit" class="btn" name="submitD">Charger</button>';
+    echo '<a href="'.$root.'/admin/aide/chargecsv.html" class="btn" target="_blank">Aide</a>';
+    echo "</td></tr>";
+    echo "</table>";
+    echo "</form>";
 } else {
     if (isset($nom)) {
         echo '<hr /><p>';
@@ -921,19 +918,19 @@ if ($missingargs) {
             writelog('Ajout CSV ' . $ntype, $commune, $cptadd);
         }
         if ($cptfiltre > 0) {
-            echo '<br />Actes filtré  : ' . $cptfiltre;
+            echo '<br>Actes filtré  : ' . $cptfiltre;
         }
         if ($cptign > 0) {
-            echo '<br />Actes ignorés  : ' . $cptign;
+            echo '<br>Actes ignorés  : ' . $cptign;
         }
         if ($cptdeja > 0) {
-            echo '<br />Actes redondants  : ' . $cptdeja;
+            echo '<br>Actes redondants  : ' . $cptdeja;
         }
-        echo '<br />Durée du traitement  : ' . (time() - $T0) . ' sec.';
+        echo '<br>Durée du traitement  : ' . (time() - $T0) . ' sec.';
         echo '</p>';
         if (!$resume) {  // fini
             echo '<p>Voir la liste des actes de ';
-            echo '<a href="' . mkurl($script, stripslashes($commune . ' [' . $depart . ']')) . '"><b>' . stripslashes($commune) . '</b></a>';
+            echo '<a href="' . $root . $script . '?xcomm=' . stripslashes($commune . ' [' . $depart . ']') . '"><b>' . stripslashes($commune) . '</b></a>';
             echo '</p>';
             if ($communecsv) {
                 maj_stats($TypeActes, $T0, $path, "A");

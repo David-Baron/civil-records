@@ -130,8 +130,8 @@ require(__DIR__ . '/../templates/admin/_menu-user.php');
     echo "<tr><td colspan=\"2\"></td></tr>";
     
     echo "<tr><td></td><td>";
-    echo '<button type="reset">Effacer</button>';
-    echo '<button type="submit">Envoyer</button>';
+    echo '<button type="reset" class="btn">Effacer</button>';
+    echo '<button type="submit" class="btn">Envoyer</button>';
     echo "</td></tr>";
     echo "</table>";
     echo "</form>";
@@ -147,7 +147,7 @@ if($form_success === true) {
     echo '<br>Durée du traitement  : ' . (time() - $T0) . ' sec.';
     echo '</p>';
     echo '<p>Retour à la ';
-    echo '<a href="' . mkurl("listusers.php", "") . '"><b>' . "liste des utilisateurs" . '</b></a>';
+    echo '<a href="' . $root . '/admin/listusers.php"><b>liste des utilisateurs</b></a>';
     echo '</p>';
 }
 echo '</div>';

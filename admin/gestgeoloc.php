@@ -199,8 +199,8 @@ open_page("Gestion des localités", $root, null, null, $JSheader); ?>
                         </td>
                         <td colspan="2">
                             <a href="<?= $root; ?>/admin/aide/geoloc.html" target="_blank">Aide</a>
-                            <button type="reset">Effacer</button>
-                            <button type="submit">Enregistrer</button>
+                            <button type="reset" class="btn">Effacer</button>
+                            <button type="submit" class="btn">Enregistrer</button>
                             <?php if ($id > 0) { ?>
                                 <a href="<?= $root; ?>/admin/gestgeoloc.php?id=<?= $id; ?>&amp;act=del">Supprimer cette localité</a>
                             <?php } ?>

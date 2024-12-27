@@ -480,8 +480,8 @@ function init_page($head = "")
 
         echo "<tr><td></td><td>";
         echo '<input type="hidden" name="action" value="go">';
-        echo '<button type="reset">Annuler</button>';
-        echo '<button type="submit">' . $bouton . '</button>';
+        echo '<button type="reset" class="btn">Annuler</button>';
+        echo '<button type="submit" class="btn">' . $bouton . '</button>';
         echo "</td></tr>";
         echo "</table>";
         echo "</form>";

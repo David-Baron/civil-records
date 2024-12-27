@@ -39,13 +39,13 @@ open_page("Permutation d'un acte", $root); ?>
                 case "V":
                     $ntype = "divers";
                     $table = $config->get('EA_DB') . "_div3";
-                    $script = "tab_bans.php";
+                    $script = "/tab_bans.php";
                     $sexe = "SEXE, C_SEXE, ";
                     break;
                 case "M":
                     $ntype = "mariage";
                     $table = $config->get('EA_DB') . "_mar3";
-                    $script = "tab_mari.php";
+                    $script = "/tab_mari.php";
                     $sexe = "";
                     break;
                 default:
@@ -131,8 +131,8 @@ open_page("Permutation d'un acte", $root); ?>
                     $comdep = $acte["COMMUNE"] . ' [' . $acte["DEPART"] . ']';
                     writelog('Permutation ' . $ntype . ' #' . $xid, $acte["COMMUNE"], $nb);
                     echo '<p>Retourner à la liste des actes ';
-                    echo '<a href="' . mkurl($script, stripslashes($comdep), $acte["NOM"]) . '"><b>' . $acte["NOM"] . '</b></a>';
-                    echo ' ou <a href="' . mkurl($script, stripslashes($comdep), $acte["C_NOM"]) . '"><b>' . $acte["C_NOM"] . '</b></a></p>';
+                    echo '<a href="' . $root . $script . '?xcomm=' . stripslashes($comdep) . '&xpatr=' . $acte["NOM"] . '"><b>' . $acte["NOM"] . '</b></a>';
+                    echo ' ou <a href="' . $root . $script . '?xcomm=' . stripslashes($comdep) . '&xpatr=' . $acte["C_NOM"] . '"><b>' . $acte["C_NOM"] . '</b></a></p>';
                 } else {
                     echo '<p>Aucun acte modifié.</p>';
                 }
@@ -141,7 +141,7 @@ open_page("Permutation d'un acte", $root); ?>
                 $result = EA_sql_query($sql);
                 if ($acte = EA_sql_fetch_array($result)) {
                     if ($acte["C_NOM"] <> '') {
-                        echo '<form method="post" enctype="multipart/form-data" action="">' . "\n";
+                        echo '<form method="post" enctype="multipart/form-data">';
                         echo '<h2 align="center">Confirmation de la permutation</h2>';
                         echo '<p class="message">Epoux  = ' . $acte["C_NOM"] . " " . $acte["C_PRE"] . '</p>';
                         echo '<p class="message">Epouse = ' . $acte["NOM"] . " " . $acte["PRE"] . '</p>';
@@ -149,18 +149,17 @@ open_page("Permutation d'un acte", $root); ?>
                         echo '<input type="hidden" name="xtyp" value="' . $xtyp . '">';
                         echo '<input type="hidden" name="xid"  value="' . $xid . '">';
                         echo '<input type="hidden" name="xconfirm" value="confirmed">';
-                        echo '<input type="submit" value=" >> CONFIRMER >> ">' . "\n";
+                        echo '<button type="submit" class="btn">Confirmer</button>';
                         $comdep = $acte["COMMUNE"] . ' [' . $acte["DEPART"] . ']';
-                        $url = mkurl($script, stripslashes($comdep), $acte["NOM"]);
-                        echo '&nbsp; &nbsp; &nbsp; <a href="' . $url . '">Annuler</a></p>';
-                        echo "</form>\n";
+                        echo '<a href="' . $root . $script . '?xtyp=' . $xtyp . '&xcomm=' . stripslashes($comdep) . '&xpatr=' . $acte["NOM"] . '" class="btn">Annuler</a></p>';
+                        echo "</form>";
                     } else {
                         msg('Interdit de permuter un acte sans conjoint');
                     }
                 } else {
                     msg('Impossible de trouver cet acte !');
                 }
-            } // confirmed ??
+            }
         } ?>
     </div>
 </div>

@@ -313,8 +313,8 @@ if (! $missingargs) {
             <tr>
                 <td></td>
                 <td>
-                    <button type="reset">Annuler</button>
-                    <button type="submit">Suite</button>
+                    <button type="reset" class="btn">Annuler</button>
+                    <button type="submit" class="btn">Suite</button>
                 </td>
             </tr>
         </table>

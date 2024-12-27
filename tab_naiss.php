@@ -60,7 +60,7 @@ if (($xpatr == "" or mb_substr($xpatr, 0, 1) == "_")) {
     echo '<h2>Actes de naissance/baptême</h2>';
     echo '<p>';
 
-    echo 'Commune/Paroisse : <a href="' . mkurl($path . '/tab_naiss.php', $xcomm) . '"><b>' . $xcomm . '</b></a>' . geoUrl($gid) . '<br />';
+    echo 'Commune/Paroisse : <a href="' . $root . '/tab_naiss.php?xcomm=' . $xcomm . '"><b>' . $xcomm . '</b></a>' . geoUrl($gid) . '<br />';
     if ($note <> '') {
         echo "</p><p>" . $note . "</p><p>";
     }
@@ -78,13 +78,13 @@ if (($xpatr == "" or mb_substr($xpatr, 0, 1) == "_")) {
 
     if ($xord == "N") {
         $order = $preorder . ", LADATE";
-        $hdate = '<a href="' . mkurl($path . '/tab_naiss.php', $xcomm, $xpatr, 'xord=D') . '">Dates</a>';
-        $baselink = mkurl($path . '/tab_naiss.php', $xcomm, $xpatr, 'xord=N');
+        $hdate = '<a href="' . $root . '/tab_naiss.php?xcomm=' . $xcomm . '&xpatr=' . $xpatr . '&xord=D">Dates</a>';
+        $baselink = $root . '/tab_naiss.php?xcomm=' . $xcomm . '&xpatr=' . $xpatr . '&xord=N';
         $hnoms = '<b>' . $nameorder . '</b>';
     } else {
         $order = "LADATE, " . $preorder;
-        $hnoms = '<a href="' . mkurl($path . '/tab_naiss.php', $xcomm, $xpatr, 'xord=N') . '">' . $nameorder . '</a>';
-        $baselink = mkurl($path . '/tab_naiss.php', $xcomm, $xpatr, 'xord=D');
+        $hnoms = '<a href="' . $root . '/tab_naiss.php?xcomm=' . $xcomm . '&xpatr=' . $xpatr . '&xord=N">' . $nameorder . '</a>';
+        $baselink = $root . '/tab_naiss.php?xcomm=' . $xcomm . '&xpatr=' . $xpatr . '&xord=D';
         $hdate = '<b>Dates</b>';
     }
     if ($xannee <> "") {

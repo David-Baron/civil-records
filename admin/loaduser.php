@@ -326,69 +326,70 @@ open_page("Chargement des utilisateurs (CSV)", $root); ?>
                 $message    = $config->get('MAIL_NEWUSER');
             }
 
-            echo '<form method="post" enctype="multipart/form-data" action="">' . "\n";
-            echo '<h2 align="center">Chargement de comptes utilisateurs</h2>';
-            msg("Veillez à vérifier que le fichier votre fichier CSV respecte le "
-                . '<a href="aide/gestuser.html">format</a> ad hoc !', "info");
-            echo '<table class="m-auto" summary="Formulaire">' . "\n";
-            echo " <tr>\n";
-            echo '  <td align="right">Fichier utilisateurs CSV : </td>' . "\n";
-            echo '  <td><input type="file" size="62" name="Users" />' . "</td>\n";
-            echo " </tr>\n";
-            echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";
+            echo '<form method="post" enctype="multipart/form-data">';
+            echo '<h2>Chargement de comptes utilisateurs</h2>';
+            echo '<div class="warning">Veillez à vérifier que le fichier votre fichier CSV 
+                respecte le <a href="aide/gestuser.html">format</a> ad hoc !</div>';
+            echo '<table class="m-auto" summary="Formulaire">';
+            echo "<tr>";
+            echo '<td>Fichier utilisateurs CSV : </td>';
+            echo '<td><input type="file" size="62" name="Users"></td>';
+            echo "</tr>";
+            echo "<tr><td colspan=\"2\">&nbsp;</td></tr>";
 
-            echo " <tr>\n";
-            echo "  <td align=right>Droits d'accès AUTO : </td>\n";
-            echo '  <td>';
+            echo "<tr>";
+            echo "<td>Droits d'accès AUTO : </td>";
+            echo '<td>';
             lb_droits_user($xdroits);
-            echo '  </td>';
-            echo " </tr>\n";
-            echo " <tr><td colspan=2>&nbsp;</td></tr>\n";
+            echo '</td>';
+            echo "</tr>";
+            echo "<tr><td colspan=2>&nbsp;</td></tr>";
 
             if ($config->get('GEST_POINTS') > 0) {
-                echo " <tr>\n";
-                echo "  <td align=right>Régime (points) AUTO : </td>\n";
-                echo '  <td>';
+                echo "<tr>";
+                echo "<td>Régime (points) AUTO : </td>";
+                echo '<td>';
                 lb_regime_user($xregime);
-                echo '  </td>';
-                echo " </tr>\n";
+                echo '</td>';
+                echo "</tr>";
 
-                echo " <tr><td colspan=2>&nbsp;</td></tr>\n";
+                echo "<tr><td colspan=2>&nbsp;</td></tr>";
             } else {
-                echo '<input type="hidden" name="regime" value="' . $xregime . '" />';
+                echo '<input type="hidden" name="regime" value="' . $xregime . '">';
             }
 
-            echo " <tr>\n";
-            echo '  <td align="right">Envoi des codes d\'accès : </td>' . "\n";
-            echo '  <td>';
-            echo '    <input type="checkbox" name="SendMail" value="1"' . ($sendmail == 1 ? ' checked' : '') . ' />Envoi automatique du mail ci-dessous&nbsp; ';
-            echo '  </td>';
-            echo " </tr>\n";
+            echo "<tr>";
+            echo '<td>Envoi des codes d\'accès : </td>';
+            echo '<td>';
+            echo '<input type="checkbox" name="SendMail" value="1"' . ($sendmail == 1 ? ' checked' : '') . '>Envoi automatique du mail ci-dessous&nbsp; ';
+            echo '</td>';
+            echo "</tr>";
 
-            echo ' <tr>' . "\n";
-            echo "  <td align=right>Texte du mail : </td>\n";
-            echo '  <td>';
+            echo '<tr>';
+            echo "<td>Texte du mail : </td>";
+            echo '<td>';
             echo '<textarea name="Message" cols=50 rows=6>' . $message . '</textarea>';
-            echo '  </td>';
-            echo " </tr>\n";
+            echo '</td>';
+            echo "</tr>";
 
-            echo " <tr>\n";
-            echo '  <td align="right">Contrôle des résultats : </td>' . "\n";
-            echo '  <td>';
-            echo '    <input type="checkbox" name="LogOk"  value="1"' . ($logOk == 1 ? ' checked' : '') . ' />Comptes créés &nbsp; ';
-            echo '    <input type="checkbox" name="LogKo"  value="1"' . ($logKo == 1 ? ' checked' : '') . ' />Comptes erronés &nbsp; ';
-            echo '    <input type="checkbox" name="LogRed" value="1"' . ($logRed == 1 ? ' checked' : '') . ' />Comptes redondants<br />';
-            echo '  </td>';
-            echo " </tr>\n";
-            echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";
-            echo " <tr><td colspan=\"2\" align=\"center\">\n<br />";
-            echo '  <input type="hidden" name="action" value="submitted" />';
-            echo '  <a href="aide/gestuser.html" target="_blank">Aide</a>&nbsp;';
-            echo '  <input type="reset" value="Effacer" />' . "\n";
-            echo '  <input type="submit" value=" >> CHARGER >> " />' . "\n";
-            echo " </td></tr>\n";
-            echo "</table>\n";
-            echo "</form>\n";
+            echo "<tr>";
+            echo '<td>Contrôle des résultats : </td>';
+            echo '<td>';
+            echo '<input type="checkbox" name="LogOk"  value="1"' . ($logOk == 1 ? ' checked' : '') . '>Comptes créés';
+            echo '<input type="checkbox" name="LogKo"  value="1"' . ($logKo == 1 ? ' checked' : '') . '>Comptes erronés';
+            echo '<input type="checkbox" name="LogRed" value="1"' . ($logRed == 1 ? ' checked' : '') . '>Comptes redondants';
+            echo '</td>';
+            echo "</tr>";
+            echo "<tr><td colspan=\"2\">&nbsp;</td></tr>";
+            echo "<tr><td></td>";
+            echo ' <input type="hidden" name="action" value="submitted">';
+            
+            echo '<td><button type="reset" class="btn">Effacer</button>';
+            echo '<button type="submit" class="btn">Charger</button>';
+            echo '<a href="' . $root . '/adminaide/gestuser.html" class="btn" target="_blank">Aide</a>&nbsp;';
+            echo "</td></tr>";
+            echo "</table>";
+            echo "</form>";
         } else {
             echo '<p>';
             if ($cptadd > 0) {
@@ -404,7 +405,7 @@ open_page("Chargement des utilisateurs (CSV)", $root); ?>
             echo '<br />Durée du traitement  : ' . (time() - $T0) . ' sec.';
             echo '</p>';
             echo '<p>Retour à la ';
-            echo '<a href="' . mkurl("listusers.php", "") . '"><b>' . "liste des utilisateurs" . '</b></a>';
+            echo '<a href="' . $root . '/admin/listusers.php"><b>liste des utilisateurs</b></a>';
             echo '</p>';
         } ?>
     </div>

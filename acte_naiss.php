@@ -52,13 +52,13 @@ open_page($title, $root); ?>
         echo '<h2>Acte de naissance/baptême</h2>';
         echo '<table class="m-auto" summary="Fiche détaillée">';
 
-        show_item3($row, 0, 5, 1003, mkurl('tab_naiss.php', $xcomm));  // Commune
+        show_item3($row, 0, 5, 1003, $root . '/tab_naiss.php?xcomm=' . $xcomm);  // Commune
         show_item3($row, 1, 0, 1002);  // Code INSEE
         show_item3($row, 0, 4, 1005);  // Departement
         show_item3($row, 1, 0, 1004);  // Code Departement
 
         show_grouptitle3($row, 0, 5, 'N', 'D1'); // Nouveau né
-        show_item3($row, 0, 4, 1011, mkurl('tab_naiss.php', $xcomm, $row["NOM"]), 1012); // Nom et prénom du Nouveau-né
+        show_item3($row, 0, 4, 1011, $root . '/tab_naiss.php?xcomm=' . $xcomm. '&xpatr=' .$row["NOM"], 1012); // Nom et prénom du Nouveau-né
         show_item3($row, 1, 4, 1007);  // date de l'acte
 
         show_item3($row, 1, 0, 1013);  // sexe

@@ -118,8 +118,8 @@ open_page($localite, $root, null, null, $JSheader); ?>
 
         if ($noteN <> '' or $cptN > 0) {
             if ($cptN > 0) {
-                $href = '<a href="' . mkurl($root . '/tab_naiss.php', $commune . ' [' . $depart . ']') . '">';
-                $txthtml = "<p>" . $href . entier($cptN) . " Naissances/Baptêmes</a><br />";
+                $href = '<a href="' . $root . '/tab_naiss.php?xcomm=' .$commune . ' [' . $depart . ']">';
+                $txthtml = "<p>" . $href . entier($cptN) . " Naissances/Baptêmes</a><br>";
             } else {
                 $txthtml = "<p>";
             }
@@ -127,8 +127,8 @@ open_page($localite, $root, null, null, $JSheader); ?>
         }
         if ($noteM <> '' or $cptM > 0) {
             if ($cptM > 0) {
-                $href = '<a href="' . mkurl($root . '/tab_mari.php', $commune . ' [' . $depart . ']') . '">';
-                $txthtml = "<p>" . $href . entier($cptM) . " Mariages</a><br />";
+                $href = '<a href="' . $root . '/tab_mari.php?xcomm=' . $commune . ' [' . $depart . ']">';
+                $txthtml = "<p>" . $href . entier($cptM) . " Mariages</a><br>";
             } else {
                 $txthtml = "<p>";
             }
@@ -136,7 +136,7 @@ open_page($localite, $root, null, null, $JSheader); ?>
         }
         if ($noteD <> '' or $cptD > 0) {
             if ($cptD > 0) {
-                $href = '<a href="' . mkurl($root . '/tab_deces.php', $commune . ' [' . $depart . ']') . '">';
+                $href = '<a href="' . $root . '/tab_deces.php?xcomm=' . $commune . ' [' . $depart . ']">';
                 $txthtml = "<p>" . $href . entier($cptD) . " Décès/Sépultures</a><br />";
             } else {
                 $txthtml = "<p>";
@@ -145,7 +145,7 @@ open_page($localite, $root, null, null, $JSheader); ?>
         }
         if ($noteV <> '' or $cptV > 0) {
             if ($cptV > 0) {
-                $href = '<a href="' . mkurl($root . '/tab_bans.php', $commune . ' [' . $depart . ']') . '">';
+                $href = '<a href="' . $root . '/tab_bans.php?xcomm=' . $commune . ' [' . $depart . ']">';
                 $txthtml = "<p>" . $href . entier($cptV) . " Actes divers</a><br />";
             } else {
                 $txthtml = "<p>";

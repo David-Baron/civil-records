@@ -278,17 +278,17 @@ function listbox_trait($fieldname, $typetrait, $default)
 { // Liste des définitions de traitements
     global $trait;
     $mes_trait = $trait[$typetrait];
-    echo '<select name="' . $fieldname . '" size="1">' . "\n";
+    echo '<select name="' . $fieldname . '" size="1">';
     if ($typetrait == "TST" or $typetrait == "NTS") {
         $mes = "&nbsp;";
     } else {
         $mes = " = ";
     }
-    echo '<option ' . selected_option(0, $default) . '>' . $mes . '</option>' . "\n";
+    echo '<option ' . (0 == $default ? 'selected' : '') . '>' . $mes . '</option>';
     foreach ($mes_trait as $key => $trt) {
-        echo '<option ' . selected_option($key, $default) . '>' . $trt . '</option>' . "\n";
+        echo '<option ' . ($key == $default ? 'selected' : '') . '>' . $trt . '</option>';
     }
-    echo " </select>\n";
+    echo " </select>";
 }
 
 function traitement($indice, $objet, $code)

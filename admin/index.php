@@ -23,11 +23,11 @@ $cptfil = 0;
 
 
 $menu_actes = "";
-$menu_actes .= '<a href="' . $root . '/admin/index.php?xtyp=N"' . ($xtyp == "N" ? ' class="bolder"' : '') . '>' . "Naissances" . "</a>";
-$menu_actes .= ' | <a href="' . $root . '/admin/index.php?xtyp=M"' . ($xtyp == "M" ? ' class="bolder"' : '') . '>' . "Mariages" . "</a>";
-$menu_actes .= ' | <a href="' . $root . '/admin/index.php?xtyp=D"' . ($xtyp == "D" ? ' class="bolder"' : '') . '>' . "Décès" . "</a>";
-$menu_actes .= ' | <a href="' . $root . '/admin/index.php?xtyp=V"' . ($xtyp == "V" ? ' class="bolder"' : '') . '>' . "Divers" . "</a>";
-$menu_actes .= ' | <a href="' . $root . '/admin/index.php?xtyp=A"' . ($xtyp == "A" ? ' class="bolder"' : '') . '>' . "Tous" . '</a>';
+$menu_actes .= '<a href="' . $root . '/admin/index.php?xtyp=N"' . ($xtyp == "N" ? ' class="bolder"' : '') . '>Naissances</a>';
+$menu_actes .= ' | <a href="' . $root . '/admin/index.php?xtyp=M"' . ($xtyp == "M" ? ' class="bolder"' : '') . '>Mariages</a>';
+$menu_actes .= ' | <a href="' . $root . '/admin/index.php?xtyp=D"' . ($xtyp == "D" ? ' class="bolder"' : '') . '>Décès</a>';
+$menu_actes .= ' | <a href="' . $root . '/admin/index.php?xtyp=V"' . ($xtyp == "V" ? ' class="bolder"' : '') . '>Divers</a>';
+$menu_actes .= ' | <a href="' . $root . '/admin/index.php?xtyp=A"' . ($xtyp == "A" ? ' class="bolder"' : '') . '>Tous</a>';
 
 
 /**

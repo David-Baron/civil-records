@@ -31,10 +31,10 @@ if ($xtyp != '' || $xtyp != "A") {
     $condit1 = " WHERE TYPACT='" . $xtyp . "'";
 }
 
-$sql = "SELECT DEPART,COMMUNE,TYPACT,LIBELLE, sum(NB_TOT) AS NB_TOT "
-                . " FROM " . $config->get('EA_DB') . "_sums " . $condit1
-                . " GROUP BY DEPART,COMMUNE,TYPACT,LIBELLE"
-                . " ORDER BY DEPART,COMMUNE,INSTR('NMDV',TYPACT),LIBELLE; ";
+$sql = "SELECT DEPART,COMMUNE,TYPACT,LIBELLE, sum(NB_TOT) AS NB_TOT 
+    FROM " . $config->get('EA_DB') . "_sums " . $condit1 . " 
+    GROUP BY DEPART,COMMUNE,TYPACT,LIBELLE 
+    ORDER BY DEPART,COMMUNE,INSTR('NMDV',TYPACT),LIBELLE; ";
 
 $pre_libelle = "XXX";
 $pre_commune = "XXX";
@@ -73,21 +73,21 @@ if ($result = EA_sql_query($sql)) {
             $etiquette = $commune . " [" . $depart . "]";
             $txthtml = "<b>" . $commune . " [" . $depart . "]</b><br />&nbsp;<br />";
         }
-        $linkdiv = "";
+        $linkdiv = '';
         switch ($ligne['TYPACT']) {
             case "N":
                 $typel = "Naissances/Baptêmes";
-                $prog = "tab_naiss.php";
+                $prog = "/tab_naiss.php";
                 $sigle = "°";
                 break;
             case "M":
                 $typel = "Mariages";
-                $prog = "tab_mari.php";
+                $prog = "/tab_mari.php";
                 $sigle = "x";
                 break;
             case "D":
                 $typel = "Décès/Sépultures";
-                $prog = "tab_deces.php";
+                $prog = "/tab_deces.php";
                 $sigle = "+";
                 break;
             case "V":
@@ -95,9 +95,9 @@ if ($result = EA_sql_query($sql)) {
                     $typel = "Divers";
                 } else {
                     $typel = $ligne['LIBELLE'];
-                    $linkdiv = ';' . $ligne['LIBELLE'];
+                    $linkdiv = '&linkdiv=' . $ligne['LIBELLE'];
                 }
-                $prog = "tab_bans.php";
+                $prog = "/tab_bans.php";
                 $sigle = "#";
                 break;
         }
@@ -106,8 +106,8 @@ if ($result = EA_sql_query($sql)) {
             $pre_type = $ligne['TYPACT'];
             $listSigles .= $sigle;
         }
-        $href = '<a href="' . mkurl($root . $chemin . $prog, $ligne['COMMUNE'] . ' [' . $ligne['DEPART'] . ']' . $linkdiv) . '">';
-        $txthtml .= $href . entier($ligne['NB_TOT']) . " " . $typel . "</a><br />";
+        $href = '<a href="' . $root . $prog . '?xcomm=' . $ligne['COMMUNE'] . ' [' . $ligne['DEPART'] . ']' . $linkdiv . '">';
+        $txthtml .= $href . entier($ligne['NB_TOT']) . " " . $typel . "</a><br>";
     }
     if ($pre_commune <> "XXX") {
         plot_commune($carto, $depart, $commune, $etiquette, $txthtml, $listTypes, $listSigles);

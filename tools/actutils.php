@@ -51,25 +51,8 @@ function open_page($title, $root = "", $js = null, $addbody = null, $addhead = n
         echo $addhead;
     }
 
-    echo "</head>\n";
+    echo "</head>";
     echo '<body>';
-
-    /*     if (getparam(EL) == 'O') {
-        echo $ExpoActes_Charset;
-    } */
-
-    /* global $TIPmsg;  // message d'alerte pré-blocage IP
-    if ($TIPmsg <> "" && (TIP_MODE_ALERT % 2) == 1) {
-        echo '<h2><font color="#FF0000">' . $TIPmsg . "</font></h2>";
-    }
-    echo '<div id="top" class="entete">';
-    if (EA_MAINTENANCE == 1) {
-        echo '<font color="#FF0000"><b>!! MAINTENANCE !!</b></font>';
-    }
-
-    if ($TIPmsg <> "" && ($config->get('TIP_MODE_ALERT') % 2) == 1) {
-        echo '<h2><font color="#FF0000">' . $TIPmsg . "</font></h2>";
-    } */
     echo '<div class="entete">';
     include(__DIR__ . '/../templates/front/_bandeau.php');
     echo "</div>";
@@ -255,26 +238,13 @@ function statistiques($vue = "T")
 
 function menu_public()
 {
-    global $root, $session, $config, $userAuthorizer;
-    $changepw = "";
-    $login = "";
-    if ($userAuthorizer->isAuthenticated()) {
-        $login = '&nbsp;&lt;' . $session->get('user')['login'];
-        $solde = current_user_solde();
-        if ($solde < 9999) {
-            $login .= ' : ' . $solde . ' pts';
-        }
-        $login .= '&gt;';
-
-        if ($userAuthorizer->isGranted($config->get('CHANGE_PW'))) {
-            $changepw = '<a href="' . $root . '/changepw.php">Changer le mot de passe</a>';
-        }
-    }
+    global $root, $config, $userAuthorizer;
     echo '<div class="box">';
     // traite le cas ou le niveau PUBLIC autre que 4 et 5, on affiche l'accès administration au dela d'un niveau 5 de l'utilisateur
     echo '<div class="box-title">Accès membre</div>';
     echo '<div class="box-body">';
     echo '<nav class="nav">';
+    echo '<a href="' . $root . '/">Accueil</a>';
     if (!$userAuthorizer->isAuthenticated()) {
         echo '<a href="' . $root . '/login.php">Connexion</a>';
         if ($config->get('SHOW_ACCES') == 1) {
@@ -282,9 +252,8 @@ function menu_public()
         }
     } else {
         if ($userAuthorizer->isGranted($config->get('CHANGE_PW'))) {
-            $changepw = '<a href="' . $root . '/changepw.php">Changer le mot de passe</a>';
+            echo '<a href="' . $root . '/changepw.php">Changer le mot de passe</a>';
         }
-        echo $changepw;
         echo '<a href="' . $root . '/index.php?act=logout">Déconnexion</a>';
     }
     if ($config->get('EMAIL_CONTACT') <> "") {
@@ -294,24 +263,9 @@ function menu_public()
     echo '</div>';
 }
 
-/**
- * pub éventuelle
- */
-function show_pub_menu()
-{
-    global $config;
-
-    echo '<div class="box">';
-    echo '<div class="box-title">Info</div>';
-    echo '<div class="box-body p-2">';
-    echo $config->get('PUB_ZONE_MENU');
-    echo '</div>';
-    echo '</div>';
-}
-
 function zone_menu($admin, int $userlevel, $pp = array())
 {
-    global $root;
+    global $root, $config;
     $menu_actes = '';
     echo '<div class="main-col-left">';
     require(__DIR__ . '/../templates/front/_search-form.php');
@@ -320,7 +274,12 @@ function zone_menu($admin, int $userlevel, $pp = array())
     }
     menu_public();
     if ($userlevel < 6) {
-        show_pub_menu();
+        echo '<div class="box">';
+        echo '<div class="box-title">Info</div>';
+        echo '<div class="box-body p-2">';
+        echo $config->get('PUB_ZONE_MENU');
+        echo '</div>';
+        echo '</div>';
     } else {
         require(__DIR__ . '/../templates/admin/_menu-admin.php');
     }
@@ -457,12 +416,13 @@ function getCommunes($params)   // Utilisée pour remplir dynamiquement une list
 }
 
 function form_typeactes_communes($mode = '', $alldiv = 1)
-{ global $root;
+{
+    global $root;
     // Tableau avec choix du type + choix d'une commune existante
     echo "<tr>";
     echo '<td>Type des actes : </td>';
     echo '<td>';
-    $ajaxcommune = ' onClick="' . "getCommunes(this.value, {'content_type': 'json', 'target': 'ComDep', 'preloader': 'prl'})" . '" ';
+    $ajaxcommune = ' onClick="getCommunes(this.value, {"content_type": "json", "target": "ComDep", "preloader": "prl"})"';
     echo '<input type="hidden" name="xtyp" value="X">';
     echo '<input type="radio" name="xtyp" value="N' . $mode . '" ' . $ajaxcommune . '>Naissances<br>';
     echo '<input type="radio" name="xtyp" value="M' . $mode . '" ' . $ajaxcommune . '>Mariages<br>';
@@ -477,9 +437,9 @@ function form_typeactes_communes($mode = '', $alldiv = 1)
     echo '<td>';
     echo '<select id="ComDep" name="ComDep">';
     echo '<option value="">Choisir d\'abord le type d\'acte</option> ';
-    echo '</select><img id="prl" src="'. $root.'/themes/default/img/minispinner.gif" style="visibility:hidden;">';
+    echo '</select><img id="prl" src="' . $root . '/themes/default/img/minispinner.gif" style="visibility:hidden;">';
     echo '</td>';
-    echo " </tr>";
+    echo "</tr>";
 }
 
 function listbox_communes($fieldname, $default, $vide = 0)  // liste de toutes les communes ts actes confondus
@@ -498,11 +458,11 @@ function listbox_communes($fieldname, $default, $vide = 0)  // liste de toutes l
         }
         while ($row = EA_sql_fetch_array($result)) {
             $comdep = $row["COMMUNE"] . " [" . $row["DEPART"] . "]";
-            echo '<option ' . selected_option(htmlentities($comdep, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET), $default) . '>' . htmlentities($comdep, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET) . '</option>';
+            echo '<option ' . (htmlentities($comdep, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET) == $default ? 'selected' : '') . '>' . htmlentities($comdep, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET) . '</option>';
             $i++;
         }
     }
-    echo " </select>\n";
+    echo " </select>";
 }
 
 /**
@@ -563,14 +523,13 @@ function load_zlabels($table, $lg, $ordre = "CSV")
         AND (g.sigle=' ') 
         AND (l.LG='" . $lg . "') 
         AND (d.dtable='" . $table . "')) " . $condit;
-    //echo $req1;
     $res = EA_sql_query($req1);
     $nbtot = EA_sql_num_rows($res);
     $mdb = array();
     for ($j = 0; $j < $nbtot; $j++) {
         array_push($mdb, EA_sql_fetch_assoc($res));
     }
-    //{ print '<pre>MDB:';  print_r($mdb); echo '</pre>'; }
+
     return $mdb;
 }
 
@@ -582,11 +541,12 @@ function metadata($zone, $voulu)  // valeur $zone du record $voulu
     while (($i < $maxi) and $mdb[$i]['ZONE'] <> $voulu) {
         $i++;
     }
+
     if ($i < $maxi) {
         return $mdb[$i][$zone];
-    } else {
-        return "Zone $voulu inconnue";
     }
+
+    return "Zone $voulu inconnue";
 }
 
 function listbox_types($fieldname, $default, $vide = 0)
@@ -617,11 +577,11 @@ function listbox_divers($fieldname, $default, $tous = 0)
             echo '<option>*** Tous ***</option>';
         }
         while ($row = EA_sql_fetch_array($result)) {
-            echo '<option ' . selected_option($row["LIBELLE"], $default) . '>' . $row["LIBELLE"] . '</option>';
+            echo '<option ' . ($default == $row["LIBELLE"] ? 'selected' : '') . '>' . $row["LIBELLE"] . '</option>';
             $i++;
         }
     }
-    echo " </select>\n";
+    echo " </select>";
 }
 
 function listbox_users($fieldname, $default, int $minUserlevel, $txtzero = '')
@@ -790,7 +750,7 @@ function show_deposant3($row, $retrait, $format, $zidinfo, $xid, $tact)
 // accessoirement affiche la possibilité de proposer une correction
 // format : somme de 1= label gras, 2 label italique, 4 info gras, 8 info italique
 {
-    global $config, $userAuthorizer, $u_db;
+    global $root, $config, $session, $userAuthorizer, $u_db;
     $lg = $GLOBALS['lg'];
     $req1 = "SELECT ZONE, GROUPE, TYP, TAILLE, OBLIG, AFFICH, ETIQ, AIDE FROM (" . $config->get('EA_DB') . "_metadb d JOIN " . $config->get('EA_DB') . "_metalg l)"
         . " WHERE ((d.ZID=l.ZID) AND (l.LG='" . $lg . "') AND d.ZID=" . $zidinfo . ")";
@@ -810,15 +770,14 @@ function show_deposant3($row, $retrait, $format, $zidinfo, $xid, $tact)
     }
 
     if ($userAuthorizer->isGranted(6)) {
-        global $path, $session;
         show_simple_item($retrait, $format, $info, $label);
         if ($session->get('user')['ID'] == $depid or $session->get('user')['level'] >= 8) {
             $actions = "";
             if ($tact == 'M' or $tact == 'V') {
-                $actions .= '<a href="' . $path . '/permute.php?xid=' . $xid . '&amp;xtyp=' . $tact . '">Permuter</a> - ';
+                $actions .= '<a href="' . $root . '/admin/permute.php?xid=' . $xid . '&amp;xtyp=' . $tact . '">Permuter</a> - ';
             }
-            $actions .=  '<a href="' . $path . '/edit_acte.php?xid=' . $xid . '&amp;xtyp=' . $tact . '">Editer</a>';
-            $actions .=  ' - <a href="' . $path . '/suppr_acte.php?xid=' . $xid . '&amp;xtyp=' . $tact . '">Supprimer</a>';
+            $actions .=  '<a href="' . $root . '/admin/edit_acte.php?xid=' . $xid . '&amp;xtyp=' . $tact . '">Editer</a>';
+            $actions .=  ' - <a href="' . $root . '/admin/suppr_acte.php?xid=' . $xid . '&amp;xtyp=' . $tact . '">Supprimer</a>';
             show_simple_item($retrait, $format, $actions, 'Actions');
         }
     } else {
@@ -859,7 +818,7 @@ function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = ""
     }
 
     echo '<h2>' . $titre . '</h2>';
-    echo '<p>Commune/Paroisse : <a href="' . $root . '/' . $script . '?xcomm=' . $xcomm . '"><strong>' . $xcomm . '</strong></a>' . geoUrl($gid) . '</p>';
+    echo '<p>Commune/Paroisse : <a href="' . $root . $script . '?xcomm=' . $xcomm . '"><strong>' . $xcomm . '</strong></a>' . geoUrl($gid) . '</p>';
     if ($note <> '') {
         echo "<p>" . $note . "</p>";
     }
@@ -887,7 +846,7 @@ function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = ""
         $nblign = EA_sql_num_rows($result);
 
         $i = 1;
-        echo '<table summary="Liste alphabétique">';
+        echo '<table class="m-auto" summary="Liste alphabétique">';
         echo '<tr class="rowheader">';
         echo '<th></th>';
         echo '<th>Patronymes</th>';
@@ -897,7 +856,7 @@ function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = ""
         while ($ligne = EA_sql_fetch_row($result)) {
             echo '<tr class="row' . (fmod($i, 2)) . '">';
             echo '<td>' . $i . '.</td>';
-            echo '<td><a href="' . mkurl($root . '/' . $script, $xcomm, $ligne[0]) . '">' . $ligne[0] . '</a></td>';
+            echo '<td><a href="' . $root . $script .'?xcomm=' . $xcomm . '&xpatr=' . $ligne[0] . '">' . $ligne[0] . '</a></td>';
             echo '<td align="center">' . $ligne[2];
             if ($ligne[2] <> $ligne[3]) {
                 echo '-' . $ligne[3];
@@ -937,13 +896,13 @@ function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = ""
             echo '<td align="center"><strong>' . $ligne[0] . '</strong></td>';
             if ($ligne[1] == 1) {
                 echo '<td align="center">' . $ligne[1] . '</td>';
-                echo '<td><a href="' . mkurl($root . '/' . $script, $xcomm, $ligne[2]) . '">' . $ligne[2] . '</a></td>';
+                echo '<td><a href="' .$root . $script . '?xcomm=' . $xcomm . '&xpatr=' . $ligne[2] . '">' . $ligne[2] . '</a></td>';
             } else {
                 echo '<td align="center">' . $ligne[1] . '</td>';
                 while (mb_strlen($ligne[0]) < $lgi) {
                     $ligne[0] = $ligne[0] . ' ';
                 }
-                echo '<td><a href="' . mkurl($root . '/' . $script, $xcomm, '_' . $ligne[0]) . '">' . $ligne[2] . ' à ' . $ligne[3] . '</a></td>';
+                echo '<td><a href="' . $root . $script. '?xcomm=' . $xcomm . '&xpatr=' . $ligne[0] . '">' . $ligne[2] . ' à ' . $ligne[3] . '</a></td>';
             }
             echo '</tr>';
             $i++;
@@ -1538,55 +1497,55 @@ function annee_seulement($date_txt)  // affichage date simplifié à l'annee si 
     return $date_txt; // date complète
 }
 
-function lb_droits_user($lelevel, $all = 0)  //
+function lb_droits_user($level, $all = 0)  //
 {
     echo '<select name="lelevel" size="1">';
-    echo '<option ' . selected_option(0, $lelevel) . '>0 : ** Aucun accès **</option>';
-    echo '<option ' . selected_option(1, $lelevel) . '>1 : Liste des communes</option>';
-    echo '<option ' . selected_option(2, $lelevel) . '>2 : Liste des patronymes</option>';
-    echo '<option ' . selected_option(3, $lelevel) . '>3 : Table des actes</option>';
-    echo '<option ' . selected_option(4, $lelevel) . '>4 : Détails des actes (avec limites)</option>';
-    echo '<option ' . selected_option(5, $lelevel) . '>5 : Détails sans limitation</option>';
-    echo '<option ' . selected_option(6, $lelevel) . '>6 : Chargement NIMEGUE et CSV</option>';
-    echo '<option ' . selected_option(7, $lelevel) . '>7 : Ajout d\'actes</option>';
-    echo '<option ' . selected_option(8, $lelevel) . '>8 : Administration tous actes</option>';
-    echo '<option ' . selected_option(9, $lelevel) . '>9 : !! Gestion des utilisateurs !!</option>';
-    if ($all == 1) {
-        echo '<option ' . selected_option(10, $lelevel) . '>A : *** Tous >>> Backup ***</option>';
-    }
     if ($all == 2) {
-        echo '<option ' . selected_option(10, $lelevel) . '>A : *** Envoi à tous ***</option>';
+        echo '<option ' . (10 == $level ? 'selected' : '') . '>A : -- Envoi à tous -- </option>';
     }
-    echo "</select>\n";
+    echo '<option ' . (0 == $level ? 'selected' : '') . '>0 : Public</option>';
+    echo '<option ' . (1 == $level ? 'selected' : '') . '>1 : Liste des communes</option>';
+    echo '<option ' . (2 == $level ? 'selected' : '') . '>2 : Liste des patronymes</option>';
+    echo '<option ' . (3 == $level ? 'selected' : '') . '>3 : Table des actes</option>';
+    echo '<option ' . (4 == $level ? 'selected' : '') . '>4 : Détails des actes (avec limites)</option>';
+    echo '<option ' . (5 == $level ? 'selected' : '') . '>5 : Détails sans limitation</option>';
+    echo '<option ' . (6 == $level ? 'selected' : '') . '>6 : Chargement NIMEGUE et CSV</option>';
+    echo '<option ' . (7 == $level ? 'selected' : '') . '>7 : Ajout d\'actes</option>';
+    echo '<option ' . (8 == $level ? 'selected' : '') . '>8 : Administration tous actes</option>';
+    echo '<option ' . (9 == $level ? 'selected' : '') . '>9 : Gestion des utilisateurs</option>';
+    if ($all = 1) {
+        echo '<option ' . (10 == $level ? 'selected' : '') . '>A : Super administrateur</option>';
+    }
+    echo "</select>";
 }
 
-function lb_statut_user($statut, $vide = 0)  //
+function lb_statut_user($statut, $vide = 0)
 {
     echo '<select name="statut" size="1">';
     if (($vide % 2) == 1) {
-        echo '<option ' . selected_option("0", $statut) . '>- Pas de condition -</option>';
+        echo '<option ' . ('0' == $statut ? 'selected' : '') . '> -- Pas de condition -- </option>';
     }
-    echo '<option ' . selected_option("W", $statut) . '>W : Attente d\'activation</option>';
-    echo '<option ' . selected_option("A", $statut) . '>A : Attente d\'approbation</option>';
-    echo '<option ' . selected_option("N", $statut) . '>N : Accès autorisé</option>';
-    echo '<option ' . selected_option("B", $statut) . '>B : Accès bloqué</option>';
+    echo '<option ' . ('W' == $statut ? 'selected' : '') . '>W : Attente d\'activation</option>';
+    echo '<option ' . ('A' == $statut ? 'selected' : '') . '>A : Attente d\'approbation</option>';
+    echo '<option ' . ('N' == $statut ? 'selected' : '') . '>N : Accès autorisé</option>';
+    echo '<option ' . ('B' == $statut ? 'selected' : '') . '>B : Accès bloqué</option>';
     /* @deprecated
     if (($vide % 4) == 3) {
-        echo '<option ' . selected_option("X", $statut) . '>X : Compte expiré de ' . DUREE_EXPIR . ' jrs</option>';
+        echo '<option ' . ('X' == $statut ? 'selected' : '') . '>X : Compte expiré de ' . DUREE_EXPIR . ' jrs</option>';
     } */
-    echo "</select>\n";
+    echo "</select>";
 }
 
-function lb_regime_user($regime, $vide = 0)  //
+function lb_regime_user($regime, $vide = 0)
 {
     echo '<select name="regime" size="1">';
     if ($vide == 1) {
-        echo '<option ' . selected_option(-1, $regime) . '>- Pas de condition -';
+        echo '<option ' . (-1 == $regime ? 'selected' : '') . '> -- Pas de condition -- ';
     }
-    echo '<option ' . selected_option(0, $regime) . '>0 : Accès libre</option>';
-    echo '<option ' . selected_option(1, $regime) . '>1 : Recharge manuelle</option>';
-    echo '<option ' . selected_option(2, $regime) . '>2 : Recharge automatique</option>';
-    echo "</select>\n";
+    echo '<option ' . (0 == $regime ? 'selected' : '') . '>0 : Accès libre</option>';
+    echo '<option ' . (1 == $regime ? 'selected' : '') . '>1 : Recharge manuelle</option>';
+    echo '<option ' . (2 == $regime ? 'selected' : '') . '>2 : Recharge automatique</option>';
+    echo "</select>";
 }
 
 function def_mes_sendmail()

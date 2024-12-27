@@ -52,7 +52,7 @@ open_page($title, $root); ?>
         echo '<h2>' . $row["LIBELLE"] . '</h2>';
         echo '<table class="m-auto" summary="Fiche détaillée">';
 
-        show_item3($row, 0, 5, 4003, mkurl('tab_bans.php', $xcomm));  // Commune
+        show_item3($row, 0, 5, 4003, $root . '/tab_bans.php?xcomm=' . $xcomm);  // Commune
         show_item3($row, 1, 0, 4002);  // Code INSEE
         show_item3($row, 0, 4, 4005);  // Departement
         show_item3($row, 1, 0, 4004);  // Code Departement
@@ -60,7 +60,7 @@ open_page($title, $root); ?>
         show_item3($row, 1, 4, 4007);  // date de l'acte
 
         show_grouptitle3($row, 0, 5, 'V', 'D1', $row["SIGLE"]); // Intervenant 1
-        show_item3($row, 1, 4, 4013, mkurl('tab_bans.php', $xcomm, $row["NOM"]), 4014); // Intervenant 1
+        show_item3($row, 1, 4, 4013, $root . '/tab_bans.php?xcomm=' . $xcomm . '&xpatr=' . $row["NOM"], 4014); // Intervenant 1
         show_item3($row, 1, 0, 4015);  // Sexe
         show_item3($row, 1, 0, 4016);  // Origine
         show_item3($row, 1, 0, 4017);  // Date naiss
@@ -81,7 +81,7 @@ open_page($title, $root); ?>
 
         if (trim($row["C_NOM"]) != "") {
             show_grouptitle3($row, 0, 5, 'V', 'F1', $row["SIGLE"]); // Intervenant 2
-            show_item3($row, 1, 4, 4032, mkurl('tab_bans.php', $xcomm, $row["C_NOM"]), 4033); // Intervenant 2
+            show_item3($row, 1, 4, 4032, $root . '/tab_bans.php?xcomm=' . $xcomm . '&xpatr=' . $row["C_NOM"], 4033); // Intervenant 2
 
             show_item3($row, 1, 0, 4034);  // Sexe
             show_item3($row, 1, 0, 4035);  // Origine
@@ -133,7 +133,7 @@ open_page($title, $root); ?>
 
         if ($userAuthorizer->isGranted(6)) {
             show_signal_erreur('V', $xid);
-        } ?>        
+        } ?>
         </table>
     </div>
 </div>

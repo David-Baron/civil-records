@@ -51,13 +51,13 @@ open_page($title, $root); ?>
         echo '<h2>Acte de décès/sépulture</h2>';
         echo '<table class="m-auto" summary="Fiche détaillée">';
 
-        show_item3($row, 0, 5, 3003, mkurl('tab_deces.php', $xcomm));  // Commune
+        show_item3($row, 0, 5, 3003, $root . '/tab_deces.php?xcomm=' . $xcomm);  // Commune
         show_item3($row, 1, 0, 3002);  // Code INSEE
         show_item3($row, 0, 4, 3005);  // Departement
         show_item3($row, 1, 0, 3004);  // Code Departement
 
         show_grouptitle3($row, 0, 5, 'D', 'D1'); // Décédé
-        show_item3($row, 1, 4, 3011, mkurl('tab_deces.php', $xcomm, $row["NOM"]), 3012); // Nom et prénom é
+        show_item3($row, 1, 4, 3011, $root . '/tab_deces.php?xcomm=' . $xcomm . '&xpatr=' . $row["NOM"], 3012); // Nom et prénom é
         show_item3($row, 1, 4, 3007);  // date de l'acte
 
         show_item3($row, 1, 0, 3013); // origine

@@ -182,10 +182,10 @@ open_page("Paramétrage des étiquettes", $root); ?>
                             if ($result = EA_sql_query($sql)) {
                                 $i = 1;
                                 echo '<select name="SIGLE" onchange="changesigle()">';
-                                echo '<option ' . selected_option($code_liste, $lesigle) . '>*** Liste ***</option>';
-                                echo '<option ' . selected_option($sans_sigle_par_defaut, $lesigle) . '>** vide=Défaut **</option>';
+                                echo '<option ' . ($code_liste == $lesigle ? 'selected' : '') . '>*** Liste ***</option>';
+                                echo '<option ' . ($sans_sigle_par_defaut == $lesigle ? 'selected' : '') . '>** vide=Défaut **</option>';
                                 while ($row = EA_sql_fetch_array($result)) {
-                                    echo '<option ' . selected_option($row["SIGLE"], $lesigle) . '>' . $row["SIGLE"] . '</option>';
+                                    echo '<option ' . ($row["SIGLE"] == $lesigle ? 'selected' : '') . '>' . $row["SIGLE"] . '</option>';
                                     $i++;
                                 }
                             } ?>
@@ -283,7 +283,7 @@ open_page("Paramétrage des étiquettes", $root); ?>
                                 } else {
                                     echo '<select name="affi_' . $i . '">';
                                     foreach ($leschoix as $lechoix) {
-                                        echo '<option ' . selected_option(mb_substr($lechoix, 0, isin($lechoix, "-", 0) - 1), $row["affich"]) . '>' . mb_substr($lechoix, isin($lechoix, "-", 0) + 1) . '</option>';
+                                        echo '<option ' . (mb_substr($lechoix, 0, isin($lechoix, "-", 0) - 1) == $row["affich"] ? 'selected' : '') . '>' . mb_substr($lechoix, isin($lechoix, "-", 0) + 1) . '</option>';
                                     }
                                     echo " </select>\n";
                                 } ?>
@@ -302,9 +302,9 @@ open_page("Paramétrage des étiquettes", $root); ?>
                         <input type="hidden" name="xconfirm" value="default">
                     <?php }
                         if (($xfile !== 'X') || ($lesigle != $code_liste)) { ?>
-                        <a href="<?= $root; ?>/admin/index.php">Annuler</a>
+                        <a href="<?= $root; ?>/admin/" class="btn">Annuler</a>
                     </td>
-                    <td><button type="submit">Enregistrer</button></td>
+                    <td><button type="submit" class="btn">Enregistrer</button></td>
                 <?php } ?>
                 </tr>
             </table>

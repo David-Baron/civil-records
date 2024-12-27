@@ -102,8 +102,8 @@ open_page("Changement de mot de passe", $root); ?>
                 <tr>
                     <td></td>
                     <td>
-                        <button type="reset">Effacer</button>
-                        <button type="submit">Modifier</button>
+                        <button type="reset" class="btn">Effacer</button>
+                        <button type="submit" class="btn">Modifier</button>
                     </td>
                     <td></td>
                 </tr>

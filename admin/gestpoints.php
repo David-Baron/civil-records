@@ -150,94 +150,91 @@ if ($missingargs) {
         }
     }
 
-    echo '<form method="post" enctype="multipart/form-data" action="">' . "\n";
+    echo '<form method="post" enctype="multipart/form-data" action="">';
     echo '<h2 align="center">' . $ptitle . '</h2>';
-    echo '<table class="m-auto">' . "\n";
+    echo '<table class="m-auto">';
 
-    echo " <tr><td colspan=\"2\"><b>Utilisateurs concernés</b></td></tr>\n";
-    echo " <tr>\n";
-    echo "  <td align=right>Droits d'accès : </td>\n";
-    echo '  <td>';
+    echo "<tr><td colspan=\"2\"><b>Utilisateurs concernés</b></td></tr>";
+    echo "<tr>";
+    echo "<td>Droits d'accès : </td>";
+    echo '<td>';
     lb_droits_user($xdroits);
-    echo '  </td>';
-    echo " </tr>\n";
+    echo '</td>';
+    echo "</tr>";
     if ($config->get('GEST_POINTS') > 0) {
-        echo " <tr><td align=right>ET</td><td>&nbsp;</td></tr>\n";
-        echo " <tr>\n";
-        echo "  <td align=right>Régime (points) : </td>\n";
-        echo '  <td>';
+        echo "<tr><td>ET</td><td>&nbsp;</td></tr>";
+        echo "<tr>";
+        echo "<td>Régime (points) : </td>";
+        echo '<td>';
         lb_regime_user($regime, 1);
-        echo '  </td>';
-        echo " </tr>\n";
+        echo '</td>';
+        echo "</tr>";
     } else {
-        echo ' <tr><td colspan="2">';
-        echo '<input type="hidden" name="regime" value="-1" />';
-        echo "</td></tr>\n";
+        echo '<tr><td colspan="2">';
+        echo '<input type="hidden" name="regime" value="-1">';
+        echo "</td></tr>";
     }
 
-    echo " <tr><td align=right>ET</td><td>&nbsp;</td></tr>\n";
-    echo " <tr>\n";
-    echo "  <td align='right'>Statut : </td>\n";
-    echo '  <td>';
+    echo "<tr><td>ET</td><td>&nbsp;</td></tr>";
+    echo "<tr>";
+    echo "<td>Statut : </td>";
+    echo '<td>';
     lb_statut_user($statut, 1);
-    echo '  </td>';
-    echo " </tr>\n";
+    echo '</td>';
+    echo "</tr>";
 
-    echo " <tr><td align=right>ET</td><td>&nbsp;</td></tr>\n";
-    echo " <tr>\n";
-    echo "  <td align='right'>Date expiration : </td>\n";
-    echo '  <td>';
+    echo "<tr><td>ET</td><td>&nbsp;</td></tr>";
+    echo "<tr>";
+    echo "<td>Date expiration : </td>";
+    echo '<td>';
     listbox_trait('conditexp', "NTS", $conditexp);
-    echo '<input type="text" name="dtexpir" size="10" value="' . $dtexpir . '" />' . "</td>\n";
-    echo " </tr>\n";
+    echo '<input type="text" name="dtexpir" size="10" value="' . $dtexpir . '"></td>';
+    echo " </tr>";
 
 
-    echo " <tr><td align=right>ET</td><td>&nbsp;</td></tr>\n";
-    echo " <tr>\n";
-    echo "  <td align=right>Commentaire : </td>\n";
-    echo '  <td>';
+    echo "<tr><td>ET</td><td>&nbsp;</td></tr>";
+    echo "<tr>";
+    echo "<td>Commentaire : </td>";
+    echo '<td>';
     listbox_trait('condit', "TST", $condit);
 
-    echo ' <input type="text" name="rem" size="50" value="' . $rem . '" />';
-    echo "</td>\n";
-    echo " </tr>\n";
+    echo '<input type="text" name="rem" size="50" value="' . $rem . '">';
+    echo "</td>";
+    echo "</tr>";
 
-    echo " <tr><td colspan=\"2\"><b>Action à effectuer</b></td></tr>\n";
-    echo " <tr>\n";
-    echo '  <td align="right">Opération : </td>' . "\n";
-    echo '  <td>';
-    echo '        <br />';
-    echo '        <input type="radio" name="oper" value="E" />Fixer la date d\'expiration des comptes à <br />';
+    echo "<tr><td colspan=\"2\"><b>Action à effectuer</b></td></tr>";
+    echo "<tr>";
+    echo '<td align="right">Opération : </td>';
+    echo '<td>';
+    echo '<input type="radio" name="oper" value="E">Fixer la date d\'expiration des comptes à <br>';
     if ($config->get('GEST_POINTS') > 0) {
-        echo '        <input type="radio" name="oper" value="R" />Remettre à 0 les points <i>consommés</i> <br />';
-        echo '        <input type="radio" name="oper" value="A" />Ajouter les points suivants au solde <i>disponible</i><br />';
-        echo '        <input type="radio" name="oper" value="F" />Fixer le solde de points <i>disponibles</i> à <br />';
+        echo '<input type="radio" name="oper" value="R">Remettre à 0 les points <i>consommés</i> <br>';
+        echo '<input type="radio" name="oper" value="A">Ajouter les points suivants au solde <i>disponible</i><br>';
+        echo '<input type="radio" name="oper" value="F">Fixer le solde de points <i>disponibles</i> à <br>';
     }
-    echo '        <br />';
-    echo '  </td>';
-    echo " </tr>\n";
+    echo '</td>';
+    echo "</tr>";
 
-    echo " <tr>\n";
-    echo "  <td align=right>Valeur : </td>\n";
-    echo '  <td><input type="text" name="nbrepts" size="12" value="' . $nbrepts . '">' . "</td>\n";
-    echo " </tr>\n";
+    echo "<tr>";
+    echo "<td>Valeur : </td>";
+    echo '<td><input type="text" name="nbrepts" size="12" value="' . $nbrepts . '"></td>';
+    echo "</tr>";
 
-    echo " </tr>\n";
-    echo " <tr><td colspan=\"2\">&nbsp;</td></tr>\n";
-    echo " <tr><td colspan=\"2\" align=\"center\">\n<br>";
-    echo '  <input type="hidden" name="action" value="submitted">';
-    // echo '  <a href="aide/chargecsv.html" target="_blank">Aide</a>&nbsp;';
-    echo '  <input type="reset" value="Effacer">' . "\n";
-    echo '  <input type="submit" value=" >> EFFECTUER >> ">' . "\n";
-    echo " </td></tr>\n";
-    echo "</table>\n";
-    echo "</form>\n";
+    echo "</tr>";
+    echo "<tr><td colspan=\"2\">&nbsp;</td></tr>";
+    echo "<tr><td></td>";
+    echo '<input type="hidden" name="action" value="submitted">';
+    echo '<td><button type="reset" class="btn">Effacer</button>';
+    echo '<button type="submit" class="btn">Effectuer</button>';
+    echo "</td></tr>";
+    echo "</table>";
+    echo "</form>";
 } else {
     echo '<hr>';
     echo '<br>Durée du traitement  : ' . (time() - $T0) . ' sec.';
     echo '</p>';
     echo '<p>Retour à la ';
-    echo '<a href="' . mkurl("listusers.php", "") . '"><b>' . "liste des utilisateurs" . '</b></a>';
+    echo '<a href="' . $root . '/admin/listusers.php"><b>liste des utilisateurs</b></a>';
     echo '</p>';
 }
 echo '</div>';

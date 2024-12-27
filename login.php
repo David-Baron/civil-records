@@ -1,5 +1,5 @@
 <?php
-
+// TODO: remeber me process
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require(__DIR__ . '/next/bootstrap.php');
@@ -91,7 +91,7 @@ open_page("Login", $root, null, null, null, '../index.htm'); ?>
                 <tr>
                     <td></td>
                     <td colspan="2">
-                        <button type="submit">Me connecter</button>
+                        <button type="submit" class="btn">Me connecter</button>
                     </td>
                 </tr>
             </table>

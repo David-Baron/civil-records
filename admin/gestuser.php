@@ -265,15 +265,19 @@ open_page("Gestion des utilisateurs", $root); ?>
                 <table class="m-auto" summary="Formulaire">
                     <tr>
                         <td>Nom : </td>
-                        <td><input type="text" size="30" name="nom" value="<?= $nom; ?>"></td>
+                        <td><?= $nom; ?></td>
                     </tr>
                     <tr>
                         <td>Prénom : </td>
-                        <td><input type="text" name="prenom" size="30" value="<?= $prenom; ?>"></td>
+                        <td><?= $prenom; ?></td>
+                    </tr>
+                    <tr>
+                        <td>Login : </td>
+                        <td><?= $lelogin; ?></td>
                     </tr>
                     <tr>
                         <td>E-mail : </td>
-                        <td><input type="text" name="email" size="50" value="<?= $email; ?>"></td>
+                        <td><?= $email; ?></td>
                     </tr>
                     <?php $zonelibre = $config->get('USER_ZONE_LIBRE');
                     if (empty($zonelibre)) {
@@ -283,28 +287,7 @@ open_page("Gestion des utilisateurs", $root); ?>
                         <td><?= $zonelibre; ?> : </td>
                         <td><input type="text" name="libre" size="50" value="<?= $libre; ?>"></td>
                     </tr>
-                    <tr>
-                        <td colspan="2">&emsp;</td>
-                    </tr>
-                    <tr>
-                        <td>Login : </td>
-                        <td><input type="text" name="lelogin" size="15" maxlength="15" value="<?= $lelogin; ?>"></td>
-                    </tr>
-                    <tr>
-                        <td>Mot de passe : </td>
-                        <td><input type="password" name="lepassw" size="15" maxlength="15">
-                            <?php if ($id == -1) { ?>
-                                <input type="checkbox" name="autopw" value="1"> Mot de passe automatique
-                            <?php } ?>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Mot de passe (vérif.) : </td>
-                        <td><input type="password" name="passwverif" size="15" maxlength="15"></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">&emsp;</td>
-                    </tr>
+                    <tr><td colspan="2">&emsp;</td></tr>
                     <tr>
                         <td>Statut : </td>
                         <td>
@@ -406,12 +389,9 @@ open_page("Gestion des utilisateurs", $root); ?>
                     <tr>
                         <td></td>
                         <td>
-                            <a href="<?= $root; ?>/admin/aide/gestuser.html" target="_blank">Aide</a>
-                            <button type="reset">Effacer</button>
-                            <button type="submit">Enregistrer</button>
-                            <?php if ($id > 0 && $level < 9) { ?>
-                                <a href="<?= $root; ?>/admin/gestuser.php?id=<?= $id; ?>&amp;act=del">Supprimer cet utilisateur</a>
-                            <?php } ?>
+                            <button type="reset" class="btn">Effacer</button>
+                            <button type="submit" class="btn">Enregistrer</button>
+                            <a href="<?= $root; ?>/admin/aide/gestuser.html" class="btn" target="_blank">Aide</a>
                         </td>
                     </tr>
                 </table>

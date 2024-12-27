@@ -145,7 +145,7 @@ open_page("Paramétrage du logiciel", $root, $js_show_help); ?>
                             ?>
                                 <select name="parvalue<?= $i; ?>">
                                     <?php foreach ($leschoix as $lechoix) { ?>
-                                        <option <?= selected_option(intval(mb_substr($lechoix, 0, isin($lechoix, "-", 0) - 1)), $row["valeur"]); ?>><?= $lechoix; ?></option>
+                                        <option <?= (intval(mb_substr($lechoix, 0, isin($lechoix, "-", 0) - 1)) == $row["valeur"] ? 'selected' : ''); ?>><?= $lechoix; ?></option>
                                     <?php } ?>
                                 </select>
                             <?php } else { ?>
@@ -157,8 +157,8 @@ open_page("Paramétrage du logiciel", $root, $js_show_help); ?>
                 <tr>
                     <td></td>
                     <td>
-                        <a href="<?= $root; ?>/admin/index.php">Annuler</a>
-                        <button type="submit">Enregistrer</button>
+                        <a href="<?= $root; ?>/admin/" class="btn">Annuler</a>
+                        <button type="submit" class="btn">Enregistrer</button>
                     </td>
                 </tr>
             </table>

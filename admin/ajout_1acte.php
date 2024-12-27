@@ -60,8 +60,8 @@ $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
                 <tr>
                     <td></td>
                     <td>
-                        <button type="reset">Annuler</button>
-                        <button type="submit">Ajouter</button>
+                        <button type="reset" class="btn">Annuler</button>
+                        <button type="submit" class="btn">Ajouter</button>
                     </td>
                 </tr>
             </table>
