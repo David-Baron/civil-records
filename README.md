@@ -11,4 +11,4 @@
 
 ## Compatibility
 
-Originaly from Expoactes 3.2.4-p406, the current devlopment main branch remains compatible with this version.
+Originaly from Expoactes 3.2.4-p406, the current main development branch remains compatible with this release.
