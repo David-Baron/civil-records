@@ -13,3 +13,7 @@
 /assets/css/cosmo.css
 /admin/users.php
 /next/ressources/routes.php
+/assets/modules
+/tools/carto_googlemap.php
+/maptest.php
+/index_origin.php

@@ -58,11 +58,12 @@ function open_page($title, $root = "", $js = null, $addbody = null, $addhead = n
     echo "</div>";
 }
 
-
-function explode_date($datetxt)  // transforme en date en un tableau en coupant sur / . - ou blanc
+/**
+ * transforme en date en un tableau en coupant sur / . - ou blanc
+ */
+function explode_date($datetxt)
 {
-    //echo "<p>".$datetxt;
-    if (strpos($datetxt, '/') > 0) {  // couper sur / ou sur - ou sur un blanc
+    if (strpos($datetxt, '/') > 0) {
         $elements = explode('/', $datetxt);
     } elseif (strpos($datetxt, '-') > 0) {
         $elements = explode('-', $datetxt);
@@ -78,7 +79,6 @@ function explode_date($datetxt)  // transforme en date en un tableau en coupant 
 
 function ajuste_date($datetxt, &$datesql, &$badannee)  // remise en forme des dates incomplètes
 {
-    //echo '<br>'.$datetxt;
     global $dateincomplete;
 
     $elements = explode_date($datetxt);
@@ -154,14 +154,8 @@ function statistiques($vue = "T")
 {
     global $root, $config, $xtyp, $show_alltypes;
 
-    $crit_dates = "";
-
     echo '<div class="box">';
     echo '<div class="box-title">Statistiques</div>';
-
-    if ($config->get('SHOW_DATES')) {
-        $crit_dates = " WHERE year(LADATE) > 0 ";
-    }
 
     $sql = "SELECT TYPACT, sum(NB_TOT) FROM " . $config->get('EA_DB') . "_sums GROUP BY TYPACT ORDER BY INSTR('NMDV',TYPACT)";
     $result = EA_sql_query($sql);
@@ -193,13 +187,13 @@ function statistiques($vue = "T")
             if ($ligne[1] > 0) {
                 $menu_actes .= iif($menu_actes == "", "", " | ");
                 if ($xtyp != $ligne[0]) {
-                    $menu_actes .= '<a href="' . $root . '/' . "index.php?vue=" . $vue . '&amp;xtyp=' . $ligne[0] . '">' . $typ . '</a>';
+                    $menu_actes .= '<a href="' . $root . '/' . "index.php?vue=" . $vue . '&xtyp=' . $ligne[0] . '">' . $typ . '</a>';
                 } else {
                     $menu_actes .= $typ;
                 }
                 $texte .= '<dd>';
                 if ($config->get('SHOW_ALLTYPES') == 0) {
-                    $texte .= '<a href="' . $root . '/' . "index.php?vue=" . $vue . '&amp;xtyp=' . $ligne[0] . '">';
+                    $texte .= '<a href="' . $root . '/' . "index.php?vue=" . $vue . '&xtyp=' . $ligne[0] . '">';
                 }
                 $texte .= entier($ligne[1]) . ' ' . $typ;
                 if ($config->get('SHOW_ALLTYPES') == 0) {
@@ -212,7 +206,7 @@ function statistiques($vue = "T")
         if ($config->get('SHOW_ALLTYPES') == 1) {
             $menu_actes .= iif($menu_actes == "", "", " | ");
             if ($xtyp != "A") {
-                $menu_actes .= '<a href="' . $root . '/' . "index.php?vue=" . $vue . '&amp;xtyp=A">' . 'Tous' . '</a>';
+                $menu_actes .= '<a href="' . $root . '/' . "index.php?vue=" . $vue . '&xtyp=A">' . 'Tous' . '</a>';
             } else {
                 $menu_actes .= 'Tous';
             }
@@ -228,7 +222,7 @@ function statistiques($vue = "T")
             $urlrss .= "?type=" . $xtyp;
             $mesrss .= " (" . typact_txt($xtyp) . ")";
         }
-        echo '<dt><a href="' . $urlrss . '" title="' . $mesrss . '"><img src="' . $root . '/tools/MakeRss/feed-icon-16x16.gif" border="0" alt="' . $mesrss . '" /></a></dt>';
+        echo '<dt><a href="' . $urlrss . '" title="' . $mesrss . '"><img src="' . $root . '/tools/MakeRss/feed-icon-16x16.gif" alt="' . $mesrss . '"></a></dt>';
     }
     echo '</dl></div>';
 
@@ -240,7 +234,6 @@ function menu_public()
 {
     global $root, $config, $userAuthorizer;
     echo '<div class="box">';
-    // traite le cas ou le niveau PUBLIC autre que 4 et 5, on affiche l'accès administration au dela d'un niveau 5 de l'utilisateur
     echo '<div class="box-title">Accès membre</div>';
     echo '<div class="box-body">';
     echo '<nav class="nav">';
@@ -294,30 +287,30 @@ function navigation($root = "", $level = 1, $type = 'A', $commune = null, $patro
     $xtyp = "?xtyp=$type";
     $xcomm = null != $commune ? "&xcomm=$commune" : '';
     $xpatr = null != $patronyme ? "&xpatr=$patronyme" : '';
-    $signe = "";
-    $s2 = "";
+    $libele = '';
+    $s2 = '';
     switch ($type) {
         case "N":
             $s2 = "/tab_naiss.php";
-            $signe = "Naissances";
+            $libele = "Naissances";
             break;
         case "M":
             $s2 = "/tab_mari.php";
-            $signe = "Mariages";
+            $libele = "Mariages";
             break;
         case "D":
             $s2 = "/tab_deces.php";
-            $signe = "Décès";
+            $libele = "Décès";
             break;
         case "V":
             $s2 = "/tab_bans.php";
-            $signe = "Divers";
+            $libele = "Divers";
             break;
         case "A":
-            $signe = "";
+            $libele = "";
             break;
         case "R":  // recherche
-            $signe = "";
+            $libele = "";
             break;
     }
 
@@ -343,9 +336,9 @@ function navigation($root = "", $level = 1, $type = 'A', $commune = null, $patro
         echo ' :: Communes et paroisses';
     }
     if ($level > 2) {
-        echo ' &gt;&gt; <a href="' . $path . $s2 . $xtyp . $xcomm . '">' . $commune . '</a> &gt;&gt; ' . $signe;
+        echo ' &gt;&gt; <a href="' . $path . $s2 . $xtyp . $xcomm . '">' . $commune . '</a> &gt;&gt; ' . $libele;
     } elseif ($level == 2) {
-        echo ' &gt;&gt; ' . $commune . ' &gt;&gt; ' . $signe;
+        echo ' &gt;&gt; ' . $commune . ' &gt;&gt; ' . $libele;
     }
     if ($level > 3) {
         echo ' &gt;&gt; <a href="' . $path . $s2 . $xtyp . $xcomm . $xpatr . '">' . $patronyme . '</a>';
@@ -374,7 +367,7 @@ function navadmin($root = '', $current = '')
     echo '<div class="box">';
     echo '<div class="box-title">';
     echo '<div class="breadcrumb">';
-    echo '<strong>Civil-Records</strong> | <a href="' . $root . '/admin/index.php">Administration</a>';
+    echo '<strong>Civil-Records</strong> | <a href="' . $root . '/admin/">Administration</a>';
     if ($current == '') {
         echo ' &gt; Tableau de bord';
     } else {
@@ -1041,7 +1034,7 @@ function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = 
                     $lire1 = 1;
                     $lire2 = 1;
                 }
-                echo '<td align="center"><strong>' . $lenom . '</strong></td>';
+                echo '<td><strong>' . $lenom . '</strong></td>';
                 while (mb_strlen($lenom) < $lgi) {
                     $lenom = $lenom . ' ';
                 }
@@ -1443,11 +1436,7 @@ function current_user_solde()
 {
     global $session, $config;
 
-    if ($config->get('GEST_POINTS') == 0) {
-        return 9999;
-    }
-
-    if ($session->get('user')['level'] >= 8 || $session->get('user')['regime'] == 0) {
+    if ($config->get('GEST_POINTS') == 0 || $session->get('user')['regime'] == 0 || $session->get('user')['level'] >= 8) {
         return 9999;
     }
 
@@ -1713,8 +1702,8 @@ function maj_stats($xtyp, $T0, $path, $mode, $com = "", $dep = "")
 function geocode_google($com, $dep)
 // Interroge google pour pour connaitre les coordonnées d'une commune
 {
-    include_once("GoogleMap/OrienteMap.inc.php");
-    include_once("GoogleMap/Jsmin.php");
+    include_once(__DIR__ .'/GoogleMap/OrienteMap.inc.php');
+    include_once(__DIR__ .'/GoogleMap/Jsmin.php');
 
     global $carto;
     if (!isset($carto)) {

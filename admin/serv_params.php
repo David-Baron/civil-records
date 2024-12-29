@@ -46,6 +46,9 @@ navadmin($root, "Paramètres serveur");
 
 require(__DIR__ . '/../templates/admin/_menu-software.php');
 
+/**
+ * @deprecated
+ */
 $sql = "SELECT valeur FROM " . $config->get('EA_DB') . "_params WHERE param = 'EA_MAINTENANCE'";
 $result = EA_sql_query($sql);
 $row = EA_sql_fetch_array($result);
@@ -78,6 +81,7 @@ if (isset($status[7])) {
 }
 
 echo '<h3>Paramètres du serveur</h3>';
+echo '<div>';
 echo "<p>Temps limite pour l'exécution des requêtes (sec) : " . val_var_mysql('wait_timeout') . "</p>";
 echo "<p>Temps limite pour les lectures (sec) : " . val_var_mysql('net_read_timeout') . "</p>";
 echo "<p>Temps limite pour les écritures (sec) : " . val_var_mysql('net_write_timeout') . "</p>";
@@ -91,7 +95,7 @@ echo "<p>Nombre maximal de connexions simultannées pour vous : " . $maxcon . "<
 if (file_exists('serv_params_accents.inc.php')) {
     include('serv_params_accents.inc.php');
 }
-
+echo '</div>';
 echo '<h2>Informations sur le géocodage (via Google Maps)</h2>';
 test_geocodage(true);
 echo '</div>';

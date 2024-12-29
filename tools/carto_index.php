@@ -71,7 +71,7 @@ if ($result = EA_sql_query($sql)) {
             $commune = $ligne['COMMUNE'];
             $pre_commune = $depart . $commune;
             $etiquette = $commune . " [" . $depart . "]";
-            $txthtml = "<b>" . $commune . " [" . $depart . "]</b><br />&nbsp;<br />";
+            $txthtml = "<b>" . $commune . " [" . $depart . "]</b><br>&nbsp;<br />";
         }
         $linkdiv = '';
         switch ($ligne['TYPACT']) {

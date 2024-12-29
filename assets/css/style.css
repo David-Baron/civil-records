@@ -379,6 +379,17 @@ dt {
     text-align: right;
 }
 
+.container {
+    display: block;
+    width:100%;
+    height:auto;
+}
+
+#map {
+    width: 100%;
+    height: 600px;
+    margin: auto;
+}
 
 @media screen and (max-width: 576px) {
     body {

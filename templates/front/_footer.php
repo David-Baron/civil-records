@@ -12,6 +12,10 @@
         include(__DIR__ . '/../../_config/js_externe_footer.inc.php');
     }
 
+    if (isset($javascripts)) {
+        echo $javascripts;
+    }
+
     global $TIPmsg;  // message d'alerte pré-blocage IP
     if ($TIPmsg <> "" && $config->get('TIP_MODE_ALERT') >= 2) {
         echo '<script language="javascript">';

@@ -179,7 +179,7 @@ $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
             echo "<tr>";
             echo '<td>Déposant : </td>';
             echo '<td>';
-            listbox_users("olddepos", 0, $config->get('DEPOSANT_LEVEL'), ' *** Tous *** ');
+            listbox_users("olddepos", 0, $config->get('DEPOSANT_LEVEL'), ' -- Tous -- ');
             echo '</td>';
             echo "</tr>";
             // echo "<tr><td colspan=\"2\">&nbsp;</td></tr>";
