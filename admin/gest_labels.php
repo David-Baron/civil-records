@@ -26,15 +26,6 @@ function show_grp($grp, $current, $barre)
     }
 }
 
-function alaligne($texte)
-{
-    // insert des BR pour provoquer des retour à la ligne
-    $order   = array("\r\n", "\n", "\r");
-    $replace = '<br />';
-    // Traitement du premier \r\n, ils ne seront pas convertis deux fois.
-    return str_replace($order, $replace, $texte);
-}
-
 $lg = $GLOBALS['lg'];
 $ok = false;
 $missingargs = false;

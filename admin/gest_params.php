@@ -14,56 +14,47 @@ if (!$userAuthorizer->isGranted(9)) {
 
 function show_grp($grp, $current, $barre)
 {
+    global $root;
+
     if ($barre) {
         echo ' | ';
     }
     if ($grp == $current) {
         echo '<strong>' . $grp . '</strong>';
     } else {
-        echo '<a href="gest_params.php?grp=' . $grp . '">' . $grp . '</a>';
+        echo '<a href="' .$root. '/admin/gest_params.php?grp=' . $grp . '">' . $grp . '</a>';
     }
 }
 
-function alaligne($texte)
+
+$show_help = 
+<<<AAA
+function show(id)
 {
-    // insert des BR pour provoquer des retour à la ligne
-    $order   = array("\r\n", "\n", "\r");
-    $replace = '<br />';
-    // Traitement du premier \r\n, ils ne seront pas convertis deux fois.
-    return str_replace($order, $replace, $texte);
+	el = document.getElementById(id);
+	if (el.style.display == 'none') {
+		el.style.display = '';
+		el = document.getElementById('help' + id);
+	} else {
+		el.style.display = 'none';
+		el = document.getElementById('help' + id);
+	}
 }
+AAA;
 
-$js_show_help = "";
-$js_show_help .= "function show(id) \n ";
-$js_show_help .= "{ \n ";
-$js_show_help .= "	el = document.getElementById(id); \n ";
-$js_show_help .= "	if (el.style.display == 'none') \n ";
-$js_show_help .= "	{ \n ";
-$js_show_help .= "		el.style.display = ''; \n ";
-$js_show_help .= "		el = document.getElementById('help' + id); \n ";
-$js_show_help .= "	} else { \n ";
-$js_show_help .= "		el.style.display = 'none'; \n ";
-$js_show_help .= "		el = document.getElementById('help' + id); \n ";
-$js_show_help .= "	} \n ";
-$js_show_help .= "} \n ";
 
-$ok = false;
-$missingargs = false;
-$xgroupe  = getparam('grp');
+$xgroupe  = $request->get('grp', 'Affichage');
 $xconfirm = getparam('xconfirm');
-
-if ($xgroupe == '') {
-    // Données postées
-    $xgroupe = "Affichage";
-    $missingargs = true;  // par défaut
-}
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 
+$ok = false;
+$missingargs = true;
 $menu_software_active = 'P';
 
+
 ob_start();
-open_page("Paramétrage du logiciel", $root, $js_show_help); ?>
+open_page("Paramétrage du logiciel", $root, $show_help); ?>
 <div class="main">
     <?php zone_menu(10, $session->get('user')['level'], array()); ?>
     <div class="main-col-center text-center">
@@ -133,8 +124,7 @@ open_page("Paramétrage du logiciel", $root, $js_show_help); ?>
                         <td>
                             <b><?= $row["libelle"]; ?></b>
                             <a href="<?= $root; ?>/admin/gest_params.php?grp=<?= $xgroupe; ?>" id="help<?= $i; ?>" onclick="show('aide<?= $i; ?>');return false;"><b>(?)</b></a>
-                            <span id="aide<?= $i; ?>" style="display: none" class="aide"><br><?= $row["param"]; ?> :
-                                <?= alaligne($row["aide"]); ?></span> :
+                            <span id="aide<?= $i; ?>" style="display: none" class="aide"><br><?= $row["aide"]; ?></span>
                         </td>
                         <td>
                             <input type="hidden" name="parname<?= $i; ?>" value="<?= $row["param"]; ?>">

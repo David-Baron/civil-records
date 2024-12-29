@@ -1016,3 +1016,13 @@ function mkurl($script, $arg1, $arg2 = "", $args = "")
     }
     return $url;
 }
+
+
+function alaligne($texte)
+{
+    // insert des BR pour provoquer des retour à la ligne
+    $order   = array("\r\n", "\n", "\r");
+    $replace = '<br />';
+    // Traitement du premier \r\n, ils ne seront pas convertis deux fois.
+    return str_replace($order, $replace, $texte);
+}
