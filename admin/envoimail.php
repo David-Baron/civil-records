@@ -85,9 +85,7 @@ require(__DIR__ . '/../templates/admin/_menu-user.php');
     echo '<form method="post" enctype="multipart/form-data">';
     echo '<h2 align="center">Envoi d\'un mail circulaire</h2>';
     echo '<table class="m-auto">';
-
     echo "<tr><td colspan=\"2\"><b>Destinataires</b></td></tr>";
-
     echo "<tr>";
     echo "<td>Droits d'accès : </td>";
     echo '<td>';
@@ -114,21 +112,16 @@ require(__DIR__ . '/../templates/admin/_menu-user.php');
     echo '<input type="text" name="rem" size="50" value="' . $rem . '">';
     echo "</td>";
     echo "</tr>";
-
     echo "<tr><td colspan=\"2\"><b>Message</b></td></tr>";
-
     echo "<tr>";
     echo "<td>Sujet : </td>";
     echo '<td><input type="text" name="sujet" size="60" value="' . $sujet . '"></td>';
     echo "</tr>";
-
     echo '<tr>';
     echo "<td>Texte du mail : </td>";
     echo '<td><textarea name="message" cols="60" rows="10">' . $message . '</textarea></td>';
     echo "</tr>";
-
     echo "<tr><td colspan=\"2\"></td></tr>";
-    
     echo "<tr><td></td><td>";
     echo '<button type="reset" class="btn">Effacer</button>';
     echo '<button type="submit" class="btn">Envoyer</button>';

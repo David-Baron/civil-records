@@ -1026,3 +1026,30 @@ function alaligne($texte)
     // Traitement du premier \r\n, ils ne seront pas convertis deux fois.
     return str_replace($order, $replace, $texte);
 }
+
+
+function menu_public()
+{
+    global $root, $config, $userAuthorizer;
+    echo '<div class="box">';
+    echo '<div class="box-title">Accès membre</div>';
+    echo '<div class="box-body">';
+    echo '<nav class="nav">';
+    echo '<a href="' . $root . '/">Accueil</a>';
+    if (!$userAuthorizer->isAuthenticated()) {
+        echo '<a href="' . $root . '/login.php">Connexion</a>';
+        if ($config->get('SHOW_ACCES') == 1) {
+            echo '<a href="' . $root . '/acces.php">Conditions d\'accès</a>';
+        }
+    } else {
+        if ($userAuthorizer->isGranted($config->get('CHANGE_PW'))) {
+            echo '<a href="' . $root . '/changepw.php">Changer le mot de passe</a>';
+        }
+        echo '<a href="' . $root . '/index.php?act=logout">Déconnexion</a>';
+    }
+    if ($config->get('EMAIL_CONTACT') <> "") {
+        echo '<a href="' . $root . '/form_contact.php">Contact</a>';
+    }
+    echo '</nav></div>';
+    echo '</div>';
+}

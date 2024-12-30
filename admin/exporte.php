@@ -426,14 +426,14 @@ function init_page($head = "")
         echo " <tr><td colspan=\"2\"></td></tr>";
         if ($Destin == "B") {
             $Max_mega = $Max_size / 1024 / 1024;
-            echo " <tr>";
+            echo "<tr>";
             echo '<td>Taille maximale : </td>';
             echo '<td><input type="text" name="maxmega" value="' . $Max_mega . '"size="2">  Mb';
             echo '</td>';
         } else {
-            echo " <tr>";
-            echo '  <td>Déposant : </td>';
-            echo '  <td>';
+            echo "<tr>";
+            echo '<td>Déposant : </td>';
+            echo '<td>';
             if ($session->get('user')['level'] < 8) {
                 echo '<input type="hidden" name="olddepos" value="0">';
             } else {
@@ -474,7 +474,7 @@ function init_page($head = "")
 
         echo "<tr>";
         echo '<td>Maximum d\'actes sélectionnés par requête <br>(voir <a target="_blank" href="' . 'gest_params.php?grp=Système">MAX_SELECT_REC</a>) 0 = pas de limite : </td>';
-        echo '<td><input type="text" name="maxrecord" value="' . $max_select_rec_i . '" size="6" /> ';
+        echo '<td><input type="text" name="maxrecord" value="' . $max_select_rec_i . '" size="6"> ';
         echo '</td>';
         echo "</tr>";
 

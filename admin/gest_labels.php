@@ -222,10 +222,10 @@ open_page("Paramétrage des étiquettes", $root); ?>
                             }
                             $j++;
                             echo '<tr class="row0">';
-                            echo ' <input type="hidden" name="grp_' . $j . '"  value="' . $curgrp . '" />';
-                            echo '  <td align="left"><i>&nbsp; ' . $grpes[$curgrp] . "</i> </td>\n";
-                            echo ' <td>';
-                            echo '<input type="text" name="group_' . $j . '" size="30" maxlength="50" value="' . $grptxt . '" />';
+                            echo '<input type="hidden" name="grp_' . $j . '"  value="' . $curgrp . '">';
+                            echo '<td><i>&nbsp; ' . $grpes[$curgrp] . "</i> </td>";
+                            echo '<td>';
+                            echo '<input type="text" name="group_' . $j . '" size="30" maxlength="50" value="' . $grptxt . '">';
                             echo $type_txt;
                             echo '</td>';
                             echo '</tr>';
@@ -260,14 +260,14 @@ open_page("Paramétrage des étiquettes", $root); ?>
                                     $grptxt = grp_label($curgrp, $xfile, $lg);
                                     $j++;
                                     echo '<tr class="row0">';
-                                    echo '  <td align="right"><b><i>Groupe : &nbsp;</i></b></td>';
-                                    echo ' <input type="hidden" name="grp_' . $j . '"  value="' . $curgrp . '" />';
-                                    echo '  <td align="left"><i>&nbsp; ' . $grpes[$curgrp] . "</i> </td>\n";
-                                    echo ' <td><input type="text"   name="group_' . $j . '" size="30" maxlength="50" value="' . $grptxt . '" /></td>';
+                                    echo '<td align="right"><b><i>Groupe : &nbsp;</i></b></td>';
+                                    echo '<input type="hidden" name="grp_' . $j . '"  value="' . $curgrp . '">';
+                                    echo '<td><i>' . $grpes[$curgrp] . "</i></td>";
+                                    echo '<td><input type="text" name="group_' . $j . '" size="30" maxlength="50" value="' . $grptxt . '"></td>';
                                     echo '</tr>';
                                 }
-                                echo ' <tr class="row1">';
-                                echo '  <td align="left"><b>' . $row["zone"] . "</b> : </td>\n";
+                                echo '<tr class="row1">';
+                                echo '<td><b>' . $row["zone"] . "</b> : </td>";
                                 echo '<td>';
                                 if (mb_substr($row["zone"], -3) == "PRE") {
                                     echo 'Avec le nom';
@@ -276,7 +276,7 @@ open_page("Paramétrage des étiquettes", $root); ?>
                                     foreach ($leschoix as $lechoix) {
                                         echo '<option ' . (mb_substr($lechoix, 0, isin($lechoix, "-", 0) - 1) == $row["affich"] ? 'selected' : '') . '>' . mb_substr($lechoix, isin($lechoix, "-", 0) + 1) . '</option>';
                                     }
-                                    echo " </select>\n";
+                                    echo "</select>";
                                 } ?>
                         </td>
                         <td>
@@ -286,16 +286,15 @@ open_page("Paramétrage des étiquettes", $root); ?>
                     </tr>
                 <?php } ?>
                 <tr>
+                    <input type="hidden" name="grpnbr" value="<?= $j; ?>">
+                    <input type="hidden" name="parnbr" value="<?= $i; ?>">
+                    <input type="hidden" name="file" value="<?= $xfile; ?>">
+                    <input type="hidden" name="xconfirm" value="default">
                     <td>
-                        <input type="hidden" name="grpnbr" value="<?= $j; ?>">
-                        <input type="hidden" name="parnbr" value="<?= $i; ?>">
-                        <input type="hidden" name="file" value="<?= $xfile; ?>">
-                        <input type="hidden" name="xconfirm" value="default">
-                    <?php }
-                        if (($xfile !== 'X') || ($lesigle != $code_liste)) { ?>
-                        <a href="<?= $root; ?>/admin/" class="btn">Annuler</a>
                     </td>
-                    <td><button type="submit" class="btn">Enregistrer</button></td>
+                <?php }
+                        if (($xfile !== 'X') || ($lesigle != $code_liste)) { ?>
+                    <td><a href="<?= $root; ?>/admin/" class="btn">Annuler</a><button type="submit" class="btn">Enregistrer</button></td>
                 <?php } ?>
                 </tr>
             </table>

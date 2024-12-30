@@ -233,7 +233,8 @@ if (current_user_solde() == 0 && $config->get('RECH_ZERO_PTS') == 0) {
 
 $T0 = time();
 $MT0 = microtime_float();
-$txtcomp = "";
+$txtcomp = '';
+$pagination = '';
 
 pathroot($root, $path, $xcomm, $xpatr, $page);
 $xach  = $request->request->get('achercher');
@@ -313,13 +314,13 @@ open_page("Recherches dans les tables", $root); ?>
     echo '<h2>Résultats de la recherche</h2>';
 
     // Résultats de la recherche
-    $critN = "";
-    $critD = "";
-    $critM = "";   // critère mariage/divers pour rech full scan
-    $critM1 = "";  // critère mariage/divers pour rech indexée sur 1er intéressé  ( car le "or" bloque l'indexé)
-    $critM2 = "";  // critère mariage/divers pour rech indexée sur 2d intéressé
-    $critV = "";
-    $mes = "";
+    $critN = '';
+    $critD = '';
+    $critM = '';   // critère mariage/divers pour rech full scan
+    $critM1 = '';  // critère mariage/divers pour rech indexée sur 1er intéressé  ( car le "or" bloque l'indexé)
+    $critM2 = '';  // critère mariage/divers pour rech indexée sur 2d intéressé
+    $critV = '';
+    $mes = '';
 
     if ($xach . $xpre == "") {
         $xzone = "";
@@ -488,9 +489,6 @@ open_page("Recherches dans les tables", $root); ?>
         $baselink .= '&amp;amin=' . $xmin . '&amp;amax=' . $xmax;
 
         $limit = "";
-        $listpages = "";
-        pagination($nbtot, $page, $baselink, $listpages, $limit);
-
         if ($limit <> "") {
             $sql = $sql . $limit;
             $result = EA_sql_query($sql);
@@ -499,12 +497,14 @@ open_page("Recherches dans les tables", $root); ?>
             $nb = $nbtot;
         }
 
+        $pagination = pagination($nbtot, $page, $baselink, $pagination, $limit);
+        
         echo '<div class="critrech">Recherche de : <ul>' . $mes . $listactes . '</ul></div>';
 
         if ($nb > 0) {
             $i = ($page - 1) * $config->get('MAX_PAGE') + 1;
             echo '<p><b>' . $nbtot . ' actes trouvés</b></p>';
-            echo '<p>' . $listpages . '</p>';
+            echo '<p>' . $pagination . '</p>';
             echo '<table class="m-auto" summary="Liste des résultats">';
             echo '<tr class="rowheader">';
             echo '<th></th>';
@@ -543,7 +543,7 @@ open_page("Recherches dans les tables", $root); ?>
                 $i++;
             }
             echo '</table>';
-            echo '<p>' . $listpages . '</p>';
+            echo '<p>' . $pagination . '</p>';
         } else {
             echo '<p> Aucun acte trouvé </p>';
         }

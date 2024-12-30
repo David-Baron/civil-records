@@ -11,16 +11,71 @@ if (!$userAuthorizer->isGranted(9)) {
     exit();
 }
 
-pathroot($root, $path, $xcomm, $xpatr, $page);
-
-$xcomm = "";
-$xpatr = "";
 $page = 1;
-$xord  = getparam('xord', 'N'); // N = Nom
-$page  = getparam('pg');
-$init  = getparam('init');
+$xord  = $request->get('xord', 'C'); // C = Commune, D = departement, S = Statut
+$page  = $request->get('pg');
+$init  = $request->get('init', null);
 
+$limit = '';
+$pagination = '';
+$alphabet = '';
+$url_params = '';
+$geoloc_modes = ['M' => 'Manuelle', 'N' => 'Non définie', 'A' => 'Automatique'];
 $menu_data_active = 'L';
+
+if ($init !== null) {
+    $url_params = '&init=' . $init;
+}
+
+// $sql = "SELECT DISTINCT upper(left(COMMUNE,1)) AS init FROM ".EA_DB."_geoloc ORDER BY init";
+// Sélectionner et grouper sur initiale de commune et ascii(initiale), ordonner code ascii ascendant pour avoir + grand code (accentué) en dernier
+$sql = "SELECT alphabet.init FROM (SELECT upper(left(COMMUNE, 1)) AS init,ascii(upper(left(COMMUNE, 1))) AS oo FROM " . $config->get('EA_DB') . "_geoloc GROUP BY init,oo  ORDER BY init , oo ASC) AS alphabet GROUP BY init";
+$result = EA_sql_query($sql);
+
+while ($letter = EA_sql_fetch_row($result)) {
+    if ($letter[0] == $init) {
+        $alphabet .= '<b>' . $letter[0] . '</b> ';
+    } else {
+        $alphabet .= '<a href="' . $root . '/admin/listgeolocs.php?xord=' . $xord . '&init=' . $letter[0] . '">' . $letter[0] . '</a> ';
+    }
+}
+
+$hcommune = '<a href="' . $root . '/admin/localities.php?xord=C' . $url_params . '">Commune</a>';
+$hdepart  = '<a href="' . $root . '/admin/localities.php?xord=D' . $url_params . '">Département</a>';
+$hgeoloc  = '<a href="' . $root . '/admin/localities.php?xord=S' . $url_params . '">Géolocalisation</a>';
+$baselink = $root . '/admin/localities.php?xord=' . $xord . $url_params;
+
+if ($xord == "C") {
+    $order = "COMMUNE, DEPART";
+    $hcommune = '<b>Commune</b>';
+} elseif ($xord == "D") {
+    $order = "DEPART, COMMUNE";
+    $hdepart = '<b>Département</b>';
+} elseif ($xord == "S") {
+    $order = "find_in_set(STATUT,'N, M, A')";
+    $hgeoloc = '<b>Géolocalisation</b>';
+} else {
+    $order = "COMMUNE, DEPART";
+    $hcommune = '<b>Commune</b>';
+}
+if ($init == "") {
+    $condit = "";
+} else {
+    $condit = " WHERE COMMUNE LIKE '" . $init . "%' ";
+}
+
+$sql = "SELECT ID, COMMUNE, DEPART, LON, LAT, STATUT FROM " . $config->get('EA_DB') . "_geoloc " . $condit . " ORDER BY " . $order;
+$result = EA_sql_query($sql);
+$nbtot = EA_sql_num_rows($result);
+if ($limit <> "") {
+    $sql = $sql . $limit;
+    $result = EA_sql_query($sql, $a_db);
+    $nb = EA_sql_num_rows($result);
+} else {
+    $nb = $nbtot;
+}
+
+$pagination = pagination($nbtot, $page, $baselink, $pagination, $limit);
 
 ob_start();
 open_page($config->get('SITENAME') . " : Liste des localités (communes et paroisses)", $root); ?>
@@ -29,111 +84,40 @@ open_page($config->get('SITENAME') . " : Liste des localités (communes et paroi
     <div class="main-col-center text-center">
         <?php
         navadmin($root, "Liste des localités");
-
+ 
         require(__DIR__ . '/../templates/admin/_menu-data.php');
 
         echo '<h2>Localités connues du site ' . $config->get('SITENAME') . '</h2>';
-
-        $baselink = $root . '/admin/listgeolocs.php';
-        // $sql = "SELECT DISTINCT upper(left(COMMUNE,1)) AS init FROM ".EA_DB."_geoloc ORDER BY init";
-        // Sélectionner et grouper sur initiale de commune et ascii(initiale), ordonner code ascii ascendant pour avoir + grand code (accentué) en dernier
-        $sql = "SELECT  alphabet.init  FROM ( SELECT upper(left(COMMUNE,1)) AS init,ascii(upper(left(COMMUNE,1)))  AS oo FROM " . $config->get('EA_DB') . "_geoloc GROUP BY init,oo  ORDER BY init , oo ASC) AS alphabet GROUP BY init";
-
-        $result = EA_sql_query($sql);
-        $alphabet = "";
-        while ($row = EA_sql_fetch_row($result)) {
-            if ($row[0] == $init) {
-                $alphabet .= '<b>' . $row[0] . '</b> ';
-            } else {
-                $alphabet .= '<a href="' . $baselink . '?xord=' . $xord . '&amp;init=' . $row[0] . '">' . $row[0] . '</a> ';
-            }
-        }
         echo '<p align="center">' . $alphabet . '</p>';
 
-        if ($init == "") {
-            $initiale = '';
-        } else {
-            $initiale = '&amp;init=' . $init;
-        }
-
-        $hcommune = '<a href="' . $baselink . '?xord=C' . $initiale . '">Commune</a>';
-        $hdepart  = '<a href="' . $baselink . '?xord=D' . $initiale . '">Département</a>';
-        $hgeoloc  = '<a href="' . $baselink . '?xord=S' . $initiale . '">Géolocalisation</a>';
-        $baselink = $baselink . '?xord=' . $xord . $initiale;
-
-        if ($xord == "C") {
-            $order = "COMMUNE,DEPART";
-            $hcommune = '<b>Commune</b>';
-        } elseif ($xord == "D") {
-            $order = "DEPART, COMMUNE";
-            $hdepart = '<b>Département</b>';
-        } elseif ($xord == "S") {
-            $order = "find_in_set(STATUT,'N,M,A')";
-            $hgeoloc = '<b>Géolocalisation</b>';
-        } else {
-            $order = "COMMUNE,DEPART";
-            $hcommune = '<b>Commune</b>';
-        }
-        if ($init == "") {
-            $condit = "";
-        } else {
-            $condit = " WHERE COMMUNE LIKE '" . $init . "%' ";
-        }
-
-
-        $sql = "SELECT ID,COMMUNE,DEPART,LON,LAT,STATUT"
-            . " FROM " . $config->get('EA_DB') . "_geoloc "
-            . $condit
-            . " ORDER BY " . $order;
-        $result = EA_sql_query($sql);
-        $nbtot = EA_sql_num_rows($result);
-
-        $limit = "";
-        $listpages = "";
-        pagination($nbtot, $page, $baselink, $listpages, $limit);
-
-        if ($limit <> "") {
-            $sql = $sql . $limit;
-            $result = EA_sql_query($sql, $a_db);
-            $nb = EA_sql_num_rows($result);
-        } else {
-            $nb = $nbtot;
-        }
-
         if ($nb > 0) {
-            if ($listpages <> "") {
-                echo '<p>' . $listpages . '</p>';
-            }
             $i = 1 + ($page - 1) * $config->get('MAX_PAGE_ADM');
-            echo '<table summary="Liste des localités">';
+            echo '<p>' . $pagination . '</p>';
+            echo '<table class="m-auto" summary="Liste des localités">';
             echo '<tr class="rowheader">';
             echo '<th> Tri : </th>';
             echo '<th>' . $hcommune . '</th>';
             echo '<th>' . $hdepart . '</th>';
+            echo '<th>Latitude</th>';
+            echo '<th>Longitude</th>';
             echo '<th>' . $hgeoloc . '</th>';
             echo '</tr>';
 
-
-            while ($ligne = EA_sql_fetch_array($result)) {
-                echo '<tr class="row' . (fmod($i, 2)) . '">';
+            while ($geoloc = EA_sql_fetch_array($result)) {
+                echo '<tr>';
                 echo '<td>' . $i . '. </td>';
-                $lenom = $ligne['COMMUNE'];
-                if (trim($lenom) == "") {
-                    $lenom = '&lt;non précisé&gt;';
-                }
-                echo '<td><a href="' . $root . '/admin/gestgeoloc.php?id=' . $ligne['ID'] . '">' . $lenom . '</a> </td>';
-                echo '<td>' . $ligne['DEPART'] . ' </td>';
-                $ast = array("M" => "Manuelle", "N" => "Non définie", "A" => "Auto");
-                echo '<td align="center">' . $ast[$ligne['STATUT']] . '</td>';
+                echo '<td><a href="' . $root . '/admin/gestgeoloc.php?id=' . $geoloc['ID'] . '">' . ($geoloc['COMMUNE'] ?? '&lt;non précisé&gt;') . '</a></td>';
+                echo '<td>' . $geoloc['DEPART'] . '</td>';
+                echo '<td>' . $geoloc['LAT'] . '</td>';
+                echo '<td>' . $geoloc['LON'] . '</td>';
+                echo '<td>' . $geoloc_modes[$geoloc['STATUT']] . '</td>';
                 echo '</tr>';
                 $i++;
             }
             echo '</table>';
-            if ($listpages <> "") {
-                echo '<p>' . $listpages . '</p>';
-            }
+            echo '<p>' . $pagination . '</p>';
         } else {
-            msg('Aucune localité géocodée');
+            echo '<p>Aucune localité trouvée</p>';
         } ?>
     </div>
 </div>

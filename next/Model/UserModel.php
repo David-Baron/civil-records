@@ -4,7 +4,7 @@ require_once(__DIR__ . '/../Engine/DatabaseConnection.php');
 
 class UserModel extends DatabaseConnection
 {
-    public function findAll($limit = 50, $offset = 0)
+    public function findAll($limit = 50, $offset = 0): array
     {
         $sql = "SELECT * FROM " . $this->table_prefix . "_user3 LIMIT $limit OFFSET $offset";
         
@@ -13,7 +13,7 @@ class UserModel extends DatabaseConnection
         return $stmt->fetchAll();
     }
 
-    public function findAllByCriteria(array $criteria)
+    public function findAllByCriteria(array $criteria): array
     {
         $params = '';
         $i = 0;
@@ -31,7 +31,7 @@ class UserModel extends DatabaseConnection
         return $stmt->fetchAll();
     }
 
-    public function findOneByCriteria(array $criteria)
+    public function findOneByCriteria(array $criteria): array
     {
         $params = '';
         $i = 0;
@@ -53,7 +53,7 @@ class UserModel extends DatabaseConnection
         return null;
     }
 
-    public function findAllWithMinLevel(int $minUserlevel)
+    public function findAllWithMinLevel(int $minUserlevel): array
     {
         $sql = "SELECT * FROM " . $this->table_prefix . "_user3 WHERE LEVEL>=:minUserlevel ORDER BY NOM,PRENOM";
         $stmt = $this->db->prepare($sql);
@@ -64,7 +64,7 @@ class UserModel extends DatabaseConnection
         return $stmt->fetchAll();
     }
 
-    public function insert(array $user)
+    public function insert(array $user): int
     {
         $date = (new DateTime())->format('Y-m-d');
         $expire_on = ((new DateTime())->add(new DateInterval('P2Y')))->format('Y-m-d');
@@ -89,6 +89,8 @@ class UserModel extends DatabaseConnection
             ':REM' => $user['REM'],
             ':libre' => $user['libre']
         ]);
+
+        return $this->db->lastInsertId($this->table_prefix . "_user3");
     }
 
     public function update(array $user)

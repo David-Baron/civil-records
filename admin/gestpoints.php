@@ -150,8 +150,8 @@ if ($missingargs) {
         }
     }
 
-    echo '<form method="post" enctype="multipart/form-data" action="">';
-    echo '<h2 align="center">' . $ptitle . '</h2>';
+    echo '<form method="post" enctype="multipart/form-data">';
+    echo '<h2>' . $ptitle . '</h2>';
     echo '<table class="m-auto">';
 
     echo "<tr><td colspan=\"2\"><b>Utilisateurs concernés</b></td></tr>";
@@ -190,7 +190,6 @@ if ($missingargs) {
     listbox_trait('conditexp', "NTS", $conditexp);
     echo '<input type="text" name="dtexpir" size="10" value="' . $dtexpir . '"></td>';
     echo " </tr>";
-
 
     echo "<tr><td>ET</td><td>&nbsp;</td></tr>";
     echo "<tr>";

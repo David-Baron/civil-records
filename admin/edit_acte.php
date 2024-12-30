@@ -241,7 +241,7 @@ open_page($title, $root); ?>
                     echo "</td></tr></table>";
                     echo "</form>";
                 } else {
-                    msg('Impossible de trouver cet acte !');
+                    echo '<p>Impossible de trouver cet acte !</p>';
                 }
             }
         } ?>

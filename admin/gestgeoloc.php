@@ -15,18 +15,24 @@ pathroot($root, $path, $xcomm, $xpatr, $page);
 
 $id  = getparam('id');
 $act = getparam('act');
-$lon    = getparam('lon');
-$lat    = getparam('lat');
-$noteN  = getparam('noteN');
-$noteM  = getparam('noteM');
-$noteD  = getparam('noteD');
-$noteV  = getparam('noteV');
-$leid = getparam('id');
-$ast = array("M" => "Manuelle", "N" => "Non définie", "A" => "Automatique");
-$missingargs = true;
-$JSheader = "";
 
-if ($id > 0) {  // édition
+$geoloc = [
+    'COMMUNE' => '',
+    'DEPART' => '',
+    'LAT' => '',
+    'LON' => '',
+    'STATUT' => 'M',
+    'NOTE_N' => '',
+    'NOTE_M' => '',
+    'NOTE_D' => '',
+    'NOTE_V' => '',
+];
+
+$geoloc_modes = ['M' => 'Manuelle', 'N' => 'Non définie', 'A' => 'Automatique'];
+
+$missingargs = true;
+
+if ($id > 0) {
     $action = 'Modification';
     $sql = "SELECT * FROM " . $config->get('EA_DB') . "_geoloc WHERE ID =" . $id;
 
@@ -41,59 +47,23 @@ if ($id > 0) {  // édition
         $noteM     = $row["NOTE_M"];
         $noteD     = $row["NOTE_D"];
         $noteV     = $row["NOTE_V"];
-    } else {
-        echo "<p>*** FICHE NON TROUVEE***</p>";
     }
-    $zoom = 11;
-    if ($lon == 0 and $lat == 0 and $config->get('GEO_CENTRE_CARTE') <> "") {
-        $georeq = "SELECT LON,LAT FROM " . $config->get('EA_DB') . "_geoloc WHERE COMMUNE = '" . sql_quote($config->get('GEO_CENTRE_CARTE')) . "' AND STATUT IN ('A','M')";
-        $geores =  EA_sql_query($georeq);
-        if ($geo = EA_sql_fetch_array($geores)) {
-            $lon = $geo['LON'];
-            $lat = $geo['LAT'];
-            $zoom = 5;
-        }
-    }
-    if ($lon == 0 and $lat == 0) {
-        $lon = 5;
-        $lat = 50; // Froidfontaine !!
-        $zoom = 5;
-    }
-
-    include_once(__DIR__ . '/../tools/GoogleMap/OrienteMap.inc.php');
-    include_once(__DIR__ . '/../tools/GoogleMap/Jsmin.php');
-
-    $carto = new GoogleMapAPI();
-    $carto->_minify_js = isset($_REQUEST["min"]) ? false : true;
-    $carto->setMapType("terrain");
-    $carto->setTypeControlsStyle("dropdown");
-    $carto->setHeight(300);
-    $carto->setWidth(500);
-    global $root;
-    $image = $config->get('EA_URL_SITE') . $root . '/assets/img/pin_eye.png';
-    $Xanchor = 10;
-    $Yanchor = 35;
-    $carto->setMarkerIcon($image, '', $Xanchor, $Yanchor); // défini le décalage du pied de la punaise
-    $carto->addMarkerByCoords($lon, $lat);
-    $carto->enableMarkerDraggable();
-    $carto->setZoomLevel($zoom);
-
-    $JSheader = $carto->getHeaderJS();
-    $JSheader .= $carto->getMapJS();
 }
 
+
 $menu_data_active = 'L';
+
 ob_start();
-open_page("Gestion des localités", $root, null, null, $JSheader); ?>
+open_page("Gestion des localités", $root, null, null, null); ?>
 <div class="main">
     <?php zone_menu(10, $session->get('user')['level'], array()); ?>
     <div class="main-col-center text-center">
         <?php
-        if ($id > 0) {
+        /* if ($id > 0) {
             $carto->printOnLoad(); // TODO: Need test, display fail...
-        }
+        } */
         navadmin($root, "Gestion d'une localité");
-        require(__DIR__ . '/../templates/admin/_menu_data.php'); ?>
+        require(__DIR__ . '/../templates/admin/_menu-data.php'); ?>
 
         <?php if ($id > 0 && $act == "del") {
             $reqmaj = "DELETE FROM " . $config->get('EA_DB') . "_geoloc WHERE ID=" . $id . ";";
@@ -127,15 +97,8 @@ open_page("Gestion des localités", $root, null, null, $JSheader); ?>
                     "LAT    = '" . sql_quote(getparam('lat')) . "' " .
                     " WHERE ID=" . $id . ";";
 
-                //echo "<p>".$reqmaj."</p>";
-                if ($result = EA_sql_query($reqmaj)) {
-                    // echo '<p>'.EA_sql_error().'<br />'.$reqmaj.'</p>';
-                    echo '<p><b>Fiche enregistrée' . $mes . '.</b></p>';
-                    $id = 0;
-                } else {
-                    echo ' -> Erreur : ';
-                    echo '<p>' . EA_sql_error() . '<br />' . $reqmaj . '</p>';
-                }
+                $result = EA_sql_query($reqmaj);
+                echo '<p><b>Fiche enregistrée' . $mes . '.</b></p>';
             }
         }
 
@@ -143,52 +106,61 @@ open_page("Gestion des localités", $root, null, null, $JSheader); ?>
         if ($id <> 0 && $missingargs) { ?>
             <h2><?= $action; ?> d'une fiche de localité</h2>
             <form method="post">
-                <table cellspacing="0" cellpadding="1" summary="Formulaire">
+                <table class="m-auto" summary="Formulaire">
                     <tr>
                         <td>Localité : </td>
-                        <td colspan="2"><b><?= $commune; ?> [<?= $depart; ?>]</b></td>
+                        <td colspan="2"><b><?= $row['COMMUNE']; ?> [<?= $row['DEPART']; ?>]</b></td>
                     </tr>
                     <tr>
-                        <td>Longitude : </td>
-                        <td><input type="text" name="lon" id="lon" size="10" value="<?= $row['LON']; ?>"></td>
-                        <td rowspan="4">
-                            <?php $carto->printMap(); ?>
+                        <td>Coordonnées : </td>
+                        <td colspan="2">
+                            Latitude <input type="text" name="lat" id="lat" size="10" value="<?= $row['LAT']; ?>">
+                            Longitude <input type="text" name="lon" id="lon" size="10" value="<?= $row['LON']; ?>">
+                            <?php if ($row['LAT'] && $row['LON']) { ?>
+                                <a href="https://www.openstreetmap.org/#map=12/<?= $row['LAT']; ?>/<?= $row['LON']; ?>" target="_blank">
+                                    <img src="<?= $root; ?>/assets/img/pin_eye.png" width="16" height="24" alt="Voir dans openstreetmap.">
+                                </a>
+                            <?php } else { ?>
+                                <a href="https://nominatim.openstreetmap.org/search?county=<?= $row['DEPART']; ?>&city=<?= $row['COMMUNE']; ?>&format=json" target="_blank">
+                                    <img src="<?= $root; ?>/assets/img/pin_eye.png" width="16" height="24" alt="Trouver les coordonées dans nominatim.">
+                                </a>
+                            <?php } ?>
                         </td>
                     </tr>
-                    <tr>
-                        <td>Latitude : </td>
-                        <td><input type="text" name="lat" id="lat" size="10" value="<?= $row['LAT']; ?>"></td>
-                    </tr>
-                    <tr>
+                    <!-- <tr>
                         <td>Géolocalisation : </td>
-                        <td><?= $ast[$statut]; ?></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2"><b>Déplacer la punaise pour corriger la localisation </b>
-                        </td>
-                    </tr>
+                        <td colspan="2"><?= $geoloc_modes[$row['STATUT']]; ?></td>
+                    </tr> -->
                     <tr>
                         <td>Commentaire Naissances : </td>
                         <td colspan="2">
-                            <textarea name="noteN" cols="60" rows="2"><?= html_entity_decode($noteN, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET); ?></textarea>
+                            <textarea name="noteN" cols="50" rows="2">
+                                <?= html_entity_decode($row["NOTE_N"], ENTITY_REPLACE_FLAGS, ENTITY_CHARSET); ?>
+                            </textarea>
                         </td>
                     </tr>
                     <tr>
                         <td>Commentaire Mariages : </td>
                         <td colspan="2">
-                            <textarea name="noteM" cols="60" rows="2"><?= html_entity_decode($noteM, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET); ?></textarea>
+                            <textarea name="noteM" cols="50" rows="2">
+                                <?= html_entity_decode($row["NOTE_M"], ENTITY_REPLACE_FLAGS, ENTITY_CHARSET); ?>
+                            </textarea>
                         </td>
                     </tr>
                     <tr>
                         <td>Commentaire Décès : </td>
                         <td colspan="2">
-                            <textarea name="noteD" cols="60" rows="2"><?= html_entity_decode($noteD, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET); ?></textarea>
+                            <textarea name="noteD" cols="50" rows="2">
+                                <?= html_entity_decode($row["NOTE_D"], ENTITY_REPLACE_FLAGS, ENTITY_CHARSET); ?>
+                            </textarea>
                         </td>
                     </tr>
                     <tr>
                         <td>Commentaire Actes divers : </td>
                         <td colspan="2">
-                            <textarea name="noteV" cols="60" rows="2"><?= html_entity_decode($noteV, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET); ?></textarea>
+                            <textarea name="noteV" cols="50" rows="2">
+                                <?= html_entity_decode($row["NOTE_V"], ENTITY_REPLACE_FLAGS, ENTITY_CHARSET); ?>
+                            </textarea>
                         </td>
                     </tr>
                     <tr>
@@ -211,8 +183,8 @@ open_page("Gestion des localités", $root, null, null, $JSheader); ?>
         <?php } else { ?>
             <p>
                 <a href="<?= $root; ?>/admin/listgeolocs.php">Retour à la liste des localités</a>
-                <?php if ($leid > 0 && $act != "del") { ?>
-                    <a href="<?= $root; ?>/admin/gestgeoloc.php?id=<?= $leid; ?>">Retour à la fiche de <?= getparam('commune'); ?></a>
+                <?php if ($id > 0 && $act != "del") { ?>
+                    <a href="<?= $root; ?>/admin/gestgeoloc.php?id=<?= $id; ?>">Retour à la fiche de <?= getparam('commune'); ?></a>
                 <?php } ?>
             </p>
         <?php } ?>

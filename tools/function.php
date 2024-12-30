@@ -324,8 +324,8 @@ function sql_and($cond) // ajoute and si condition non vide
 {
     if ($cond != "") {
         return $cond . " AND ";
-    } 
-    
+    }
+
     return "";
 }
 
@@ -339,8 +339,8 @@ function sql_virgule($cond, $add) // ajoute , si liste non vide
 {
     if ($cond != "") {
         return $cond . ", " . $add;
-    } 
-    
+    }
+
     return $add;
 }
 
@@ -358,8 +358,8 @@ function val_var_mysql($label)
     if ($result = EA_sql_query("SHOW VARIABLES LIKE '" . $label . "'")) {
         $row = EA_sql_fetch_assoc($result);
         return $row['Value'];
-    } 
-    
+    }
+
     return "??";
 }
 
@@ -368,8 +368,8 @@ function val_status_mysql($label)
     if ($result = EA_sql_query("SHOW STATUS LIKE '" . $label . "'")) {
         $row = EA_sql_fetch_assoc($result);
         return $row['Value'];
-    } 
-    
+    }
+
     return "??";
 }
 
@@ -513,16 +513,9 @@ function close_db($dblink) // ferme la connexion à la DB
 
 function msg($desc, $type = "erreur")
 {
+    global $root;
     if ($desc <> null) {
-        echo "<p class=\"$type\">";
-        if ($type == "erreur") {
-            echo "Erreur : ";
-        }
-        echo "$desc</p>\n";
-        global $root;
-        if (empty($root)) {
-            $root = ".";
-        }
+        echo "<p class=\"$type\">$desc</p>";
         if (intval($desc) > 0) {
             echo '<p>Consultez la liste des <a href="' . $root . '/admin/aide/codeserreurs.html">codes d\'erreurs</a>.</p>';
         }
@@ -559,7 +552,7 @@ function writelog($texte, $commune = "-", $nbactes = 0)
     global $config, $session;
 
     $time = now();
-    if(!$session->has('user')) {
+    if (!$session->has('user')) {
         $user = 'Unidentified user';
         $texte = $_SERVER['REMOTE_ADDR'] . ":" . $texte;
     } else {

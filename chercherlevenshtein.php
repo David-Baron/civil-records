@@ -369,9 +369,10 @@ open_page("Recherches dans les tables", $root); ?>
                 $baselink .= iif($xtypN, '&amp;TypN=N', '') . iif($xtypD, '&amp;TypD=D', '') . iif($xtypM, '&amp;TypM=M', '') . iif($xtypV, '&amp;TypV=V', '');
                 $baselink .= '&amp;ComDep=' . urlencode($comdep);
                 $baselink .= '&amp;amin=' . $xmin . '&amp;amax=' . $xmax;
-                $limit = "";
-                $listpages = "";
-                pagination($nbtot, $page, $baselink, $listpages, $limit);
+                $limit = '';
+                $pagination = '';
+
+                $pagination = pagination($nbtot, $page, $baselink, $pagination, $limit);
                 if ($limit <> "") {
                     $sql = $sql . $limit;
                     $result = EA_sql_query($sql);
@@ -383,7 +384,7 @@ open_page("Recherches dans les tables", $root); ?>
                 if ($nb > 0) {
                     $i = ($page - 1) * $config->get('MAX_PAGE') + 1;
                     echo '<p><b>' . $nbtot . ' actes trouvés</b></p>';
-                    echo '<p>' . $listpages . '</p>';
+                    echo '<p>' . $pagination . '</p>';
                     echo '<table summary="Liste des résultats">';
                     echo '<tr class="rowheader">';
                     echo '<th> &nbsp; </th>';
@@ -438,7 +439,7 @@ open_page("Recherches dans les tables", $root); ?>
                         $i++;
                     }
                     echo '</table>';
-                    echo '<p>' . $listpages . '</p>';
+                    echo '<p>' . $pagination . '</p>';
                 } else {
                     echo '<p> Aucun acte trouvé </p>';
                 }

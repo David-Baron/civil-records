@@ -53,7 +53,7 @@ $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
                         <input type="radio" name="TypeActes" value="M" <?= $ajaxcommune; ?>>Mariage
                         <input type="radio" name="TypeActes" value="D" <?= $ajaxcommune; ?>>Décès
                         <input type="radio" name="TypeActes" value="V" <?= $ajaxcommune; ?>>Acte divers :
-                        <?php listbox_divers("typdivers", "***Tous***", 0); ?>
+                        <?php listbox_divers("typdivers", " -- Tous --", 0); ?>
                     </td>
                 </tr>
                 <tr><td colspan="2">&nbsp;</td></tr>

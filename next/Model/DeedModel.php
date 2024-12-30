@@ -4,7 +4,7 @@ require_once(__DIR__ . '/../Engine/DatabaseConnection.php');
 
 class DeedModel extends DatabaseConnection
 {
-    public function findAll($limit = 50, $offset = 0)
+    public function findAll($limit = 50, $offset = 0): array
     {
         $sql = "";
         

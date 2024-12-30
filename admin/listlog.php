@@ -24,6 +24,8 @@ $xdel  = getparam('xdel');
 $xfilter = getparam('xfilter');
 
 $menu_software_active = 'J';
+$limit = '';
+$pagination = '';
 
 ob_start();
 open_page($config->get('SITENAME') . " : Activité du site", $root); ?>
@@ -46,32 +48,31 @@ echo '<p><a href="?xdel=365">' . "Supprimer les événements âgés de plus d'un
 // Lister les actions
 echo '<h2>Activité sur les données du site ' . $config->get('SITENAME') . '</h2>';
 
-echo '<center><form method="post" action="">' . "\n";
-echo '<input type="text" name="xfilter" value="" />' . "\n";
-echo '&nbsp; &nbsp;<input type="submit" value="FILTRER" /></td>' . "\n";
+echo '<center><form method="post">';
+echo '<input type="text" name="xfilter" value="">';
+echo '<button type="submit" class="btn">Filtrer</button></td>';
 echo '</form></center>';
 
-$baselink = $root . '/admin/listlog.php' . "?xfilter=" . $xfilter;
+$baselink = $root . '/admin/listlog.php?xfilter=' . $xfilter;
 if ($xord == "N") {
     $order = "NOM, PRENOM, DATE DESC";
-    $hdate = '<a href="' . $baselink . '&amp;xord=D">Date et heure</a>';
-    $hcomm = '<a href="' . $baselink . '&amp;xord=C">Commune/Paroisse</a>';
-    $baselink = $baselink . '&amp;xord=N';
+    $hdate = '<a href="' . $root . '/admin/listlog.php?xfilter=' . $xfilter . '&xord=D">Date et heure</a>';
+    $hcomm = '<a href="' . $root . '/admin/listlog.php?xfilter=' . $xfilter . '&xord=C">Commune/Paroisse</a>';
+    $baselink = $root . '/admin/listlog.php?xfilter=' . $xfilter . '&xord=N';
     $hnoms = '<b>Utilisateur</b>';
 } elseif ($xord == "D") {
     $order = "DATE DESC";
-    $hcomm = '<a href="' . $baselink . '&amp;xord=C">Commune/Paroisse</a>';
-    $hnoms = '<a href="' . $baselink . '&amp;xord=N">Utilisateur</a>';
-    $baselink = $baselink . '&amp;xord=D';
+    $hcomm = '<a href="' . $root . '/admin/listlog.php?xfilter=' . $xfilter . '&xord=C">Commune/Paroisse</a>';
+    $hnoms = '<a href="' . $root . '/admin/listlog.php?xfilter=' . $xfilter . '&xord=N">Utilisateur</a>';
+    $baselink = $root . '/admin/listlog.php?xfilter=' . $xfilter . '&xord=D';
     $hdate = '<b>Date et heure</b>';
 } else {
     $order = "COMMUNE, DATE DESC";
-    $hdate = '<a href="' . $baselink . '&amp;xord=D">Date et heure</a>';
-    $hnoms = '<a href="' . $baselink . '&amp;xord=N">Utilisateur</a>';
-    $baselink = $baselink . '&amp;xord=L';
+    $hdate = '<a href="' . $root . '/admin/listlog.php?xfilter=' . $xfilter . '&xord=D">Date et heure</a>';
+    $hnoms = '<a href="' . $root . '/admin/listlog.php?xfilter=' . $xfilter . '&xord=N">Utilisateur</a>';
+    $baselink = $root . '/admin/listlog.php?xfilter=' . $xfilter . '&xord=L';
     $hcomm = '<b>Commune/Paroisse</b>';
 }
-$baselink .= "&amp;xfilter=" . $xfilter;
 
 $sql = "CREATE TEMPORARY TABLE temp_user3 (ID int(11), nom varchar(30), prenom varchar(30), PRIMARY KEY (ID))";
 $result = EA_sql_query($sql);
@@ -96,10 +97,6 @@ optimize($sql);
 $result = EA_sql_query($sql);
 $nbtot = EA_sql_num_rows($result);
 
-$limit = "";
-$listpages = "";
-pagination($nbtot, $page, $baselink, $listpages, $limit);
-
 if ($limit <> "") {
     $sql = $sql . $limit;
     $result = EA_sql_query($sql);
@@ -108,10 +105,12 @@ if ($limit <> "") {
     $nb = $nbtot;
 }
 
+$pagination = pagination($nbtot, $page, $baselink, $pagination, $limit);
+
 if ($nb > 0) {
-    echo '<p>' . $listpages . '</p>';
     $i = 1 + ($page - 1) * $config->get('MAX_PAGE');
-    echo '<table summary="Liste des actions">';
+    echo '<p>' . $pagination . '</p>';
+    echo '<table class="m-auto" summary="Liste des actions">';
     echo '<tr class="rowheader">';
     // echo '<th> Tri : </th>';
     echo '<th>' . $hdate . '</th>';
@@ -133,9 +132,9 @@ if ($nb > 0) {
         $i++;
     }
     echo '</table>';
-    echo '<p>' . $listpages . '</p>';
+    echo '<p>' . $pagination . '</p>';
 } else {
-    msg('Aucune action enregistrée');
+    echo '<p>Aucune action enregistrée</p>';
 } ?>
 
 <p>Durée du traitement  : <?= round(microtime_float() - $MT0, 3); ?> sec.</p>

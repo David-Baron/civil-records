@@ -60,7 +60,7 @@ open_page("Backup de votre base de données", $root); ?>
             } else {
                 //echo "<p>Commande exécutée : <br>".$full_command;
                 echo "<p>Désolé : impossible d'exécuter le backup ou erreur au cours de l'exécution !";
-                echo "<p>Consulter l'<a " . 'href="aide/backup.html"' . ">aide</a> pour résoudre le problème.";
+                echo '<p>Consulter l\'<a href="'.$root.'/admin/aide/backup.html">aide</a> pour résoudre le problème.';
             }
         } ?>
     </div>

@@ -19,7 +19,10 @@ $page = 1;
 $xord  = getparam('xord', 'N'); // N = Nom
 $page  = getparam('pg');
 $init  = getparam('init');
+
 $menu_user_active = 'L';
+$initiale = '';
+$pagination = '';
 
 ob_start();
 open_page($config->get('SITENAME') . " : Liste des utilisateurs enregistrés", $root); ?>
@@ -51,9 +54,7 @@ open_page($config->get('SITENAME') . " : Liste des utilisateurs enregistrés", $
         }
         echo '<p align="center">' . $alphabet . '</p>';
 
-        if ($init == "") {
-            $initiale = '';
-        } else {
+        if ($init != "") {
             $initiale = '&amp;init=' . $init;
         }
 
@@ -108,7 +109,6 @@ open_page($config->get('SITENAME') . " : Liste des utilisateurs enregistrés", $
             $condit = " WHERE NOM LIKE '" . $init . "%' ";
         }
 
-
         $sql = "SELECT NOM, PRENOM, LOGIN, LEVEL, ID, EMAIL, REGIME, SOLDE, MAJ_SOLDE, if(STATUT='N',if(dtexpiration<'" . date("Y-m-d", time()) . "','X',STATUT),STATUT) AS STATUT, PT_CONSO"
             . " FROM " . $config->get('EA_UDB') . "_user3 "
             . $condit
@@ -117,9 +117,6 @@ open_page($config->get('SITENAME') . " : Liste des utilisateurs enregistrés", $
         $nbtot = EA_sql_num_rows($result);
 
         $limit = "";
-        $listpages = "";
-        pagination($nbtot, $page, $baselink, $listpages, $limit);
-
         if ($limit <> "") {
             $sql = $sql . $limit;
             $result = EA_sql_query($sql, $u_db);
@@ -128,11 +125,11 @@ open_page($config->get('SITENAME') . " : Liste des utilisateurs enregistrés", $
             $nb = $nbtot;
         }
 
+        $pagination = pagination($nbtot, $page, $baselink, $pagination, $limit);
+
         if ($nb > 0) {
-            if ($listpages <> "") {
-                echo '<p>' . $listpages . '</p>';
-            }
             $i = 1 + ($page - 1) * $config->get('MAX_PAGE_ADM');
+            echo '<p>' . $pagination . '</p>';
             echo '<table class="m-auto" summary="Liste des utilisateurs">';
             echo '<tr class="rowheader">';
             echo '<th> Tri : </th>';
@@ -175,18 +172,16 @@ open_page($config->get('SITENAME') . " : Liste des utilisateurs enregistrés", $
                 }
                 echo '<td>';
                 if ($ligne[5] <> "") {
-                    echo '&nbsp;<a href="mailto:' . $ligne[5] . '">e-mail</a>&nbsp;';
+                    echo '<a href="mailto:' . $ligne[5] . '">e-mail</a>';
                 }
                 echo '</td>';
                 echo '</tr>';
                 $i++;
             }
             echo '</table>';
-            if ($listpages <> "") {
-                echo '<p>' . $listpages . '</p>';
-            }
+            echo '<p>' . $pagination . '</p>';
         } else {
-            msg('Aucun utilisateur enregistré');
+            echo '<p>Aucun utilisateur enregistré</p>';
         } ?>
     </div>
 </div>

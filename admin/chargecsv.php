@@ -583,7 +583,6 @@ if (!$missingargs) { // fichier d'actes
             echo '</tr>';
         }
         $i = 0;
-        //{ print '<pre>';  print_r($mdb); echo '</pre>'; }
         foreach ($mdb as $zone) {
             /*
             [0] => Array
@@ -655,9 +654,9 @@ if (!$missingargs) { // fichier d'actes
         }
         // Masque du Filtre
         if ($submit == 'C') {
-            echo '<input type="hidden" name="Filtre" value="' . $Filtre . '" />';
-            echo '<input type="hidden" name="Condition" value="' . $Condition . '" />';
-            echo '<input type="hidden" name="Compare" value="' . $Compare . '" />';
+            echo '<input type="hidden" name="Filtre" value="' . $Filtre . '">';
+            echo '<input type="hidden" name="Condition" value="' . $Condition . '">';
+            echo '<input type="hidden" name="Compare" value="' . $Compare . '">';
         } else {
             echo '<tr><td colspan="3"><br><strong>Filtre éventuel sur le fichier CSV</strong></td></tr>';
             echo '<tr class="row0">';
@@ -704,7 +703,7 @@ if (!$missingargs) { // fichier d'actes
                 }
             }
             // Affichage de la fiche exemple
-            echo '<tr><td colspan="3">&nbsp;<input type="hidden" name="nofiche" value="' . $nofiche . '"></td></tr>';
+            echo '<tr><td colspan="3"<input type="hidden" name="nofiche" value="' . $nofiche . '"></td></tr>';
             echo '<tr><td colspan="3">';
             echo '<table class="m-auto" summary="Fiche exemple">';
             echo '<tr class="rowheader">';

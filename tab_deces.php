@@ -75,7 +75,7 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
                 if ($xord == "N") {
                     $order = $preorder . ", LADATE";
                     $hdate = '<a href="' . $root . '/tab_deces.php?xcomm=' . $xcomm . '&xpatr=' . $xpatr . 'xord=D">Dates</a>';
-                    $baselink = $root . '/tab_deces.php?xcomm=' . $xcomm . '&xpatr=' . $xpatr .'xord=N';
+                    $baselink = $root . '/tab_deces.php?xcomm=' . $xcomm . '&xpatr=' . $xpatr . 'xord=N';
                     $hnoms = '<b>' . $nameorder . '</b>';
                 } else {
                     $order = "LADATE, " . $preorder;
@@ -103,9 +103,9 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
                 $result = EA_sql_query($sql);
                 $nbtot = EA_sql_num_rows($result);
 
-                $limit = "";
-                $listpages = "";
-                pagination($nbtot, $page, $baselink, $listpages, $limit);
+                $limit = '';
+                $pagination = '';
+                $pagination = pagination($nbtot, $page, $baselink, $pagination, $limit);
 
                 if ($limit <> "") {
                     $sql = $sql . $limit;
@@ -116,10 +116,8 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
                 }
 
                 if ($nb > 0) {
-                    if ($listpages <> "") {
-                        echo '<p>' . $listpages . '</p>';
-                    }
                     $i = 1 + ($page - 1) * $config->get('MAX_PAGE');
+                    echo '<p>' . $pagination . '</p>';
                     echo '<table class="m-auto" summary="Liste des patronymes">';
                     echo '<tr class="rowheader">';
                     echo '<th> Tri : </th>';
@@ -134,7 +132,7 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
                         echo '<tr class="row' . (fmod($i, 2)) . '">';
                         echo '<td>' . $i . '. </td>';
                         echo '<td>&nbsp;' . annee_seulement($ligne[2]) . '&nbsp;</td>';
-                        echo '<td>&nbsp;<a href="' . $root . '/acte_deces.php?xid=' . $ligne[3] . '&xct=' . ctrlxid($ligne[0], $ligne[1]) . '&xcomm=' .$xcomm.'&xpatr=' . $xpatr . '">' . $ligne[0] . ' ' . $ligne[1] . '</a></td>';
+                        echo '<td>&nbsp;<a href="' . $root . '/acte_deces.php?xid=' . $ligne[3] . '&xct=' . ctrlxid($ligne[0], $ligne[1]) . '&xcomm=' . $xcomm . '&xpatr=' . $xpatr . '">' . $ligne[0] . ' ' . $ligne[1] . '</a></td>';
                         if ($userAuthorizer->isGranted(6)) {
                             actions_deposant($userid, $ligne[4], $ligne[3], 'D');
                         }
@@ -142,11 +140,9 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
                         $i++;
                     }
                     echo '</table>';
-                    if ($listpages <> "") {
-                        echo '<p>' . $listpages . '</p>';
-                    }
+                    echo '<p>' . $pagination . '</p>';
                 } else {
-                    msg('Aucun acte trouvé');
+                    echo '<p>Aucun acte trouvé</p>';
                 }
             }
             echo '</div>';
@@ -154,4 +150,3 @@ if ($xpatr == "" or mb_substr($xpatr, 0, 1) == "_") {
             include(__DIR__ . '/templates/front/_footer.php');
             $response->setContent(ob_get_clean());
             $response->send();
-

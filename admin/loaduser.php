@@ -22,10 +22,7 @@ $xdroits    = getparam('lelevel');
 $xregime    = getparam('regime', 2); // pas activé -> automatique
 $message    = getparam('Message');
 $xaction    = getparam('action');
-if ($xaction == 'submitted') {
-    setcookie("chargeUSERparam", $sendmail . $xdroits . $xregime, time() + 60 * 60 * 24 * 60);  // 60 jours
-    setcookie("chargeUSERlogs", $logOk . $logKo . $logRed, time() + 60 * 60 * 24 * 60);  // 60 jours
-}
+
 $missingargs = true;
 $emailfound = false;
 $oktype = false;
@@ -361,7 +358,7 @@ open_page("Chargement des utilisateurs (CSV)", $root); ?>
             echo "<tr>";
             echo '<td>Envoi des codes d\'accès : </td>';
             echo '<td>';
-            echo '<input type="checkbox" name="SendMail" value="1"' . ($sendmail == 1 ? ' checked' : '') . '>Envoi automatique du mail ci-dessous&nbsp; ';
+            echo '<input type="checkbox" name="SendMail" value="1"' . ($sendmail == 1 ? ' checked' : '') . '> Envoi automatique du mail ci-dessous';
             echo '</td>';
             echo "</tr>";
 
@@ -375,9 +372,9 @@ open_page("Chargement des utilisateurs (CSV)", $root); ?>
             echo "<tr>";
             echo '<td>Contrôle des résultats : </td>';
             echo '<td>';
-            echo '<input type="checkbox" name="LogOk"  value="1"' . ($logOk == 1 ? ' checked' : '') . '>Comptes créés';
-            echo '<input type="checkbox" name="LogKo"  value="1"' . ($logKo == 1 ? ' checked' : '') . '>Comptes erronés';
-            echo '<input type="checkbox" name="LogRed" value="1"' . ($logRed == 1 ? ' checked' : '') . '>Comptes redondants';
+            echo '<input type="checkbox" name="LogOk"  value="1"' . ($logOk == 1 ? ' checked' : '') . '> Comptes créés';
+            echo '<input type="checkbox" name="LogKo"  value="1"' . ($logKo == 1 ? ' checked' : '') . '> Comptes erronés';
+            echo '<input type="checkbox" name="LogRed" value="1"' . ($logRed == 1 ? ' checked' : '') . '> Comptes redondants';
             echo '</td>';
             echo "</tr>";
             echo "<tr><td colspan=\"2\">&nbsp;</td></tr>";
@@ -393,7 +390,7 @@ open_page("Chargement des utilisateurs (CSV)", $root); ?>
         } else {
             echo '<p>';
             if ($cptadd > 0) {
-                echo '<br />User ajoutés  : ' . $cptadd;
+                echo '<br>User ajoutés  : ' . $cptadd;
                 writelog('Ajout USERS CSV ', "", "", $cptadd);
             }
             if ($cptign > 0) {

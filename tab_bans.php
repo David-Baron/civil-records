@@ -124,9 +124,9 @@ if ($xpatr == "" || mb_substr($xpatr, 0, 1) == "_") {
                 $result = EA_sql_query($sql);
                 $nbtot = EA_sql_num_rows($result);
 
-                $limit = "";
-                $listpages = "";
-                pagination($nbtot, $page, $baselink, $listpages, $limit);
+                $limit = '';
+                $pagination = '';
+                $pagination = pagination($nbtot, $page, $baselink, $pagination, $limit);
 
                 if ($limit <> "") {
                     $sql = $sql . $limit;
@@ -137,10 +137,8 @@ if ($xpatr == "" || mb_substr($xpatr, 0, 1) == "_") {
                 }
 
                 if ($nb > 0) {
-                    if ($listpages <> "") {
-                        echo '<p>' . $listpages . '</p>';
-                    }
                     $i = 1 + ($page - 1) * $config->get('MAX_PAGE');
+                    echo '<p>' . $pagination . '</p>';
                     echo '<table class="m-auto" summary="Liste des patronymes">';
                     echo '<tr class="rowheader">';
                     echo '<th> Tri : </th>';
@@ -178,11 +176,9 @@ if ($xpatr == "" || mb_substr($xpatr, 0, 1) == "_") {
                         $i++;
                     }
                     echo '</table>';
-                    if ($listpages <> "") {
-                        echo '<p>' . $listpages . '</p>';
-                    }
+                    echo '<p>' . $pagination . '</p>';
                 } else {
-                    msg('Aucun acte trouvé');
+                    echo'<p>Aucun acte trouvé</p>';
                 }
             } ?>
                 </div>

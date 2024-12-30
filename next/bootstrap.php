@@ -1,6 +1,5 @@
 <?php
 
-
 if (!file_exists(__DIR__ . '/../vendor/autoload.php')) {
     require __DIR__ . '/ressources/message_vendor_error.html';
     exit();

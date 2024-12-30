@@ -103,26 +103,3 @@ function nogetargs($chaine)
     return $chaine;
 }
 
-/**
- * Retourne la chaine la plus en avant par ordre alphabétique
- */
-function strmin($str1, $str2)
-{
-    if ($str1 > $str2) {
-        return $str2;
-    }
-
-    return $str1;
-}
-
-/**
- * Retourne la chaine la plus en arriere par ordre alphabétique
- */
-function strmax($str1, $str2)
-{
-    if ($str1 < $str2) {
-        return $str2;
-    }
-
-    return $str1;
-}

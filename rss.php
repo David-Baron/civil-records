@@ -68,19 +68,19 @@ while ($row = EA_sql_fetch_array($result) and $cpt < $max) {
     switch ($row["TYP"]) {
         case "N":
             $typ = "Naissances/Baptêmes";
-            $prog = "tab_naiss";
+            $prog = "/tab_naiss";
             break;
         case "D":
             $typ = "Décès/Sépultures";
-            $prog = "tab_deces";
+            $prog = "/tab_deces";
             break;
         case "M":
             $typ = "Mariages";
-            $prog = "tab_mari";
+            $prog = "/tab_mari";
             break;
         case "V":
             $typ = "Actes divers"; // : ".$row["LIBELLE"];
-            $prog = "tab_bans";
+            $prog = "/tab_bans";
             break;
     }
     $titre = htmlspecialchars($row["COMMUNE"], ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
@@ -90,7 +90,7 @@ while ($row = EA_sql_fetch_array($result) and $cpt < $max) {
     $titre .= ' : ' . $typ;
     $description = $row["CPT"] . ' ' . $typ . ' de ' . $row["DEB"] . ' à ' . $row["FIN"];
     $auteur = "";
-    $url = $root . '/' . $prog . ".php?args=" . urlencode($row["COMMUNE"] . ' [' . $row["DEPART"] . ']');
+    $url = $root . $prog . ".php?args=" . urlencode($row["COMMUNE"] . ' [' . $row["DEPART"] . ']');
 
     /* $rss->AddItem('Titre','Descripton','Auteur','Catégorie','date','http://'); */
     $rss->AddItem(

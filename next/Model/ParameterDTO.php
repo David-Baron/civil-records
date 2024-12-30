@@ -12,7 +12,7 @@ class ParameterDTO
         $this->parameters = $parameterModel->findAll();
     }
 
-    public function dataToArray()
+    public function dataToArray(): array
     {
         $array = [];
         /** FOR COMPATIBILITY ONLY */
@@ -49,8 +49,8 @@ class ParameterDTO
         return $array;
     }
 
-    public function arrayToData()
-    {
-        
-    }
+    /**
+     * Currently not useful
+     */
+    public function arrayToData() {}
 }

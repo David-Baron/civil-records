@@ -128,26 +128,33 @@ function ajuste_date($datetxt, &$datesql, &$badannee)  // remise en forme des da
 
 
 /**
- * retourne mode de recherche par défaut selon le parametre RECH_DEF_TYP sous forme de lettre
+ * Return the code of search mode by default according to RECH_DEF_TYP parameter
  */
-function default_rech_code()
+function default_rech_code(): string
 {
     global $config;
-    $typs = array(1 => "E", "D", "F", "C", "S");
-    return $typs[$config->get('RECH_DEF_TYP')];
+    $search_modes = [
+        1 => ['code' => 'E', 'libele' => 'Exacte'],
+        2 => ['code' => 'D', 'libele' => 'au Début'],
+        3 => ['code' => 'F', 'libele' => 'à la Fin'],
+        4 => ['code' => 'C', 'libele' => 'est Compris dans'],
+        5 => ['code' => 'S', 'libele' => 'Sonore']
+    ];
+
+    return $search_modes[$config->get('RECH_DEF_TYP')]['code'];
 }
 
 /**
  * Préselectionne le mode de recherche par défaut selon le parametre RECH_DEF_TYP
  */
-function prechecked($typrech)
+function prechecked(string $typrech): string
 {
     $deftyp = default_rech_code();
     if ($typrech == $deftyp) {
         return ' value="' . $typrech . '" checked="checked" ';
-    } else {
-        return ' value="' . $typrech . '" ';
     }
+
+    return ' value="' . $typrech . '" ';
 }
 
 function statistiques($vue = "T")
@@ -159,56 +166,52 @@ function statistiques($vue = "T")
 
     $sql = "SELECT TYPACT, sum(NB_TOT) FROM " . $config->get('EA_DB') . "_sums GROUP BY TYPACT ORDER BY INSTR('NMDV',TYPACT)";
     $result = EA_sql_query($sql);
-    if (!$result) {
-        $message  = '<p>Requête invalide : ' . EA_sql_error();
-        $message  .= '<br>Requête : ' . $sql;
-        // echo ($message); TODO: Will be a log
-    }
-
-    $tot = 0;
-    $texte = "";
-    $menu_actes = "";
     if ($result) {
-        while ($ligne = EA_sql_fetch_row($result)) {
-            switch ($ligne[0]) {
-                case "N":
-                    $typ = "Naissances/Baptêmes";
-                    break;
-                case "M":
-                    $typ = "Mariages";
-                    break;
-                case "D":
-                    $typ = "Décès/Sépultures";
-                    break;
-                case "V":
-                    $typ = "Actes divers";
-                    break;
+        $tot = 0;
+        $texte = "";
+        $menu_actes = "";
+        if ($result) {
+            while ($ligne = EA_sql_fetch_row($result)) {
+                switch ($ligne[0]) {
+                    case "N":
+                        $typ = "Naissances/Baptêmes";
+                        break;
+                    case "M":
+                        $typ = "Mariages";
+                        break;
+                    case "D":
+                        $typ = "Décès/Sépultures";
+                        break;
+                    case "V":
+                        $typ = "Actes divers";
+                        break;
+                }
+                if ($ligne[1] > 0) {
+                    $menu_actes .= iif($menu_actes == "", "", " | ");
+                    if ($xtyp != $ligne[0]) {
+                        $menu_actes .= '<a href="' . $root . '/index.php?vue=' . $vue . '&xtyp=' . $ligne[0] . '">' . $typ . '</a>';
+                    } else {
+                        $menu_actes .= $typ;
+                    }
+                    $texte .= '<dd>';
+                    if ($config->get('SHOW_ALLTYPES') == 0) {
+                        $texte .= '<a href="' . $root . '/index.php?vue=' . $vue . '&xtyp=' . $ligne[0] . '">';
+                    }
+                    $texte .= entier($ligne[1]) . ' ' . $typ;
+                    if ($config->get('SHOW_ALLTYPES') == 0) {
+                        $texte .= '</a>';
+                    }
+                    $texte .= '</dd>';
+                }
+                $tot += $ligne[1];
             }
-            if ($ligne[1] > 0) {
+            if ($config->get('SHOW_ALLTYPES') == 1) {
                 $menu_actes .= iif($menu_actes == "", "", " | ");
-                if ($xtyp != $ligne[0]) {
-                    $menu_actes .= '<a href="' . $root . '/' . "index.php?vue=" . $vue . '&xtyp=' . $ligne[0] . '">' . $typ . '</a>';
+                if ($xtyp != "A") {
+                    $menu_actes .= '<a href="' . $root . '/index.php?vue=' . $vue . '&xtyp=A">Tous</a>';
                 } else {
-                    $menu_actes .= $typ;
+                    $menu_actes .= 'Tous';
                 }
-                $texte .= '<dd>';
-                if ($config->get('SHOW_ALLTYPES') == 0) {
-                    $texte .= '<a href="' . $root . '/' . "index.php?vue=" . $vue . '&xtyp=' . $ligne[0] . '">';
-                }
-                $texte .= entier($ligne[1]) . ' ' . $typ;
-                if ($config->get('SHOW_ALLTYPES') == 0) {
-                    $texte .= '</a>';
-                }
-                $texte .= '</dd>';
-            }
-            $tot += $ligne[1];
-        }
-        if ($config->get('SHOW_ALLTYPES') == 1) {
-            $menu_actes .= iif($menu_actes == "", "", " | ");
-            if ($xtyp != "A") {
-                $menu_actes .= '<a href="' . $root . '/' . "index.php?vue=" . $vue . '&xtyp=A">' . 'Tous' . '</a>';
-            } else {
-                $menu_actes .= 'Tous';
             }
         }
     }
@@ -230,11 +233,17 @@ function statistiques($vue = "T")
     return $menu_actes;
 }
 
-function menu_public()
+function zone_menu($admin, int $userlevel, $pp = array())
 {
     global $root, $config, $userAuthorizer;
+    $menu_actes = '';
+    echo '<div class="main-col-left">';
+    require(__DIR__ . '/../templates/front/_search-form.php');
+    if ($userlevel < 6) {
+        $menu_actes = statistiques(); // TODO: need tests
+    }
     echo '<div class="box">';
-    echo '<div class="box-title">Accès membre</div>';
+    echo '<div class="box-title">Membre</div>';
     echo '<div class="box-body">';
     echo '<nav class="nav">';
     echo '<a href="' . $root . '/">Accueil</a>';
@@ -254,18 +263,6 @@ function menu_public()
     }
     echo '</nav></div>';
     echo '</div>';
-}
-
-function zone_menu($admin, int $userlevel, $pp = array())
-{
-    global $root, $config;
-    $menu_actes = '';
-    echo '<div class="main-col-left">';
-    require(__DIR__ . '/../templates/front/_search-form.php');
-    if (isset($pp['s'])) {
-        $menu_actes = statistiques($pp['s']);
-    }
-    menu_public();
     if ($userlevel < 6) {
         echo '<div class="box">';
         echo '<div class="box-title">Info</div>';
@@ -849,7 +846,7 @@ function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = ""
         while ($ligne = EA_sql_fetch_row($result)) {
             echo '<tr class="row' . (fmod($i, 2)) . '">';
             echo '<td>' . $i . '.</td>';
-            echo '<td><a href="' . $root . $script .'?xcomm=' . $xcomm . '&xpatr=' . $ligne[0] . '">' . $ligne[0] . '</a></td>';
+            echo '<td><a href="' . $root . $script . '?xcomm=' . $xcomm . '&xpatr=' . $ligne[0] . '">' . $ligne[0] . '</a></td>';
             echo '<td align="center">' . $ligne[2];
             if ($ligne[2] <> $ligne[3]) {
                 echo '-' . $ligne[3];
@@ -889,13 +886,13 @@ function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = ""
             echo '<td align="center"><strong>' . $ligne[0] . '</strong></td>';
             if ($ligne[1] == 1) {
                 echo '<td align="center">' . $ligne[1] . '</td>';
-                echo '<td><a href="' .$root . $script . '?xcomm=' . $xcomm . '&xpatr=' . $ligne[2] . '">' . $ligne[2] . '</a></td>';
+                echo '<td><a href="' . $root . $script . '?xcomm=' . $xcomm . '&xpatr=' . $ligne[2] . '">' . $ligne[2] . '</a></td>';
             } else {
                 echo '<td align="center">' . $ligne[1] . '</td>';
                 while (mb_strlen($ligne[0]) < $lgi) {
                     $ligne[0] = $ligne[0] . ' ';
                 }
-                echo '<td><a href="' . $root . $script. '?xcomm=' . $xcomm . '&xpatr=' . $ligne[0] . '">' . $ligne[2] . ' à ' . $ligne[3] . '</a></td>';
+                echo '<td><a href="' . $root . $script . '?xcomm=' . $xcomm . '&xpatr=' . $ligne[0] . '">' . $ligne[2] . ' à ' . $ligne[3] . '</a></td>';
             }
             echo '</tr>';
             $i++;
@@ -1245,6 +1242,7 @@ function pagination($nbtot, &$page, $href, &$listpages, &$limit)
         $limit = "";
         $page = 1;
     }
+    return $listpages;
 }
 
 function actions_deposant($userid, $depid, $actid, $typact)  // version graphique
@@ -1702,8 +1700,8 @@ function maj_stats($xtyp, $T0, $path, $mode, $com = "", $dep = "")
 function geocode_google($com, $dep)
 // Interroge google pour pour connaitre les coordonnées d'une commune
 {
-    include_once(__DIR__ .'/GoogleMap/OrienteMap.inc.php');
-    include_once(__DIR__ .'/GoogleMap/Jsmin.php');
+    include_once(__DIR__ . '/GoogleMap/OrienteMap.inc.php');
+    include_once(__DIR__ . '/GoogleMap/Jsmin.php');
 
     global $carto;
     if (!isset($carto)) {
@@ -1783,7 +1781,7 @@ function geoUrl($gid)
     global $root, $config;
     $imgtxt = "Carte";
     if ($gid > 0 && $config->get('GEO_LOCALITE') > 0) {
-        $geourl = ' &nbsp; <a href="' . $root . '/localite.php?id=' . $gid . '"><img src="' . $root . '/img/boussole.png" border="0" alt="(' . $imgtxt . ')" title="' . $imgtxt . '" align="middle"></a>';
+        $geourl = ' &nbsp; <a href="' . $root . '/localite.php?id=' . $gid . '"><img src="' . $root . '/img/boussole.png" alt="(' . $imgtxt . ')" title="' . $imgtxt . '" align="middle"></a>';
     } else {
         $geourl = '';
     }
@@ -1907,4 +1905,29 @@ function set_cond_select_actes($params)
     }
 
     return array($table, $ntype, $soustype, $condcom, $condad, $condaf, $condtdiv, $conddep);
+}
+
+
+/**
+ * Retourne la chaine la plus en avant par ordre alphabétique
+ */
+function strmin($str1, $str2)
+{
+    if ($str1 > $str2) {
+        return $str2;
+    }
+
+    return $str1;
+}
+
+/**
+ * Retourne la chaine la plus en arriere par ordre alphabétique
+ */
+function strmax($str1, $str2)
+{
+    if ($str1 < $str2) {
+        return $str2;
+    }
+
+    return $str1;
 }
