@@ -3,7 +3,6 @@
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require(__DIR__ . '/../next/bootstrap.php');
-require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
 if (!$userAuthorizer->isGranted(9)) {
     $response = new RedirectResponse("$root/admin/");
@@ -18,7 +17,7 @@ function init_page()
     open_page("Export des paramètres ", $root);
     ?>
     <div class="main">
-        <?php zone_menu(10, $session->get('user')['level'], array()); ?>
+        <?php zone_menu(10, $session->get('user')['level']); ?>
         <div class="main-col-center text-center">
             <?php 
     navadmin($root, "Export des paramètres");

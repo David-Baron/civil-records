@@ -3,7 +3,6 @@
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require(__DIR__ . '/../next/bootstrap.php');
-require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
 if (!$userAuthorizer->isGranted(6)) {
     $response = new RedirectResponse("$root/admin/");

@@ -3,7 +3,6 @@
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require(__DIR__ . '/../next/bootstrap.php');
-require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
 if (!$userAuthorizer->isGranted(9)) {
     $response = new RedirectResponse("$root/admin/");
@@ -11,13 +10,14 @@ if (!$userAuthorizer->isGranted(9)) {
     exit();
 }
 
-pathroot($root, $path, $xcomm, $xpatr, $page);
+throw new \Exception("This function not exist anymore, deprecated functionality user import from csv...", 1);
+exit;
 
 $T0 = time();
 $logOk      = getparam('LogOk'); // for checked
 $logKo      = getparam('LogKo'); // for checked
 $logRed     = getparam('LogRed'); // for checked
-$sendmail   = getparam('SendMail'); // for checked
+$with_email   = getparam('with_email', 1); // for checked
 $xdroits    = getparam('lelevel');
 $xregime    = getparam('regime', 2); // pas activé -> automatique
 $message    = getparam('Message');
@@ -267,25 +267,21 @@ open_page("Chargement des utilisateurs (CSV)", $root); ?>
                                 . sql_quote($comment) . "');";
                             //echo $reqmaj;
                             if ($result = EA_sql_query($reqmaj, $u_db)) {
-                                if ($sendmail == 1) {
-                                    $urlsite = $config->get('EA_URL_SITE') . $root . "/index.php";
-                                    $codes = array("#NOMSITE#", "#URLSITE#", "#LOGIN#", "#PASSW#", "#NOM#", "#PRENOM#");
-                                    $decodes = array($config->get('SITENAME'), $urlsite, $login, $pw, $nom, $pre);
-                                    $bon_message = str_replace($codes, $decodes, $message);
-                                    $sujet = "Votre compte " . $config->get('SITENAME');
-                                    $sender = mail_encode($config->get('SITENAME')) . ' <' . $config->get('LOC_MAIL') . ">";
-                                    $okmail = sendmail($sender, $mail, $sujet, $bon_message);
-                                } else {
-                                    $okmail = false;
+                                if ($request->request->get('with_email')) {                                   
+                                    $from = $config->get('SITENAME') . ' <' . $_ENV['EMAIL_SITE'] . ">";
+                                    $to = $mail;
+                                    $subject = "Votre compte " . $config->get('SITENAME');
+                                    $mailerFactory = new MailerFactory();
+                                    $mail = $mailerFactory->createEmail($from, $to, $subject, 'new_account_created.php', [
+                                        'sitename' => $config->get('SITENAME'),
+                                        'urlsite' => $config->get('URL_SITE'),
+                                        'user' => ['nom' => $nom, 'prenom' => $pre, 'login' => $login],
+                                        'plain_text_password' => $pw
+                                    ]);
+                                    $mailerFactory->send($mail);
                                 }
-                                if (!$okmail) {
-                                    $log .= " [login=" . $login . "]";
-                                    $log .= " [password=" . $pw . "]";
-                                    echo $log . ' -> Créé - Mail PAS envoyé.';
-                                } else {
-                                    if ($logOk == 1) {
-                                        echo $log . ' -> Ok.';
-                                    }
+                                if ($logOk == 1) {
+                                    echo $log . '  -> Créé.';
                                 }
                                 $cptadd++;
                             } else {
@@ -304,22 +300,6 @@ open_page("Chargement des utilisateurs (CSV)", $root); ?>
         //Si pas tout les arguments nécessaire, on affiche le formulaire
         if ($missingargs) {
             if ($xaction == '') {  // parametres par défaut
-                if (isset($_COOKIE['chargeUSERlogs'])) {
-                    $chargeUSERlogs = $_COOKIE['chargeUSERlogs'];
-                } else {
-                    $chargeUSERlogs = "111";
-                }
-                $logOk      = $chargeUSERlogs[0];
-                $logKo      = $chargeUSERlogs[1];
-                $logRed     = $chargeUSERlogs[2];
-                if (isset($_COOKIE['chargeUSERparam'])) {
-                    $chargeUSERparam = $_COOKIE['chargeUSERparam'];
-                } else {
-                    $chargeUSERparam = "042";
-                }
-                $sendmail   = $chargeUSERparam[0];
-                $xdroits    = $chargeUSERparam[1];
-                $xregime    = $chargeUSERparam[2];
                 $message    = $config->get('MAIL_NEWUSER');
             }
 
@@ -358,7 +338,7 @@ open_page("Chargement des utilisateurs (CSV)", $root); ?>
             echo "<tr>";
             echo '<td>Envoi des codes d\'accès : </td>';
             echo '<td>';
-            echo '<input type="checkbox" name="SendMail" value="1"' . ($sendmail == 1 ? ' checked' : '') . '> Envoi automatique du mail ci-dessous';
+            echo '<input type="checkbox" name="with_email" ' . ($with_email == 1 ? 'checked' : '') . '> Envoi automatique du mail ci-dessous';
             echo '</td>';
             echo "</tr>";
 
@@ -380,7 +360,7 @@ open_page("Chargement des utilisateurs (CSV)", $root); ?>
             echo "<tr><td colspan=\"2\">&nbsp;</td></tr>";
             echo "<tr><td></td>";
             echo ' <input type="hidden" name="action" value="submitted">';
-            
+
             echo '<td><button type="reset" class="btn">Effacer</button>';
             echo '<button type="submit" class="btn">Charger</button>';
             echo '<a href="' . $root . '/adminaide/gestuser.html" class="btn" target="_blank">Aide</a>&nbsp;';

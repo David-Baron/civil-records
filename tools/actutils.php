@@ -247,6 +247,7 @@ function zone_menu($admin, int $userlevel, $pp = array())
     echo '<div class="box-body">';
     echo '<nav class="nav">';
     echo '<a href="' . $root . '/">Accueil</a>';
+    echo '<a href="' . $root . '/contact.php">Contact</a>';
     if (!$userAuthorizer->isAuthenticated()) {
         echo '<a href="' . $root . '/login.php">Connexion</a>';
         if ($config->get('SHOW_ACCES') == 1) {

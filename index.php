@@ -3,7 +3,6 @@
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require(__DIR__ . '/next/bootstrap.php');
-require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
 if ($config->get('PUBLIC_LEVEL') < 4 && !$userAuthorizer->isGranted(1)) {
     $response = new RedirectResponse("$root/login.php");
@@ -28,7 +27,7 @@ $stylesheets = '';
 
 if ($config->get('SHOW_ALLTYPES') != 1) $xtyp = 'N';
 
-if ($config->get('GEO_MODE_PUBLIC') == 5 || $vue == 'C') { // si pas localité isolée et avec carte
+if ($config->get('GEO_MODE_PUBLIC') == 5 || $vue == 'C') {
     require(__DIR__ . '/tools/carto_openstreetmap.php');
 }
 

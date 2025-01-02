@@ -3,7 +3,6 @@
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require(__DIR__ . '/../next/bootstrap.php');
-require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 require(__DIR__ . '/../next/Model/UserModel.php');
 
 $Destin   = getparam('Destin'); // TODO: will be from last url
@@ -88,7 +87,6 @@ function init_page($head = "")
     $file = getparam('file');
     $file = iif($file > 1, $file, 1);
     $Maxbytes = (float) $maxmega * 1024 * 1024;
-    //{ print '<pre>';  print_r($_REQUEST); echo '</pre>'; echo "<p>Commune= ".$Commune."<p>";}
     $autokey = getparam('autokey');
     $continue = 1;
     $xaction = getparam('action');

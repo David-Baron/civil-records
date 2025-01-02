@@ -4,7 +4,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /** TODO: origin param system... Need to build a DTO and delete this code */
 require(__DIR__ . '/../next/bootstrap.php');
-require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
 if (!$userAuthorizer->isGranted(9)) {
     $response = new RedirectResponse("$root/admin/");
@@ -22,13 +21,13 @@ function show_grp($grp, $current, $barre)
     if ($grp == $current) {
         echo '<strong>' . $grp . '</strong>';
     } else {
-        echo '<a href="' .$root. '/admin/gest_params.php?grp=' . $grp . '">' . $grp . '</a>';
+        echo '<a href="' . $root . '/admin/gest_params.php?grp=' . $grp . '">' . $grp . '</a>';
     }
 }
 
 
-$show_help = 
-<<<AAA
+$show_help =
+    <<<AAA
 function show(id)
 {
 	el = document.getElementById(id);
@@ -50,6 +49,7 @@ pathroot($root, $path, $xcomm, $xpatr, $page);
 
 $ok = false;
 $missingargs = true;
+
 $menu_software_active = 'P';
 
 
@@ -64,7 +64,7 @@ open_page("Paramétrage du logiciel", $root, $show_help); ?>
         <h2>Paramétrage du site <?= $config->get('SITENAME'); ?></h2>
         <p>
             <strong>Paramètres : </strong>
-            <?php $sql = "SELECT distinct groupe FROM " . $config->get('EA_DB') . "_params WHERE NOT (groupe in ('Hidden','Deleted')) ORDER BY groupe";
+            <?php $sql = "SELECT distinct groupe FROM " . $config->get('EA_DB') . "_params WHERE NOT (groupe in ('Hidden','Deleted', 'Replaced')) ORDER BY groupe";
             $result = EA_sql_query($sql);
             $barre = false;
             while ($row = EA_sql_fetch_array($result)) {
@@ -107,10 +107,10 @@ open_page("Paramétrage du logiciel", $root, $show_help); ?>
         $result = EA_sql_query($sql);
         ?>
         <h2><?= $xgroupe; ?></h2>
-        <?php if ($xgroupe == "Mail") { ?>
-            <p><a href="<?= $root; ?>/admin/test_mail.php"><b>Tester l'envoi d'e-mail</b></a></p>
+        <?php if ($xgroupe == "Mail" && !isset($_ENV['MAILER_FACTORY_DSN'])) { ?>
+            <p><a href="<?= $root; ?>/admin/environment.php" class="danger"><b>Veuillez configurer votre messagerie</b></a></p>
         <?php }
-        if ($xgroupe == "Utilisateurs" and isset($udbname)) {
+        if ($xgroupe == "Utilisateurs" && isset($udbname)) {
             msg('ATTENTION : Base des utilisateurs déportée sur ' . $udbaddr . "/" . $udbuser . "/" . $udbname . "/" . $config->get('EA_UDB') . "</p>", 'info');
         } ?>
 
@@ -128,7 +128,30 @@ open_page("Paramétrage du logiciel", $root, $show_help); ?>
                         </td>
                         <td>
                             <input type="hidden" name="parname<?= $i; ?>" value="<?= $row["param"]; ?>">
-                            <?php if ($row["type"] == "B") { ?>
+                            <?php
+                            switch ($row["type"]) {
+                                case "B":
+                                    $size = 1;
+                                    break;
+                                case "N":
+                                case "L":
+                                    $size = 5;
+                                    $maxsize = 5;
+                                    break;
+                                case "C":
+                                    $size = 50;
+                                    $maxsize = 250;
+                                    break;
+                                case "T":
+                                    $size = 1000;
+                                    $maxsize = 0;
+                                    break;
+                                default:
+                                    $size = 1;
+                                    $maxsize = 0;
+                                    break;
+                            }
+                            if ($row["type"] == "B") { ?>
                                 <input type="checkbox" name="parvalue<?= $i; ?>" value="1" <?= ($row["valeur"] == 1 ? ' checked' : ''); ?>>
                             <?php } elseif ($row["type"] == "L") {
                                 $leschoix = explode(";", $row["listval"]);
@@ -138,8 +161,12 @@ open_page("Paramétrage du logiciel", $root, $show_help); ?>
                                         <option <?= (intval(mb_substr($lechoix, 0, isin($lechoix, "-", 0) - 1)) == $row["valeur"] ? 'selected' : ''); ?>><?= $lechoix; ?></option>
                                     <?php } ?>
                                 </select>
-                            <?php } else { ?>
-                                <textarea name="parvalue<?= $i; ?>" cols="40" rows="6"><?= html_entity_decode($row["valeur"], ENTITY_REPLACE_FLAGS, ENTITY_CHARSET); ?></textarea>
+                                <?php } else {
+                                if ($size <= 100) { ?>
+                                    <input type="text" name="parvalue<?= $i; ?>" size="<?= $size; ?>" maxlength="<?= $maxsize; ?>" value="<?= $row["valeur"]; ?>">
+                                <?php } else { ?>
+                                    <textarea name="parvalue<?= $i; ?>" cols="40" rows="6"><?= html_entity_decode($row["valeur"], ENTITY_REPLACE_FLAGS, ENTITY_CHARSET); ?></textarea>
+                                <?php } ?>
                             <?php } ?>
                         </td>
                     </tr>

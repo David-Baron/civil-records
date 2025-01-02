@@ -4,7 +4,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require(__DIR__ . '/next/bootstrap.php');
-require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
+require(__DIR__ . '/next/Model/DocumentMarriageModel.php');
 
 if ($config->get('PUBLIC_LEVEL') < 4 && !$userAuthorizer->isGranted(4)) {
     $session->getFlashBag()->add('warning', 'Vous n\'êtes pas connecté ou vous n\'avez pas les autorisations nécessaires!');
@@ -19,11 +19,10 @@ $ctrlcod = $request->get('xct');
 $xcomm = $request->get('xcomm');
 $xpatr = $request->get('xpatr');
 
-$sql = "SELECT * FROM " . $config->get('EA_DB') . "_mar3 WHERE ID=" . $xid;
+$documentMarriageModel = new DocumentMarriageModel();
+$row = $documentMarriageModel->findId($xid);
 
-if ($stmt = EA_sql_query($sql)) {
-    $row = EA_sql_fetch_array($stmt);
-} else {
+if (!$row) {
     // TODO: need to log error here and This will be a new Response 404
     $session->getFlashBag()->add('danger', 'Le document auquel vous tentez d\'acceder n\'est pas ou plus disponible sur ce serveur!');
     $response = new RedirectResponse($session->get('previous_url', "$root/"));

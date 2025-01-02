@@ -3,7 +3,7 @@
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require(__DIR__ . '/next/bootstrap.php');
-require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
+require(__DIR__ . '/next/Engine/MailerFactory.php');
 
 $form_errors = [];
 
@@ -11,54 +11,52 @@ if ($request->getMethod() === 'POST') {
     if (empty($request->request->get('login'))) {
         $form_errors['login'] = 'Vous devez préciser le login';
     }
+
     if (empty($request->request->get('key'))) {
         $form_errors['key'] = 'Vous devez inscrire la clé qui vous été envoyée par mail';
     }
 
     if (empty($form_errors)) {
         $sql = EA_sql_query("SELECT * FROM " . $config->get('EA_UDB') . "_user3 WHERE login='" . $request->request->get('login')
-            . "' AND rem='" . $request->request->get('key') . "' AND statut='W'", $u_db);
+            . "' AND rem='" . $request->request->get('key') . "'", $u_db);
         if (EA_sql_num_rows($sql) == 1) {
             $user = EA_sql_fetch_array($sql);
-            // $login = $user['login'];
-            $id = $user['ID'];
-            $nomprenom = $user['prenom'] . ' ' . $user['nom'];
-            $login = $user['login'];
-            $mes = "";
+
+            $flash = '';
             $statut = 'N'; // A = attente approbation par admin, N = normal
             if ($config->get('USER_AUTO_DEF') == 1) {
                 $statut = 'A';
             }
 
-            $sql = "UPDATE " . $config->get('EA_UDB') . "_user3 SET statut='" . $statut . "', rem=' ' WHERE id=" . $id . ";";
+            $sql = "UPDATE " . $config->get('EA_UDB') . "_user3 SET statut='" . $statut . "', rem=' ' WHERE id=" . $user['ID'] . ";";
             $result = EA_sql_query($sql, $u_db);
-            $crlf = chr(10) . chr(13);
+
             $log = "Activation compte";
-            if ($config->get('USER_AUTO_DEF') == 1) {
-                $message  = $nomprenom . " (" . $login . ")" . $crlf;
-                $message .= "vient de demander accès au site " . $config->get('SITENAME') . "." . $crlf;
-                $message .= "Vous pouvez APPROUVER cet acces avec le lien suivant : " . $crlf;
-                $message .= $config->get('EA_URL_SITE') . $root . "/admin/approuver_compte.php?id=" . $id . "&action=OK" . $crlf;
-                $message .= "OU " . $crlf;
-                $message .= "Vous pouvez REFUSER cet acces avec le lien suivant : " . $crlf;
-                $message .= $config->get('EA_URL_SITE') . $root . "/admin/approuver_compte.php?id=" . $id . "&action=KO" . $crlf;
-                $sujet = "Approbation acces de " . $nomprenom;
-                $mes = " Votre demande de compte est soumise à l'approbation de l'administrateur.";
+            if ($config->get('USER_AUTO_DEF') != 1) {
+                $message  = 'Un utilisateur ' . $user['prenom'] . ' ' . $user['nom'] . '<br>';
+                $message .= "a demander un accès au site " . $config->get('SITENAME') . '.<br>';
+                $message .= 'Veuillez approuver ou refuser cet accès avec le lien suivant : <br>';
+                $message .= $config->get('URL_SITE') . '/admin/approuver_compte.php?id=' . $user['ID'] . '<br>';
+                $sujet = 'Approbation acces de ' . $user['prenom'] . ' ' . $user['nom'];
+                $flash = " Votre demande de compte est soumise à l'approbation de l'administrateur.";
             } else {
-                $message  = $nomprenom . " (" . $login . ")" . $crlf;
-                $message .= "vient d'obtenir un accès au site " . $config->get('SITENAME') . "." . $crlf;
-                $sujet = "Validation acces de " . $nomprenom;
-                $mes = " Votre compte est actif et vous pouvez à présent vous connecter.";
+                $message  = $user['prenom'] . ' ' . $user['nom'] . " (" . $user['login'] . ")" . '<br>';
+                $message .= "vient d'obtenir un accès au site " . $config->get('SITENAME') . "." . '<br>';
+                $sujet = "Validation acces de " . $user['prenom'] . ' ' . $user['nom'];
+                $flash = " Votre compte est actif et vous pouvez à présent vous connecter.";
             }
-            $sender = mail_encode($config->get('SITENAME')) . ' <' . $config->get('LOC_MAIL') . ">";
-            $okmail = sendmail($sender, $config->get('LOC_MAIL'), $sujet, $message);
-            if ($okmail) {
-                $log .= " + mail";
-            } else {
-                $log .= " NO mail";
-            }
-            writelog($log, $login, 0);
-            $session->getFlashBag()->add('info', 'Votre adresse a été vérifiée.<br>' . $mes);
+
+            $from = $config->get('SITENAME') . ' <' . $_ENV['EMAIL_SITE'] . ">";
+            $to = $_ENV['EMAIL_ADMIN'];
+            $mailerFactory = new MailerFactory();
+            $mail = $mailerFactory->createEmail($from, $to, $subject, 'email_default.php', [
+                'sitename' => $config->get('SITENAME'),
+                'urlsite' => $config->get('SITE_URL'),
+                'message' => $message
+            ]);
+            $mailerFactory->send($mail);
+
+            $session->getFlashBag()->add('info', 'Votre adresse a été vérifiée.<br>' . $flash);
             $response = new RedirectResponse("$root/");
             $response->send();
             exit();
@@ -95,7 +93,7 @@ open_page("Activer compte utilisateur", $root); ?>
             <td>
                 <input type="text" size="30" name="login" <?= (isset($form_errors['login']) ? 'class="erreur"' : ''); ?>>
                 <?php if (isset($form_errors['login'])) { ?>
-                          <div class="invalid-feedback erreur"><?= $form_errors['login']; ?></div>
+                    <div class="invalid-feedback erreur"><?= $form_errors['login']; ?></div>
                 <?php } ?>
             </td>
         </tr>
@@ -105,7 +103,7 @@ open_page("Activer compte utilisateur", $root); ?>
             <td>
                 <input type="text" name="key" size="30" <?= (isset($form_errors['key']) ? 'class="erreur"' : ''); ?>>
                 <?php if (isset($form_errors['login'])) { ?>
-                          <div class="invalid-feedback erreur"><?= $form_errors['key']; ?></div>
+                    <div class="invalid-feedback erreur"><?= $form_errors['key']; ?></div>
                 <?php } ?>
             </td>
         </tr>

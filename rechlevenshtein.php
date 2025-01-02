@@ -3,8 +3,7 @@
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require(__DIR__ . '/next/bootstrap.php');
-require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
-include("tools/cree_table_levenshtein.php");
+include(__DIR__ . '/tools/cree_table_levenshtein.php');
 
 if (!$userAuthorizer->isGranted($config->get('LEVEL_LEVENSHTEIN'))) {
     $session->getFlashBag()->add('warning', 'Vous n\'êtes pas connecté ou vous n\'avez pas les autorisations nécessaires!');

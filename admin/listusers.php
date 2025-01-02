@@ -3,7 +3,6 @@
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require(__DIR__ . '/../next/bootstrap.php');
-require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
 if (!$userAuthorizer->isGranted(9)) {
     $response = new RedirectResponse("$root/admin/");
@@ -15,9 +14,8 @@ pathroot($root, $path, $xcomm, $xpatr, $page);
 
 $xcomm = "";
 $xpatr = "";
-$page = 1;
 $xord  = getparam('xord', 'N'); // N = Nom
-$page  = getparam('pg');
+$page  = getparam('page', 1);
 $init  = getparam('init');
 
 $menu_user_active = 'L';

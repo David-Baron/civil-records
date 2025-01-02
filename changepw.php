@@ -3,7 +3,6 @@
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require(__DIR__ . '/next/bootstrap.php');
-require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
 if (!$userAuthorizer->isAuthenticated()) {
     $response = new RedirectResponse("$root/login.php");

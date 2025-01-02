@@ -3,9 +3,14 @@
 * Trace IP v2 
 */
 
+require(__DIR__ . '/../../next/Engine/MailerFactory.php');
+
+throw new \Exception("This function not exist anymore, deprecated functionality traceip...", 1);
+exit;
+
 function traceip()
 {
-    global $config, $session;    
+    global $config, $session;
     global $bypassTIP; // bypassTIP : pour ne pas exécuter traceip sur une page il suffit de déclarer $bypassTIP=1;
     global $TIPlevel;  // $TIPlevel : niveau de la page : 1=page a compter (actes) 0 = autre (par défaut)
     // visitor general data
@@ -18,7 +23,7 @@ function traceip()
     if (isset($array_server_values['HTTP_USER_AGENT']))
         $Vua   = $array_server_values['HTTP_USER_AGENT'];
     $Vip   = $array_server_values['REMOTE_ADDR'];
-    
+
     if (!isset($bypassTIP)) $bypassTIP = 0;
     if (!isset($TIPlevel)) $TIPlevel = 0;
 
@@ -27,8 +32,7 @@ function traceip()
     if (!defined("TIP_DUREE")) define("TIP_DUREE", "1"); */
 
     // Filtrage activé
-    if (($config->get('TIP_FILTRER') == 1 or ($config->get('TIP_FILTRER') == 2 and $TIPlevel > 0)) and $bypassTIP != 1)
-    {
+    if (($config->get('TIP_FILTRER') == 1 or ($config->get('TIP_FILTRER') == 2 and $TIPlevel > 0)) and $bypassTIP != 1) {
 
         // Elimine l'IP non bloquée qui est plus âgée que TIP_DUREE minutes
         $req_tip_del_oldIP = "DELETE FROM " . $config->get('EA_DB') . "_traceip WHERE (datetime < " . ($Vdatetime - 60 * $config->get('TIP_DUREE')) . " AND locked = 0)";
@@ -91,27 +95,22 @@ function traceip()
             $req_tip_banIP = "UPDATE " . $config->get('EA_DB') . "_traceip SET locked = 1 WHERE ip='" . $Vip . "';";
             EA_sql_query($req_tip_banIP) or die(EA_sql_error() . ' ' . __LINE__);
 
-            // Generate the alert mail
-            //$tip_headers = 'From: Expoactes/TraceIP v2 <'.LOC_MAIL.'>' . "\r\n";
-            $tip_subject = '[IP Interdite] ' . $Vip . ' - ' . $Vdate . "\r\n";
-            $tip_body  = 'Variables serveur envoyées :' . "\n";
+            $mail_message  = 'Variables serveur envoyées : <br>';
             foreach ($array_server_values as $key => $val) {
-                $tip_body .= '  ' . $key . ' => ' . $val . "\n";
+                $mail_message .= '  ' . $key . ' => ' . $val . "<br>";
             };
-            $tip_body = addslashes($tip_body);
-            eval("\$tip_body = \"$tip_body\";");
-            $tip_body = stripslashes($tip_body);
-            $root = "";
-            $path = "";
-            $xcomm = $xpatr = $page = "";
-            pathroot($root, $path, $xcomm, $xpatr, $page);
-            $url_admin_tip = $config->get('EA_URL_SITE') . $root . "/admin/gesttraceip.php";
-            $tip_body .= "\n\nAdministrer les IP bannies : " . $url_admin_tip;
 
-            // Send the mail
-            //mail(TIP_MAIL_TO, $tip_subject, $tip_body, $tip_headers);
-            $from = remove_accent($config->get('SITENAME')) . ' <' . $config->get('LOC_MAIL') . '>';
-            sendmail($from, $config->get('TIP_MAIL_TO'), $tip_subject, $tip_body);
+            $url_admin_tip = $config->get('EA_URL_SITE') . "/admin/gesttraceip.php";
+            $mail_message .= "<br>Administrer les IP bannies : " . $url_admin_tip;
+
+            $from = $config->get('SITENAME') . ' <' . $_ENV['EMAIL_SITE'] . ">";
+            $to = $_ENV['EMAIL_ADMIN'];
+            $subject = '[IP Interdite] ' . $Vip . ' - ' . $Vdate;
+            $mailerFactory = new MailerFactory();
+            $mail = $mailerFactory->createEmail($from, $to, $subject, null, [
+                'message' => $mail_message
+            ]);
+            $mailerFactory->send($mail);
         };
         if ($TIPlocked == 1) {
             // this visitor is banned
@@ -125,9 +124,8 @@ function traceip()
     }
 }
 
-
-function admin_traceip()
 // Administration des IP Bannies 
+function admin_traceip()
 {
     global $config;
     echo '<h1>Gestion du filtrage d\'IP (adapté de TraceIP v2)</h1>' . "\n";

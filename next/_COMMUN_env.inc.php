@@ -14,9 +14,9 @@ include_once __DIR__ . '/../tools/function.php'; // Compatibility only
 include_once __DIR__ . '/../tools/adlcutils.php'; // Compatibility only
 include_once __DIR__ . '/../tools/actutils.php'; // Compatibility only
 
-if (!in_array(basename($_SERVER['PHP_SELF']), ['eclair.php', 'rss.php', 'p_info.php'])) {
+/* if (!in_array(basename($_SERVER['PHP_SELF']), ['eclair.php', 'rss.php', 'p_info.php'])) {
     include_once __DIR__ . '/../tools/loginutils.php';
 }
-
+ */
 // Cette partie gère l'existence d'un script modifié localement, son nom doit alors être LOCAL-[Nom complet d'origine]
-$EA_Ce_Script = str_replace('LOCAL-', '', basename($_SERVER['PHP_SELF']));
+// $EA_Ce_Script = str_replace('LOCAL-', '', basename($_SERVER['PHP_SELF']));

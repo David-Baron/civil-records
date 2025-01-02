@@ -13,6 +13,21 @@ class UserModel extends DatabaseConnection
         return $stmt->fetchAll();
     }
 
+    public function findId(int $id): array|null
+    {
+        $sql = "SELECT * FROM " . $this->table_prefix . "_user3 WHERE id=:id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            'id' => $id
+        ]);
+        
+        if ($user = $stmt->fetch()) {
+            return $user;
+        } 
+        
+        return null;
+    }
+
     public function findAllByCriteria(array $criteria): array
     {
         $params = '';

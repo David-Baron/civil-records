@@ -1053,3 +1053,391 @@ function menu_public()
     echo '</nav></div>';
     echo '</div>';
 }
+
+
+function sendmail($from, $to, $sujet, $message)
+{
+    global $config;
+    /*
+        echo '<p>Expéditeur : ['.htmlspecialchars($from, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET).']';
+        echo '<br />Destinataire : ['.htmlspecialchars($to, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET).']';
+        echo '<br />Sujet : ['.htmlspecialchars($sujet, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET).']'.base64_encode($sujet);
+        echo '<br />Message : ['.htmlspecialchars($message, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET).']'.'</p>';
+        */
+    if ($config->get('EXTERN_MAIL') == 0) {
+        // appel de la fonction interne ... pour autant qu'elle soit bien configurée
+        $headers  = 'MIME-Version: 1.0' . "\n";
+        $headers .= "Content-Type: text/plain; charset=" . MAIL_CHARSET . "; format=flowed\n";
+        $headers .= "Content-Transfer-Encoding: 8bit\n";
+        $headers .= "X-Mailer: PHP" . phpversion() . "\n";
+        $headers .= 'From: ' . $from . "\n";
+
+        $ok =  @mail($to, mail_encode($sujet), $message, $headers);
+        if (!$ok) {
+            msg("051 : L'envoi du mail via la procédure interne à PHP n'a pas réussi.");
+            global $userlogin;
+            if ($userlogin <> "") {
+                echo '<p>Expéditeur : ' . htmlspecialchars($from, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
+                echo '<br />Destinataire : ' . htmlspecialchars($to, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET) . '</p>';
+                //mail($to, mail_encode($sujet), $message, $headers); // nouvel essai.
+            }
+        }
+        return $ok;
+    } else {
+        if (file_exists(dirname(__FILE__) . '/PHPMailer/') and file_exists(dirname(__FILE__) . '/mail_externe.inc.php')) {
+            // Gestion Envoi mel par script externe local et PHPMailer
+            $retour_mail_externe = false;
+            // Le script doit positionner la variable $retour_mail_externe à "false" ou "true", à défaut ce script considérera que l'envoi de mél a échoué même s'il a réussi.
+            require_once(dirname(__FILE__) . '/mail_externe.inc.php');
+            return $retour_mail_externe;
+        }
+        // envoi du mail vers un autre serveur smtp ... si c'est nécessaire
+        $lb = "\r\n";                //linebreak
+
+        if ($config->get('SMTP_HOST') == "" or $config->get('LOC_HOST') == "" or $config->get('LOC_MAIL') == "") {
+            msg("052 : Paramètres de gestion du mail incomlètement configurés.");
+            return false;
+        }
+        // if ($smtp_port=="")
+        $smtp_port = 25;  // valeur par défaut
+
+        $contenu  = "from:" . $from . $lb;
+        $contenu .= "to:" . $to . $lb;
+        $contenu .= "subject:" . $sujet . $lb;
+        $contenu .= $message;
+
+        $content   = explode($lb, $contenu);
+
+        // if ($body) {$bdy = preg_replace("/^\./","..",explode($body_lb,$body));}
+
+        // build the array for the SMTP dialog. Line content is array(command, success code, additonal error message)
+
+        if ($config->get('SMTP_PASS') <> "") {
+            // SMTP authentication methode AUTH LOGIN, use extended HELO "EHLO"
+            $smtp = array(
+                // call the server and tell the name of your local host
+                array("EHLO " . $config->get('LOC_HOST') . $lb, "220,250", "HELO error: "),
+                // request to auth
+                array("AUTH LOGIN" . $lb, "334", "AUTH error:"),
+                // username
+                array(base64_encode($config->get('SMTP_ACC')) . $lb, "334", "AUTHENTIFICATION error : "),
+                // password
+                array(base64_encode($config->get('SMTP_PASS')) . $lb, "235", "AUTHENTIFICATION error : "),
+            );
+        } else {
+            $smtp = array(array("HELO " . $config->get('LOC_HOST') . $lb, "220,250", "HELO error: "));
+        }
+
+        // call the server and tell the name of your local host
+
+        // envelop
+        $smtp[] = array("MAIL FROM: <" . $from . ">" . $lb, "250", "MAIL FROM error: ");
+
+        $tos    = explode(",", $to); //header
+        for ($i = 0; $i < count($tos); $i++) {
+            $smtp[] = array("RCPT TO: <" . $tos[$i] . ">" . $lb, "250", "RCPT TO error: ");
+        }
+        // begin data
+        $smtp[] = array("DATA" . $lb, "354", "DATA error: ");
+        foreach ($content as $cont) {
+            $smtp[] = array($cont . $lb, "", "");
+        }
+        $smtp[] = array("." . $lb, "250", "DATA(end)error: ");
+        $smtp[] = array("QUIT" . $lb, "221", "QUIT error: ");
+
+        // open socket
+        $fp = @fsockopen($config->get('SMTP_HOST'), $smtp_port, $errno, $errstr, 15);
+        if (!$fp) {
+            writelog("Cannot connect to host", $config->get('SMTP_HOST'), 0);
+            msg('053 : Impossible de se connecter au serveur mail "' . $config->get('SMTP_HOST') . '".');
+            return false;
+        }
+
+        $banner = fgets($fp, 1024);
+        // perform the SMTP dialog with all lines of the list
+        foreach ($smtp as $req) {
+            $r = $req[0];
+            // send request
+            @fputs($fp, $req[0]);
+            // get available server messages and stop on errors
+            if ($req[1]) {
+                while ($result = fgets($fp, 1024)) {
+                    if (mb_substr($result, 3, 1) == " ") {
+                        break;
+                    }
+                }
+                if (!strstr($req[1], mb_substr($result, 0, 3))) {
+                    writelog($req[2] . $result, $config->get('SMTP_HOST'), 0);
+                    msg('054 : Problème lors du dialogue avec le serveur mail "' . $config->get('SMTP_HOST') . '" : ' . $req[2] . $result);
+                    return false;
+                }
+            }
+        }
+        $result = fgets($fp, 1024);
+
+        fclose($fp);
+        return true;
+    }
+}
+
+
+// require(__DIR__ . '/traceIP/trace_ip.php');
+
+// if (!defined("TIP_LEVEL_NO_IP_TEST")) define("TIP_LEVEL_NO_IP_TEST", 9);
+
+/* function login($path = '', $cas = 3)  // Uniquement utilisé par authentification
+{
+    global $root;
+    header("Location: " . $root . "/login.php?cas=" . $cas . "&uri=" . urlencode($_SERVER['REQUEST_URI']));
+    die();
+}
+ */
+/* function current_user($zone)
+{
+    global $userlogin, $u_db;
+    if ($userlogin == "") {
+        return 0;
+    }  // non connecté
+    else {
+        $sql = "SELECT * FROM " . EA_UDB . "_user3 WHERE login = '" . $userlogin . "'";
+        $res = EA_sql_query($sql, $u_db);
+        if ($res and EA_sql_num_rows($res) != 0) {
+            $row = EA_sql_fetch_array($res);
+            if ($zone == "MD5") {
+                return $row["hashpass"];
+            }
+            //return md5($row["login"].$row["passw"]);
+            else {
+                return $row[$zone];
+            }
+        } 
+
+        return 0;
+    }
+} */
+
+/* function logonok($level = 0)
+{
+    global $root,$userlogin,$statut,$expirok,$u_db;
+
+    if (!defined("EA_MAINTENANCE")) {
+        define("EA_MAINTENANCE", 0);
+    }
+    // Autentification PHP
+    if (isset($_REQUEST['login'])) {  // si on présente un login, on le teste de suite
+        $userid = 0;
+        $statut = "";
+        $expirok = true;
+        $session->get('user')['level'] = CheckUser(getparam('login'), getparam('passwd'), getparam('codedpass'), getparam('iscoded'), $userid);
+        $t = array("W" => 5, "A" => 5, "B" => 7);
+        if($session->get('user')['level'] == 0) {
+            if (!$expirok) {
+                $cas = 6;
+            } elseif (array_key_exists($statut, $t)) {
+                $cas = $t[$statut];
+            } else {
+                $cas = 1;
+            }
+            login($root, $cas);
+        } else {
+            if (getparam('iscoded') == 'Y') {
+                $md5 = getparam('codedpass');
+            } else {
+                $md5 = sha1(getparam('passwd'));
+            }
+            if (getparam('saved') == 'yes') {
+                $duree = time() + (60 * 60 * 24) * 5;
+            } else {
+                $duree = 0;
+            }
+            setcookie('md5', $md5, $duree, $root);
+            setcookie('userid', $userid, $duree, $root);
+            $niveau = $userlevel;
+            $userlogin = getparam('login');
+            if ($userlevel >= LEVEL_MAIL_LOGIN) {
+                $lb        = "\r\n";
+                $Vdate = date("d/m/Y à H:i");
+                $array_server_values = $_SERVER;
+                $Vua   = $array_server_values['HTTP_USER_AGENT'];
+                $Vip   = $array_server_values['REMOTE_ADDR'];
+                $message  = "Information sécurité : Vous vous êtes connecté au site suivant " . $lb;
+                $message .= "" . $lb;
+                $message .= EA_URL_SITE . $root . "/index.php" . $lb;
+                $message .= "" . $lb;
+                $message .= "avec le login [" . getparam('login') . "] ce " . $Vdate . $lb;
+                $message .= "" . $lb;
+                $message .= "Votre adresse IP est :" . $Vip . $lb;
+                $message .= "Votre client est : " . $Vua . $lb;
+                $sujet = "Confirmation de login sur " . SITENAME;
+                $sender = mail_encode(SITENAME) . ' <' . LOC_MAIL . ">";
+                $okmail = sendmail($sender, current_user('email'), $sujet, $message);
+            }
+        }
+    } elseif(isset($_COOKIE['userid']) and isset($_COOKIE['md5'])) {
+        $niveau = CheckMD5($_COOKIE['userid'], $_COOKIE['md5']);  // mets à jour $userlogin
+        if ($niveau < $level) {
+            $niveau = 0;
+        }
+    } elseif ($level <= PUBLIC_LEVEL) {
+        $niveau = PUBLIC_LEVEL;  // ne pas (re)positionner userlogin
+    } else {
+        //echo "ERROR LOGIN. redirigé sur ".$root."/login.php?cas=2&uri=".urlencode($_SERVER['REQUEST_URI']);
+        login($root, '2');
+    }
+    if (!(EA_MAINTENANCE == 0 or $niveau == 9)) {
+        $niveau = 0;
+    }
+    recharger_solde();
+    // test IP
+    if ($niveau < TIP_LEVEL_NO_IP_TEST && $niveau != 5) {
+        traceip();
+    }
+    return $niveau;
+} */
+
+/* function CheckUser($login, $pw, $codedpw, $coded, &$userid)
+// Vérification réelle du droit d'accès
+{
+    global $statut, $level, $expirok, $u_db;
+
+    if (strlen($login) > 15 or strlen($pw) > 15) {
+        writelog('Login ERROR : ' . $login, $pw, $nbresult);
+        // probablement attaque avec injection de code
+        return 0;
+    } else {
+        $res = EA_sql_query("SELECT * FROM " . EA_UDB . "_user3 WHERE login='" . $login . "'", $u_db);
+        $nbresult = EA_sql_num_rows($res);
+        if ($nbresult > 1) {
+            writelog('Login ERROR : ', $login, $nbresult);
+            // probablement attaque avec injection de code ou 2 logins identiques dans la base
+            return 0;
+        } else {
+            if ($nbresult == 1) {
+                $row = EA_sql_fetch_array($res);
+                $statut = $row["statut"];
+                if ($coded == 'N') {
+                    $pwok = ($row["hashpass"] === sha1($pw));
+                } else {
+                    $pwok = ($row["hashpass"] === $codedpw);
+                }
+                if ($statut == 'N') {
+                    $expirok = ($row["dtexpiration"] >= date("Y-m-d", time()) or $row["level"] == 9);
+                }
+                // recontrôle des user et pw pour assurer respect de la casse et anti injection
+                if ($row["login"] == $login and $pwok and $expirok and $row["level"] >= $level and ($row["level"] == 9 or $row["statut"] == 'N')) {
+                    $GLOBALS['EA_NP'] = $row["nom"] . ' ' . $row["prenom"]; // MENU $EA_NP
+                    $userid = $row["ID"];
+                    return max($row["level"], PUBLIC_LEVEL);
+                } else {
+                    return 0;
+                }
+            } else {
+                return 0;
+            }
+        }
+    }
+} */
+
+/* function CheckMD5($userid, $md5)
+{
+    global $userlogin, $level, $u_db;
+    $res = EA_sql_query("SELECT * FROM " . EA_UDB . "_user3 WHERE ID='" . $userid . "'", $u_db);
+    if (EA_sql_num_rows($res) == 1) {
+        $row = EA_sql_fetch_array($res);
+        if ($row["hashpass"] != $md5) {
+            return 0;
+        } else {
+            if ($row["level"] >= $level) {
+                $GLOBALS['EA_NP'] = $row["nom"] . ' ' . $row["prenom"];// MENU $EA_NP
+                $userlogin = $row["login"];
+                return max($row["level"], PUBLIC_LEVEL);
+            } else {
+                return 0;
+            }
+        }
+    } else {
+        return 0;
+    }
+} */
+
+
+// Fonction d'envoi de mél avec PHPMailer (à installer dans 'tools/PHPMailer/') : https://github.com/PHPMailer/PHPMailer
+// En entrée :
+//     SMTP_HOST : Serveur d'envoi avec port sous la forme  SERVEUR:PORT
+//     SMTP_PASS : mot de passe du compte (si non indiqué, pas d'envoi authentifié)
+//     SMTP_ACC  : Adresse mel du compte des envois authentifiés
+//     LOC_HOST  : Nom du serveur d'origine des mels
+//     LOC_MAIL  : Adresse mail de l'administrateur. Adresse d'émetteur par défaut
+//     $from     : mel emetteur
+//     $to       : mel destinataire
+//     $sujet    : sujet du mel
+//     $message  : texte du mel
+//
+// En sortie : $retour_mail_externe "true" si réussi, "false" sinon
+// VOIR : /admin/aide/config.html#Mail
+
+$retour_mail_externe = false;
+
+$rep_PHPMailer = dirname(__FILE__) . '/PHPMailer/';
+if (!file_exists($rep_PHPMailer)) {
+    msg("052 : Dossier PHPMailer absent.");
+    writelog('Dossier PHPMailer absent.', 'PHPMailer', 0);
+    return $retour_mail_externe; // Le return est nécessaire pour stopper le script mais le contenu n'est pas utilisé
+}
+if (($config->get('SMTP_HOST') . $config->get('LOC_HOST')) == "") {
+    msg("052 : Paramètres de gestion du mail incomplètement configurés.");
+    writelog('Paramètres manquants.', 'PHPMailer', 0);
+    return $retour_mail_externe; // Le return est nécessaire pour stopper le script mais le contenu n'est pas utilisé
+}
+// Content-Type: text/plain; charset=iso-8859-1
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require_once($rep_PHPMailer . "src/Exception.php");
+require_once($rep_PHPMailer . "src/PHPMailer.php");
+require_once($rep_PHPMailer . "src/SMTP.php");
+//date_default_timezone_set("Europe/Paris");
+$mail = new PHPMailer();
+
+// Extrait le port du nom du serveur, par défaut port 465
+$temp = explode(':', $config->get('SMTP_HOST'));
+if (!isset($temp[1])) {
+    $temp[1] = 465;
+}
+
+$mail->Host = $temp[0];
+$mail->Port = $temp[1];
+$mail->Hostname = $config->get('LOC_HOST');
+
+if ($config->get('SMTP_PASS') == "") {
+    $mail->SMTPAuth = false;
+} else {
+    $mail->SMTPAuth = true;
+    $mail->Username = $config->get('SMTP_ACC'); //Username to use for SMTP authentication - use full email address for gmail
+    $mail->Password = $config->get('SMTP_PASS'); //Password to use for SMTP authentication
+}
+
+$mail->isSMTP();
+$mail->isHTML(false);
+$mail->CharSet = 'UTF-8';
+$mail->Subject = $sujet;
+//$mail->AltBody = $message;
+$mail->Body = $message;
+// $mail->SMTPDebug = SMTP::DEBUG_SERVER;
+$les_adresses = $mail->parseAddresses($from, false);
+$mail->SetFrom($les_adresses[0]['address'], $les_adresses[0]['name']);
+// $mail->setFrom(LOC_MAIL, SITENAME);
+$to_array = explode(',', $to);
+foreach ($to_array as $address) {
+    $mail->AddAddress($address, 'ExpoActes');
+}
+$mail->addReplyTo($from);
+
+try {
+    $mail->send();
+    $retour_mail_externe = true;
+    return $retour_mail_externe; // Le return est nécessaire pour stopper le script mais le contenu n'est pas utilisé
+} catch (\Exception $e) {
+    msg('Problème lors du dialogue avec le serveur mail: " : ' . $e->getMessage());
+    writelog($e->getMessage(), $mail->ErrorInfo, 0);
+    return $retour_mail_externe; // Le return est nécessaire pour stopper le script mais le contenu n'est pas utilisé
+}

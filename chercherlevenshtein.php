@@ -3,7 +3,6 @@
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require(__DIR__ . '/next/bootstrap.php');
-require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 include(__DIR__ . '/tools/cree_table_levenshtein.php');
 include(__DIR__ . '/tools/traite_tables_levenshtein.php');
 

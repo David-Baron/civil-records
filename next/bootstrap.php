@@ -45,3 +45,5 @@ $request = Request::createFromGlobals();
 $response = new Response();
 
 $userAuthorizer = new UserAuthorizer($session);
+
+require(__DIR__ . '/_COMMUN_env.inc.php'); // Compatibility only

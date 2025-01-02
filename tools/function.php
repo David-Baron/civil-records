@@ -635,16 +635,19 @@ function MakeRandomPassword($length = 6)
     $_vowels = array('a', 'e', 'i', 'o', 'u', '2', '3', '4', '5', '6', '7', '8', '9');
     $_consonants = array('b', 'c', 'd', 'f', 'g', 'h', 'k', 'm', 'n', 'p', 'r', 's', 't', 'v', 'w', 'x', 'z');
     $_syllables = array();
-    $newpass = "";
+    $newpass = '';
+    
     foreach ($_vowels as $v) {
         foreach ($_consonants as $c) {
             array_push($_syllables, "$c$v");
             array_push($_syllables, "$v$c");
         }
     }
+
     for ($i = 0; $i < ($length / 2); $i++) {
         $newpass = $newpass . $_syllables[array_rand($_syllables)];
     }
+
     return $newpass;
 }
 
@@ -652,9 +655,9 @@ function valid_mail_adrs($email)
 {
     if (preg_match('`^\w([-_.]?\w)*@\w([-_.]?\w)*\.([a-z]{2,4})$`', $email)) {
         return true;
-    } else {
-        return false;
-    }
+    } 
+    
+    return false;
 }
 
 function mail_encode($texte)
@@ -665,127 +668,8 @@ function mail_encode($texte)
 
 function sendmail($from, $to, $sujet, $message)
 {
-    global $config;
-    /*
-        echo '<p>Expéditeur : ['.htmlspecialchars($from, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET).']';
-        echo '<br />Destinataire : ['.htmlspecialchars($to, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET).']';
-        echo '<br />Sujet : ['.htmlspecialchars($sujet, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET).']'.base64_encode($sujet);
-        echo '<br />Message : ['.htmlspecialchars($message, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET).']'.'</p>';
-        */
-    if ($config->get('EXTERN_MAIL') == 0) {
-        // appel de la fonction interne ... pour autant qu'elle soit bien configurée
-        $headers  = 'MIME-Version: 1.0' . "\n";
-        $headers .= "Content-Type: text/plain; charset=" . MAIL_CHARSET . "; format=flowed\n";
-        $headers .= "Content-Transfer-Encoding: 8bit\n";
-        $headers .= "X-Mailer: PHP" . phpversion() . "\n";
-        $headers .= 'From: ' . $from . "\n";
-
-        $ok =  @mail($to, mail_encode($sujet), $message, $headers);
-        if (!$ok) {
-            msg("051 : L'envoi du mail via la procédure interne à PHP n'a pas réussi.");
-            global $userlogin;
-            if ($userlogin <> "") {
-                echo '<p>Expéditeur : ' . htmlspecialchars($from, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
-                echo '<br />Destinataire : ' . htmlspecialchars($to, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET) . '</p>';
-                //mail($to, mail_encode($sujet), $message, $headers); // nouvel essai.
-            }
-        }
-        return $ok;
-    } else {
-        if (file_exists(dirname(__FILE__) . '/PHPMailer/') and file_exists(dirname(__FILE__) . '/mail_externe.inc.php')) {
-            // Gestion Envoi mel par script externe local et PHPMailer
-            $retour_mail_externe = false;
-            // Le script doit positionner la variable $retour_mail_externe à "false" ou "true", à défaut ce script considérera que l'envoi de mél a échoué même s'il a réussi.
-            require_once(dirname(__FILE__) . '/mail_externe.inc.php');
-            return $retour_mail_externe;
-        }
-        // envoi du mail vers un autre serveur smtp ... si c'est nécessaire
-        $lb = "\r\n";                //linebreak
-
-        if ($config->get('SMTP_HOST') == "" or $config->get('LOC_HOST') == "" or $config->get('LOC_MAIL') == "") {
-            msg("052 : Paramètres de gestion du mail incomlètement configurés.");
-            return false;
-        }
-        // if ($smtp_port=="")
-        $smtp_port = 25;  // valeur par défaut
-
-        $contenu  = "from:" . $from . $lb;
-        $contenu .= "to:" . $to . $lb;
-        $contenu .= "subject:" . $sujet . $lb;
-        $contenu .= $message;
-
-        $content   = explode($lb, $contenu);
-
-        // if ($body) {$bdy = preg_replace("/^\./","..",explode($body_lb,$body));}
-
-        // build the array for the SMTP dialog. Line content is array(command, success code, additonal error message)
-
-        if ($config->get('SMTP_PASS') <> "") {
-            // SMTP authentication methode AUTH LOGIN, use extended HELO "EHLO"
-            $smtp = array(
-                // call the server and tell the name of your local host
-                array("EHLO " . $config->get('LOC_HOST') . $lb, "220,250", "HELO error: "),
-                // request to auth
-                array("AUTH LOGIN" . $lb, "334", "AUTH error:"),
-                // username
-                array(base64_encode($config->get('SMTP_ACC')) . $lb, "334", "AUTHENTIFICATION error : "),
-                // password
-                array(base64_encode($config->get('SMTP_PASS')) . $lb, "235", "AUTHENTIFICATION error : "),
-            );
-        } else {
-            $smtp = array(array("HELO " . $config->get('LOC_HOST') . $lb, "220,250", "HELO error: "));
-        }
-
-        // call the server and tell the name of your local host
-
-        // envelop
-        $smtp[] = array("MAIL FROM: <" . $from . ">" . $lb, "250", "MAIL FROM error: ");
-
-        $tos    = explode(",", $to); //header
-        for ($i = 0; $i < count($tos); $i++) {
-            $smtp[] = array("RCPT TO: <" . $tos[$i] . ">" . $lb, "250", "RCPT TO error: ");
-        }
-        // begin data
-        $smtp[] = array("DATA" . $lb, "354", "DATA error: ");
-        foreach ($content as $cont) {
-            $smtp[] = array($cont . $lb, "", "");
-        }
-        $smtp[] = array("." . $lb, "250", "DATA(end)error: ");
-        $smtp[] = array("QUIT" . $lb, "221", "QUIT error: ");
-
-        // open socket
-        $fp = @fsockopen($config->get('SMTP_HOST'), $smtp_port, $errno, $errstr, 15);
-        if (!$fp) {
-            writelog("Cannot connect to host", $config->get('SMTP_HOST'), 0);
-            msg('053 : Impossible de se connecter au serveur mail "' . $config->get('SMTP_HOST') . '".');
-            return false;
-        }
-
-        $banner = fgets($fp, 1024);
-        // perform the SMTP dialog with all lines of the list
-        foreach ($smtp as $req) {
-            $r = $req[0];
-            // send request
-            @fputs($fp, $req[0]);
-            // get available server messages and stop on errors
-            if ($req[1]) {
-                while ($result = fgets($fp, 1024)) {
-                    if (mb_substr($result, 3, 1) == " ") {
-                        break;
-                    }
-                }
-                if (!strstr($req[1], mb_substr($result, 0, 3))) {
-                    writelog($req[2] . $result, $config->get('SMTP_HOST'), 0);
-                    msg('054 : Problème lors du dialogue avec le serveur mail "' . $config->get('SMTP_HOST') . '" : ' . $req[2] . $result);
-                    return false;
-                }
-            }
-        }
-        $result = fgets($fp, 1024);
-
-        fclose($fp);
-        return true;
-    }
+    throw new \Exception("This function not exist anymore, look at MailerFactory", 1);
+    
 }
 
 function crypter($mes, $password)

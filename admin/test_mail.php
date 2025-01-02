@@ -3,7 +3,7 @@
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require(__DIR__ . '/../next/bootstrap.php');
-require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
+require(__DIR__ . '/../next/Engine/MailerFactory.php');
 
 if (!$userAuthorizer->isGranted(8)) {
     $response = new RedirectResponse("$root/admin/");
@@ -12,22 +12,22 @@ if (!$userAuthorizer->isGranted(8)) {
 }
 
 $form_errors = [];
-$success_message = '';
+$success_or_failure_message = '';
 
 if ($request->getMethod() === 'POST') {
-    $dest = $request->request->get('email');
-    if (empty($dest)) {
+    if (empty($request->request->get('email')) || !filter_var($request->request->get('email'), FILTER_VALIDATE_EMAIL)) {
         $form_errors['email'] = "Vous devez préciser votre adresse email";
     }
     if (empty($form_errors)) {
-        $sender = mail_encode($config->get('SITENAME')) . ' <' . $config->get('LOC_MAIL') . ">";
-        $okmail = sendmail($sender, $dest, 'Test messagerie de ' . $config->get('SITENAME'), 'Ce message de test a été envoyé via ExpoActes');
-        if ($okmail) {
-            $success_message = "<p>Un mail de test vous a été envoyé. Vérifiez qu'il vous est bien parvenu.</p>";
-        } else {
-            $success_message = "<p>La fonction mail n'a pas pu être vérifée.<br>";
-            $success_message .= "<b>La consultation des actes peut très bien fonctionner sans mail</b> mais plusieurs fonctions de gestion des utilisateurs ne fonctionneront pas.";
-        }
+        $from = $config->get('SITENAME') . ' <' . $_ENV['EMAIL_SITE'] . ">";
+        $to = $request->request->get('email');
+        $subject = 'Test messagerie de ' . $config->get('SITENAME');
+        $mailerFactory = new MailerFactory();
+        $mail = $mailerFactory->createEmail($from, $to, $subject, null, [
+            'message' => 'Ce message de test a été envoyé via Civil-Records.'
+        ]);
+        $mailerFactory->send($mail);
+        $success_or_failure_message = "<p>Un mail de test vous a été envoyé. Vérifiez qu'il vous est bien parvenu.</p>";
     }
 }
 
@@ -38,19 +38,17 @@ open_page("Test e-mail", $root); ?>
     <div class="main-col-center text-center">
         <?php navadmin($root, "Test du mail"); ?>
         <h1>Test de l'envoi d'un mail</h1>
-        <h3>Cette procédure ne peut envoyer qu'un mail de test !</h3>
-        <div><?= $sucess_message; ?></div>
-        <p>Le texte du mail est donc fixe.</p>
+        <div><?= $success_or_failure_message; ?></div>
         <form method="post">
             <table class="m-auto">
                 <tr>
                     <td>Votre adresse email : </td>
-                    <td><input type="text" name="email" size=40 value="<?= $config->get('LOC_MAIL'); ?>"></td>
+                    <td><input type="email" name="email" size="40" required></td>
                 </tr>
                 <tr>
                     <td></td>
-                    <input type="hidden" name="action" value="submitted">
-                    <td><button type="reset" class="btn">Effacer</button>
+                    <td>
+                        <button type="reset" class="btn">Effacer</button>
                         <button type="submit" class="btn">Envoyer</button>
                     </td>
                 </tr>

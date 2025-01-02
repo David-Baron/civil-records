@@ -76,7 +76,7 @@ function linkjpg($texte)   // transforme en lien actif les nom de fichier JPG re
                 $nb = $dern - $prem;
 
                 for ($k = 0; $k <= $nb; $k++) {
-                    $index2 = $prem + $i;
+                    $index2 = $prem + $k;
                     $index1 = "000" . $index2;
                     $index = mb_substr($index1, -3);
                     $image = $config->get('URK_JPG') . $prefixe . $index . ".jpg";

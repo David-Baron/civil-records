@@ -5,9 +5,9 @@
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require(__DIR__ . '/../next/bootstrap.php');
-require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
+require(__DIR__ . '/../next/Engine/MailerFactory.php');
 
-if (!$userAuthorizer->isGranted(9) || $config->get('USER_AUTO_DEF') == 1) {
+if (!$userAuthorizer->isGranted(9)) {
     $response = new RedirectResponse("$root/admin/");
     $response->send();
     exit();
@@ -23,19 +23,13 @@ $user_id = $request->get('id', null);
 $sql = "SELECT * FROM " . $config->get('EA_UDB') . "_user3 WHERE ID=" . $user_id . ";";
 $res = EA_sql_query($sql, $u_db);
 if (EA_sql_num_rows($res) != 1) {
-    $session->getFlashBag()->add('danger', 'Pas de compte à approuver avec cette identification.');
-    $response = new RedirectResponse("$root/admin/");
+    $session->getFlashBag()->add('danger', 'Pas de compte à approuver avec cette identifiant.');
+    $response = new RedirectResponse("$root/admin/listusers.php");
     $response->send();
     exit();
 }
 
 $user = EA_sql_fetch_array($res);
-$nomprenom = $user['prenom'] . ' ' . $user['nom'];
-$login = $user['login'];
-
-$action = 'OK';
-$message_model = $config->get('MAIL_APPROBATION');
-
 $form_errors = [];
 
 if ($request->getMethod() === 'POST') {
@@ -47,33 +41,27 @@ if ($request->getMethod() === 'POST') {
 
     if (empty($form_errors)) {
         $mes = "";
-        if ($action == "OK") {
-            $statut = 'N';  // normal
-            $sujet = "Approbation de votre compte";
-            $mes = "approuvé";
-        } else {
-            $statut = 'B';  // bloqué
-            $sujet = "Refus de votre compte";
-            $mes = "refusé";
+        if ($action == "accepted") {
+            $statut = 'N';
+            $subject = "Approbation de votre compte";
+            $email_template = 'new_account_accepted.php'; // TODO: $config->get('MAIL_APPROBATION');
+        } elseif ($action == "denied") {
+            $statut = 'B';
+            $subject = "Refus de votre compte";
+            $email_template = 'new_account_denied.php'; // TODO: $config->get('MAIL_REFUS');
         }
 
-        $sql = "UPDATE " . $config->get('EA_UDB') . "_user3 SET statut=" . $statut . ", REM='' WHERE ID=" . $user_id . ";";
-        $crlf = chr(10) . chr(13);
-        $log = "Cpte " . $mes;
+        $sql = "UPDATE " . $config->get('EA_UDB') . "_user3 SET statut='" . $statut . "', REM=' ' WHERE ID=" . $user_id . ";";
+        EA_sql_query($sql, $u_db);
 
-        $urlsite = $config->get('EA_URL_SITE') . $root . "/";
-        $codes = array("#NOMSITE#", "#URLSITE#", "#LOGIN#", "#NOM#", "#PRENOM#");
-        $decodes = array($config->get('SITENAME'), $urlsite, $user['LOGIN'], $user['NOM'], $user['PRENOM']);
-        $message = str_replace($codes, $decodes, $request->request->get('messageplus'));
+        $mailerFactory = new MailerFactory();
+        $mail = $mailerFactory->createEmail($_ENV['EMAIL_SITE'], $user['email'], $subject, $email_template, [
+            'urlsite' => $config->get('EA_URL_SITE'),
+            'sitename' => $config->get('SITENAME'),
+            'user' => $user,
+        ]);
+        $mailerFactory->send($mail);
 
-        $sender = mail_encode($config->get('SITENAME')) . ' <' . $config->get('LOC_MAIL') . ">";
-        $okmail = sendmail($sender, $user['email'], $sujet, $message);
-        if ($okmail) {
-            $log .= " + mail";
-        } else {
-            $log .= " NO mail";
-        }
-        writelog($log, $login, 0);
         $session->getFlashBag()->add('success', 'La demande de compte a été ' . $mes . 'e.');
         $response = new RedirectResponse("$root/admin/gestuser.php?id=$user_id");
         $response->send();
@@ -90,38 +78,25 @@ open_page("Approbation d'un compte utilisateur", $root); ?>
         <?php
         navadmin($root, "Approbation d'un compte utilisateur");
 
-        $message_model = $config->get('MAIL_APPROBATION');
-        if ($action == 'KO') {
-            $message_model = $config->get('MAIL_REFUS');
-        }
-
         echo '<h2>Approbation d\'un compte d\'utilisateur</h2>';
         echo '<form method="post">';
         echo '<table class="m-auto" summary="Formulaire">';
 
         echo "<tr>";
         echo '<td>' . "Candidat : </td>";
-        echo '<td><b>' . $nomprenom . "</b></td>";
+        echo '<td><b>' . $user['prenom'] . ' ' . $user['nom'] . "</b></td>";
         echo "</tr>";
 
         echo "<tr>";
-        echo '<td>' . "Login : </td>";
-        echo '<td>' . $login . "</td>";
+        echo '<td>Login : </td>';
+        echo '<td>' . $user['login'] . "</td>";
         echo "</tr>";
 
         echo "<tr>";
         echo '<td>Action : </td>';
         echo '<td>';
-        echo '<input type="radio" name="action" value="OK" ' . ("OK" === $action ? ' checked' : '') . '> Approuver';
-        echo '<input type="radio" name="action" value="KO" ' . ("KO" === $action ? ' checked' : '') . '> Refuser';
+        echo '<select name="action" id="action"><option value="accepted">Approuver</option><option value="denied">Refuser</option></select>';
         echo ' cet utilisateur';
-        echo '</td>';
-        echo "</tr>";
-
-        echo '<tr>';
-        echo "<td>Message : </td>";
-        echo '<td>';
-        echo '<textarea name="messageplus" cols=60 rows=10>' . $message_model . '</textarea>';
         echo '</td>';
         echo "</tr>";
 
@@ -129,14 +104,13 @@ open_page("Approbation d'un compte utilisateur", $root); ?>
 
         echo "<tr><td></td><td>";
         echo '<button type="reset" class="btn">Effacer</button>';
-        echo ' <button type="submit" class="btn">Envoyer</button>';
+        echo '<button type="submit" class="btn">Envoyer</button>';
         echo "</td></tr>";
         echo "</table>";
         echo "</form>";
 
-        echo '<p align="center">Aller à : <a href="index.php">la page d\'accueil</a>';
-        echo ' | <a href="' . $root . '/admin/listusers.php">la liste des utilisateurs</a>';
-        echo ' | <a href="' . $root . '/admin/gestuser.php?id=' . $user_id . '">la fiche de ' . $nomprenom . '</a></p>';
+        echo '<p><a href="' . $root . '/admin/listusers.php">Liste des utilisateurs</a>';
+        echo ' | <a href="' . $root . '/admin/gestuser.php?id=' . $user_id . '">Fiche de ' . $user['prenom'] . ' ' . $user['nom'] . '</a></p>';
 
         echo '</div>';
         echo '</div>';

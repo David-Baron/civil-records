@@ -1,5 +1,6 @@
 {
     "require": {
-        "symfony/http-foundation": "^7.2"
+        "symfony/http-foundation": "^7.2",
+        "symfony/mailer": "^7.2"
     }
 }

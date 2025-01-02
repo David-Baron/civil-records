@@ -1,9 +1,9 @@
 <?php
 // TODO: remeber me process
+// TODO: add antiflood process
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require(__DIR__ . '/next/bootstrap.php');
-require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 require(__DIR__ . '/next/Engine/AppUserAuthenticator.php');
 
 if ($session->has('user')) {
@@ -11,32 +11,7 @@ if ($session->has('user')) {
     $response->send();
     exit();
 }
-// $xcomm = ""; Useless now.
-// $xpatr = ""; Useless now.
-// $page = ""; Useless now.
-// $uri = getparam('uri', $root . '/'); // Useless now.
-// $motif = getparam('cas'); Useless now.
-/* if ($motif == 1) {
-    msg('Login ou mot de passe incorrect (vérifiez Majuscules/minuscules) !');
-}
-if ($motif == 2) {
-    msg("L'accès à la page que vous voulez consulter est réservé"); // Oui mais pas à la bonne place...
-}
-if ($motif == 3) {
-    msg('Vos droits sont insuffisants pour accéder à cette page'); // Ceci ne devrait JAMAIS arriver...
-}
-if ($motif == 4) {
-    msg("Vous devez vous reconnecter avec le nouveau mot de passe"); // Oui mais pas à la bonne place...
-}
-if ($motif == 5) {
-    msg("Votre compte doit encore être activé et/ou approuvé"); // Oui mais pas à la bonne place...
-}
-if ($motif == 6) {
-    msg("Votre compte a expiré. Contactez l'administrateur pour le réactiver"); // Ceci ne devrait JAMAIS arriver...
-}
-if ($motif == 7) {
-    msg("Votre compte est bloqué. Contactez l'administrateur"); // Ceci ne devrait JAMAIS arriver...
-} */
+
 $form_errors = [];
 
 if ($request->getMethod() === 'POST') {

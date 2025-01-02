@@ -4,7 +4,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 $bypassTIP = 1; // pas de tracing ici
 require(__DIR__ . '/../next/bootstrap.php');
-require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 
 if (!$userAuthorizer->isGranted(9)) {
     $response = new RedirectResponse("$root/admin/");

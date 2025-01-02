@@ -3,8 +3,8 @@
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require(__DIR__ . '/next/bootstrap.php');
-require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 require(__DIR__ . '/next/Model/UserModel.php');
+require(__DIR__ . '/next/Engine/MailerFactory.php');
 
 if ($config->get('USER_AUTO_DEF') == 0) {
     $flash = 'Cette action n\'est pas autorisée sur ce site</b> Vous devez contacter le gestionnaire du site pour demander un compte utilisateur.';
@@ -86,36 +86,31 @@ if ($request->getMethod() === 'POST') {
             'libre' => $libre, 
             'REM' => $clevalid
         ];
+
         $userModel = new UserModel();
         $userModel->insert($user);
 
-        $log = "Créat. auto user";
-        $crlf = chr(10) . chr(13);
-        $message = $config->get('MAIL_AUTOUSER');
-        $flash = '';
+        $email_template = 'new_account.php'; // TODO: $config->get('MAIL_AUTOUSER');
+        
         if ($config->get('USER_AUTO_DEF') == 1) {
-            $message = $config->get('MAIL_VALIDUSER');
+            $email_template = 'new_account_auto_validation.php'; // TODO: $config->get('MAIL_AUTOUSER');
         }
 
-        $urlvalid = $config->get('EA_URL_SITE') . $root . "/activer_compte.php?login=" . $login . "&amp;key=" . $clevalid . $crlf . $crlf;
-        $urlsite = $config->get('EA_URL_SITE') . $root . "/";
-        $codes = array("#NOMSITE#", "#URLSITE#", "#LOGIN#", "#PASSW#", "#NOM#", "#PRENOM#", "#URLVALID#", "#KEYVALID#");
-        $decodes = array($config->get('SITENAME'), $urlsite, $login, $passw, $nom, $prenom, $urlvalid, $clevalid);
-        $bon_message = str_replace($codes, $decodes, $message);
-        $sujet = "Votre compte " . $config->get('SITENAME');
-        $sender = mail_encode($config->get('SITENAME')) . ' <' . $config->get('LOC_MAIL') . ">";
-        $okmail = sendmail($sender, $email, $sujet, $bon_message);
-        if ($okmail) {
-            $log .= " + mail";
-            $flash = " et un mail vous a été envoyé pour procéder à l'activation.";
-            $flash .= "<br>Si vous ne recevez pas de mail, merci d'en avertir l'administrateur afin qu'il active votre compte.";
-        } else {
-            $log .= " NO mail";
-            $flash = " mais le mail n'a pas pu être envoyé : contactez l'administrateur du site pour le faire activer.";
-        }
+        $from = $config->get('SITENAME') . ' <' . $_ENV['EMAIL_SITE'] . ">";
+        $to = $user['email'];
+        $subject = "Votre compte " . $config->get('SITENAME');
 
-        writelog($log, $lelogin, 0);
-        $session->getFlashBag()->add('info', 'Votre compte a été créé.<br>' . $flash);
+        $mailerFactory = new MailerFactory();
+        $mail = $mailerFactory->createEmail($from, $to, $subject, $email_template, [
+            'sitename' => $config->get('SITENAME'),
+            'urlsite' => $config->get('SITE_URL'),
+            'user' => $user,
+            'urlvalid' => $config->get('EA_URL_SITE') . $root . "/activer_compte.php?login=" . $login . "&amp;key=" . $clevalid,
+            'keyvalid' => $clevalid
+        ]);
+        $mailerFactory->send($mail);
+
+        $session->getFlashBag()->add('info', 'Votre compte a été créé.<br>Un mail vous a été envoyé pour procéder à l\'activation.');
         $response = new RedirectResponse("$root/");
         $response->send();
         exit();

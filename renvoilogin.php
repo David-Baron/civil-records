@@ -3,7 +3,7 @@
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require(__DIR__ . '/next/bootstrap.php');
-require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
+require(__DIR__ . '/next/Engine/MailerFactory.php');
 
 $form_errors = [];
 
@@ -11,9 +11,9 @@ if ($request->getMethod() === 'POST') {
     if ($request->request->get('email') == "" || filter_var(FILTER_VALIDATE_EMAIL) === false) {
         $form_errors['email'] = 'Vous devez fournir une adresse email valide.';
     }
-    
-    if(empty($form_errors)) {
-        $sql = "SELECT nom, prenom,login,email,level FROM " . $config->get('EA_UDB') . "_user3 WHERE email = '" . getparam('email') . "'; ";
+
+    if (empty($form_errors)) {
+        $sql = "SELECT nom, prenom, login, email, level FROM " . $config->get('EA_UDB') . "_user3 WHERE email = '" . getparam('email') . "'; ";
         $result = EA_sql_query($sql, $u_db);
         $nb = EA_sql_num_rows($result);
         if ($nb == 1) {
@@ -25,38 +25,35 @@ if ($request->getMethod() === 'POST') {
                 " WHERE email = '" . $request->request->get('email') . "';";
             $result = EA_sql_query($reqmaj, $u_db);
 
-            $lb        = "\r\n";
-            $message  = "Bonjour," . $lb;
-            $message .= "" . $lb;
-            $message .= "Voici vos codes d'accès au site  :" . $lb;
-            $message .= "" . $lb;
-            $message .= $config->get('EA_URL_SITE') . $root . "/index.php" . $lb;
-            $message .= "" . $lb;
-            $message .= "Votre login : " . $user['login'] . $lb;
-            $message .= "Votre NOUVEAU mot de passe : " . $pw . $lb;
-            $message .= "" . $lb;
+            $message  = "Bonjour,<br><br>";
+            $message .= "Voici vos codes d'accès au site : <br><br>";
+            $message .= $config->get('EA_URL_SITE')  . "<br><br>";
+            $message .= "Votre login : " . $user['login'] . '<br>';
+            $message .= "Votre NOUVEAU mot de passe : " . $pw . '<br><br>';
             if ($userlevel >= $config->get('CHANGE_PW')) {
-                $message .= "Vous pourrez changer ce mot de passe dans votre espace utilisateur." . $lb;
-                $message .= "" . $lb;
+                $message .= "Vous pourrez changer ce mot de passe dans votre espace utilisateur.<br><br>";
             }
-            $message .= "Cordialement," . $lb;
-            $message .= "" . $lb;
-            $message .= "Votre webmestre." . $lb;
+            $message .= "Cordialement,<br>";
+            $message .= "Votre webmestre.";
 
-            $sujet = "Rappel de vos codes pour " . $config->get('SITENAME');
-            $sender = mail_encode($config->get('SITENAME')) . ' <' . $config->get('LOC_MAIL') . ">";
-            $okmail = sendmail($sender, $user['email'], $sujet, $message);
-            if (!$okmail) {
-                $form_errors['email'] = 'Un problème lors de l\'envoi du mail! Veuillez contactez <a href=mailto:' . $config->get('LOC_MAIL') . '>l\'administrateur.</a>';
-            } else {
-                writelog('Renvoi login/password', $user['login'], 0);
-                $session->getFlashBag()->add('warning', 'Veuillez consultez votre messagerie pour récupérer vos codes d\'accès.');
-                $response = new RedirectResponse("$root/");
-                $response->send();
-                exit();
-            }
+            $from = $config->get('SITENAME') . ' <' . $_ENV['EMAIL_SITE'] . ">";
+            $to = $user['email'];
+            $subject = "Rappel de vos codes pour " . $config->get('SITENAME');
+            $mailerFactory = new MailerFactory();
+            $mail = $mailerFactory->createEmail($from, $to, $subject, 'email_default.php', [
+                'sitename' => $config->get('SITENAME'),
+                'urlsite' => $config->get('SITE_URL'),
+                'message' => $message
+            ]);
+            $mailerFactory->send($mail);
+
+            $session->getFlashBag()->add('info', 'Veuillez consultez votre messagerie pour récupérer vos codes d\'accès.');
+            $response = new RedirectResponse("$root/");
+            $response->send();
+            exit();
+
         } elseif ($nb > 1) {
-            $form_errors['email'] = 'Cette adresse email est référencée pour plusieurs comptes. Contactez <a href=mailto:' . $config->get('LOC_MAIL') . '>l\'administrateur.</a>';
+            $form_errors['email'] = 'Cette adresse email est référencée pour plusieurs comptes. Contactez nous directement <a href="' .$root .'/contact.php">ici.</a>';
         }
     }
 }

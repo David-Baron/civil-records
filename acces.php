@@ -1,7 +1,6 @@
 <?php
 
 require(__DIR__ . '/next/bootstrap.php');
-require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
 ob_start();
 open_page('Conditions d\'acces', $root); ?>

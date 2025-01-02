@@ -3,8 +3,7 @@
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require(__DIR__ . '/next/bootstrap.php');
-require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
-
+require(__DIR__ . '/next/Engine/MailerFactory.php');
 
 if (!$userAuthorizer->isGranted(1)) {
     $session->getFlashBag()->add('warning', 'Vous n\'êtes pas connecté ou vous n\'avez pas les autorisations nécessaires!');
@@ -13,7 +12,6 @@ if (!$userAuthorizer->isGranted(1)) {
     exit();
 }
 
-$crlf = chr(10) . chr(13);
 $AVEC_INFOS_SUGGESTION = false; // DÉSACTIVE LA GESTION DES INFOS DETAILLÉES true|false
 
 function gen_desc($fld_attr)
@@ -91,22 +89,22 @@ function set_table_type_script_acte($TypeActes)
     // Utilisé dans search_acte et construction formulaire    list($table, $ntype, $script) = set_table_type_script_acte($TypeActes);
     $EA_TypAct_Txt = array('N' => 'de naissances', 'M' => 'de mariages', 'D' => 'de décès', 'V' => 'divers');
     $EA_Type_Table = array('N' => $config->get('EA_DB') . '_nai3', 'M' => $config->get('EA_DB') . '_mar3', 'D' => $config->get('EA_DB') . '_dec3', 'V' => $config->get('EA_DB') . '_div3');
-    $EA_Type_TabScript = array('N' => "tab_naiss.php", 'M' => "tab_mari.php", 'D' => "tab_deces.php", 'V' => "tab_bans.php");
-    $script = $EA_Type_TabScript[$TypeActes];
+    $actes_type_paths = array('N' => "/tab_naiss.php", 'M' => "/tab_mari.php", 'D' => "/tab_deces.php", 'V' => "/tab_bans.php");
+    $script = $actes_type_paths[$TypeActes];
 
     if (!in_array($TypeActes, array('N', 'M', 'D', 'V'))) {
         $table = $ntype = $script = '';
     } else {
         $table = $EA_Type_Table[$TypeActes];
         $ntype = $EA_TypAct_Txt[$TypeActes];
-        $script = $EA_Type_TabScript[$TypeActes];
+        $script = $actes_type_paths[$TypeActes];
     }
 
     return array($table, $ntype, $script);
 }
 function search_acte(int $xid, string $xtyp, $TYPE_TRT)
 {
-    global $session, $crlf;
+    global $session;
     $lg = $GLOBALS['lg'];
     list($table, $ntype, $script) = set_table_type_script_acte($xtyp);
     // LIBELLE","A0","50","V","Type de document","TXT"),
@@ -145,17 +143,16 @@ function search_acte(int $xid, string $xtyp, $TYPE_TRT)
     if ($TYPE_TRT == 'montre_formulaire_acte') { // CAS 1	montre_formulaire_acte
         $logtxt = "Proposition de modification d'un acte ";
 
-        echo '<h3 align="center">' . $logtxt . ' ' . $ntype . '</h3>';
-        //echo '<h3 align="center">Commune/paroisse : '.$acte["COMMUNE"].'</h3>';
+        echo '<h3>' . $logtxt . ' ' . $ntype . '</h3>';
         echo '<table class="m-auto" summary="Formulaire">';
         $grp = "";
         for ($i = 0; $i < count($mdb); $i++) {
             if ($mdb[$i]['GROUPE'] <> $grp) {
                 $grp = $mdb[$i]['GROUPE'];
-                echo ' <tr>';
-                echo '  <td align="left"><b>' . $mdb[$i]['GETIQ'] . "  </b></td>";
-                echo '  <td> </td>';
-                echo ' </tr>';
+                echo '<tr>';
+                echo '<td><b>' . $mdb[$i]['GETIQ'] . "  </b></td>";
+                echo '<td></td>';
+                echo '</tr>';
             }
             // parametres : $name,$size,$value,$caption
             $value = getparam($mdb[$i]['ZONE']);
@@ -180,10 +177,10 @@ function search_acte(int $xid, string $xtyp, $TYPE_TRT)
                 } else {
                     $value = $acte[$mdb[$i]['ZONE']];
                 }
-            } // if $value
-            echo ' <tr>';
-            echo "  <td>" . $mdb[$i]['ETIQ'] . " : </td>";
-            echo '  <td>';
+            }
+            echo '<tr>';
+            echo "<td>" . $mdb[$i]['ETIQ'] . " : </td>";
+            echo '<td>';
             if ($col[$mdb[$i]['ZONE']] <= 70) {
                 $value = str_replace('"', '&quot;', $value);
 
@@ -191,9 +188,9 @@ function search_acte(int $xid, string $xtyp, $TYPE_TRT)
             } else {
                 echo '<textarea name="' . $mdb[$i]['ZONE'] . '" cols=70 rows=' . (min(4, $col[$mdb[$i]['ZONE']] / 70)) . '>' . $value . '</textarea>';
             }
-            echo '  </td>';
-            echo " </tr>";
-        } // for
+            echo '</td>';
+            echo "</tr>";
+        }
         echo ' <tr><td>';
         echo "</td></tr></table>";
         // return
@@ -201,9 +198,9 @@ function search_acte(int $xid, string $xtyp, $TYPE_TRT)
         $msg_diff_acte = '';
         $msg_gen_modif = '';
 
-        $sep = $crlf;
-        $identification = gen_id_nim($xtyp, $acte) . $crlf;
-        $msg_diff_acte .= $identification . $crlf;
+        $sep = '<br>';
+        $identification = gen_id_nim($xtyp, $acte) . '<br>';
+        $msg_diff_acte .= $identification . '<br>';
         $msg_diff_acte .= "Dans le tableau suivant, la 1ère colonne indique : libellé court (complément libellé), la 2e colonne la valeur actuelle et la 3e, la valeur proposée.";
 
         for ($i = 0; $i < count($mdb); $i++) {
@@ -213,7 +210,7 @@ function search_acte(int $xid, string $xtyp, $TYPE_TRT)
                 $msg_diff_acte .= $sep . gen_desc($mdb[$i]) . ' : actuellement "' . $acte[$mdb[$i]['ZONE']] . '" devrait être "' . $value . '".';
                 $msg_gen_modif .= "&" . $mdb[$i]['ZONE'] . "=" . $value;
             }
-        } // for
+        }
         return array($msg_diff_acte, $msg_gen_modif);
     }
 }
@@ -242,33 +239,28 @@ if ($request->getMethod() === 'POST') {
         }
     }
     if (empty($form_errors)) {
-        $mes = "";
-        $log = "Signalmt erreur";
-
-        $EA_Type_ActScript = array('N' => "acte_naiss.php", 'M' => "acte_mari.php", 'D' => "acte_deces.php", 'V' => "acte_bans.php");
-        $s4 = $EA_Type_ActScript[$xty];
-
-        $urlvalid = $config->get('EA_URL_SITE') . $root . "/admin/" . $s4 . "?xid=" . $xid . $crlf . $crlf;
-        $lemessage = '';
+        $mail_message = '';
+        $acte_type_paths = array('N' => "/acte_naiss.php", 'M' => "/acte_mari.php", 'D' => "/acte_deces.php", 'V' => "/acte_bans.php");
+        $urlvalid = $config->get('EA_URL_SITE') . $root . "/admin" . $acte_type_paths[$xty] . "?xid=" . $xid . '<br><br>';
 
         if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
-            $lemessage .= "Destinataire final (Vérificateur, ou releveur sinon) : " . $xdf . $crlf . $crlf;
+            $mail_message .= "Destinataire final (Vérificateur, ou releveur sinon) : " . $xdf . '<br><br>';
         }
-        $lemessage .= "Erreur signalée par " . $user_name . " (" . $user_email . ")." . $crlf . $crlf;
+        $mail_message .= "Erreur signalée par " . $user_name . " (" . $user_email . ").<br><br>";
         if ($AVEC_INFOS_SUGGESTION) {
-            $lemessage .= "Description générale :" . $crlf;
+            $mail_message .= "Description générale : <br>";
             if ($msgerreur == '') {
                 $msgerreur = 'Non remplie par le signaleur, voir champs individuels.';
             }
         }
-        $lemessage .= $msgerreur . $crlf . $crlf;
+        $mail_message .= $msgerreur . '<br><br>';
 
-        $lemessage .= "Acte concerné (lien pour vérificateur) : " . $crlf . $crlf;
-        $lemessage .= $urlvalid . $crlf;
+        $mail_message .= "Acte concerné (lien pour vérificateur) : <br><br>";
+        $mail_message .= $urlvalid . '<br>';
 
         if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
             list($msg_diff_acte, $nouveaux_champs) = search_acte($xid, $xty, 'diff_et_gen');
-            $lemessage .= $msg_diff_acte . $crlf;
+            $mail_message .= $msg_diff_acte . '<br>';
 
             $nouveaux_champs = str_replace(" ", "%20", $nouveaux_champs);
             $nouveaux_champs = str_replace('"', "%22", $nouveaux_champs);
@@ -280,34 +272,23 @@ if ($request->getMethod() === 'POST') {
             $nouveaux_champs = str_replace("\n", "%0A", $nouveaux_champs);
 
             $urlmodif = $config->get('EA_URL_SITE') . $root . "/admin/edit_acte.php?xid=" . $xid . "&xtyp=" . $xty;
-            $lemessage .= $crlf . "Lien pour le responsable des modifications sur ExpoActes :" . $crlf . $crlf;
-            $lemessage .= $urlmodif . $nouveaux_champs . $crlf . $crlf;
+            $mail_message .= '<br>Lien pour le responsable des modifications sur ExpoActes : <br><br>';
+            $mail_message .= $urlmodif . $nouveaux_champs . '<br><br>';
         }
 
-        $sujet = "Erreur signalée sur " . $config->get('SITENAME');
-        $sender = mail_encode($user_name) . ' <' . $user_email . ">";
+        $from = $user_name . ' <' . $user_email . ">";
+        $to = $_ENV['EMAIL_CORRECTOR'];
+        $subject = "Erreur signalée sur " . $config->get('SITENAME');
 
-        $dest = $config->get('EMAIL_SIGN_ERR');
-        if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
-            if ($xcc == "cc") {
-                $dest = $config->get('EMAIL_SIGN_ERR') . "," . $user_email;
-            } else {
-                $dest = $config->get('EMAIL_SIGN_ERR');
-            }
-        }
+        $mailerFactory = new MailerFactory();
+        $mail = $mailerFactory->createEmail($from, $to, $subject, 'email_default.php', [
+            'sitename' => $config->get('SITENAME'),
+            'urlsite' => $config->get('SITE_URL'),
+            'message' => $mail_message,
+        ]);
+        $mailerFactory->send($mail);
 
-        $okmail = sendmail($sender, $dest, $sujet, $lemessage);
-        if ($okmail) {
-            $log .= " + mail";
-            $mes = "Un mail a été envoyé à l'administrateur.";
-        } else {
-            $log .= " NO mail";
-            $mes = "Le mail n'a pas pu être envoyé ! <br>Merci de contactez directement l'administrateur du site.";
-        }
-
-        $log .= ":" . $xty . "/" . $xid;
-        writelog($log, $user_name, 1);
-        $session->getFlashBag()->add('warning', $mes);
+        $session->getFlashBag()->add('info', "Un mail a été envoyé à l'administrateur.");
         $response = new RedirectResponse($session->get('previous_url', "$root/"));
         $response->send();
         exit();
@@ -334,7 +315,7 @@ open_page("Signalement d'une erreur", $root); ?>
 
         if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
             echo "<tr>";
-            echo '<td colspan="2">' . "<h4>Modification des champs individuels : </h4></td>";
+            echo '<td colspan="2"><h4>Modification des champs individuels : </h4></td>';
             echo "</tr>";
             echo "<tr>";
             search_acte($xid, $xty, 'montre_formulaire_acte');
@@ -342,16 +323,16 @@ open_page("Signalement d'une erreur", $root); ?>
         }
 
         echo "<tr>";
-        echo '<td colspan="2">' . "<h4>Description de l'erreur observée si elle est générale : </h4></td>";
+        echo '<td colspan="2"><h4>Description de l\'erreur observée si elle est générale : </h4></td>';
         echo "</tr>";
         echo "<tr>";
-        echo '<td colspan="2"><textarea name="msgerreur" cols="80" rows="12">' . $msgerreur . '</textarea>' . "</td>";
+        echo '<td colspan="2"><textarea name="msgerreur" cols="80" rows="12">' . $msgerreur . '</textarea></td>';
         echo "</tr>";
 
         if ($AVEC_INFOS_SUGGESTION) { // CONDITIONNEL SIGNAL_ERREUR
             echo "<tr>";
             echo '<td>Copie Courriel : </td>';
-            echo '<td><input type="checkbox" id="xcc" name="xcc" value="cc" checked>' . "</td>";
+            echo '<td><input type="checkbox" id="xcc" name="xcc" value="cc" checked></td>';
             echo "</tr>";
         } ?>
 
@@ -378,22 +359,18 @@ open_page("Signalement d'une erreur", $root); ?>
             }
         }
 
-        echo " <tr><td>";
-        echo '  <input type="hidden" name="xid" value="' . $xid . '">';
-        echo '  <input type="hidden" name="xty" value="' . $xty . '">';
-        echo '  <input type="hidden" name="xdf" value="' . $xdf . '">';
-        //echo '  <input type="hidden" name="xcc" value="'.$xcc.'">';
-
-        if (!$AVEC_INFOS_SUGGESTION) { // CONDITIONNEL AVANT SIGNAL_ERREUR
-            echo ' <a href="' . $root . '/"">Revenir à l\'accueil</a></p>';
-        }
-
+        echo "<tr><td>";
+        echo '<input type="hidden" name="xid" value="' . $xid . '">';
+        echo '<input type="hidden" name="xty" value="' . $xty . '">';
+        echo '<input type="hidden" name="xdf" value="' . $xdf . '">';
+        // echo '<input type="hidden" name="xcc" value="'.$xcc.'">';
         echo "</td><td>";
-        echo '<button type="reset">Effacer</button>';
-        echo '<button type="submit">Envoyer</button>';
+        echo '<button type="reset" class="btn">Effacer</button>';
+        echo '<button type="submit" class="btn">Envoyer</button>';
         echo "</td></tr>";
         echo "</table>";
         echo "</form>";
+        echo '<p><a href="' . $root . '/">Revenir à l\'accueil</a></p>';
         ?>
     </div>
 </div>

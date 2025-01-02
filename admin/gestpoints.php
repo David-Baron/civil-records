@@ -3,7 +3,6 @@
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require(__DIR__ . '/../next/bootstrap.php');
-require(__DIR__ . '/../next/_COMMUN_env.inc.php'); // Compatibility only
 require(__DIR__ . '/../tools/traitements.inc.php');
 
 if (!$userAuthorizer->isGranted(9)) {
@@ -142,14 +141,6 @@ if (getparam('action') == 'submitted') {
 }
 //Si pas tout les arguments nécessaire, on affiche le formulaire
 if ($missingargs) {
-    if (getparam('action') == '') { // parametres par défaut
-        if (isset($_COOKIE['chargeUSERlogs'])) {
-            $logOk = $_COOKIE['chargeUSERlogs'][0];
-        } else {
-            $logOk = "1";
-        }
-    }
-
     echo '<form method="post" enctype="multipart/form-data">';
     echo '<h2>' . $ptitle . '</h2>';
     echo '<table class="m-auto">';

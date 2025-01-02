@@ -1,7 +1,6 @@
 <?php
 
 require(__DIR__ . '/next/bootstrap.php');
-require(__DIR__ . '/next/_COMMUN_env.inc.php'); // Compatibility only
 
 if (!defined("ECLAIR_LOG")) define("ECLAIR_LOG", 0);
 
