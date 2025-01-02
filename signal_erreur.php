@@ -1,9 +1,9 @@
 <?php
 
+use CivilRecords\Engine\MailerFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-require(__DIR__ . '/next/bootstrap.php');
-require(__DIR__ . '/next/Engine/MailerFactory.php');
+require(__DIR__ . '/src/bootstrap.php');
 
 if (!$userAuthorizer->isGranted(1)) {
     $session->getFlashBag()->add('warning', 'Vous n\'êtes pas connecté ou vous n\'avez pas les autorisations nécessaires!');

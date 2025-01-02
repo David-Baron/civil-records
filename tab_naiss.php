@@ -2,7 +2,7 @@
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-require(__DIR__ . '/next/bootstrap.php');
+require(__DIR__ . '/src/bootstrap.php');
 
 $session->set('previous_url', $request->server->get('REQUEST_URI')); // Usefull for redirecting user
 

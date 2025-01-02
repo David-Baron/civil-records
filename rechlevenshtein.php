@@ -2,7 +2,7 @@
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-require(__DIR__ . '/next/bootstrap.php');
+require(__DIR__ . '/src/bootstrap.php');
 include(__DIR__ . '/tools/cree_table_levenshtein.php');
 
 if (!$userAuthorizer->isGranted($config->get('LEVEL_LEVENSHTEIN'))) {

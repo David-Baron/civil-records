@@ -1,10 +1,10 @@
 <?php
 
+use CivilRecords\Model\UserModel;
+use CivilRecords\Engine\MailerFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-require(__DIR__ . '/next/bootstrap.php');
-require(__DIR__ . '/next/Model/UserModel.php');
-require(__DIR__ . '/next/Engine/MailerFactory.php');
+require(__DIR__ . '/src/bootstrap.php');
 
 if ($config->get('USER_AUTO_DEF') == 0) {
     $flash = 'Cette action n\'est pas autorisée sur ce site</b> Vous devez contacter le gestionnaire du site pour demander un compte utilisateur.';

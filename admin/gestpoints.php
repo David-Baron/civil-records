@@ -2,7 +2,7 @@
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-require(__DIR__ . '/../next/bootstrap.php');
+require(__DIR__ . '/../src/bootstrap.php');
 require(__DIR__ . '/../tools/traitements.inc.php');
 
 if (!$userAuthorizer->isGranted(9)) {

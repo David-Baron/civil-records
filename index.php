@@ -2,7 +2,7 @@
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-require(__DIR__ . '/next/bootstrap.php');
+require(__DIR__ . '/src/bootstrap.php');
 
 if ($config->get('PUBLIC_LEVEL') < 4 && !$userAuthorizer->isGranted(1)) {
     $response = new RedirectResponse("$root/login.php");

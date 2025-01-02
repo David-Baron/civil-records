@@ -2,7 +2,7 @@
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-require(__DIR__ . '/../next/bootstrap.php');
+require(__DIR__ . '/../src/bootstrap.php');
 
 if (! defined('EA_TYPE_SITE')) define('EA_TYPE_SITE', 'ACTES'); // Compatibility only
 

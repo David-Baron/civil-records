@@ -1,10 +1,10 @@
 <?php
 // TODO: remeber me process
 // TODO: add antiflood process
+use CivilRecords\Engine\AppUserAuthenticator;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-require(__DIR__ . '/next/bootstrap.php');
-require(__DIR__ . '/next/Engine/AppUserAuthenticator.php');
+require(__DIR__ . '/src/bootstrap.php');
 
 if ($session->has('user')) {
     $response = new RedirectResponse("$root/?act=logout");

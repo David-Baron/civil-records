@@ -1,9 +1,9 @@
 <?php
 
+use CivilRecords\Engine\EnvironmentFileParser;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-require(__DIR__ . '/../next/bootstrap.php');
-require(__DIR__ . '/../next/Engine/EnvironmentFileParser.php');
+require(__DIR__ . '/../src/bootstrap.php');
 
 if (!$userAuthorizer->isGranted(9)) {
     $response = new RedirectResponse("$root/admin/");

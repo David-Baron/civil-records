@@ -2,8 +2,7 @@
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-require(__DIR__ . '/../next/bootstrap.php');
-require(__DIR__ . '/../next/Model/UserModel.php');
+require(__DIR__ . '/../src/bootstrap.php');
 
 if (!$userAuthorizer->isGranted(8)) {
     $response = new RedirectResponse("$root/admin/");
@@ -50,7 +49,7 @@ $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
         <?php
         navadmin($root, $title);
 
-        require(__DIR__ . '/../templates/admin/_menu_data.php');
+        require(__DIR__ . '/../templates/admin/_menu-data.php');
 
         $comdep  = html_entity_decode(getparam('ComDep'), ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
         $oldcom = communede($comdep);

@@ -1,6 +1,6 @@
 <?php
 
-require(__DIR__ . '/next/bootstrap.php');
+require(__DIR__ . '/src/bootstrap.php');
 
 if (!defined("ECLAIR_LOG")) define("ECLAIR_LOG", 0);
 

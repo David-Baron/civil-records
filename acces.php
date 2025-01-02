@@ -1,6 +1,6 @@
 <?php
 
-require(__DIR__ . '/next/bootstrap.php');
+require(__DIR__ . '/src/bootstrap.php');
 
 ob_start();
 open_page('Conditions d\'acces', $root); ?>

@@ -2,7 +2,7 @@
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-require(__DIR__ . '/../next/bootstrap.php');
+require(__DIR__ . '/../src/bootstrap.php');
 
 //define('EA_MASTER',"Y"); // pour editer les zones "Techniques"
 

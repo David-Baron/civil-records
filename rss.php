@@ -1,6 +1,6 @@
 <?php
 
-require(__DIR__ . '/next/bootstrap.php');
+require(__DIR__ . '/src/bootstrap.php');
 require(__DIR__ . '/tools/MakeRss/MakeRss.class.php');
 
 function antispam($email)

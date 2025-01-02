@@ -2,8 +2,7 @@
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-require(__DIR__ . '/../next/bootstrap.php');
-require(__DIR__ . '/../next/Model/UserModel.php');
+require(__DIR__ . '/../src/bootstrap.php');
 
 my_ob_start_affichage_continu();
 
@@ -90,7 +89,7 @@ function init_page($head = "")
         <?php navadmin($root, $titre);
 
         if ($moderestore) {
-            require(__DIR__ . '/../templates/admin/_menu_data.php');
+            require(__DIR__ . '/../templates/admin/_menu-data.php');
         }
         $pageinited = true;
     }

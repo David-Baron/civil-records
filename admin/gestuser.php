@@ -1,9 +1,10 @@
 <?php
 
+use CivilRecords\Model\UserModel;
+use CivilRecords\Engine\MailerFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-require(__DIR__ . '/../next/bootstrap.php');
-require(__DIR__ . '/../next/Model/UserModel.php');
+require(__DIR__ . '/../src/bootstrap.php');
 
 if (!$userAuthorizer->isGranted(9)) {
     $response = new RedirectResponse("$root/admin/");

@@ -1,7 +1,8 @@
 <?php
 
+use CivilRecords\Model\UserModel;
+
 if (function_exists("date_default_timezone_set")) date_default_timezone_set('Europe/Paris'); // For compatibility only
-$db  = con_db(); // For compatibility only
 
 function open_page($title, $root = "", $js = null, $addbody = null, $addhead = null, $index = null, $rss = null)
 {
@@ -419,7 +420,7 @@ function form_typeactes_communes($mode = '', $alldiv = 1)
     echo '<input type="radio" name="xtyp" value="M' . $mode . '" ' . $ajaxcommune . '>Mariages<br>';
     echo '<input type="radio" name="xtyp" value="D' . $mode . '" ' . $ajaxcommune . '>Décès<br>';
     echo '<input type="radio" name="xtyp" value="V' . $mode . '" ' . $ajaxcommune . '>Actes divers : ';
-    listbox_divers("typdivers", "***Tous***", $alldiv);
+    listbox_divers("typdivers", " -- Tous -- ", $alldiv);
     echo '<br><br>';
     echo '</td>';
     echo "</tr>";
@@ -442,10 +443,10 @@ function listbox_communes($fieldname, $default, $vide = 0)  // liste de toutes l
         $i = 1;
         echo '<select name="' . $fieldname . '" size="1">';
         if ($vide == 1) {
-            echo '<option>*** Toutes ***</option>';
+            echo '<option> -- Toutes -- </option>';
         }
         if ($vide == 2) {
-            echo '<option>*** Backup complet (par type) ***</option>';
+            echo '<option>Backup complet (par type)</option>';
         }
         while ($row = EA_sql_fetch_array($result)) {
             $comdep = $row["COMMUNE"] . " [" . $row["DEPART"] . "]";
@@ -565,7 +566,7 @@ function listbox_divers($fieldname, $default, $tous = 0)
         $i = 1;
         echo '<select name="' . $fieldname . '">';
         if ($tous) {
-            echo '<option>*** Tous ***</option>';
+            echo '<option> -- Tous -- </option>';
         }
         while ($row = EA_sql_fetch_array($result)) {
             echo '<option ' . ($default == $row["LIBELLE"] ? 'selected' : '') . '>' . $row["LIBELLE"] . '</option>';

@@ -2,8 +2,7 @@
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-require(__DIR__ . '/../next/bootstrap.php');
-require(__DIR__ . '/../next/Model/UserModel.php');
+require(__DIR__ . '/../src/bootstrap.php');
 
 $Destin   = getparam('Destin'); // TODO: will be from last url
 $needlevel = 6;
@@ -139,7 +138,7 @@ function init_page($head = "")
         $missingargs = true;  // par défaut
         init_page();
         if ($Destin == "B") {  // Backup
-            require(__DIR__ . '/../templates/admin/_menu_data.php');
+            require(__DIR__ . '/../templates/admin/_menu-data.php');
         }
     }
     if (! $missingargs) {
@@ -404,7 +403,7 @@ function init_page($head = "")
     } else { // missingargs
         //Si pas tout les arguments nécessaire, on affiche le formulaire
         echo '<form method="post" enctype="multipart/form-data">';
-        echo '<h2 align="center">' . $titre . '</h2>';
+        echo '<h2>' . $titre . '</h2>';
         if ($session->get('user')['level'] < 8) {
             msg('Attention : Vous ne pourrez réexporter que les données dont vous êtes le déposant !', 'info');
         }

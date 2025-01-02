@@ -3,7 +3,7 @@
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /** TODO: origin param system... Need to build a DTO and delete this code */
-require(__DIR__ . '/../next/bootstrap.php');
+require(__DIR__ . '/../src/bootstrap.php');
 
 if (!$userAuthorizer->isGranted(9)) {
     $response = new RedirectResponse("$root/admin/");

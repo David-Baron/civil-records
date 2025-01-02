@@ -1,10 +1,9 @@
 <?php
 
-use Symfony\Component\HttpFoundation\Response;
+use CivilRecords\Model\DocumentMarriageModel;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-require(__DIR__ . '/next/bootstrap.php');
-require(__DIR__ . '/next/Model/DocumentMarriageModel.php');
+require(__DIR__ . '/src/bootstrap.php');
 
 if ($config->get('PUBLIC_LEVEL') < 4 && !$userAuthorizer->isGranted(4)) {
     $session->getFlashBag()->add('warning', 'Vous n\'êtes pas connecté ou vous n\'avez pas les autorisations nécessaires!');
