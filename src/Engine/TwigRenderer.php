@@ -5,22 +5,23 @@ namespace CivilRecords\Engine;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
-class TwigRenderer
+class TwigRenderer extends Environment
 {
-    protected Environment $twig;
-    protected array $data = [];
+    protected array $options = ['debug' => true];
 
     public function __construct()
     {
-        $loader = new FilesystemLoader(__DIR__ . '/../../templates');
-        $this->twig = new Environment($loader, [
-            'cache' => false, //' __DIR__ . /../../var/cache',
-        ]);
-    }
+        if (file_exists(__DIR__ . '/../../config/twig.php')) {
+            $config = require(__DIR__ . '/../../config/twig.php');
+            $this->options = array_merge($this->options, $config['options']);
+        }
 
-    public function render(string $template, array $data = [])
-    {
-        $this->data = array_merge($this->data, $data);
-        return $this->twig->render($template, $this->data);
+        $loader = new FilesystemLoader(__DIR__ . '/../../templates');
+
+        parent::__construct($loader, $this->options);
+        
+        if (isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'dev') {
+            $this->addExtension(new \Twig\Extension\DebugExtension());
+        }
     }
 }

@@ -4,8 +4,8 @@
     <div class="box-body">
         <nav class="nav">
             <?php if ($userAuthorizer->isGranted(5)) { ?>
-                <a href="<?= $root ?>/admin/index.php">Inventaire des actes</a>
-                <a href="<?= $root ?>/admin/charge.php">Charger des actes NIMEGUE</a>
+                <a href="<?= $root ?>/admin/tableau_de_bord">Inventaire des actes</a>
+                <a href="<?= $root ?>/admin/actes/import_nimegue">Charger des actes NIMEGUE</a>
             <?php } ?>
             <?php if ($userAuthorizer->isGranted(6)) { ?>
                 <a href="<?= $root ?>/admin/chargecsv.php">Charger des actes CSV</a>

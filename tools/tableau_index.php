@@ -29,7 +29,7 @@ while ($row = EA_sql_fetch_row($result)) {
     if ($row[0] == $init) {
         $alphabet .= '<b>' . $row[0] . '</b> ';
     } else {
-        $alphabet .= '<a href="' . $root . '/index.php?xtyp=' . $xtyp . '&init=' . $row[0] . '">' . $row[0] . '</a> ';
+        $alphabet .= '<a href="' . $root . '/accueil?xtyp=' . $xtyp . '&init=' . $row[0] . '">' . $row[0] . '</a> ';
     }
 }
 echo '<p align="center">' . $alphabet . '</p>';
@@ -76,20 +76,20 @@ foreach ($needed_types as $needed_type) {
                 switch ($needed_type) {
                     case "N":
                         $typel = "Naissances &amp; Baptêmes";
-                        $prog = "/tab_naiss.php";
+                        $prog = "/actes/naissances";
                         break;
                     case "V":
                         $typel = "Divers : " . $ligne['LIBELLE'];
-                        $prog = "/tab_bans.php";
+                        $prog = "/actes/divers";
                         $linkdiv = '&stype=' . $ligne['LIBELLE'];
                         break;
                     case "M":
                         $typel = "Mariages";
-                        $prog = "/tab_mari.php";
+                        $prog = "/actes/mariages";
                         break;
                     case "D":
                         $typel = "Décès &amp; Sépultures";
-                        $prog = "/tab_deces.php";
+                        $prog = "/actes/deces";
                         break;
                 }
                 echo '<tr class="rowheader">';
@@ -105,7 +105,7 @@ foreach ($needed_types as $needed_type) {
             $imgtxt = "Distribution par années";
             if ($userAuthorizer->isGranted(6) or $config->get('SHOW_DATES') == 1) {
                 if ($config->get('SHOW_DISTRIBUTION') == 1) {
-                    echo '<td><a href="' . $root . '/stat_annees.php?comdep=' . urlencode($ligne['COMMUNE'] . ' [' . $ligne['DEPART'] . ']' . $linkdiv) . '&amp;xtyp=' . $needed_type . '"><img src="' . $root . '/img/histo.gif" border="0" alt="' . $imgtxt . '" title="' . $imgtxt . '"></a></td>';
+                    echo '<td><a href="' . $root . '/statistiques?comdep=' . urlencode($ligne['COMMUNE'] . ' [' . $ligne['DEPART'] . ']' . $linkdiv) . '&amp;xtyp=' . $needed_type . '"><img src="' . $root . '/img/histo.gif" border="0" alt="' . $imgtxt . '" title="' . $imgtxt . '"></a></td>';
                 }
                 echo '<td> (' . $ligne['R_AN_MIN'] . '-' . $ligne['R_AN_MAX'] . ') </td>';
             }

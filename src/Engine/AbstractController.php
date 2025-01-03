@@ -2,15 +2,15 @@
 
 namespace CivilRecords\Engine;
 
-use CivilRecords\Engine\PhpRenderer;
+use CivilRecords\Engine\TwigRenderer;
 
 abstract class AbstractController
 {
-    protected PhpRenderer $renderer;
+    protected TwigRenderer $renderer;
 
     public function __construct()
     {
-        $this->renderer = new PhpRenderer();
+        $this->renderer = new TwigRenderer();
     }
 
     function render(string $template, array $data = [])

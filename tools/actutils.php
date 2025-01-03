@@ -4,9 +4,9 @@ use CivilRecords\Model\UserModel;
 
 if (function_exists("date_default_timezone_set")) date_default_timezone_set('Europe/Paris'); // For compatibility only
 
-function open_page($title, $root = "", $js = null, $addbody = null, $addhead = null, $index = null, $rss = null)
+function open_page($title, $path = "", $js = null, $addbody = null, $addhead = null, $index = null, $rss = null)
 {
-    global $path, $config, $scriptname, $commune, $TIPmsg;
+    global $root, $config, $scriptname, $commune, $TIPmsg;
 
     header('Content-Type: text/html; charset=UTF-8');
 
@@ -23,18 +23,18 @@ function open_page($title, $root = "", $js = null, $addbody = null, $addhead = n
     echo '<meta name="keywords" content="' . $config->get('META_KEYWORDS', '') . '">';
     echo '<meta name="generator" content="Civil-Records">';
 
-    echo '<link rel="shortcut icon" href="' . $root . '/assets/img/favicon.ico" type="image/x-icon">';
+    echo '<link rel="shortcut icon" href="' . $root . '/themes/img/favicon.ico" type="image/x-icon">';
 
     echo '<link rel="stylesheet" href="' . $root . '/themes/olive.css" type="text/css">';
-    echo '<link rel="stylesheet" href="' . $root . '/assets/css/style.css" type="text/css">';
-    if (file_exists(__DIR__ . '/../_config/actes.css')) {
+    echo '<link rel="stylesheet" href="' . $root . '/themes/css/style.css" type="text/css">';
+/*     if (file_exists(__DIR__ . '/../_config/actes.css')) {
         echo '<link rel="stylesheet" href="' . $root . '/_config/actes.css" type="text/css">';
-    }
+    } */
     // echo '<link rel="stylesheet" href="' . $root . '/themes/olive-print.css" type="text/css" media="print">';
 
-    if (file_exists(__DIR__ . '/../_config/js_externe_header.inc.php')) {
+    /* if (file_exists(__DIR__ . '/../_config/js_externe_header.inc.php')) {
         include(__DIR__ . '/../_config/js_externe_header.inc.php');
-    }
+    } */
 
     if ($rss <> "") {
         echo '<link rel="alternate" type="application/rss+xml" title="' . $config->get('SITENAME') . ' | ' . $title . '" href="' . $root . '/' . $rss . '">';
@@ -190,13 +190,13 @@ function statistiques($vue = "T")
                 if ($ligne[1] > 0) {
                     $menu_actes .= iif($menu_actes == "", "", " | ");
                     if ($xtyp != $ligne[0]) {
-                        $menu_actes .= '<a href="' . $root . '/index.php?vue=' . $vue . '&xtyp=' . $ligne[0] . '">' . $typ . '</a>';
+                        $menu_actes .= '<a href="' . $root . '/accueil?vue=' . $vue . '&xtyp=' . $ligne[0] . '">' . $typ . '</a>';
                     } else {
                         $menu_actes .= $typ;
                     }
                     $texte .= '<dd>';
                     if ($config->get('SHOW_ALLTYPES') == 0) {
-                        $texte .= '<a href="' . $root . '/index.php?vue=' . $vue . '&xtyp=' . $ligne[0] . '">';
+                        $texte .= '<a href="' . $root . '/accueil?vue=' . $vue . '&xtyp=' . $ligne[0] . '">';
                     }
                     $texte .= entier($ligne[1]) . ' ' . $typ;
                     if ($config->get('SHOW_ALLTYPES') == 0) {
@@ -209,7 +209,7 @@ function statistiques($vue = "T")
             if ($config->get('SHOW_ALLTYPES') == 1) {
                 $menu_actes .= iif($menu_actes == "", "", " | ");
                 if ($xtyp != "A") {
-                    $menu_actes .= '<a href="' . $root . '/index.php?vue=' . $vue . '&xtyp=A">Tous</a>';
+                    $menu_actes .= '<a href="' . $root . '/accueil?vue=' . $vue . '&xtyp=A">Tous</a>';
                 } else {
                     $menu_actes .= 'Tous';
                 }
@@ -220,13 +220,13 @@ function statistiques($vue = "T")
     echo '<div class="box-body p-2"><dl>';
     echo '<dt><strong>' . entier($tot) . ' actes</strong> dont :</dt>' . $texte;
     if ($config->get('SHOW_RSS') <> 0) {
-        $urlrss = $root . '/rss.php';
+        $urlrss = $root . '/rss';
         $mesrss = 'Résumé de la base en RSS';
         if ($show_alltypes == 0) {
             $urlrss .= "?type=" . $xtyp;
             $mesrss .= " (" . typact_txt($xtyp) . ")";
         }
-        echo '<dt><a href="' . $urlrss . '" title="' . $mesrss . '"><img src="' . $root . '/tools/MakeRss/feed-icon-16x16.gif" alt="' . $mesrss . '"></a></dt>';
+        echo '<dt><a href="' . $urlrss . '" title="' . $mesrss . '"><img src="' . $root . '/themes/img/feed-icon-16x16.gif" alt="' . $mesrss . '"></a></dt>';
     }
     echo '</dl></div>';
 
@@ -248,20 +248,17 @@ function zone_menu($admin, int $userlevel, $pp = array())
     echo '<div class="box-body">';
     echo '<nav class="nav">';
     echo '<a href="' . $root . '/">Accueil</a>';
-    echo '<a href="' . $root . '/contact.php">Contact</a>';
+    echo '<a href="' . $root . '/contact">Contact</a>';
     if (!$userAuthorizer->isAuthenticated()) {
-        echo '<a href="' . $root . '/login.php">Connexion</a>';
+        echo '<a href="' . $root . '/identification">Connexion</a>';
         if ($config->get('SHOW_ACCES') == 1) {
-            echo '<a href="' . $root . '/acces.php">Conditions d\'accès</a>';
+            echo '<a href="' . $root . '/acces">Conditions d\'accès</a>';
         }
     } else {
         if ($userAuthorizer->isGranted($config->get('CHANGE_PW'))) {
-            echo '<a href="' . $root . '/changepw.php">Changer le mot de passe</a>';
+            echo '<a href="' . $root . '/changer_motdepasse">Changer le mot de passe</a>';
         }
-        echo '<a href="' . $root . '/index.php?act=logout">Déconnexion</a>';
-    }
-    if ($config->get('EMAIL_CONTACT') <> "") {
-        echo '<a href="' . $root . '/form_contact.php">Contact</a>';
+        echo '<a href="' . $root . '/accueil?act=logout">Déconnexion</a>';
     }
     echo '</nav></div>';
     echo '</div>';
@@ -290,19 +287,19 @@ function navigation($root = "", $level = 1, $type = 'A', $commune = null, $patro
     $s2 = '';
     switch ($type) {
         case "N":
-            $s2 = "/tab_naiss.php";
+            $s2 = "/actes/naissances";
             $libele = "Naissances";
             break;
         case "M":
-            $s2 = "/tab_mari.php";
+            $s2 = "/actes/mariages";
             $libele = "Mariages";
             break;
         case "D":
-            $s2 = "/tab_deces.php";
+            $s2 = "/actes/deces";
             $libele = "Décès";
             break;
         case "V":
-            $s2 = "/tab_bans.php";
+            $s2 = "/actes/divers";
             $libele = "Divers";
             break;
         case "A":
@@ -319,15 +316,15 @@ function navigation($root = "", $level = 1, $type = 'A', $commune = null, $patro
     echo 'Navigation';
     if ($level > 1) {
         if ($level > 10) {
-            echo ' :: <a href="' . $root . '/index.php">Accueil</a>';
-            echo ' &gt; <a href="' . $root . '/admin/index.php">Administration</a>';
+            echo ' :: <a href="' . $root . '/">Accueil</a>';
+            echo ' &gt; <a href="' . $root . '/admin/tableau_de_bord">Administration</a>';
             $path = $root . '/admin';
             $level = $level - 10;
         } else {
             if ($config->get('SHOW_ALLTYPES') == 0) {
-                echo ' :: <a href="' . $root . '/index.php?xtyp=' . $type . '">Communes et paroisses</a>';
+                echo ' :: <a href="' . $root . '/accueil?xtyp=' . $type . '">Communes et paroisses</a>';
             } else {
-                echo ' :: <a href="' . $root . '/index.php">Communes et paroisses</a>';
+                echo ' :: <a href="' . $root . '/">Communes et paroisses</a>';
             }
             $path = $root;
         }
@@ -366,7 +363,7 @@ function navadmin($root = '', $current = '')
     echo '<div class="box">';
     echo '<div class="box-title">';
     echo '<div class="breadcrumb">';
-    echo '<strong>Civil-Records</strong> | <a href="' . $root . '/admin/">Administration</a>';
+    echo '<strong>Civil-Records</strong> | <a href="' . $root . '/admin/tableau_de_bord">Administration</a>';
     if ($current == '') {
         echo ' &gt; Tableau de bord';
     } else {
@@ -429,7 +426,7 @@ function form_typeactes_communes($mode = '', $alldiv = 1)
     echo '<td>';
     echo '<select id="ComDep" name="ComDep">';
     echo '<option value="">Choisir d\'abord le type d\'acte</option> ';
-    echo '</select><img id="prl" src="' . $root . '/themes/default/img/minispinner.gif" style="visibility:hidden;">';
+    echo '</select><img id="prl" src="' . $root . '/themes/img/minispinner.gif" style="visibility:hidden;">';
     echo '</td>';
     echo "</tr>";
 }
@@ -766,10 +763,10 @@ function show_deposant3($row, $retrait, $format, $zidinfo, $xid, $tact)
         if ($session->get('user')['ID'] == $depid or $session->get('user')['level'] >= 8) {
             $actions = "";
             if ($tact == 'M' or $tact == 'V') {
-                $actions .= '<a href="' . $root . '/admin/permute.php?xid=' . $xid . '&amp;xtyp=' . $tact . '">Permuter</a> - ';
+                $actions .= '<a href="' . $root . '/admin/actes/permuter?xid=' . $xid . '&xtyp=' . $tact . '">Permuter</a> - ';
             }
-            $actions .=  '<a href="' . $root . '/admin/edit_acte.php?xid=' . $xid . '&amp;xtyp=' . $tact . '">Editer</a>';
-            $actions .=  ' - <a href="' . $root . '/admin/suppr_acte.php?xid=' . $xid . '&amp;xtyp=' . $tact . '">Supprimer</a>';
+            $actions .=  '<a href="' . $root . '/admin/actes/modifier?xid=' . $xid . '&xtyp=' . $tact . '">Editer</a>';
+            $actions .=  ' - <a href="' . $root . '/admin/actes/supprimer?xid=' . $xid . '&xtyp=' . $tact . '">Supprimer</a>';
             show_simple_item($retrait, $format, $actions, 'Actions');
         }
     } else {
@@ -1124,12 +1121,12 @@ function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = 
                     echo '<td><a href="' . $root . '/' . $script . '?xcomm=' . $xcomm . $sousurl . '&xpatr=' . $ligne1[0] . '">' . $ligne1[0] . '</a></td>';
                     echo '<td align="center"> ' . fourchette_dates($ligne1[2], $ligne1[3]) . '</td>';
                     echo '<td align="center"> ' . $ligne1[1] . '</td>';
-                    echo '<td align="center"> ' . '-' . '</td>';
+                    echo '<td align="center"> - </td>';
                     $lire1 = 1;
                 } elseif ($mari > $femm) {
                     echo '<td><a href="' . $root . '/' . $script . '?xcomm=' . $xcomm . $sousurl . '&xpatr=' . $ligne2[0] . '">' . $ligne2[0] . '</a></td>';
                     echo '<td align="center"> ' . fourchette_dates($ligne2[2], $ligne2[3]) . '</td>';
-                    echo '<td align="center"> ' . '-' . '</td>';
+                    echo '<td align="center"> - </td>';
                     echo '<td align="center"> ' . $ligne2[1] . '</td>';
                     $lire2 = 1;
                 } else {
@@ -1227,7 +1224,7 @@ function pagination($nbtot, &$page, $href, &$listpages, &$limit)
                         $pp = false;
                         $listpages = $listpages . "<strong> " . $p . "</strong>";
                     } else {
-                        $listpages = $listpages . ' <a href="' . $href . '&amp;pg=' . $p . '">' . $p . "</a>";
+                        $listpages = $listpages . ' <a href="' . $href . '&page=' . $p . '">' . $p . "</a>";
                     }
                 } else {
                     if (!$pp) {
@@ -1266,10 +1263,10 @@ function actions_deposant($userid, $depid, $actid, $typact)  // version graphiqu
         echo '</td>';
         echo '<td>';
         if ($typact == 'M' || $typact == 'V') {
-            echo '<a href="' . $root . '/admin/permute.php?xid=' . $actid . '&xtyp=' . $typact . '"><img width="16" height="16" title="Permuter" alt="Permuter" src="' . $root . '/assets/img/permuter.gif"></a>';
+            echo '<a href="' . $root . '/admin/actes/permuter?xid=' . $actid . '&xtyp=' . $typact . '"><img width="16" height="16" title="Permuter" alt="Permuter" src="' . $root . '/themes/img/permuter.gif"></a>';
         }
-        echo ' <a href="' . $root . '/admin/edit_acte.php?xid=' . $actid . '&xtyp=' . $typact . '"><img width="16" height="16" title="Modifier" alt="Modifier" src="' . $root . '/assets/img/modifier.gif"></a>';
-        echo ' <a href="' . $root . '/admin/suppr_acte.php?xid=' . $actid . '&xtyp=' . $typact . '"><img width="16" height="16" title="Supprimer" alt="Supprimer" src="' . $root . '/assets/img/supprimer.gif"></a>';
+        echo ' <a href="' . $root . '/admin/actes/modifier?xid=' . $actid . '&xtyp=' . $typact . '"><img width="16" height="16" title="Modifier" alt="Modifier" src="' . $root . '/themes/img/modifier.gif"></a>';
+        echo ' <a href="' . $root . '/admin/actes/supprimer?xid=' . $actid . '&xtyp=' . $typact . '"><img width="16" height="16" title="Supprimer" alt="Supprimer" src="' . $root . '/themes/img/supprimer.gif"></a>';
         echo '</td>';
     } else {
         echo '<td>';
@@ -1365,9 +1362,7 @@ function solde_ok($cout = 0, $dep_id = "", $typact = "", $xid = ""): int
                             $avertissement .= 'Il vous reste à présent ' . $newsolde . ' points';  // passé par variable globale
                         } else {
                             echo 'Erreur dans la gestion des points ';
-                            //echo '<p>'.EA_sql_error().'<br />'.$reqmaj.'</p>';
                         }
-                        //print_r($lstactvus);
                         setcookie('viewlst', crypter(implode(',', $lstactvus), 'solde'));
                         return $lesolde;  // solde avant retrait
                     } else {
@@ -1422,10 +1417,10 @@ function recharger_solde()
                 $lesolde = $config->get('PTS_PAR_PER');
                 $reqmaj = "UPDATE " . $config->get('EA_DB') . "_user3 SET solde = " . $lesolde . ", maj_solde = '" . today() . "' WHERE ID=" . $userid . "";
                 if ($result = EA_sql_query($reqmaj, $u_db)) {
-                    $avertissement .= 'Votre compte a été automatiquement crédité de ' . $config->get('PTS_PAR_PER') . ' points<br />'; // passé par variable globale
+                    $avertissement .= 'Votre compte a été automatiquement crédité de ' . $config->get('PTS_PAR_PER') . ' points<br>'; // passé par variable globale
                 } else {
                     echo 'Erreur dans gestion des points ';
-                    echo '<p>' . EA_sql_error() . '<br />' . $reqmaj . '</p>';
+                    echo '<p>' . EA_sql_error() . '<br>' . $reqmaj . '</p>';
                 }
             }
         }
@@ -1447,7 +1442,7 @@ function show_signal_erreur($typ, $xid)
 {
     global $root, $config;
     if (strlen($config->get('EMAIL_SIGN_ERR')) > 0) {
-        show_simple_item(0, 1, '<a href="' . $root . '/signal_erreur.php?xty=' . $typ . '&xid=' . $xid . '" target="_blank">Cliquez ici pour la signaler</a>', 'Trouvé une erreur ?');
+        show_simple_item(0, 1, '<a href="' . $root . '/signal_erreur?xty=' . $typ . '&xid=' . $xid . '" target="_blank">Cliquez ici pour la signaler</a>', 'Trouvé une erreur ?');
     }
 }
 
@@ -1622,7 +1617,7 @@ function stats_1_comm($xtyp, $lacom)
 function maj_stats($xtyp, $T0, $path, $mode, $com = "", $dep = "")
 // mode : A = all, C=Commune unique, N=Next commune (qd All pas terminé)
 {
-    global $config;
+    global $root, $config;
     if ($mode == "C") {
         $tpsreserve = min(3, ini_get("max_execution_time") / 2);
     } else {
@@ -1632,7 +1627,7 @@ function maj_stats($xtyp, $T0, $path, $mode, $com = "", $dep = "")
     $Max_time = ini_get("max_execution_time") - $tpsreserve;
     if (time() - $T0 > $Max_time) {
         echo "<p>Les statistiques n'ont pas pu être recalculées immédiatement.<br>";
-        echo '<a href="' . $path . "/maj_sums.php" . '?xtyp=' . $xtyp . '&amp;mode=' . $mode . '&amp;com=' . urlencode($com) . '">' . "Cliquez ici pour recalculer ces statistiques" . "</a></p>";
+        echo '<a href="' . $root . '/admin/actes/statistiques?xtyp=' . $xtyp . '&mode=' . $mode . '&com=' . urlencode($com) . '">Cliquez ici pour recalculer ces statistiques</a></p>';
     } else {
         switch ($xtyp) {
             case "N":
@@ -1689,7 +1684,7 @@ function maj_stats($xtyp, $T0, $path, $mode, $com = "", $dep = "")
             if ($timeisup) {
                 echo "<p><b>Mise à jour INCOMPLETE des statistiques des " . $typ . " </b></p>";
                 //echo "<p>Pour continuer le calcul des statistiques cliquez le lien suivant :<br>";
-                echo '<a href="' . $path . "/maj_sums.php" . '?xtyp=' . $xtyp . '&amp;mode=N&amp;com=' . urlencode($lacom) . '">' . "Cliquez ici pour CONTINUER le recalcul de ces statistiques" . "</a></p>";
+                echo '<a href="' . $root . '/admin/actes/statistiques?xtyp=' . $xtyp . '&mode=N&com=' . urlencode($lacom) . '">Cliquez ici pour CONTINUER le recalcul de ces statistiques</a></p>';
             } else {
                 echo "<p><b>Mise à jour globale des statistiques des " . $typ . " terminée.</b></p>";
             }
@@ -1780,13 +1775,13 @@ function test_geocodage($show = false)
 
 function geoUrl($gid)
 {
+    
     global $root, $config;
-    $imgtxt = "Carte";
+    $geourl = '';
     if ($gid > 0 && $config->get('GEO_LOCALITE') > 0) {
-        $geourl = ' &nbsp; <a href="' . $root . '/localite.php?id=' . $gid . '"><img src="' . $root . '/img/boussole.png" alt="(' . $imgtxt . ')" title="' . $imgtxt . '" align="middle"></a>';
-    } else {
-        $geourl = '';
+        $geourl = ' <a href="' . $root . '/localite?id=' . $gid . '"><img src="' . $root . '/themes/img/boussole.png" alt="(Carte)" title="Carte"></a>';
     }
+
     return $geourl;
 }
 

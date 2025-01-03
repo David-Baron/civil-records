@@ -1,3 +1,8 @@
 <?php 
 
-return [];
+
+return [
+    'options' => [
+        'cache' => false, //' __DIR__ . /../../var/cache',
+    ]
+];

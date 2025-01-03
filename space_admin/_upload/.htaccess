@@ -1,0 +1,14 @@
+## VOIR https://www.windows8facile.fr/apache-deny-from-all-require-all-denied/
+<Files .htaccess>
+   # C'est Apache 2.4 minimum
+   #<IfModule mod_authz_core.c>
+   <IfModule mod_version.c>
+      Require all denied
+   </IfModule>
+   # C'est avant Apache 2.4 donc 2.2
+   #<IfModule !mod_authz_core.c>
+   <IfModule !mod_version.c>
+      order allow,deny
+      deny from all
+   </IfModule>
+</Files>
