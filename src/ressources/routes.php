@@ -1,11 +1,11 @@
 <?php 
 /**
  * Route ex:
- * /deeds/france/moselle/algrange/naissances?source_type=civil                  => display the list of civil deeds birth
- * /deeds/france/moselle/algrange/naissances?source_type=parish                 => display the list of parish deed birth
- * /deeds/france/moselle/algrange/1948/naissances/127581?source_type=civil      => display one birth of the civil deed n°127581
- * /deeds/france/moselle/algrange/1948/deces?source_type=civil                  => display the list of civil deeds death
- * /deeds/france/moselle/algrange/1948/deces/15?source_type=civil               => display one death of the civil deed n°15
+ * /deeds/france/moselle/algrange/birth?source_type=civil                  => display the list of civil deeds birth
+ * /deeds/france/moselle/algrange/birth?source_type=parish                 => display the list of parish deed birth
+ * /deeds/france/moselle/algrange/1948/birth/127581?source_type=civil      => display one birth of the civil deed n°127581
+ * /deeds/france/moselle/algrange/1948/death?source_type=civil                  => display the list of civil deeds death
+ * /deeds/france/moselle/algrange/1948/death/15?source_type=civil               => display one death of the civil deed n°15
  * /deeds/france/moselle/algrange/divers                                      => display the list of the miscellaneous deeds
  */
 return [

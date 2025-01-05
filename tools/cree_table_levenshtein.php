@@ -99,11 +99,7 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
             }
         }
 
-        if ($hf == "F") {  // recherche femme
-            //	  	  $sql = "CREATE TEMPORARY TABLE IF NOT EXISTS ".EA_DB."_".$ip_adr_trait."_f  (`nomlev` varchar( 25 ) COLLATE latin1_general_ci NOT NULL ,`distf` int( 11 ) NOT NULL ,PRIMARY KEY ( `nomlev` )
-            //								) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;";
-            //	  	  $sql = "CREATE TEMPORARY TABLE IF NOT EXISTS ".EA_DB."_".$ip_adr_trait."_f  (`nomlev` varchar( 25 ) COLLATE ".$COLLATION." NOT NULL ,`distf` int( 11 ) NOT NULL ,PRIMARY KEY ( `nomlev` )
-            //								) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=".$COLLATION.";";
+        if ($hf == "F") {
             $sql = "CREATE TEMPORARY TABLE IF NOT EXISTS " . $config->get('EA_DB') . "_" . $ip_adr_trait . "_f  
 			(`distf` int( 11 ) NOT NULL DEFAULT 0, PRIMARY KEY ( `nomlev` ) )
 			AS  (SELECT   `NOM` AS `nomlev` FROM " . $table . " WHERE `ID` = '0');";
@@ -154,15 +150,10 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
             }
         }
 
-
-        if ($hf == "D") {  // spécial décès
-            //	  	  	  $sql = "CREATE TEMPORARY TABLE IF NOT EXISTS ".EA_DB."_".$ip_adr_trait."_d  (`nomlev` varchar( 25 ) COLLATE latin1_general_ci NOT NULL ,`distd` int( 11 ) NOT NULL ,PRIMARY KEY ( `nomlev` )
-            //								) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;";
-            //	  	  	  $sql = "CREATE TEMPORARY TABLE IF NOT EXISTS ".EA_DB."_".$ip_adr_trait."_d  (`nomlev` varchar( 25 ) COLLATE ".$COLLATION." NOT NULL ,`distd` int( 11 ) NOT NULL ,PRIMARY KEY ( `nomlev` )
-            //								) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=".$COLLATION.";";
+        if ($hf == "D") {
             $sql = "CREATE TEMPORARY TABLE IF NOT EXISTS " . $config->get('EA_DB') . "_" . $ip_adr_trait . "_d  
 			(`distd` int( 11 ) NOT NULL DEFAULT 0, PRIMARY KEY ( `nomlev` ) )
-			AS  (SELECT   `NOM` AS `nomlev` FROM " . $table . " WHERE `ID` = '0');";
+			AS (SELECT `NOM` AS `nomlev` FROM " . $table . " WHERE `ID`='0');";
 
             $result = EA_sql_query($sql) or die('Erreur SQL creation !' . $sql . '<br>' . EA_sql_error());
             if ($commune1 == "U") {
@@ -180,14 +171,10 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
             }
         }
 
-        if ($hf == "N") {  // spécial naissance
-            //	  	  	  $sql = "CREATE TEMPORARY TABLE IF NOT EXISTS ".EA_DB."_".$ip_adr_trait."_n  (`nomlev` varchar( 25 ) COLLATE latin1_general_ci NOT NULL ,`distn` int( 11 ) NOT NULL ,PRIMARY KEY ( `nomlev` )
-            //								) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;";
-            //	  	  	  $sql = "CREATE TEMPORARY TABLE IF NOT EXISTS ".EA_DB."_".$ip_adr_trait."_n  (`nomlev` varchar( 25 ) COLLATE ".$COLLATION." NOT NULL ,`distn` int( 11 ) NOT NULL ,PRIMARY KEY ( `nomlev` )
-            //								) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=".$COLLATION.";";
+        if ($hf == "N") {
             $sql = "CREATE TEMPORARY TABLE IF NOT EXISTS " . $config->get('EA_DB') . "_" . $ip_adr_trait . "_n  
 			(`distn` int( 11 ) NOT NULL DEFAULT 0, PRIMARY KEY ( `nomlev` ) )
-			AS  (SELECT   `NOM` AS `nomlev` FROM " . $table . " WHERE `ID` = '0');";
+			AS  (SELECT   `NOM` AS `nomlev` FROM " . $table . " WHERE `ID`='0');";
 
             $result = EA_sql_query($sql) or die('Erreur SQL creation !' . $sql . '<br>' . EA_sql_error());
             if ($commune1 == "U") {
@@ -205,18 +192,11 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
             }
         }
 
-        //$T5 = time();
-
-
         $result = EA_sql_query($sql) or die('Erreur SQL !' . $sql . '<br>' . EA_sql_error());
         $nbtot = EA_sql_num_rows($result);
         $nb = $nbtot;
-
-        //		echo '<p>Durée requete temp '.$hf.'  tot : '.$nb.'   : '.(time()-$T5).' sec.</p>'."\n";
-
-        if ($nb > 0) {	//$T4 = time();
+        if ($nb > 0) {
             while ($ligne = EA_sql_fetch_row($result)) {
-
                 $k = levenshtein(strtoupper($xacht), strtoupper($ligne[0]));
                 if ($k < $dm) {
                     if ($hf == "H") {
@@ -231,12 +211,9 @@ function table_temp($xacht, $xcomp, $table, $hf, $xcomm, $ip_adr_trait, $xmin, $
                     if ($hf == "N") {
                         $sql1 = "INSERT IGNORE INTO " . $config->get('EA_DB') . "_" . $ip_adr_trait . "_n (nomlev,distn) VALUES ('" . sql_quote($ligne[0]) . "'," . $k . " )";
                     }
-
                     $result1 = EA_sql_query($sql1) or die('Erreur SQL insertion !' . $sql1 . '<br>' . EA_sql_error());
-                    //$i++;
                 }
             }
-            //echo '<p>Durée Levenshtein '.$hf.'  tot : '.$nb.'   : '.(time()-$T4).' sec.</p>'."\n";
         }
         return 'ok';
     }

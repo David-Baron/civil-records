@@ -8,19 +8,19 @@
                 <a href="<?= $root ?>/admin/actes/import_nimegue">Charger des actes NIMEGUE</a>
             <?php } ?>
             <?php if ($userAuthorizer->isGranted(6)) { ?>
-                <a href="<?= $root ?>/admin/chargecsv.php">Charger des actes CSV</a>
-                <a href="<?= $root ?>/admin/supprime.php">Supprimer des actes</a>
-                <a href="<?= $root ?>/admin/exporte.php">Réexporter des actes</a>
+                <a href="<?= $root ?>/admin/actes/import_csv">Charger des actes CSV</a>
+                <a href="<?= $root ?>/admin/actes/supprime_groupe">Supprimer des actes</a>
+                <a href="<?= $root ?>/admin/actes/export">Réexporter des actes</a>
             <?php } ?>
             <?php if ($userAuthorizer->isGranted(7)) { ?>
-                <a href="<?= $root ?>/admin/maj_sums.php">Administrer les données</a>
+                <a href="<?= $root ?>/admin/actes/statistiques">Administrer les données</a>
             <?php } ?>
             <?php if ($userAuthorizer->isGranted(9)) { ?>
-                <a href="<?= $root ?>/admin/listusers.php">Administrer les utilisateurs</a>
-                <a href="<?= $root ?>/admin/gest_params.php">Administrer le logiciel</a>
+                <a href="<?= $root ?>/admin/utilisateurs">Administrer les utilisateurs</a>
+                <a href="<?= $root ?>/admin/serveur/parametres">Administrer le logiciel</a>
             <?php } ?>
-            <a href="<?= $root ?>/admin/aide/aide.html">Aide</a>
-            <a href="<?= $root ?>/admin/about.php">A propos</a>
+            <a href="<?= $root ?>/admin/aide">Aide</a>
+            <a href="<?= $root ?>/admin/a-propos">A propos</a>
         </nav>
     </div>
 </div>

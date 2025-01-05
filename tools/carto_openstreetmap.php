@@ -2,104 +2,71 @@
 
 // Data builder for openstretmap map
 
-function plot_commune($depart, $commune, $etiquette, $texte_html, $listTypes = "", $listSigles = "")
+use CivilRecords\Model\GeoLocalizationModel;
+use CivilRecords\Model\StatisticModel;
+
+/**
+ * Return the map pin for one locality
+ */
+function plot_commune($depart, $commune, $etiquette, $texte_html, $listTypes = "", $sigle = "")
 {
-    global $root, $config;
-    $georeq = "SELECT LON,LAT FROM " . $config->get('EA_DB') . "_geoloc WHERE COMMUNE = '" . sql_quote($commune) . "' AND DEPART = '" . sql_quote($depart) . "'";
-    $geores =  EA_sql_query($georeq);
-    if ($geo = EA_sql_fetch_array($geores)) {
+    $geolocalizationModel = new GeoLocalizationModel();
+    $geoloc = $geolocalizationModel->findOneByCriteria(['COMMUNE' => $commune, 'DEPART' => $depart]);
+    if ($geoloc) {
         if (strlen($listTypes) == 1) {
-            // $pin = $root . '/assets/img/pin_' . $listTypes . ".png";
             $pin = $listTypes;
         } else {
-            // $pin = $root . '/assets/img/pin_' . strlen($listTypes) . ".png";
             $pin = strlen($listTypes);
-            //$etiquette .= "(".$listSigles.")";
-            $etiquette = $listSigles . " : " . $etiquette;
+            $etiquette = $sigle . " : " . $etiquette;
         }
-        // $carto->addMarkerByAddress($ligne['COMMUNE'].", ".$ligne['DEPART'],$ligne['COMMUNE'], "");
-        // $carto->addMarkerByCoords($geo['LON'],$geo['LAT'],$etiquette,"XX"); //$etiquette,$texte_html);
-        // $carto->addMarkerByCoords($geo['LON'], $geo['LAT'], $etiquette, $texte_html, '', $pin);
-        return ['LAT' => $geo['LAT'], 'LON' => $geo['LON'], 'LIBELE' => $etiquette, 'STATS' => $texte_html, 'PIN' => $pin];
+
+        return ['LAT' => $geoloc['LAT'], 'LON' => $geoloc['LON'], 'LIBELE' => $etiquette, 'STATS' => $texte_html, 'PIN' => $pin];
     }
 }
 
+$statisticModel = new StatisticModel();
+$statistics = $statisticModel->findAllForMap($xtyp);
 
-$sql_params = '';
-if ($xtyp != 'A') {
-    $sql_params = " WHERE TYPACT='" . $xtyp . "'";
-}
-
-$sql = "SELECT DEPART,COMMUNE,TYPACT,LIBELLE, sum(NB_TOT) AS NB_TOT 
-    FROM " . $config->get('EA_DB') . "_sums " . $sql_params . " 
-    GROUP BY DEPART,COMMUNE,TYPACT,LIBELLE 
-    ORDER BY DEPART,COMMUNE,INSTR('NMDV',TYPACT),LIBELLE; ";
-
-$pre_libelle = "XXX";
-$pre_commune = "XXX";
-$txthtml = '';
-$listTypes = '';
-$listSigles = '';
-$pre_type = "W";
 $map_plots = []; // array of stats for map popup [LAT, LON, LIBELE, STATS, PIN]
 
+foreach ($statistics as $statistic) {
+    if ($statistic['DEPART'] != 'XXX' && $statistic['COMMUNE'] != 'XXX') { // nouvelle commune
 
-
-if ($result = EA_sql_query($sql)) {
-    $i = 1;
-    while ($ligne = EA_sql_fetch_array($result)) {
-        $i++;
-        if ($ligne['DEPART'] . $ligne['COMMUNE'] <> $pre_commune) { // nouvelle commune
-            if ($pre_commune <> "XXX") {
-                $map_plots[] = plot_commune($depart, $commune, $etiquette, $txthtml, $listTypes, $listSigles);
-                $listTypes = '';
-                $listSigles = '';
-                $pre_type = "W";
-            }
-            $depart = $ligne['DEPART'];
-            $commune = $ligne['COMMUNE'];
-            $pre_commune = $depart . $commune;
-            $etiquette = $commune . " [" . $depart . "]";
-            $txthtml = "<b>" . $commune . " [" . $depart . "]</b><br>";
-        }
         $linkdiv = '';
-        switch ($ligne['TYPACT']) {
+        switch ($statistic['TYPACT']) {
             case "N":
                 $typel = "Naissances/Baptêmes";
-                $prog = "/tab_naiss.php";
+                $prog = "/actes/naissances";
                 $sigle = "°";
                 break;
             case "M":
-                $typel = "Mariages";
-                $prog = "/tab_mari.php";
+                $typel = 'Mariages';
+                $prog = '/actes/mariages';
                 $sigle = "x";
                 break;
             case "D":
-                $typel = "Décès/Sépultures";
-                $prog = "/tab_deces.php";
+                $typel = 'Décès/Sépultures';
+                $prog = '/actes/deces';
                 $sigle = "+";
                 break;
             case "V":
-                if ($ligne['LIBELLE'] == "") {
-                    $typel = "Divers";
+                if ($statistic['LIBELLE'] == "") {
+                    $typel = 'Divers';
                 } else {
-                    $typel = $ligne['LIBELLE'];
-                    $linkdiv = '&linkdiv=' . $ligne['LIBELLE'];
+                    $typel = $statistic['LIBELLE'];
+                    $linkdiv = '&linkdiv=' . $statistic['LIBELLE'];
                 }
-                $prog = "/tab_bans.php";
+                $prog = '/actes/divers';
                 $sigle = "#";
                 break;
         }
-        if ($pre_type <> $ligne['TYPACT']) {
-            $listTypes .= $ligne['TYPACT'];
-            $pre_type = $ligne['TYPACT'];
-            $listSigles .= $sigle;
-        }
-        $href = '<a href="' . $root . $prog . '?xcomm=' . $ligne['COMMUNE'] . ' [' . $ligne['DEPART'] . ']' . $linkdiv . '">';
-        $txthtml .= $href . entier($ligne['NB_TOT']) . " " . $typel . "</a><br>";
-    }
-    if ($pre_commune <> "XXX") {
-        $map_plots[] = plot_commune($depart, $commune, $etiquette, $txthtml, $listTypes, $listSigles);
+
+        $etiquette = $statistic['COMMUNE'] . " [" . $statistic['DEPART'] . "]";
+        $txthtml = '<b>' . $etiquette . '</b><br>';
+        $href = '<a href="' . $root . $prog . '?xcomm=' . $statistic['COMMUNE'] . ' [' . $statistic['DEPART'] . ']' . $linkdiv . '">';
+        $txthtml .= $href . entier($statistic['NB_TOT']) . " " . $typel . "</a><br>";
+
+        $map_plots[] = plot_commune($statistic['DEPART'], $statistic['COMMUNE'], $etiquette, $txthtml, $statistic['TYPACT'], $sigle);
     }
 }
 
@@ -107,13 +74,13 @@ $map_plots = json_encode($map_plots);
 
 $stylesheets =
     <<<AAA
-<link rel="stylesheet" href="$root/assets/modules/leaflet/dist/leaflet.css">
-<link rel="stylesheet" href="$root/assets/modules/leaflet.markercluster/dist/MarkerCluster.Default.css">
+<link rel="stylesheet" href="$root/modules/leaflet/dist/leaflet.css">
+<link rel="stylesheet" href="$root/modules/leaflet.markercluster/dist/MarkerCluster.Default.css">
 AAA;
 $javascripts =
     <<<AAA
-<script src="/assets/modules/leaflet/dist/leaflet.js"></script>
-<script src="/assets/modules/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+<script src="/modules/leaflet/dist/leaflet.js"></script>
+<script src="/modules/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 <script>
         var place = {
             name: 'Paris',
@@ -123,35 +90,35 @@ $javascripts =
 
         const icons = [{
                 name: 'M',
-                path: '$root/assets/img/pin_M.png'
+                path: '$root/themes/img/pin_M.png'
             },
             {
                 name: 'N',
-                path: '$root/assets/img/pin_N.png'
+                path: '$root/themes/img/pin_N.png'
             },
             {
                 name: 'D',
-                path: '$root/assets/img/pin_D.png'
+                path: '$root/themes/img/pin_D.png'
             },
             {
                 name: 'V',
-                path: '$root/assets/img/pin_V.png'
+                path: '$root/themes/img/pin_V.png'
             },
             {
                 name: '1',
-                path: '$root/assets/img/pin_1.png'
+                path: '$root/themes/img/pin_1.png'
             },
             {
                 name: '2',
-                path: '$root/assets/img/pin_2.png'
+                path: '$root/themes/img/pin_2.png'
             },
             {
                 name: '3',
-                path: '$root/assets/img/pin_3.png'
+                path: '$root/themes/img/pin_3.png'
             },
             {
                 name: '4',
-                path: '$root/assets/img/pin_4.png'
+                path: '$root/themes/img/pin_4.png'
             }
         ];
 

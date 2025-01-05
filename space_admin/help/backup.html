@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Civil-Records | Aide</title>
-    <link rel="shortcut icon" href="../../assets/img/favicon.ico" type="image/x-icon">
-    <link media="screen" rel="stylesheet" href="./actes_aide.css" type="text/css">
+    <link rel="shortcut icon" href="/modules/help/img/favicon.ico" type="image/x-icon">
+    <link media="screen" rel="stylesheet" href="/modules/help/css/help.css" type="text/css">
 </head>
 
 <body>
@@ -16,7 +16,7 @@
         <li><a href="#users">Backup/restauration des utilisateurs</a></li>
         <li><a href="#users">Backup/restauration des paramètres de configuration</a></li>
     </ul>
-    <p><a href="aide.html">Retour à la liste des fichiers d'aide</a></p>
+    <p><a href="/admin/aide">Index de l'aide</a></p>
     <p><span style="font-weight: bold;">Il est toujours prudent de réaliser
             régulièrement une copie de sauvegarde de l'ensemble de la base
              de données</span> afin de pouvoir faire face à un incident
@@ -62,44 +62,18 @@
         dans chacun des index qui sont gérés pour accélérer
         les recherches.</p>
     <h3><a name="maint"></a>Mode MAINTENANCE</h3>
-    <p>Pour être certain de prendre une copie cohérente de la base lors
-        du backup, il vaut mieux que personne d'utilise la base pendant ce moment là.
-        A cette fin, il est possible de basculer la base en mode maintenance. De cette
-        manière, seul l'administrateur peut encore utiliser le site lorsque le
-        mode MAINTENANCE est activé. Tous les autres visiteurs voient un écran
-        de login avec le message &quot;<strong>Erreur : Le système est en cours
-            de mise à jour. Merci de revenir plus tard.</strong>&quot; qui n'est
-        franchissable qu'avec le niveau 9. </p>
-    <p>Pour basculer entre le mode NORMAL et le mode MAINTENANCE, il suffit de cliquer
-        sur le lien ad hoc dans la page <strong>Administrer le logiciel &gt; Etat serveur.</strong></p>
-    <p>Cette page <strong>Etat serveur</strong> donne aussi quelques indications sur
-        l'état du serveur MySQL de l'hébergement. Il faut bien entendu
-        garder à l'esprit que le nombre de requêtes par seconde concerne
-        toutes les bases hébergées sur ce serveur et pas seulement la
-        vôtre. Il n'est donc pas anormal de trouver un nombre de plusieurs centaines
-        de requêtes par seconde, même si cette valeur dénote un serveur
-        qui est tout de même assez chargé.</p>
+    <p>Déprecié et supprimé, ceci n'a aucun sens.</p>
     <h3><a name="data"></a>Backup/restauration des données (actes) </h3>
     <h4>Localisation des fichiers de backup</h4>
-    <p>Pour accélérer la réalisation des backups, les fichiers
-        générés sont automatiquement créés dans le
-        répertoire "actes/<span style="font-weight: bold;">_backup</span>" du
-        serveur web. Ces fichiers, au format texte, sont des variantes légèrement
+    <p>Les fichiers générés sont automatiquement créés dans le répertoire "<span style="font-weight: bold;">backup</span>" dans 
+        le "local_storage" défini lors de l'instalation. Par défaut le "local_storage" est le dossier "__storage" à la racine de l'application.
+        Ces fichiers, au format texte, sont des variantes légèrement
         modifiées des fichies d'export NIMEGUE mais ne sont pas directement compatibles
         avec ceux-ci. <strong>Pour bien les distinguer ils recoivent l'extension &quot;.bea&quot;</strong>
         pour &quot;Backup ExpoActes&quot;. Pour les restaurations les fichiers doivent
-        aussi se trouver dans ce répertoire pour pouvoir être utilisés.</p>
-    <p>Il est très important de protéger l'accès à ce
-        répertoire de backup car il contient tout votre travail ! C'est pour
-        cela que le répertoire "actes/<span style="font-weight: bold;">_backup</span>"
-        contient aussi un fichier "<span style="font-weight: bold;">.htaccess</span>"
-        qui indique au serveur Apache qu'il doit interdire l'accès via HTTP à
-        tous les fichiers de ce répertoire. Malheureusement, l'efficacité
-        de ce fichier ".htaccess" dépend de la configuration du serveur et il
-        faut donc vérifier que l'accès au fichier de backup est bien protégé.
-        <br>
-        <br>
-        De toutes façons, <span style="font-weight: bold;">pour que la sauvegarde
+        aussi se trouver dans ce répertoire pour pouvoir être utilisés.
+    </p>
+    <p><span style="font-weight: bold;">pour que la sauvegarde
             soit vraiment  efficace, il est important de transférer les fichiers
             de backup vers votre propre ordinateur</span>. Pour cela, vous devez utiliser
         votre programme FTP. De cette façon, en cas d'incident vous disposez
@@ -109,15 +83,17 @@
         de les supprimer sur le serveur après les avoir transférés
         sur votre PC.
     </p>
-    <p>Avant toute restauration de données, il convient évidemment de
+    <p>
+        Avant toute restauration de données, il convient évidemment de
         retransférer vos fichier sauvegardés dans le répertoire
-        "actes/<span style="font-weight: bold;">_backup</span>". </p>
-    <p>NB : Le backup et la restauration ont pour objectif de garantir la sécurité
-        d'une base de donnée déterminée. Il ne faut pas utiliser
+        "votre_local_storage/<span style="font-weight: bold;">backup</span>".
+    </p>
+    <p>NB : Le backup et la restauration ont pour objectif de garantir l'unicité
+        d'une base de donnée. Il ne faut pas utiliser
         la restauration pour &quot;ajouter&quot; des données d'une base dans
         une autre. Par contre, on peut sans crainte restaurer une base sur des données
-        qui existent déjà. En effet, le logiciel se base sur l'identifiant
-        inerne des actes et ne restaure que les données qui ne sont plus présentes.
+        qui existent déjà. En effet, le logiciel se base sur l'identifiant générés par ce serveur de la base 
+        et ne restaure que les données qui ne sont plus présentes.
         Il est ainsi par exemple possible de restaurer tous les actes d'une commune
         qui auraient été supprimés par erreur.</p>
     <h4>Effectuer une copie de sauvegarde (backup)</h4>
@@ -138,7 +114,7 @@
         <li>Presser le bouton &quot;&gt;&gt; EXPORTER &gt;&gt;&quot;</li>
         <li>Le backup commence alors en indiquant le nom du fichier qui est créé.<br>
             <br>
-            <img src="scr_backup_1.png"><br>
+            <img src="/modules/help/img/scr_backup_1.png"><br>
         </li>
         <li>Ce nom est composé de la date du backup dans l'ordre année-mois-jour
             suivie du code du type des actes (N, M, D ou V pour &quot;Divers&quot;) et
@@ -151,7 +127,7 @@
         <li>Il suffit donc de presser successivent ce lien pour conduire la copie à
             son terme. <br>
             <br>
-            <img src="scr_backup_2.png"><br>
+            <img src="/modules/help/img/scr_backup_2.png"><br>
         </li>
         <li>Il faut bien entendu répéter l'opération avec les autres
             types d'actes présents.</li>
@@ -176,7 +152,7 @@
         <li>Sélectionner également le type des actes à restaurer;</li>
         <li>Presser le bouton &quot;&gt;&gt; CHARGER &gt;&gt;&quot;;<br>
             <br>
-            <img src="restauration_1.png" width="724" height="261"><br>
+            <img src="/modules/help/img/restauration_1.png" width="724" height="261"><br>
         </li>
         <li>Remarque : Il est à présent possible d'ajouter TOUTES les données d'un backup à
             une autre base de données en cochant la case &quot;AJOUTER ...&quot;. Dans ce cas, AUCUNE
@@ -196,7 +172,7 @@
             il n'y a aucun risque a restaurer plusieurs fois le même fichier : les
             actes déjà présent sont simplement ignorés.<br>
             <br>
-            <img src="restauration_2.png" width="716" height="230"><br>
+            <img src="/modules/help/img/restauration_2.png" width="716" height="230"><br>
         </li>
         <li>Si le temps alloué est dépassé, un message indique
             l'avancement du travail et il suffit de cliquer sur le lien pour poursuivre
@@ -208,14 +184,14 @@
             à charger les fichiers suivants. Ici aussi, on peut cliquer directement
             sur le lien ad hoc ou laisser le recharger la page et poursuivre automatiquement.<br>
             <br>
-            <img src="restauration_3.png" width="718" height="179"><br>
+            <img src="/modules/help/img/restauration_3.png" width="718" height="179"><br>
         </li>
         <li>Lorsque tous les fichiers ont été chargés, le système
             tente d'effectuer un recalcul des statistiques relatives au type d'acte considéré.
             Si le temps disponible pour cela n'est pas suffisant, un lien ad hoc est proposé
             qu'il suffit d'activer.<br>
             <br>
-            <img src="restauration_4.png" width="713" height="370">
+            <img src="/modules/help/img/restauration_4.png" width="713" height="370">
         </li>
     </ul>
     <p>Remarques : </p>
@@ -248,7 +224,7 @@
         restaurer et cliquer sur &quot;&gt;&gt; CHARGER &gt;&gt;&quot;.</p>
     <p><br>
         <br>
-        <a href="aide.html">Retour à la liste des fichiers d'aide</a>
+        <a href="/admin/aide">Index de l'aide</a>
     </p>
 </body>
 

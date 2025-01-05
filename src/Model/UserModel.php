@@ -39,6 +39,7 @@ class UserModel extends DatabaseConnection
             } else {
                 $params .= " AND $key=:$key";
             }
+            $i++;
         }
 
         $sql = "SELECT * FROM " . $this->table_prefix . "_user3 WHERE $params ORDER BY NOM,PRENOM";
@@ -57,6 +58,7 @@ class UserModel extends DatabaseConnection
             } else {
                 $params .= " AND $key=:$key";
             }
+            $i++;
         }
 
         $sql = "SELECT * FROM " . $this->table_prefix . "_user3 WHERE $params ORDER BY NOM,PRENOM";

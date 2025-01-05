@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Civil-Records | Aide</title>
-    <link rel="shortcut icon" href="../../assets/img/favicon.ico" type="image/x-icon">
-    <link media="screen" rel="stylesheet" href="./actes_aide.css" type="text/css">
+    <link rel="shortcut icon" href="/modules/help/img/favicon.ico" type="image/x-icon">
+    <link media="screen" rel="stylesheet" href="/modules/help/css/help.css" type="text/css">
 </head>
 
 <body>
@@ -16,13 +16,13 @@
     <p>Les codes d'accès à la base de données (nom du serveur,
         login et mot de passe) ne sont pas présents dans le fichier _config/BD-...-connect.inc.php
         ou ne sont pas corrects. <br>
-        <a href="config.html#params">Ajoutez ces codes ou corrigez-les</a>.
+        <a href="/admin/aide/config#params">Ajoutez ces codes ou corrigez-les</a>.
     </p>
     <h4>012 : La base [xxxxx] n'est pas accessible sur le serveur MySQL.</h4>
     <p>Le nom de la base de données n'est par reconnu par le serveur MYSQL.
         Le nom peut êtes incorrect ou la base n'est pas encore créée
         sur le serveur.<br>
-        <a href="config.html#params">Vérifier le nom de la base</a> et sa présence.
+        <a href="/admin/aide/config#params">Vérifier le nom de la base</a> et sa présence.
         Bien souvent vous pouvez utiliser l'utilitaire PHPMyAdmin pour vérifier
         ces informations.
     </p>
@@ -47,7 +47,7 @@
         permettre au serveur web de déplacer un fichier vers ce répertoire.<br>
         Vérifier la présence du répertoire et ses droits d'accès.
         Au besoin, ExpoActes peut utiliser un autre répertoire dont le chemin
-        d'accès doit êtes précisé via le <a href="config.html#uploaddir">paramètre
+        d'accès doit êtes précisé via le <a href="/admin/aide/config#uploaddir">paramètre
             UPLOAD_DIR</a>.</p>
     <h4>032 : Impossible de créer un fichier dans &quot;_upload&quot;.</h4>
     <p>Le répertoire pour le téléchargement existe mais il est
@@ -94,7 +94,7 @@
         ait décidé de ne pas offrir ce service. <br>
         Pour résoudre la problème, il faut soit corriger le paramétrage
         du module PHP (fichier php.ini) soit utiliser le module d'envoi de mail intégré
-        à ExpoActes en <a href="config.html#sendmail">configurant celui-ci</a>
+        à ExpoActes en <a href="/admin/aide/config#sendmail">configurant celui-ci</a>
         de manière adéquate.</p>
     <h4>052 : Paramètres de gestion du mail incomlètement configurés.</h4>
     <p>Les paramètres de la focntion interne de mail doivent êtes complétés.
@@ -118,7 +118,7 @@
         du fichier PHP.INI.</p>
     <p>Si cela est inpossible avec votre hébergement vous pouvez aussi désactiver
         la gestion des codes captcha dans le paramétrage des utilisateurs.</p>
-    <p><strong>Pour la modification des paramètres du logiciel, voir la <a href="config.html">configuration
+    <p><strong>Pour la modification des paramètres du logiciel, voir la <a href="/admin/aide/config">configuration
                 avancée</a>.</strong> </p>
     <div style="text-align: center;">
         <p>-o-O-o- <br>

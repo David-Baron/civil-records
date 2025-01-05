@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Civil-Records | Aide</title>
-    <link rel="shortcut icon" href="../../assets/img/favicon.ico" type="image/x-icon">
-    <link media="screen" rel="stylesheet" href="./actes_aide.css" type="text/css">
+    <link rel="shortcut icon" href="/modules/help/img/favicon.ico" type="image/x-icon">
+    <link media="screen" rel="stylesheet" href="/modules/help/css/help.css" type="text/css">
 </head>
 
 <body>
-    <h1 style="text-align: center;">Expoactes : Paramétrage du logiciel et
+    <h1 style="text-align: center;">Civil-Records : Paramétrage du logiciel et
         configuration avancée </h1>
-    <p style="text-align: center;"><a href="aide.html">Retour à la liste des
-            fichiers d'aide</a> </p>
+    <p style="text-align: center;"><a href="/admin/aide">Index de l'aide</a> </p>
     <h4>Sommaire</h4>
     <p>Presque tous les éléments de personnalisation du logiciel (on dit plutôt
         paramétrage) sont stockés dans la base de donnée et peuvent facilement
@@ -23,7 +22,7 @@
         de modifier les intitulés des zones affichées dans les actes. </p>
     <p>L'ensemble de ces paramètres peut aussi être sauvegardé ou restauré selon
         les besoins (notamment en cas de migration de la base d'un hébergeur à un
-        autre). Cette procédure est décrite dans le <a href="backup.html">chapitre
+        autre). Cette procédure est décrite dans le <a href="/admin/aide/backup">chapitre
             backup</a>. </p>
     <p>En plus de cette configuration, quelques autres actions peuvent être
         apportées pour modifier l'apparence du site (essentiellement modifier la
@@ -230,7 +229,7 @@
         utilisables pour chacun des 4 types d'actes. Nous verrons plus loin qu'il
         permet aussi de modifier les intitulés des groupes de données pour les
         actes divers spécifiques. </p>
-    <p><img width="629" height="427" src="Etiquettes.png" /></p>
+    <p><img width="629" height="427" src="/modules/help/img/Etiquettes.png" /></p>
     <p>Comme on le voit, pour chaque zone on peut d'abord préciser
         quand elle sera affichées :</p>
     <ul>
@@ -252,7 +251,7 @@
     <p>Le cinquième menu permet de modifier les étiquettes de
         groupes pour les actes divers selon le type de ces actes. La sélection du
         type s'effectue sur base du sigle associé à ce type d'actes.</p>
-    <p><img width="524" height="330" src="etiquettesdiverses.png" /></p>
+    <p><img width="524" height="330" src="/modules/help/img/etiquettesdiverses.png" /></p>
     <p>Si le sigle d'une série d'acte n'a pas été défini, il est
         possible de l'affecter avec le menu de modification groupée des actes. La
         sauvegarde des étiquette s'effectue en même temps que celle des autres
@@ -289,8 +288,8 @@
         données puisqu'il indique où trouver cette base de données.
     </p>
     <h4><a id="Backup" name="Backup"></a>Sauvegarder / restaurer les paramètres</h4>
-    <p>Le logiciel propose des dispositifs pour réaliser des <a href="backup.html">copies
-            de sécurité des actes</a> d'une part et de <a href="gestuser.html">la
+    <p>Le logiciel propose des dispositifs pour réaliser des <a href="/admin/aide/backup">copies
+            de sécurité des actes</a> d'une part et de <a href="/admin/aide/gestuser">la
             liste des utilisateurs</a> d'autre part. La liste des paramètres
         personnalisés de votre installation est le troisième et dernier "paquet"
         d'informations qu'il serait indispensable de retrouver pour restaurer
@@ -312,7 +311,7 @@
         </li>
         <li>
             <div><br>
-                <img width="697" height="243" src="restaureparams.png">
+                <img width="697" height="243" src="/modules/help/img/restaureparams.png">
             </div>
         </li>
         <li><strong>Pour restaurer les paramètres</strong>, il suffit de cliquer
@@ -325,7 +324,7 @@
         Affichage) </h4>
     <blockquote>
         <h5><a id="SITENAME" name="SITENAME"></a>Identification du site </h5>
-        <p><img width="818" height="454" src="parametres.png"></p>
+        <p><img width="818" height="454" src="/modules/help/img/parametres.png"></p>
         <ul>
             <li><strong>Nom du site principal</strong> [SITENAME] : <br>
                 Nom de votre site principal. Ce nom est utiliés dans le cartouche de
@@ -459,23 +458,22 @@
         <p>Les paramètres suivants vous permettent de personnaliser ce dispositif
             :</p>
         <ul>
-            <li><b>Message acceptation des cookies </b>[<span class="aide" style="" id="aide15">COOKIE_MESSAGE</span>]
+            <li><b>Message acceptation des cookies </b>[<span class="aide" id="aide15">COOKIE_MESSAGE</span>]
                 : <br>
-                <span class="aide" style="" id="aide15">Ce message, affiché tous les
+                <span class="aide" id="aide15">Ce message, affiché tous les
                     ans, annonce l'utilisation des cookies sur le site. Vous pouvez
                     personnaliser le message en fonction des services activés (google
                     analytics, publicité, réseaux sociaux, ...)</span>.
             </li>
-            <li><b>URL d'une page sur les cookie</b> [<span class="aide" style="" id="aide16">COOKIE_URL_INFO</span>]
+            <li><b>URL d'une page sur les cookie</b> [<span class="aide" id="aide16">COOKIE_URL_INFO</span>]
                 : <br>
                 La réglementation recommande d'informer aussi précisément que possible
                 le visiteur sur les cookies mis en oeuvre. Vous pouvez donc créer une
-                page web informative à cet effet <span class="aide" style="" id="aide16">et
+                page web informative à cet effet <span class="aide" id="aide16">et
                     préciser ici l'URL de cette page. Il peut s'agir d'une page interne
                     au site ou externe.</span></li>
-            <li> <strong><b>Style du message cookies</b> </strong>[<span class="aide" style=""
-                    id="aide17">COOKIE_STYLE</span>]
-                : <span class="aide" style="" id="aide17"></span><span class="aide" style="" id="aide17"><br>
+            <li> <strong><b>Style du message cookies</b> </strong>[<span class="aide" id="aide17">COOKIE_STYLE</span>]
+                : <span class="aide" id="aide17"></span><span class="aide" id="aide17"><br>
                     Le texte du message précisé ci-dessus apparaît dans une boîte de
                     dialogue dont vous avez la possibilité de préciser le positionnement
                     sur la page (en haut, en bas ou "flottante") ainsi que le style qui
@@ -510,13 +508,13 @@
             caractéristiques de la carte globale lorsqu'elle est affichée :</p>
         <ul>
             <li><strong>Hauteur de la carte en pixels </strong><a
-                    href="http://127.0.0.1/LDEV3/actes/admin/gest_params.php?grp=G%E9oloc">(</a>GEO_HAUT_CARTE)
+                    href="/admin/gest_params.php?grp=G%E9oloc">(</a>GEO_HAUT_CARTE)
                 : La valeur classique est de 500 pixels. Vous pouvez agrandir ou
                 réduire cette valeur mais il est prudent de rester dans la fourchette
                 400 à 700 pixels. La largeur est déterminée automatiquement pour
                 occuper toute la largeur libre de la page.</li>
             <li><strong>Niveau de zoom initial </strong><a
-                    href="http://127.0.0.1/LDEV3/actes/admin/gest_params.php?grp=G%E9oloc"></a>(GEO_ZOOM_INITIAL)
+                    href="/actes/admin/gest_params.php?grp=G%E9oloc"></a>(GEO_ZOOM_INITIAL)
                 : Détermine le niveau de zoom à l'affichage de la carte (généralement
                 entre 6 et 11). Par défaut, cette valeur est à 0 et laisse donc le
                 système déterminer lui-même le niveau de zoom permettant de voir
@@ -527,14 +525,14 @@
                 commencer avec la valeur 10 puis d'ajuster si besoin à une valeur plus
                 petite ou plus grande.</li>
             <li><strong>Centrage forcé de la carte sur </strong><a
-                    href="http://127.0.0.1/LDEV3/actes/admin/gest_params.php?grp=G%E9oloc"></a>(GEO_CENTRE_CARTE)
+                    href="/actes/admin/gest_params.php?grp=G%E9oloc"></a>(GEO_CENTRE_CARTE)
                 : Complémentaire du paramètre précédent, celui-ci permet de "centrer"
                 la carte initiale sur une localité prédéterminée qui doit être une des
                 communes ou paroisses géolocalisées. Cette localisation servira
                 également de base pour la définition des coordonnées non trouvées par
                 Google.</li>
             <li><strong>Niveau de zoom dégroupage </strong><a
-                    href="http://127.0.0.1/LDEV3/actes/admin/gest_params.php?grp=G%E9oloc"></a>(GEO_ZOOM_DEGROUPAGE)
+                    href="/actes/admin/gest_params.php?grp=G%E9oloc"></a>(GEO_ZOOM_DEGROUPAGE)
                 : Une carte comportant trop de "punaises" devient illisible. Pour
                 éviter cela un mécanisme regroupe les localités proches en "groupes"
                 et indique le nombre de localités présentes. Toutefois, dans les vues
@@ -717,8 +715,8 @@
         <h5><a id="TIP" name="TIP"></a>Filtrage des adresses IP</h5>
         <p>A la demande de plusieurs utilisateurs, un mécanisme de
             protection contre les systèmes d'aspiration de sites a été intégré. Il
-            s'agit en fait d'une version adaptée et enrichie du module "TraceIP v2"
-            proposé sur le site <a href="http://www.php-astux.info">www.php-astux.info</a>.</p>
+            s'agit en fait d'une version adaptée et enrichie du module "TraceIP v2".
+        </p>
         <p><strong>Le module de protection N'EST PAS ACTIF PAR DEFAUT</strong>.
             Pour l'activer, il suffit de sélectionner l'une des options 1 ou 2 du
             paramètre "<strong>Utiliser l'anti-aspirateur IP</strong>" dans l'onglet
@@ -892,12 +890,12 @@
             trouver ceertains actes comportant des erreurs d'encodage et ce
             particulièrement si le lettre initiale est incorrecte. Pour résoudre ce
             problème<strong> Jean-Louis Cazor</strong> a eu l'idée d'implémenter un
-            autre algorithme se basant sur <a href="levenshtein_principes.html">la
+            autre algorithme se basant sur <a href="/admin/aide/levenshtein_principes">la
                 méthode Levenshtein</a>. Cet algorithme est très puissant mais
             malheureusement très gourmand en ressouces machine. Il crée en effet des
             tables de données intermédiaires et effectue de nombreux calculs sur les
             informations prélectionnées. Il convient dès lors de le reserver aux
-            utilisateurs avertis et de <a href="levenshtein_utilisation.html">suivre
+            utilisateurs avertis et de <a href="/admin/aide/levenshtein_utilisation">suivre
                 les conseils d'utilisation précisés par Jean-Louis</a>. </p>
         <p>Par défaut cet algorithme est activé mais seulement accessible aux
             administrateurs. La mise à disposition de cet algorithme est contrôlée
@@ -949,16 +947,16 @@
         <p>Pour faciliter le référencement de vos actes dans le moteur de
             recherche de Généanet, un dispositif de génération automatique de
             liste-éclair a a été adjoint au logiciel. Il est accessible via l'URL <a
-                href="../../eclair.php">eclair.php</a>
+                href="/eclair.php">eclair.php</a>
             à la racine du site ExpoActes pour auatnt que cette inddexation soit
             autorisées via le paramètre <strong>Publier la liste éclair pour
                 Généanet </strong><a
-                href="http://127.0.0.1/LDEV3/actes/admin/gest_params.php?grp=Recherche"></a>[ECLAIR_AUTORISE].
+                href="/actes/admin/gest_params.php?grp=Recherche"></a>[ECLAIR_AUTORISE].
         </p>
         <p>La procédure produit une liste principale des communes avec le nombre
             d'actes puis pour chacune d'elles une liste des patronymes avec la
             première année, la dernière année et le nombre d'actes.</p>
-        <table width="669" border="1">
+        <table width="669">
             <caption> &nbsp; </caption>
             <tbody>
                 <tr>
@@ -968,16 +966,16 @@
                 <tr>
                     <td>
                         <ul>
-                            <li><a href="http://127.0.0.1/LDEV3/actes/eclair.php?xtyp=D&amp;xcom=Graide&amp;xdep=Namur">Décès
+                            <li><a href="/actes/eclair.php?xtyp=D&amp;xcom=Graide&amp;xdep=Namur">Décès
                                     de Graide [Namur] </a> (657 actes) <strong>---------------&gt;</strong>
                             </li>
-                            <li><a href="http://127.0.0.1/LDEV3/actes/eclair.php?xtyp=N&amp;xcom=Hanret&amp;xdep=Namur">Naissances
+                            <li><a href="/actes/eclair.php?xtyp=N&amp;xcom=Hanret&amp;xdep=Namur">Naissances
                                     de Hanret [Namur] </a> (4281 actes) </li>
                             <li><a
-                                    href="http://127.0.0.1/LDEV3/actes/eclair.php?xtyp=N&amp;xcom=Incourt&amp;xdep=Brabant+Wallon">Naissances
+                                    href="/actes/eclair.php?xtyp=N&amp;xcom=Incourt&amp;xdep=Brabant+Wallon">Naissances
                                     de Incourt [Brabant Wallon] </a> (364 actes) </li>
                             <li><a
-                                    href="http://127.0.0.1/LDEV3/actes/eclair.php?xtyp=N&amp;xcom=L%27Ecluse&amp;xdep=Brabant+Wallon">Naissances
+                                    href="/actes/eclair.php?xtyp=N&amp;xcom=L%27Ecluse&amp;xdep=Brabant+Wallon">Naissances
                                     de L'Ecluse [Brabant Wallon] </a> (64 actes) </li>
                         </ul>
                     </td>
@@ -999,7 +997,7 @@
         <p>Pour éviter de charger exagérément le serveur lors de la production de
             ces listes, il est possible de les scinder en plusieurs parties grâce au
             paramètre <strong>Nombre maximum d'actes par liste éclair </strong><a
-                href="http://127.0.0.1/LDEV3/actes/admin/gest_params.php?grp=Recherche"></a>[ECLAIR_MAX_ROW].</p>
+                href="/actes/admin/gest_params.php?grp=Recherche"></a>[ECLAIR_MAX_ROW].</p>
         <p>Par ailleurs, il est possible de contrôler les accès qui sont effectués
             à cette liste éclair en obligeant, via le paramètre <strong>Journalisation
                 des requêtes éclair</strong> [ECLAIR_LOG], le système à journaliser
@@ -1067,9 +1065,9 @@
             avec le logiciel NIMEGUE et aussi d'admettre des chemins d'accès qui
             comprennent eux-même des blancs.</p>
         <p>Ainsi, les contenus suivants :</p>
-        <p><img width="758" height="249" src="url001.png" /></p>
+        <p><img width="758" height="249" src="/modules/help/img/url001.png" /></p>
         <p>Produisent l'affichage suivant : </p>
-        <p><img width="654" height="74" src="url002.png" /></p>
+        <p><img width="654" height="74" src="/modules/help/img/url002.png" /></p>
         <p>Reste à déterminer quelle URL est finalement générée sous le lien
             actif. </p>
         <p><strong>Lien créé pour une URL </strong></p>

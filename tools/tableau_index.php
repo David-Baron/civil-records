@@ -1,15 +1,13 @@
 <?php
 
-$needed_types = array('N', 'M', 'D', 'V');
+$needed_types = ['N', 'M', 'D', 'V'];
 $initiale = '';
 $condit1 = '';
 $condit2 = '';
+
 if ($xtyp != '' || $xtyp != 'A') {
     $condit1 = " WHERE TYPACT='" . sql_quote($xtyp) . "'";
-}
-
-if ($xtyp != 'A') {
-    $needed_types = array($xtyp);
+    $needed_types = [$xtyp];
 }
 
 if ($init != '') {
@@ -18,7 +16,6 @@ if ($init != '') {
     $condit2 = " AND upper(left(COMMUNE," . $leninit . "))='" . sql_quote($init) . "'";
 }
 
-// $sql = "SELECT DISTINCT upper(left(COMMUNE,1)) AS init FROM " . EA_DB . "_sums " . $condit1 . " ORDER BY init";
 // Sélectionner et grouper sur initiale de commune et ascii(initiale), ordonner code ascii ascendant pour avoir + grand code (accentué) en dernier
 $sql = "SELECT alphabet.init FROM ( SELECT upper(left(COMMUNE,1)) AS init,ascii(upper(left(COMMUNE,1))) AS oo 
     FROM " . $config->get('EA_DB') . "_sums " . $condit1 . " GROUP BY init,oo  ORDER BY init , oo ASC) AS alphabet GROUP BY init";

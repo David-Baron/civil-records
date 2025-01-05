@@ -1776,10 +1776,10 @@ function test_geocodage($show = false)
 function geoUrl($gid)
 {
     
-    global $root, $config;
+    global $root, $config, $userAuthorizer;
     $geourl = '';
-    if ($gid > 0 && $config->get('GEO_LOCALITE') > 0) {
-        $geourl = ' <a href="' . $root . '/localite?id=' . $gid . '"><img src="' . $root . '/themes/img/boussole.png" alt="(Carte)" title="Carte"></a>';
+    if ($gid > 0 && $config->get('GEO_LOCALITE') > 0 && $userAuthorizer->isGranted(1)) {
+        $geourl = ' <a href="' . $root . '/localite?id=' . $gid . '"><img src="' . $root . '/themes/img/boussole.png" alt="Localité détails" title="Localité détails"></a>';
     }
 
     return $geourl;

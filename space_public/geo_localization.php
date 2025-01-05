@@ -5,7 +5,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 // TODO: Map view fail due to googlemap link
 
 if (!$userAuthorizer->isGranted(1)) {
-    $response = new RedirectResponse("$root/login.php");
+    $response = new RedirectResponse("$root/");
     $response->send();
     exit();
 }

@@ -4,8 +4,6 @@
 /admin.txt
 /_backup/parameters.backup.xml
 /admin/users.php
-/assets/js/bootstrap.bundle.min.js
-/assets/css/cosmo.css
 /next/Controller
 /next/Engine/AbstractController.php
 /next/Engine/PhpRenderer.php
@@ -18,3 +16,5 @@
 /tools/carto_googlemap.php
 /bin
 /templates/tests
+/__storage
+/space_admin/_upload
