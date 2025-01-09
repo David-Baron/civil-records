@@ -2,28 +2,27 @@
 
 namespace CivilRecords\Controller;
 
-use CivilRecords\Model\DeedModel;
 use CivilRecords\Engine\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 
 class AdminDeedController extends AbstractController
 {
-    private DeedModel $deedModel;
 
-    public function __construct()
+    public function __construct(Request $request)
     {
         parent::__construct();
-        $this->deedModel = new DeedModel();
+
     }
 
-    public function list($page = 1)
+    public function list(Request $request)
     {
         $limit = 50;
-        $offset = ($page * $limit) - $limit;
+        $offset = ($request->get('page', 1) * $limit) - $limit;
 
-        $deeds = $this->deedModel->findAll($limit, $offset);
+        // $deeds = $this->deedModel->findAll($limit, $offset);
         return $this->render('next_admin/deed-list.php', [
             'title' => 'Admin users',
-            'deeds' => $deeds
+            // 'deeds' => $deeds
         ]);
     }
 }

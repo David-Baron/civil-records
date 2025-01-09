@@ -365,7 +365,7 @@ function init_page($head = "")
                                     fwrite($tof, $token . "\r\n");
                                     fclose($tof);
                                     $list_backups = get_last_backups();
-                                    $list_backups[$TypeActes] = today();
+                                    $list_backups[$TypeActes] = date("Y-m-d", time());
                                     set_last_backups($list_backups);
                                 }
                                 echo '<p>Transfert terminé.</p>';

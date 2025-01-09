@@ -23,7 +23,7 @@ $rem      = getparam('rem');
 $emailfound = false;
 $cptok = 0;
 $cptko = 0;
-$today = today();
+$today = date("Y-m-d", time());
 
 $form_errors = [];
 $form_success = false;

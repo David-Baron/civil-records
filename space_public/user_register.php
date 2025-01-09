@@ -1,6 +1,6 @@
 <?php
 
-use CivilRecords\Model\UserModel;
+use CivilRecords\Domain\UserModel;
 use CivilRecords\Engine\MailerFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -45,10 +45,10 @@ if ($request->getMethod() === 'POST') {
     if (!empty($config->get('TXT_CONDIT_USAGE')) &&  false == $acceptcond) {
         $form_errors['acceptcond'] = "Vous devez marquer votre accord sur les conditions d'utilisation";
     }
-    if (strlen($login) < 3 || strlen($login) > 15 || !sans_quote($login)) {
+    if (strlen($login) < 3 || strlen($login) > 15) { // || !sans_quote($login)
         $form_errors['login'] = 'Login entre 3 et 15 caractères alpha numérique sans apostrophe.';
     }
-    if (strlen($passw) < 6 || strlen($passw) > 15 || !sans_quote($passw)) {
+    if (strlen($passw) < 6 || strlen($passw) > 15) {// || !sans_quote($passw)
         $form_errors['passw'] = 'Mot de passe entre 6 et 15 caractères alpha numérique sans apostrophe.';
     }
     if ($passw <> $passwverif) {

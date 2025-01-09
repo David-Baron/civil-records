@@ -1,8 +1,6 @@
 <?php
 
-use CivilRecords\Model\UserModel;
-
-if (function_exists("date_default_timezone_set")) date_default_timezone_set('Europe/Paris'); // For compatibility only
+use CivilRecords\Domain\UserModel;
 
 function open_page($title, $path = "", $js = null, $addbody = null, $addhead = null, $index = null, $rss = null)
 {
@@ -27,7 +25,7 @@ function open_page($title, $path = "", $js = null, $addbody = null, $addhead = n
 
     echo '<link rel="stylesheet" href="' . $root . '/themes/olive.css" type="text/css">';
     echo '<link rel="stylesheet" href="' . $root . '/themes/css/style.css" type="text/css">';
-/*     if (file_exists(__DIR__ . '/../_config/actes.css')) {
+    /*     if (file_exists(__DIR__ . '/../_config/actes.css')) {
         echo '<link rel="stylesheet" href="' . $root . '/_config/actes.css" type="text/css">';
     } */
     // echo '<link rel="stylesheet" href="' . $root . '/themes/olive-print.css" type="text/css" media="print">';
@@ -125,37 +123,6 @@ function ajuste_date($datetxt, &$datesql, &$badannee)  // remise en forme des da
     }
     // echo " Bad?".$badannee." --> ".$datetxt." --> ".$datesql." --> ".showdate($datesql);
     return $datetxt;
-}
-
-
-/**
- * Return the code of search mode by default according to RECH_DEF_TYP parameter
- */
-function default_rech_code(): string
-{
-    global $config;
-    $search_modes = [
-        1 => ['code' => 'E', 'libele' => 'Exacte'],
-        2 => ['code' => 'D', 'libele' => 'au Début'],
-        3 => ['code' => 'F', 'libele' => 'à la Fin'],
-        4 => ['code' => 'C', 'libele' => 'est Compris dans'],
-        5 => ['code' => 'S', 'libele' => 'Sonore']
-    ];
-
-    return $search_modes[$config->get('RECH_DEF_TYP')]['code'];
-}
-
-/**
- * Préselectionne le mode de recherche par défaut selon le parametre RECH_DEF_TYP
- */
-function prechecked(string $typrech): string
-{
-    $deftyp = default_rech_code();
-    if ($typrech == $deftyp) {
-        return ' value="' . $typrech . '" checked="checked" ';
-    }
-
-    return ' value="' . $typrech . '" ';
 }
 
 function statistiques($vue = "T")
@@ -358,16 +325,16 @@ function navigation($root = "", $level = 1, $type = 'A', $commune = null, $patro
     echo '</div>';
 }
 
-function navadmin($root = '', $current = '')
+function navadmin($root = '', $current_view = '')
 {
     echo '<div class="box">';
     echo '<div class="box-title">';
     echo '<div class="breadcrumb">';
     echo '<strong>Civil-Records</strong> | <a href="' . $root . '/admin/tableau_de_bord">Administration</a>';
-    if ($current == '') {
+    if ($current_view == '') {
         echo ' &gt; Tableau de bord';
     } else {
-        echo ' &gt; ' . $current;
+        echo ' &gt; ' . $current_view;
     }
     echo '</div>';
     echo '</div>';
@@ -538,22 +505,6 @@ function metadata($zone, $voulu)  // valeur $zone du record $voulu
     return "Zone $voulu inconnue";
 }
 
-function listbox_types($fieldname, $default, $vide = 0)
-{
-    $act_types = [
-        ['code' => 'N', 'code_3' => 'NAI', 'label' => 'Naissances'],
-        ['code' => 'M', 'code_3' => 'MAR', 'label' => 'Mariages'],
-        ['code' => 'D', 'code_3' => 'DEC', 'label' => 'Décès'],
-        ['code' => 'V', 'code_3' => 'DIV', 'label' => 'Actes divers'],
-    ];
-
-    echo '<select name="' . $fieldname . '" size="1">';
-    foreach ($act_types as $act_type) {
-        echo '<option value="' . $act_type['code'] . '" ' . ($act_type['code'] === $default ? 'selected' : '') . '>' . $act_type['label'] . '</option>';
-    }
-    echo " </select>";
-}
-
 function listbox_divers($fieldname, $default, $tous = 0)
 {
     global $config;
@@ -687,6 +638,12 @@ function show_item3($row, $retrait, $format, $zidinfo, $url = "", $zidinfo2 = ""
 {
     global $config, $userAuthorizer;
 
+    $sexes = [
+        'M' => 'Masculin',
+        'F' => 'Féminin',
+        '?' => 'Non précisé'
+    ];
+
     $lg = $GLOBALS['lg'];
     $req1 = "SELECT ZONE, GROUPE, TYP, TAILLE, OBLIG, AFFICH, ETIQ, AIDE FROM (" . $config->get('EA_DB') . "_metadb d JOIN " . $config->get('EA_DB') . "_metalg l)"
         . " WHERE ((d.ZID=l.ZID) AND (l.LG='" . $lg . "') AND d.ZID=" . $zidinfo . ")";
@@ -696,6 +653,8 @@ function show_item3($row, $retrait, $format, $zidinfo, $url = "", $zidinfo2 = ""
     $oblig = $res1["AFFICH"];  // F = Facultatif, O = Obligatoire, A= Adminstration seulmt
     $label = $res1["ETIQ"];
     $info2 = "";
+
+
     if ($zidinfo2 != "") {
         $req2 = "SELECT ZONE, GROUPE, TYP, TAILLE, OBLIG, AFFICH, ETIQ, AIDE FROM (" . $config->get('EA_DB') . "_metadb d JOIN " . $config->get('EA_DB') . "_metalg l)"
             . " WHERE ((d.ZID=l.ZID) AND (l.LG='" . $lg . "') AND d.ZID=" . $zidinfo2 . ")";
@@ -722,7 +681,7 @@ function show_item3($row, $retrait, $format, $zidinfo, $url = "", $zidinfo2 = ""
                 $info = showdate($info);
                 break;
             case "SEX":
-                $info = sexe($info);
+                $info = $sexes[$info];
                 break;
         }
         if ($activelink <> 0) {  // urlifie les url et les images JPG et autres
@@ -732,8 +691,6 @@ function show_item3($row, $retrait, $format, $zidinfo, $url = "", $zidinfo2 = ""
         show_simple_item($retrait, $format, $info, $label, $info2, $url);
     }
 }
-
-//-----------------------------------------------------------------------------
 
 function show_deposant3($row, $retrait, $format, $zidinfo, $xid, $tact)
 // accessoirement affiche la possibilité de proposer une correction
@@ -776,26 +733,11 @@ function show_deposant3($row, $retrait, $format, $zidinfo, $xid, $tact)
     }
 }
 
-function sexe($code)
-{
-    switch ($code) {
-        case "M":
-            return "Masculin";
-            break;
-        case "F":
-            return "Féminin";
-            break;
-        case "?":
-            return "Non précisé";
-            break;
-    }
-}
-
 // liste_patro_1("tabnaiss.php",$root,$xcomm,$xpatr,"Naissances / baptêmes",EA_DB."_nai");
 // Liste des patronymes pour les actes à UN intervenant (naissance et décès)
 function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = "", $note = "")
 {
-    global $config;
+    global $config, $userAuthorizer;
     $lgi = 1;
     $initiale = "";
     $comdep  = html_entity_decode($xcomm, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
@@ -807,7 +749,10 @@ function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = ""
     }
 
     echo '<h2>' . $titre . '</h2>';
-    echo '<p>Commune/Paroisse : <a href="' . $root . $script . '?xcomm=' . $xcomm . '"><strong>' . $xcomm . '</strong></a>' . geoUrl($gid) . '</p>';
+    echo '<p>Commune/Paroisse : <a href="' . $root . $script . '?xcomm=' . $xcomm . '"><strong>' . $xcomm . '</strong></a>';
+    if ($gid > 0 && $config->get('GEO_LOCALITE') > 0 && $userAuthorizer->isGranted(1)) {
+        echo ' <a href="' . $root . '/admin/geolocalizations/detail?id=' . $gid . '"><img src="' . $root . '/themes/img/boussole.png" alt="Localité détails" title="Localité détails"></a><br></p>';
+    }
     if ($note <> '') {
         echo "<p>" . $note . "</p>";
     }
@@ -906,7 +851,7 @@ function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = ""
 // Liste des patronymes pour les actes à DEUX intervenants (mariages et divers)
 function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = "", $gid = "", $note = "")
 {
-    global $config;
+    global $config, $userAuthorizer;
     $lgi = 1;
     $initiale  = "";
     $initialeF = "";
@@ -935,21 +880,20 @@ function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = 
     }
 
     echo '<h2>' . $titre . '</h2>';
-    echo '<p>Commune/Paroisse : <a href="' . $root . '/' . $script . '?xcomm=' . $xcomm . $sousurl . '"><strong>' . $xcomm . '</strong></a>' . geoUrl($gid) . '</p>';
+    echo '<p>Commune/Paroisse : <a href="' . $root . '/' . $script . '?xcomm=' . $xcomm . $sousurl . '"><strong>' . $xcomm . '</strong></a>';
+    if ($gid > 0 && $config->get('GEO_LOCALITE') > 0 && $userAuthorizer->isGranted(1)) {
+        echo ' <a href="' . $root . '/admin/geolocalizations/detail?id=' . $gid . '"><img src="' . $root . '/themes/img/boussole.png" alt="Localité détails" title="Localité détails"></a></p>>';
+    }
     if ($note <> '') {
         echo "<p>" . $note . "</p>";
     }
-
+    $condDep = "";
     if ($Depart <> "") {
         $condDep = " AND DEPART = '" . sql_quote($Depart) . "'";
-    } else {
-        $condDep = "";
     }
 
     // Faut-il découper le fichier par initiales ?
-    $sql = "SELECT count(*)"
-        . " FROM $table "
-        . " WHERE COMMUNE = '" . sql_quote($Commune) . "'" . $condDep . $initdeux . $soustype;
+    $sql = "SELECT count(*) FROM $table WHERE COMMUNE='" . sql_quote($Commune) . "'" . $condDep . $initdeux . $soustype;
     $result = EA_sql_query($sql);
     $ligne = EA_sql_fetch_row($result);
     $nbresu = $ligne[0];
@@ -961,7 +905,6 @@ function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = 
             . " GROUP BY left(NOM,$lgi)";
         $result1 = EA_sql_query($req1);
         $nb1 = EA_sql_num_rows($result1);
-        optimize($req1);
 
         $req2 = "SELECT left(C_NOM,$lgi), count(distinct C_NOM), min(C_NOM), max(C_NOM)"
             . " FROM $table "
@@ -969,7 +912,7 @@ function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = 
             . " GROUP BY left(C_NOM,$lgi)";
         $result2 = EA_sql_query($req2);
         $nb2 = EA_sql_num_rows($result2);
-        optimize($req2);
+
 
         $i = 1;
         $fini = 0;
@@ -1059,7 +1002,6 @@ function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = 
             . " GROUP BY NOM "
             . " ORDER BY NOM";
         $result1 = EA_sql_query($req1);
-        optimize($req1);
         $nb1 = EA_sql_num_rows($result1);
 
         $req2 = "SELECT distinct C_NOM, count(*), min(year(LADATE)),max(year(LADATE)) "
@@ -1069,7 +1011,6 @@ function liste_patro_2($script, $root, $xcomm, $xpatr, $titre, $table, $stype = 
             . " ORDER BY C_NOM";
 
         $result2 = EA_sql_query($req2);
-        optimize($req1);
         $nb2 = EA_sql_num_rows($result2);
 
         $i = 1;
@@ -1170,6 +1111,7 @@ function fourchette_dates($d1min = 0, $d1max = 0, $d2min = 0, $d2max = 0)
 {
     $min = 0;
     $max = 0;
+    $res = "-";
     if ($d1min > 0) {
         $min = $d1min;
     }
@@ -1190,9 +1132,8 @@ function fourchette_dates($d1min = 0, $d1max = 0, $d2min = 0, $d2max = 0)
         }
     } elseif ($min > 0) {
         $res = $min;
-    } else {
-        $res = "-";
     }
+    
     return $res;
 }
 
@@ -1273,15 +1214,6 @@ function actions_deposant($userid, $depid, $actid, $typact)  // version graphiqu
         echo $depinfo; //iif(($depnom==""),"#".$depid,$depnom.' '.$deppre);
         echo '</td><td></td>';
     }
-}
-
-function show_depart($depart)
-{
-    if ($depart <> "") {
-        return " [" . $depart . ']';
-    }
-
-    return "";
 }
 
 function typact_txt($typact)
@@ -1379,27 +1311,6 @@ function solde_ok($cout = 0, $dep_id = "", $typact = "", $xid = ""): int
     }
 }
 
-function dt_expiration_defaut()
-{
-    global $config;
-    if ($config->get('LIMITE_EXPIRATION') == "") {
-        $dtexpir = $config->get('TOUJOURS');
-    } else {
-        $dtexpir = "";
-        if (isin($config->get('LIMITE_EXPIRATION'), "/") > 0) {
-            $MauvaiseAnnee = 1;
-            ajuste_date($config->get('LIMITE_EXPIRATION'), $dtexpir, $MauvaiseAnnee);  // creée ladate en sql
-        } else {
-            if ($config->get('LIMITE_EXPIRATION') > 0) {
-                $dtexpir = date("Y-m-d", time() + 60 * 1440 * $config->get('LIMITE_EXPIRATION'));
-            } else {
-                $dtexpir = $config->get('TOUJOURS');
-            }
-        }
-    }
-    return $dtexpir;
-}
-
 function recharger_solde()
 {
     global $session, $config, $avertissement, $u_db;
@@ -1415,7 +1326,7 @@ function recharger_solde()
         if ((strtotime("now") - ($config->get('DUREE_PER_P') * 86400)) >= strtotime($session->get('user')['maj_solde'])) {
             if ($lesolde < $config->get('PTS_PAR_PER')) { // pour ne pas supprimer des points "bonus" on attend.
                 $lesolde = $config->get('PTS_PAR_PER');
-                $reqmaj = "UPDATE " . $config->get('EA_DB') . "_user3 SET solde = " . $lesolde . ", maj_solde = '" . today() . "' WHERE ID=" . $userid . "";
+                $reqmaj = "UPDATE " . $config->get('EA_DB') . "_user3 SET solde = " . $lesolde . ", maj_solde = '" . date("Y-m-d", time()) . "' WHERE ID=" . $userid . "";
                 if ($result = EA_sql_query($reqmaj, $u_db)) {
                     $avertissement .= 'Votre compte a été automatiquement crédité de ' . $config->get('PTS_PAR_PER') . ' points<br>'; // passé par variable globale
                 } else {
@@ -1487,7 +1398,7 @@ function lb_droits_user($level, $all = 0)  //
     if ($all == 2) {
         echo '<option ' . (10 == $level ? 'selected' : '') . '>A : -- Envoi à tous -- </option>';
     }
-    echo '<option ' . (0 == $level ? 'selected' : '') . '>0 : Public</option>';
+    echo '<option ' . (0 == $level ? 'selected' : '') . '>Public</option>';
     echo '<option ' . (1 == $level ? 'selected' : '') . '>1 : Liste des communes</option>';
     echo '<option ' . (2 == $level ? 'selected' : '') . '>2 : Liste des patronymes</option>';
     echo '<option ' . (3 == $level ? 'selected' : '') . '>3 : Table des actes</option>';
@@ -1498,7 +1409,7 @@ function lb_droits_user($level, $all = 0)  //
     echo '<option ' . (8 == $level ? 'selected' : '') . '>8 : Administration tous actes</option>';
     echo '<option ' . (9 == $level ? 'selected' : '') . '>9 : Gestion des utilisateurs</option>';
     if ($all = 1) {
-        echo '<option ' . (10 == $level ? 'selected' : '') . '>A : Super administrateur</option>';
+        echo '<option ' . (10 == $level ? 'selected' : '') . '>Super administrateur</option>';
     }
     echo "</select>";
 }
@@ -1530,24 +1441,6 @@ function lb_regime_user($regime, $vide = 0)
     echo '<option ' . (1 == $regime ? 'selected' : '') . '>1 : Recharge manuelle</option>';
     echo '<option ' . (2 == $regime ? 'selected' : '') . '>2 : Recharge automatique</option>';
     echo "</select>";
-}
-
-function def_mes_sendmail()
-{
-    $lb        = "\r\n";
-    $message  = "Bonjour," . $lb;
-    $message .= "" . $lb;
-    $message .= "Un compte vient d'être créé pour vous permettre de vous connecter au site :" . $lb;
-    $message .= "" . $lb;
-    $message .= "#URLSITE#" . $lb;
-    $message .= "" . $lb;
-    $message .= "Votre login : #LOGIN#" . $lb;
-    $message .= "Votre mot de passe : #PASSW#" . $lb;
-    $message .= "" . $lb;
-    $message .= "Cordialement," . $lb;
-    $message .= "" . $lb;
-    $message .= "Votre webmestre." . $lb;
-    return $message;
 }
 
 function stats_1_comm($xtyp, $lacom)
@@ -1600,7 +1493,7 @@ function stats_1_comm($xtyp, $lacom)
             . $ligne['ctot'] . ", "
             . $ligne['cnnul'] . ", "
             . $ligne['cfil'] . ", "
-            . "'" . now() . "'); ";
+            . "'" . date("Y-m-d H:i:s", time()) . "'); ";
         //echo "<p>".$reqins;
         if ($ligne['dmax'] == 0) {
             msg('Les dates de ' . $ligne['COMMUNE'] . ' sont mal encodées');
@@ -1665,7 +1558,7 @@ function maj_stats($xtyp, $T0, $path, $mode, $com = "", $dep = "")
             $resbase = EA_sql_query($reqbase);
             $reqbase = "SELECT DISTINCT COMMUNE,DEPART FROM " . $table . " ORDER BY COMMUNE";
             $resbase = EA_sql_query($reqbase);
-            optimize($reqbase);
+
             $listcomm = "";
             $timeisup = false;
             while ($comm = EA_sql_fetch_array($resbase) and !$timeisup) {
@@ -1694,8 +1587,10 @@ function maj_stats($xtyp, $T0, $path, $mode, $com = "", $dep = "")
     }
 }
 
+/**
+ * Interroge google pour pour connaitre les coordonnées d'une commune
+ */
 function geocode_google($com, $dep)
-// Interroge google pour pour connaitre les coordonnées d'une commune
 {
     include_once(__DIR__ . '/GoogleMap/OrienteMap.inc.php');
     include_once(__DIR__ . '/GoogleMap/Jsmin.php');
@@ -1733,7 +1628,7 @@ function geoloc_1_com($com, $dep)
     if ($rech >= 1) { // il faut geocoder
         //echo "<p>Recherche de ".$com."/".$dep;
         $coord = geocode_google($com, $dep);
-        if ($coord['lon'] == 0 and $coord['lat'] == 0) {
+        if ($coord['lon'] == 0 && $coord['lat'] == 0) {
             $statut = 'N';
         } // Non trouvé
         else {
@@ -1761,7 +1656,7 @@ function test_geocodage($show = false)
     $coord = geocode_google("Paris", "France");
     $xx = $coord['lon'] + $coord['lat'];
     $gok = true;
-    if (($xx > 51) and ($xx < 52)) {
+    if (($xx > 51) && ($xx < 52)) {
         $msg = "<p>Le géocodage fonctionne normalement</p>";
     } else {
         $gok = false;
@@ -1771,18 +1666,6 @@ function test_geocodage($show = false)
         echo $msg;
     }
     return $gok;
-}
-
-function geoUrl($gid)
-{
-    
-    global $root, $config, $userAuthorizer;
-    $geourl = '';
-    if ($gid > 0 && $config->get('GEO_LOCALITE') > 0 && $userAuthorizer->isGranted(1)) {
-        $geourl = ' <a href="' . $root . '/localite?id=' . $gid . '"><img src="' . $root . '/themes/img/boussole.png" alt="Localité détails" title="Localité détails"></a>';
-    }
-
-    return $geourl;
 }
 
 function geoNote($Commune, $Depart, $atyp)
@@ -1800,6 +1683,7 @@ function geoNote($Commune, $Depart, $atyp)
         } // indique de ne pas afficher la carte
         $note = $geo['NOTE_' . $atyp];
     }
+
     return $note;
 }
 
@@ -1834,7 +1718,6 @@ function get_last_backups(): array
 
     return $list_backups;
 }
-
 
 // enregistre la liste des dates des derniers backups
 function set_last_backups($list_backups)
@@ -1903,7 +1786,6 @@ function set_cond_select_actes($params)
 
     return array($table, $ntype, $soustype, $condcom, $condad, $condaf, $condtdiv, $conddep);
 }
-
 
 /**
  * Retourne la chaine la plus en avant par ordre alphabétique

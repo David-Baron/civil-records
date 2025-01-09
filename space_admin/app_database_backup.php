@@ -34,7 +34,7 @@ open_page("Backup de votre base de données", $root); ?>
             echo "<p>Commencement de la sauvegarde...\n<br>";
             my_flush(); // On affiche un minimum
 
-            $file = $dbname . "_" . today() . ".sql";
+            $file = $dbname . "_" . date("Y-m-d", time()) . ".sql";
             $command = "mysqldump";
             $options = "--opt --host=" . $dbaddr . " --user=" . $dbuser . " --password=" . $dbpass . " " . $dbname . " > ..\\_backup\\" . $file;
             $opt323 = "--compatible=mysql323 ";

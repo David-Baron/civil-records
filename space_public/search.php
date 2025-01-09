@@ -234,6 +234,14 @@ $MT0 = microtime_float();
 $txtcomp = '';
 $pagination = '';
 
+$search_modes = [
+    1 => ['code' => 'E', 'libele' => 'Exacte'],
+    2 => ['code' => 'D', 'libele' => 'au Début'],
+    3 => ['code' => 'F', 'libele' => 'à la Fin'],
+    4 => ['code' => 'C', 'libele' => 'est Compris dans'],
+    5 => ['code' => 'S', 'libele' => 'Sonore']
+];
+
 $xach  = $request->request->get('achercher');
 $xzone = $request->request->get('zone');
 $xpre  = $request->request->get('prenom');
@@ -256,7 +264,7 @@ if ($xtyps == "") { // plusieurs types possibles
 }
 
 if ($request->request->get('direct') == 1) {  // ***** recherche directe ****
-    $xcomp = default_rech_code();  // dépend du parametre RECH_DEF_TYP
+    $xcomp = $search_modes[$config->get('RECH_DEF_TYP')]['code'];
     $xcomm = "***";  // toutes
     $comdep = $xcomm;
     if ($config->get('CHERCH_TS_TYP') == 1) {
@@ -472,9 +480,7 @@ open_page("Recherches dans les tables", $root); ?>
         $listactes = "<li>Actes de " . $listactes . "</li>\n";
         $reqbigs = "set sql_big_selects=1";
         $resbase = EA_sql_query($reqbigs);
-
-        optimize($sql);
-
+        
         $result = EA_sql_query($sql);
         $nbtot = EA_sql_num_rows($result);
 

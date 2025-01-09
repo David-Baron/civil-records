@@ -324,7 +324,7 @@ if ($autokey == "" or $autokey == "NEW") {
     }
 }
 
-$today = today();
+$today = date("Y-m-d", time());
 $gosuivant = 0; // N° du fichier suivant
 $metahead = '';
 $ok = false;

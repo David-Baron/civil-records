@@ -49,4 +49,5 @@ include_once(__DIR__ . '/../config/connect.inc.php'); // Compatibility only
 include_once(__DIR__ . '/../tools/function.php'); // Compatibility only
 include_once(__DIR__ . '/../tools/actutils.php'); // Compatibility only
 
+if (function_exists("date_default_timezone_set")) date_default_timezone_set('Europe/Paris'); // For compatibility only
 $db  = con_db(); // For compatibility only

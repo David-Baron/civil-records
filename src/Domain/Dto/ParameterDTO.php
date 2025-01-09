@@ -1,7 +1,7 @@
 <?php
-namespace CivilRecords\Model;
+namespace CivilRecords\Domain\Dto;
 
-use CivilRecords\Model\ParameterModel;
+use CivilRecords\Domain\ParameterModel;
 
 class ParameterDTO
 {

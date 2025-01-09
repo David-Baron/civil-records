@@ -1,5 +1,5 @@
 <?php
-namespace CivilRecords\Model;
+namespace CivilRecords\Domain;
 
 use CivilRecords\Engine\DatabaseConnection;
 

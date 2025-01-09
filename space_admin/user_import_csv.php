@@ -30,7 +30,7 @@ $cptign = 0;
 $cptadd = 0;
 $cptdeja = 0;
 $avecidnim = false;
-$today = today();
+$today = date("Y-m-d", time());
 $menu_user_active = 'I';
 
 ob_start();
@@ -193,7 +193,7 @@ open_page("Chargement des utilisateurs (CSV)", $root); ?>
                             }
                             $comment = $user[8]; // REM
                             if ($user[9] == "") {  // 11 = date d'expiration
-                                $dtexpiration = dt_expiration_defaut();
+                                $dtexpiration = ((new \DateTime())->add(new \DateInterval('P2Y')))->format('Y-m-d');
                             } else {
                                 $dtexpiration = $user[9];
                             }
@@ -211,7 +211,7 @@ open_page("Chargement des utilisateurs (CSV)", $root); ?>
                                     $dtcreation = "1001-01-01";
                                 }  // restauration
                                 else {
-                                    $dtcreation = today();
+                                    $dtcreation = date("Y-m-d", time());
                                 }
                             } else {
                                 $dtcreation = $user[13];
@@ -222,7 +222,7 @@ open_page("Chargement des utilisateurs (CSV)", $root); ?>
                                 $pt_conso = $user[14];
                             }
                             if (empty($user[15])) {  // 15 = date de dernière recharge
-                                $maj_solde = today();
+                                $maj_solde = date("Y-m-d", time());
                             } else {
                                 $maj_solde = $user[15];
                             }

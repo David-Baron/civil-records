@@ -1,6 +1,6 @@
 <?php
 
-use CivilRecords\Model\DocumentDeathModel;
+use CivilRecords\Domain\DeedDeathModel;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 if ($config->get('PUBLIC_LEVEL') < 4 && !$userAuthorizer->isGranted(4)) {
@@ -16,8 +16,8 @@ $ctrlcod = $request->get('xct');
 $xcomm = $request->get('xcomm');
 $xpatr = $request->get('xpatr');
 
-$documentDeathModel = new DocumentDeathModel();
-$row = $documentDeathModel->findId($xid);
+$deedDeathModel = new DeedDeathModel();
+$row = $deedDeathModel->findId($xid);
 
 if (!$row) {
     // TODO: need to log error here and This will be a new Response 404

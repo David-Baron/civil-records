@@ -4,19 +4,16 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 $session->set('previous_url', $request->server->get('REQUEST_URI')); // Usefull for redirecting user
 
-$xcomm = "";
-$xpatr = "";
+$xcomm = '';
+$xpatr = '';
 $xord  = $request->get('xord', 'D'); // N = Nom, D = dates
 $page = $request->get('page', 1);
+$xannee = $request->get('xannee', null);
 
 $comdep  = html_entity_decode($xcomm, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET);
 $commune = communede($comdep);
 $departement  = departementde($comdep);
 
-$xannee = "";
-if (mb_substr($xpatr, 0, 1) == "!") {
-    $xannee = mb_substr($xpatr, 1);
-}
 
 $gid = 0;
 $note = geoNote($commune, $departement, 'N');
@@ -57,7 +54,10 @@ if (($xpatr == "" or mb_substr($xpatr, 0, 1) == "_")) {
                 echo '<h2>Actes de naissance/baptême</h2>';
                 echo '<p>';
 
-                echo 'Commune/Paroisse : <a href="' . $root . '/actes/naissances?xcomm=' . $xcomm . '"><b>' . $xcomm . '</b></a>' . geoUrl($gid) . '<br />';
+                echo 'Commune/Paroisse : <a href="' . $root . '/actes/naissances?xcomm=' . $xcomm . '"><b>' . $xcomm . '</b></a>';
+                if ($gid > 0 && $config->get('GEO_LOCALITE') > 0 && $userAuthorizer->isGranted(1)) {
+                    echo ' <a href="' . $root . '/admin/geolocalizations/detail?id=' . $gid . '"><img src="' . $root . '/themes/img/boussole.png" alt="Localité détails" title="Localité détails"></a><br>';
+                }
                 if ($note <> '') {
                     echo "</p><p>" . $note . "</p><p>";
                 }

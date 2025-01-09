@@ -27,7 +27,7 @@ $emailfound = false;
 $cptok = 0;
 $cptko = 0;
 $ok = true;
-$today = today();
+$today = date("Y-m-d", time());
 $condrem = "";
 $menu_user_active = 'S';
 

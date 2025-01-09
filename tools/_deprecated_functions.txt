@@ -1546,3 +1546,259 @@ function nogetargs($chaine)
 
     return $chaine;
 }
+
+
+function optimize($sql)  // pour détection des optimisations à faire
+{
+    if (defined("OPTIMIZE") or getparam('OPTIMIZE') == "YES") {
+        if (isin(strtoupper($sql), 'SELECT') >= 0) {
+            $optim = EA_sql_query("EXPLAIN " . $sql);
+            echo '<p>' . preg_replace('/union/', '<br /><b>UNION</b><br />', $sql) . '</p>';
+            if (strtoupper(mb_substr($sql, 0, 1)) == 'S') {
+                $nbres = EA_sql_num_rows($optim);
+                if ($nbres > 0) {
+                    print '<pre> OPTIMISATION : <p> ';
+                    while ($line = EA_sql_fetch_assoc($optim)) {
+                        print_r($line);
+                    }
+                    echo '</pre>';
+                }
+            }
+        } else {
+            print '<p>REQUETE MAJ : ' . $sql . '<p> ';
+        }
+    }
+}
+
+
+/**
+ * Préselectionne le mode de recherche par défaut selon le parametre RECH_DEF_TYP
+ */
+function prechecked(string $typrech): string
+{
+    global $config;
+    $search_modes = [
+        1 => ['code' => 'E', 'libele' => 'Exacte'],
+        2 => ['code' => 'D', 'libele' => 'au Début'],
+        3 => ['code' => 'F', 'libele' => 'à la Fin'],
+        4 => ['code' => 'C', 'libele' => 'est Compris dans'],
+        5 => ['code' => 'S', 'libele' => 'Sonore']
+    ];
+    $default = $search_modes[$config->get('RECH_DEF_TYP')]['code'];
+
+    if ($default === $typrech) {
+        return ' value="' . $typrech . '" checked';
+    }
+
+    return ' value="' . $typrech . '" ';
+}
+
+
+
+/**
+ * Return the code of search mode by default according to RECH_DEF_TYP parameter
+ */
+function default_rech_code(): string
+{
+    global $config;
+    $search_modes = [
+        1 => ['code' => 'E', 'libele' => 'Exacte'],
+        2 => ['code' => 'D', 'libele' => 'au Début'],
+        3 => ['code' => 'F', 'libele' => 'à la Fin'],
+        4 => ['code' => 'C', 'libele' => 'est Compris dans'],
+        5 => ['code' => 'S', 'libele' => 'Sonore']
+    ];
+
+    return $search_modes[$config->get('RECH_DEF_TYP')]['code'];
+}
+
+
+function listbox_types($fieldname, $default, $vide = 0)
+{
+    $act_types = [
+        ['code' => 'N', 'code_3' => 'NAI', 'label' => 'Naissances'],
+        ['code' => 'M', 'code_3' => 'MAR', 'label' => 'Mariages'],
+        ['code' => 'D', 'code_3' => 'DEC', 'label' => 'Décès'],
+        ['code' => 'V', 'code_3' => 'DIV', 'label' => 'Actes divers'],
+    ];
+
+    echo '<select name="' . $fieldname . '" size="1">';
+    foreach ($act_types as $act_type) {
+        echo '<option value="' . $act_type['code'] . '" ' . ($act_type['code'] === $default ? 'selected' : '') . '>' . $act_type['label'] . '</option>';
+    }
+    echo " </select>";
+}
+
+function sexe($code)
+{
+    switch ($code) {
+        case "M":
+            return "Masculin";
+            break;
+        case "F":
+            return "Féminin";
+            break;
+        case "?":
+            return "Non précisé";
+            break;
+    }
+}
+
+function show_depart($depart)
+{
+    if ($depart <> "") {
+        return " [" . $depart . ']';
+    }
+
+    return "";
+}
+
+function dt_expiration_defaut()
+{
+    global $config;
+    if ($config->get('LIMITE_EXPIRATION') == "") {
+        $dtexpir = $config->get('TOUJOURS');
+    } else {
+        $dtexpir = "";
+        if (isin($config->get('LIMITE_EXPIRATION'), "/") > 0) {
+            $MauvaiseAnnee = 1;
+            ajuste_date($config->get('LIMITE_EXPIRATION'), $dtexpir, $MauvaiseAnnee);  // creée ladate en sql
+        } else {
+            if ($config->get('LIMITE_EXPIRATION') > 0) {
+                $dtexpir = date("Y-m-d", time() + 60 * 1440 * $config->get('LIMITE_EXPIRATION'));
+            } else {
+                $dtexpir = $config->get('TOUJOURS');
+            }
+        }
+    }
+    return $dtexpir;
+}
+
+function def_mes_sendmail()
+{
+    $lb        = "\r\n";
+    $message  = "Bonjour," . $lb;
+    $message .= "" . $lb;
+    $message .= "Un compte vient d'être créé pour vous permettre de vous connecter au site :" . $lb;
+    $message .= "" . $lb;
+    $message .= "#URLSITE#" . $lb;
+    $message .= "" . $lb;
+    $message .= "Votre login : #LOGIN#" . $lb;
+    $message .= "Votre mot de passe : #PASSW#" . $lb;
+    $message .= "" . $lb;
+    $message .= "Cordialement," . $lb;
+    $message .= "" . $lb;
+    $message .= "Votre webmestre." . $lb;
+    return $message;
+}
+
+function geoUrl($gid)
+{
+    global $root, $config, $userAuthorizer;
+    $geourl = '';
+    if ($gid > 0 && $config->get('GEO_LOCALITE') > 0 && $userAuthorizer->isGranted(1)) {
+        $geourl = ' <a href="' . $root . '/admin/geolocalizations/detail?id=' . $gid . '"><img src="' . $root . '/themes/img/boussole.png" alt="Localité détails" title="Localité détails"></a>';
+    }
+
+    return $geourl;
+}
+
+function close_db($dblink) // ferme la connexion à la DB
+{
+    EA_sql_close($dblink);
+}
+
+function today()
+{
+    return date("Y-m-d", time());
+}
+
+function now()
+{
+    return date("Y-m-d H:i:s", time());
+}
+
+function microdelay($delay) //Just for the fun ! ;-)
+{
+    @fsockopen("tcp://localhost", 31238, $errno, $errstr, $delay);
+}
+
+function mail_encode($texte)
+{
+    // code les textes pour l'adresse mail ou le sujet de façon à passer même en 7bits
+    return "=?" . MAIL_CHARSET . "?B?" . base64_encode($texte) . "?=";
+}
+
+function valid_mail_adrs($email)
+{
+    if (preg_match('`^\w([-_.]?\w)*@\w([-_.]?\w)*\.([a-z]{2,4})$`', $email)) {
+        return true;
+    } 
+    
+    return false;
+}
+
+// Détection du codage UTF-8 d'une chaîne.
+function is_utf8($str)
+{
+    $c = 0;
+    $b = 0;
+    $bits = 0;
+    $len = strlen($str);
+    for ($i = 0; $i < $len; $i++) {
+        $c = ord($str[$i]);
+        if ($c > 128) {
+            if (($c >= 254)) {
+                return false;
+            } elseif ($c >= 252) {
+                $bits = 6;
+            } elseif ($c >= 248) {
+                $bits = 5;
+            } elseif ($c >= 240) {
+                $bits = 4;
+            } elseif ($c >= 224) {
+                $bits = 3;
+            } elseif ($c >= 192) {
+                $bits = 2;
+            } else {
+                return false;
+            }
+            if (($i + $bits) > $len) {
+                return false;
+            }
+            while ($bits > 1) {
+                $i++;
+                $b = ord($str[$i]);
+                if ($b < 128 || $b > 191) {
+                    return false;
+                }
+                $bits--;
+            }
+        }
+    }
+    return true;
+}
+
+function val_status_mysql($label)
+{
+    if ($result = EA_sql_query("SHOW STATUS LIKE '" . $label . "'")) {
+        $row = EA_sql_fetch_assoc($result);
+        return $row['Value'];
+    }
+
+    return "??";
+}
+
+function sans_quote($texte)  // retourne vrai si aucune quote dans le texte
+{
+    if (strpos($texte, "'") === false) {
+        return true;
+    }
+
+    return false;
+}
+
+function EA_sql_close($LINK)
+{
+    return BD_EA_link_remove($LINK, false);
+}

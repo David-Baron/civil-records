@@ -56,14 +56,9 @@ if ($row[0] == 1) {
 }
 
 echo '<h2>Informations sur le serveur web (site)</h2>';
-
 echo "<p>Version du serveur PHP : <b>" . phpversion() . "</b></p>";
 echo "<p>Type du serveur : <b>" . php_uname() . "</b></p>";
-
 echo '<h2>Informations sur le serveur MySQL (base de données)</h2>';
-
-$db = con_db();  // avec affichage de l état de la connexion
-
 echo "<p>Version du serveur MySQL : <b>" . EA_sql_get_server_info() . "</b></p>";
 
 // paramètres du serveur MySQL

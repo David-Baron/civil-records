@@ -31,7 +31,7 @@ if ($xid === null) {
 $ok = false;
 $missingargs = false;
 $oktype = false;
-$today = today();
+$today = date("Y-m-d", time());
 
 ob_start();
 open_page($title, $root); ?>

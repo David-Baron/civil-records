@@ -39,28 +39,6 @@ function ea_utf8_decode($text)
     return $text;
 }
 
-function optimize($sql)  // pour détection des optimisations à faire
-{
-    if (defined("OPTIMIZE") or getparam('OPTIMIZE') == "YES") {
-        if (isin(strtoupper($sql), 'SELECT') >= 0) {
-            $optim = EA_sql_query("EXPLAIN " . $sql);
-            echo '<p>' . preg_replace('/union/', '<br /><b>UNION</b><br />', $sql) . '</p>';
-            if (strtoupper(mb_substr($sql, 0, 1)) == 'S') {
-                $nbres = EA_sql_num_rows($optim);
-                if ($nbres > 0) {
-                    print '<pre> OPTIMISATION : <p> ';
-                    while ($line = EA_sql_fetch_assoc($optim)) {
-                        print_r($line);
-                    }
-                    echo '</pre>';
-                }
-            }
-        } else {
-            print '<p>REQUETE MAJ : ' . $sql . '<p> ';
-        }
-    }
-}
-
 function return_bytes($val)
 {  // conversion des valeurs de paramètres PHP de type 2M ou 256K
     $val = trim($val);
@@ -95,6 +73,9 @@ function isin($grand, $petit, $debut = 0) // retourne la position de $petit dans
     return $pos;
 }
 
+/**
+ * @deprecated Use Symfony\Component\HttpFoundation\Request insteed.
+ */
 function getparam($name, $default = "")
 {
     if (isset($_REQUEST[$name])) {
@@ -160,15 +141,6 @@ function ads_explode($chaine, $separ, $nbre) // explose une chaines dans un tabl
 function zeros($nbre, $chiffres) // pour précéder un entier de 0  (ex 006)
 {
     return mb_substr('0000000000' . $nbre, -$chiffres, $chiffres);
-}
-
-function sans_quote($texte)  // retourne vrai si aucune quote dans le texte
-{
-    if (strpos($texte, "'") === false) {
-        return true;
-    } else {
-        return false;
-    }
 }
 
 function multisin($grand, $listpetits)
@@ -363,18 +335,8 @@ function val_var_mysql($label)
     return "??";
 }
 
-function val_status_mysql($label)
-{
-    if ($result = EA_sql_query("SHOW STATUS LIKE '" . $label . "'")) {
-        $row = EA_sql_fetch_assoc($result);
-        return $row['Value'];
-    }
-
-    return "??";
-}
-
-function explode_csv($line)
 // décompose selon ; ou tab en respectant les guillements éventuels
+function explode_csv($line)
 {
     $l = strlen($line);
     $j = 0;
@@ -406,6 +368,7 @@ function is__writable($path, $show = true)  // Teste si acces en ecriture est po
     if ($show) {
         echo '<p>Test de création du fichier ' . $path . '';
     }
+
     if (file_exists($path)) {
         if (!($f = @fopen($path, 'r+'))) {
             return false;
@@ -506,11 +469,9 @@ function con_db($show = false) // fonction de connexion des DB
     return $a_db;
 }
 
-function close_db($dblink) // ferme la connexion à la DB
-{
-    EA_sql_close($dblink);
-}
-
+/**
+ * @deprecated Use array form_errors insteed.
+ */
 function msg($desc, $type = "erreur")
 {
     global $root;
@@ -551,7 +512,7 @@ function writelog($texte, $commune = "-", $nbactes = 0)
 {
     global $config, $session;
 
-    $time = now();
+    $time = date("Y-m-d H:i:s", time());
     if (!$session->has('user')) {
         $user = 'Unidentified user';
         $texte = $_SERVER['REMOTE_ADDR'] . ":" . $texte;
@@ -571,16 +532,6 @@ function microtime_float()
 {
     list($usec, $sec) = explode(" ", microtime());
     return ((float) $usec + (float) $sec);
-}
-
-function now()
-{
-    return date("Y-m-d H:i:s", time());
-}
-
-function today()
-{
-    return date("Y-m-d", time());
 }
 
 function showdate($sqldate, $mode = "T")
@@ -625,18 +576,13 @@ function date_sql($ladate)
     }
 }
 
-function microdelay($delay) //Just for the fun ! ;-)
-{
-    @fsockopen("tcp://localhost", 31238, $errno, $errstr, $delay);
-}
-
 function MakeRandomPassword($length = 6)
 {
     $_vowels = array('a', 'e', 'i', 'o', 'u', '2', '3', '4', '5', '6', '7', '8', '9');
     $_consonants = array('b', 'c', 'd', 'f', 'g', 'h', 'k', 'm', 'n', 'p', 'r', 's', 't', 'v', 'w', 'x', 'z');
     $_syllables = array();
     $newpass = '';
-    
+
     foreach ($_vowels as $v) {
         foreach ($_consonants as $c) {
             array_push($_syllables, "$c$v");
@@ -649,27 +595,6 @@ function MakeRandomPassword($length = 6)
     }
 
     return $newpass;
-}
-
-function valid_mail_adrs($email)
-{
-    if (preg_match('`^\w([-_.]?\w)*@\w([-_.]?\w)*\.([a-z]{2,4})$`', $email)) {
-        return true;
-    } 
-    
-    return false;
-}
-
-function mail_encode($texte)
-{
-    // code les textes pour l'adresse mail ou le sujet de façon à passer même en 7bits
-    return "=?" . MAIL_CHARSET . "?B?" . base64_encode($texte) . "?=";
-}
-
-function sendmail($from, $to, $sujet, $message)
-{
-    throw new \Exception("This function not exist anymore, look at MailerFactory", 1);
-    
 }
 
 function crypter($mes, $password)
@@ -736,46 +661,4 @@ function my_ob_start_affichage_continu()
         }
     }
     ob_implicit_flush(1);
-}
-
-
-// Détection du codage UTF-8 d'une chaîne.
-function is_utf8($str)
-{
-    $c = 0;
-    $b = 0;
-    $bits = 0;
-    $len = strlen($str);
-    for ($i = 0; $i < $len; $i++) {
-        $c = ord($str[$i]);
-        if ($c > 128) {
-            if (($c >= 254)) {
-                return false;
-            } elseif ($c >= 252) {
-                $bits = 6;
-            } elseif ($c >= 248) {
-                $bits = 5;
-            } elseif ($c >= 240) {
-                $bits = 4;
-            } elseif ($c >= 224) {
-                $bits = 3;
-            } elseif ($c >= 192) {
-                $bits = 2;
-            } else {
-                return false;
-            }
-            if (($i + $bits) > $len) {
-                return false;
-            }
-            while ($bits > 1) {
-                $i++;
-                $b = ord($str[$i]);
-                if ($b < 128 || $b > 191) {
-                    return false;
-                }
-                $bits--;
-            }
-        }
-    }
-    return true;
 }

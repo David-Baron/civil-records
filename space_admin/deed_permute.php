@@ -13,7 +13,7 @@ $oktype = false;
 $xid  = getparam('xid');
 $xtyp = getparam('xtyp');
 $xconfirm = getparam('xconfirm');
-$today = today();
+$today = date("Y-m-d", time());
 
 ob_start();
 open_page("Permutation d'un acte", $root); ?>

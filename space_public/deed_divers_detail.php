@@ -1,6 +1,6 @@
 <?php
 
-use CivilRecords\Model\DocumentDiversModel;
+use CivilRecords\Domain\DeedDiversModel;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 if ($config->get('PUBLIC_LEVEL') < 4 && !$userAuthorizer->isGranted(4)) {
@@ -16,8 +16,8 @@ $ctrlcod = $request->get('xct');
 $xcomm = $request->get('xcomm');
 $xpatr = $request->get('xpatr');
 
-$documentDiversModel = new DocumentDiversModel();
-$row = $documentDiversModel->findId($xid);
+$deedDiversModel = new DeedDiversModel();
+$row = $deedDiversModel->findId($xid);
 
 if (!$row) {
     // TODO: need to log error here and This will be a new Response 404

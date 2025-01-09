@@ -2,7 +2,7 @@
 
 namespace CivilRecords\Engine;
 
-use CivilRecords\Model\ParameterDTO;
+use CivilRecords\Domain\Dto\ParameterDTO;
 
 class AppConfiguration
 {

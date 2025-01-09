@@ -15,9 +15,9 @@ if ($request->getMethod() === 'POST') {
     if (strlen($request->request->get('new_password')) < 6) {
         $form_errors['password'] = 'Le mot de passe doit contenir au moins 6 caractères';
     }
-    if (!(sans_quote($request->request->get('new_password')))) {
+    /* if (!(sans_quote($request->request->get('new_password')))) {
         $form_errors['new_password'] = 'Le mot de passe ne doit pas contenir d\'apostrophe';
-    }
+    } */
     if ($request->request->get('new_password') <> $request->request->get('new_password_confirm')) {
         $form_errors['new_password_confirm'] = 'Les mots de passe ne sont pas identiques';
     }

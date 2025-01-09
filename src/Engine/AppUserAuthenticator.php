@@ -2,7 +2,7 @@
 
 namespace CivilRecords\Engine;
 
-use CivilRecords\Model\UserModel;
+use CivilRecords\Domain\UserModel;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 class AppUserAuthenticator

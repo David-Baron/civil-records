@@ -66,7 +66,10 @@ if ($xpatr == "" || mb_substr($xpatr, 0, 1) == "_") {
                 navigation($root, 3, 'V', $xcomm, $xpatr);
                 echo '<h2>Divers' . $stitre . '</h2>';
                 echo '<p>';
-                echo 'Commune/Paroisse : <a href="' . $root . '/actes/divers?xcomm=' . $xcomm . '&sousurl' . $sousurl . '"><b>' . $xcomm . '</b></a>' . geoUrl($gid) . '<br>';
+                echo 'Commune/Paroisse : <a href="' . $root . '/actes/divers?xcomm=' . $xcomm . '&sousurl' . $sousurl . '"><b>' . $xcomm . '</b></a>';
+                if ($gid > 0 && $config->get('GEO_LOCALITE') > 0 && $userAuthorizer->isGranted(1)) {
+                    echo ' <a href="' . $root . '/admin/geolocalizations/detail?id=' . $gid . '"><img src="' . $root . '/themes/img/boussole.png" alt="Localité détails" title="Localité détails"></a><br>';
+                }
                 if ($note <> '') {
                     echo "</p><p>" . $note . "</p><p>";
                 }

@@ -9,43 +9,14 @@ if (!$userAuthorizer->isGranted(9)) {
 }
 
 $MT0 = microtime_float();
-$xcomm = "";
-$xpatr = "";
-$page = 1;
-$xord  = getparam('xord', 'D');// N = Nom
-$page  = getparam('pg');
-$xdel  = getparam('xdel');
-$xfilter = getparam('xfilter');
+$xord  = $request->get('xord', 'D');// N = Nom
+$page  = $request->get('page', 1);
+$xdel  = $request->get('xdel');
+$xfilter = $request->get('xfilter');
 
 $menu_software_active = 'J';
 $limit = '';
 $pagination = '';
-
-ob_start();
-open_page($config->get('SITENAME') . " : Activité du site", $root); ?>
-<div class="main">
-    <?php zone_menu(10, $session->get('user')['level']); ?>
-    <div class="main-col-center text-center">
-        <?php 
-navadmin($root, "Activité du site");
-
-require(__DIR__ . '/../templates/admin/_menu-software.php');
-
-// Suppression des informations anciennes
-if ($xdel > 31) {
-    $sql = "DELETE FROM " . $config->get('EA_DB') . "_log WHERE datediff(curdate(),DATE)>" . $xdel;
-    $result = EA_sql_query($sql);
-    $nb = EA_sql_affected_rows();
-    echo $nb . " ligne(s) suprimée(s)."; // .$datedel;
-}
-echo '<p><a href="?xdel=365">' . "Supprimer les événements âgés de plus d'un an</a></p>";
-// Lister les actions
-echo '<h2>Activité sur les données du site ' . $config->get('SITENAME') . '</h2>';
-
-echo '<center><form method="post">';
-echo '<input type="text" name="xfilter" value="">';
-echo '<button type="submit" class="btn">Filtrer</button></td>';
-echo '</form></center>';
 
 $baselink = $root . '/admin/application/logs?xfilter=' . $xfilter;
 if ($xord == "N") {
@@ -68,6 +39,36 @@ if ($xord == "N") {
     $hcomm = '<b>Commune/Paroisse</b>';
 }
 
+// Suppression des informations anciennes
+if ($xdel > 31) {
+    $sql = "DELETE FROM " . $config->get('EA_DB') . "_log WHERE datediff(curdate(),DATE)>" . $xdel;
+    $result = EA_sql_query($sql);
+    $nb = EA_sql_affected_rows();
+    $session->getFlashBag()->add('success', $nb . ' ligne(s) suprimée(s).');
+    $response = new RedirectResponse("$root/admin/application/logs");
+    $response->send();
+    exit();
+}
+
+ob_start();
+open_page($config->get('SITENAME') . " : Activité du site", $root); ?>
+<div class="main">
+    <?php zone_menu(10, $session->get('user')['level']); ?>
+    <div class="main-col-center text-center">
+        <?php 
+navadmin($root, "Activité du site");
+
+require(__DIR__ . '/../templates/admin/_menu-software.php');
+
+echo '<p><a href="' . $root . '/admin/application/logs?xdel=365">Supprimer les événements âgés de plus d\'un an</a></p>';
+echo '<h2>Activité sur les données du site ' . $config->get('SITENAME') . '</h2>';
+
+echo '<form method="post">';
+echo '<input type="text" name="xfilter" value="">';
+echo '<button type="submit" class="btn">Filtrer</button></td>';
+echo '</form>';
+
+
 $sql = "CREATE TEMPORARY TABLE temp_user3 (ID int(11), nom varchar(30), prenom varchar(30), PRIMARY KEY (ID))";
 $result = EA_sql_query($sql);
 
@@ -85,8 +86,6 @@ if ($xfilter <> "") {
     $sql .= " WHERE COMMUNE LIKE '%" . $xfilter . "%' or ACTION LIKE '%" . $xfilter . "%' or NOM LIKE '%" . $xfilter . "%'";
 }
 $sql .= " ORDER BY " . $order;
-
-optimize($sql);
 
 $result = EA_sql_query($sql);
 $nbtot = EA_sql_num_rows($result);

@@ -1,9 +1,9 @@
 <?php
+
+use CivilRecords\Engine\MailerFactory;
 /*
 * Trace IP v2 
 */
-
-require(__DIR__ . '/../../next/Engine/MailerFactory.php');
 
 throw new \Exception("This function not exist anymore, deprecated functionality traceip...", 1);
 exit;

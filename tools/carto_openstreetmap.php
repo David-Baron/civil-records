@@ -2,8 +2,8 @@
 
 // Data builder for openstretmap map
 
-use CivilRecords\Model\GeoLocalizationModel;
-use CivilRecords\Model\StatisticModel;
+use CivilRecords\Domain\StatisticModel;
+use CivilRecords\Domain\GeoLocalizationModel;
 
 /**
  * Return the map pin for one locality

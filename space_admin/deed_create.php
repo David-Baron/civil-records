@@ -12,7 +12,7 @@ $title = "Ajout d'un acte";
 $ok = false;
 $missingargs = false;
 $oktype = false;
-$today = today();
+$today = date("Y-m-d", time());
 
 $menu_data_active = 'A';
 

@@ -210,7 +210,4 @@ function EA_sql_select_db($ladbname, $dblink)
     $dblink = EA_sql_which_link($dblink);
     return mysqli_select_db($dblink, $ladbname);
 }
-function EA_sql_close($LINK)
-{
-    return BD_EA_link_remove($LINK, false);
-}
+

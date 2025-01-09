@@ -185,7 +185,7 @@ echo '<p>Patronymes  : ' . $cptrec . '.</p>';
     $Vip   = $array_server_values['REMOTE_ADDR'];
     $hf = @fopen("_logs/eclair-" . date('Y-m') . ".log", "a");
     $dur = round(microtime_float() - $MT0, 3) * 1000;
-    @fwrite($hf, now() . ";" . $Vip . ";" . $xtyp . ";" . $xcom . ";" . $xdep . ";" . $xini . ";" . $cptrec . ";" . $dur . ";" . $Vua . chr(10));
+    @fwrite($hf, date("Y-m-d H:i:s", time()) . ";" . $Vip . ";" . $xtyp . ";" . $xcom . ";" . $xdep . ";" . $xini . ";" . $cptrec . ";" . $dur . ";" . $Vua . chr(10));
     @fclose($hf);
 }
 

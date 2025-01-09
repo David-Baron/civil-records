@@ -209,7 +209,7 @@ if (! $missingargs) {
             } else {
                 $actie = "Backup";
                 $list_backups = get_last_backups();
-                $list_backups["U"] = today();
+                $list_backups["U"] = date("Y-m-d", time());
                 set_last_backups($list_backups);
             }
             writelog($actie . ' de fiches utilisateur', "USERS", $nb);

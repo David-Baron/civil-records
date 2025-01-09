@@ -139,7 +139,7 @@ $cptdeja = 0;
 $cptfiltre = 0;
 $avecidnim = false;
 
-$today = today();
+$today = date("Y-m-d", time());
 $missingargs = true;
 
 my_ob_start_affichage_continu();

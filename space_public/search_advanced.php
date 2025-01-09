@@ -43,11 +43,11 @@ open_page("Recherche avancée", $root, null, null, null, null, 'rss.php'); ?>
                         <input type="radio" name="zone" value="7"> Parrain/témoin
                     <p>
                         Comparaison :
-                        <input type="radio" name="comp" <?= prechecked("E"); ?>>Exacte
-                        <input type="radio" name="comp" <?= prechecked("D"); ?>>Au début
-                        <input type="radio" name="comp" <?= prechecked("F"); ?>>A la fin
-                        <input type="radio" name="comp" <?= prechecked("C"); ?>>Est dans
-                        <input type="radio" name="comp" <?= prechecked("S"); ?>>Sonore
+                        <input type="radio" name="comp" value="E" <?= ($config->get('RECH_DEF_TYP') === 1 ? ' checked' : ''); ?>>Exacte
+                        <input type="radio" name="comp" value="D" <?= ($config->get('RECH_DEF_TYP') === 2 ? ' checked' : ''); ?>>Au début
+                        <input type="radio" name="comp" value="F" <?= ($config->get('RECH_DEF_TYP') === 3 ? ' checked' : ''); ?>>A la fin
+                        <input type="radio" name="comp" value="C" <?= ($config->get('RECH_DEF_TYP') === 4 ? ' checked' : ''); ?>>Est dans
+                        <input type="radio" name="comp" value="S" <?= ($config->get('RECH_DEF_TYP') === 5 ? ' checked' : ''); ?>>Sonore
                     </p>
                 </div>
                 <div class="rech_zone">
@@ -64,11 +64,11 @@ open_page("Recherche avancée", $root, null, null, null, null, 'rss.php'); ?>
                     </p>
                     <p>
                         Comparaison :
-                        <input type="radio" name="comp2" <?= prechecked("E"); ?>>Exacte
-                        <input type="radio" name="comp2" <?= prechecked("D"); ?>>Au début
-                        <input type="radio" name="comp2" <?= prechecked("F"); ?>>A la fin
-                        <input type="radio" name="comp2" <?= prechecked("C"); ?>>Est dans
-                        <input type="radio" name="comp2" <?= prechecked("S"); ?>>Sonore
+                        <input type="radio" name="comp2" value="E" <?= ($config->get('RECH_DEF_TYP') === 1 ? ' checked' : ''); ?>>Exacte
+                        <input type="radio" name="comp2" value="D" <?= ($config->get('RECH_DEF_TYP') === 2 ? ' checked' : ''); ?>>Au début
+                        <input type="radio" name="comp2" value="F" <?= ($config->get('RECH_DEF_TYP') === 3 ? ' checked' : ''); ?>>A la fin
+                        <input type="radio" name="comp2" value="C" <?= ($config->get('RECH_DEF_TYP') === 4 ? ' checked' : ''); ?>>Est dans
+                        <input type="radio" name="comp2" value="S" <?= ($config->get('RECH_DEF_TYP') === 5 ? ' checked' : ''); ?>>Sonore
                     </p>
                 </div>
                 <div class="rech_zone">
@@ -84,11 +84,11 @@ open_page("Recherche avancée", $root, null, null, null, null, 'rss.php'); ?>
                     </p>
                     <p>
                         Comparaison :
-                        <input type="radio" name="comp3" <?= prechecked("E"); ?>>Exacte
-                        <input type="radio" name="comp3" <?= prechecked("D"); ?>>Au début
-                        <input type="radio" name="comp3" <?= prechecked("F"); ?>>A la fin
-                        <input type="radio" name="comp3" <?= prechecked("C"); ?>>Est dans
-                        <input type="radio" name="comp3" <?= prechecked("S"); ?>>Sonore
+                        <input type="radio" name="comp3" value="E" <?= ($config->get('RECH_DEF_TYP') === 1 ? ' checked' : ''); ?>>Exacte
+                        <input type="radio" name="comp3" value="D" <?= ($config->get('RECH_DEF_TYP') === 2 ? ' checked' : ''); ?>>Au début
+                        <input type="radio" name="comp3" value="F" <?= ($config->get('RECH_DEF_TYP') === 3 ? ' checked' : ''); ?>>A la fin
+                        <input type="radio" name="comp3" value="C" <?= ($config->get('RECH_DEF_TYP') === 4 ? ' checked' : ''); ?>>Est dans
+                        <input type="radio" name="comp3" value="S" <?= ($config->get('RECH_DEF_TYP') === 5 ? ' checked' : ''); ?>>Sonore
                     </p>
                 </div>
                 <div class="rech_zone">

@@ -50,7 +50,7 @@ $user = $userModel->findId($id);
 
 // Données postées -> ajouter ou modifier
 if ($request->getMethod() === 'POST') {
-    dd($request->request->all());
+    // dd($request->request->all());
     if ($result = EA_sql_query($reqmaj, $u_db)) {
         if ($id <= 0) {
             $log = "Ajout utilisateur";

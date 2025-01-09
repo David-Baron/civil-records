@@ -1,9 +1,9 @@
 <?php
-namespace CivilRecords\Model;
+namespace CivilRecords\Domain;
 
 use CivilRecords\Engine\DatabaseConnection;
 
-class DocumentBirthModel extends DatabaseConnection
+class DeedBirthModel extends DatabaseConnection
 {
     public function findAll($limit = 50, $offset = 0): array
     {
@@ -22,8 +22,8 @@ class DocumentBirthModel extends DatabaseConnection
             'id' => $id
         ]);
         
-        if ($document = $stmt->fetch()) {
-            return $document;
+        if ($deed = $stmt->fetch()) {
+            return $deed;
         } 
         
         return null;
