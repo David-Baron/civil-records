@@ -1802,3 +1802,65 @@ function EA_sql_close($LINK)
 {
     return BD_EA_link_remove($LINK, false);
 }
+
+function lb_regime_user($regime, $vide = 0)
+{
+    echo '<select name="regime" size="1">';
+    if ($vide == 1) {
+        echo '<option ' . (-1 == $regime ? 'selected' : '') . '> -- Pas de condition -- ';
+    }
+    echo '<option ' . (0 == $regime ? 'selected' : '') . '>0 : Accès libre</option>';
+    echo '<option ' . (1 == $regime ? 'selected' : '') . '>1 : Recharge manuelle</option>';
+    echo '<option ' . (2 == $regime ? 'selected' : '') . '>2 : Recharge automatique</option>';
+    echo "</select>";
+}
+
+function lb_statut_user($statut, $vide = 0)
+{
+    echo '<select name="statut" size="1">';
+    if (($vide % 2) == 1) {
+        echo '<option ' . ('0' == $statut ? 'selected' : '') . '> -- Pas de condition -- </option>';
+    }
+    echo '<option ' . ('W' == $statut ? 'selected' : '') . '>W : Attente d\'activation</option>';
+    echo '<option ' . ('A' == $statut ? 'selected' : '') . '>A : Attente d\'approbation</option>';
+    echo '<option ' . ('N' == $statut ? 'selected' : '') . '>N : Accès autorisé</option>';
+    echo '<option ' . ('B' == $statut ? 'selected' : '') . '>B : Accès bloqué</option>';
+    /* @deprecated
+    if (($vide % 4) == 3) {
+        echo '<option ' . ('X' == $statut ? 'selected' : '') . '>X : Compte expiré de ' . DUREE_EXPIR . ' jrs</option>';
+    } */
+    echo "</select>";
+}
+
+function lb_droits_user($level, $all = 0)  //
+{
+    echo '<select name="lelevel" size="1">';
+    if ($all == 2) {
+        echo '<option ' . (10 == $level ? 'selected' : '') . '>A : -- Envoi à tous -- </option>';
+    }
+    echo '<option ' . (0 == $level ? 'selected' : '') . '>Public</option>';
+    echo '<option ' . (1 == $level ? 'selected' : '') . '>1 : Liste des communes</option>';
+    echo '<option ' . (2 == $level ? 'selected' : '') . '>2 : Liste des patronymes</option>';
+    echo '<option ' . (3 == $level ? 'selected' : '') . '>3 : Table des actes</option>';
+    echo '<option ' . (4 == $level ? 'selected' : '') . '>4 : Détails des actes (avec limites)</option>';
+    echo '<option ' . (5 == $level ? 'selected' : '') . '>5 : Détails sans limitation</option>';
+    echo '<option ' . (6 == $level ? 'selected' : '') . '>6 : Chargement NIMEGUE et CSV</option>';
+    echo '<option ' . (7 == $level ? 'selected' : '') . '>7 : Ajout d\'actes</option>';
+    echo '<option ' . (8 == $level ? 'selected' : '') . '>8 : Administration tous actes</option>';
+    echo '<option ' . (9 == $level ? 'selected' : '') . '>9 : Gestion des utilisateurs</option>';
+    if ($all = 1) {
+        echo '<option ' . (10 == $level ? 'selected' : '') . '>Super administrateur</option>';
+    }
+    echo "</select>";
+}
+
+function show_signal_erreur($typ, $xid)
+{
+    global $root;
+    show_simple_item(0, 1, '<a href="' . $root . '/signal_erreur?xtyp=' . $typ . '&xid=' . $xid . '" target="_blank">Cliquez ici pour la signaler</a>', 'Trouvé une erreur ?');
+}
+
+function antispam($email)
+{
+    return str_replace(array("@"), array("@anti.spam.com@"), $email);
+}

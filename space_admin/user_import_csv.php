@@ -266,7 +266,7 @@ open_page("Chargement des utilisateurs (CSV)", $root); ?>
                                 . sql_quote($comment) . "');";
                             //echo $reqmaj;
                             if ($result = EA_sql_query($reqmaj, $u_db)) {
-                                if ($request->request->get('with_email')) {                                   
+                                if ($request->request->get('with_email')) {
                                     $from = $config->get('SITENAME') . ' <' . $_ENV['EMAIL_SITE'] . ">";
                                     $to = $mail;
                                     $subject = "Votre compte " . $config->get('SITENAME');
@@ -300,90 +300,108 @@ open_page("Chargement des utilisateurs (CSV)", $root); ?>
         if ($missingargs) {
             if ($xaction == '') {  // parametres par défaut
                 $message    = $config->get('MAIL_NEWUSER');
-            }
+            } ?>
 
-            echo '<form method="post" enctype="multipart/form-data">';
-            echo '<h2>Chargement de comptes utilisateurs</h2>';
-            echo '<div class="warning">Veillez à vérifier que le fichier votre fichier CSV 
-                respecte le <a href="aide/gestuser.html">format</a> ad hoc !</div>';
-            echo '<table class="m-auto" summary="Formulaire">';
-            echo "<tr>";
-            echo '<td>Fichier utilisateurs CSV : </td>';
-            echo '<td><input type="file" size="62" name="Users"></td>';
-            echo "</tr>";
-            echo "<tr><td colspan=\"2\">&nbsp;</td></tr>";
+            <form method="post" enctype="multipart/form-data">
+                <h2>Chargement de comptes utilisateurs</h2>
+                <div class="warning">Veillez à vérifier que le fichier votre fichier CSV
+                    respecte le <a href="aide/gestuser.html">format</a> ad hoc !</div>
+                <table class="m-auto" summary="Formulaire">
+                    <tr>
+                        <td>Fichier utilisateurs CSV : </td>
+                        <td><input type="file" size="62" name="Users"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td>Droits d'accès AUTO : </td>
+                        <td>
+                            <select name="lelevel" size="1">
+                                <option <?= (0 == $xdroits ? 'selected' : ''); ?>>Public</option>
+                                <option <?= (1 == $xdroits ? 'selected' : ''); ?>>1 : Liste des communes</option>
+                                <option <?= (2 == $xdroits ? 'selected' : ''); ?>>2 : Liste des patronymes</option>
+                                <option <?= (3 == $xdroits ? 'selected' : ''); ?>>3 : Table des actes</option>
+                                <option <?= (4 == $xdroits ? 'selected' : ''); ?>>4 : Détails des actes (avec limites)</option>
+                                <option <?= (5 == $xdroits ? 'selected' : ''); ?>>5 : Détails sans limitation</option>
+                                <option <?= (6 == $xdroits ? 'selected' : ''); ?>>6 : Chargement NIMEGUE et CSV</option>
+                                <option <?= (7 == $xdroits ? 'selected' : ''); ?>>7 : Ajout d' actes</option>
+                                <option <?= (8 == $xdroits ? ' selected' : ''); ?>>8 : Administration tous actes</option>
+                                <option <?= (9 == $xdroits ? 'selected' : ''); ?>>9 : Gestion des utilisateurs</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan=2>&nbsp;</td>
+                    </tr>
+                    <?php if ($config->get('GEST_POINTS') > 0) { ?>
+                        <tr>
+                            <td>Régime (points) AUTO : </td>
+                            <td>
+                                <select name="regime" size="1">
+                                    <option <?= (0 == $xregime ? 'selected' : ''); ?>>Accès libre</option>
+                                    <option <?= (1 == $xregime ? 'selected' : ''); ?>>Recharge manuelle</option>
+                                    <option <?= (2 == $xregime ? 'selected' : ''); ?>>Recharge automatique</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan=2>&nbsp;</td>
+                        </tr>
+                    <?php } else { ?>
+                        <input type="hidden" name="regime" value="<?= $xregime; ?>">
+                <?php }
 
-            echo "<tr>";
-            echo "<td>Droits d'accès AUTO : </td>";
-            echo '<td>';
-            lb_droits_user($xdroits);
-            echo '</td>';
-            echo "</tr>";
-            echo "<tr><td colspan=2>&nbsp;</td></tr>";
+                    echo "<tr>";
+                    echo '<td>Envoi des codes d\'accès : </td>';
+                    echo '<td>';
+                    echo '<input type="checkbox" name="with_email" ' . ($with_email == 1 ? 'checked' : '') . '> Envoi automatique du mail ci-dessous';
+                    echo '</td>';
+                    echo "</tr>";
 
-            if ($config->get('GEST_POINTS') > 0) {
-                echo "<tr>";
-                echo "<td>Régime (points) AUTO : </td>";
-                echo '<td>';
-                lb_regime_user($xregime);
-                echo '</td>';
-                echo "</tr>";
+                    echo '<tr>';
+                    echo "<td>Texte du mail : </td>";
+                    echo '<td>';
+                    echo '<textarea name="Message" cols=50 rows=6>' . $message . '</textarea>';
+                    echo '</td>';
+                    echo "</tr>";
 
-                echo "<tr><td colspan=2>&nbsp;</td></tr>";
-            } else {
-                echo '<input type="hidden" name="regime" value="' . $xregime . '">';
-            }
+                    echo "<tr>";
+                    echo '<td>Contrôle des résultats : </td>';
+                    echo '<td>';
+                    echo '<input type="checkbox" name="LogOk"  value="1"' . ($logOk == 1 ? ' checked' : '') . '> Comptes créés';
+                    echo '<input type="checkbox" name="LogKo"  value="1"' . ($logKo == 1 ? ' checked' : '') . '> Comptes erronés';
+                    echo '<input type="checkbox" name="LogRed" value="1"' . ($logRed == 1 ? ' checked' : '') . '> Comptes redondants';
+                    echo '</td>';
+                    echo "</tr>";
+                    echo "<tr><td colspan=\"2\">&nbsp;</td></tr>";
+                    echo "<tr><td></td>";
+                    echo ' <input type="hidden" name="action" value="submitted">';
 
-            echo "<tr>";
-            echo '<td>Envoi des codes d\'accès : </td>';
-            echo '<td>';
-            echo '<input type="checkbox" name="with_email" ' . ($with_email == 1 ? 'checked' : '') . '> Envoi automatique du mail ci-dessous';
-            echo '</td>';
-            echo "</tr>";
-
-            echo '<tr>';
-            echo "<td>Texte du mail : </td>";
-            echo '<td>';
-            echo '<textarea name="Message" cols=50 rows=6>' . $message . '</textarea>';
-            echo '</td>';
-            echo "</tr>";
-
-            echo "<tr>";
-            echo '<td>Contrôle des résultats : </td>';
-            echo '<td>';
-            echo '<input type="checkbox" name="LogOk"  value="1"' . ($logOk == 1 ? ' checked' : '') . '> Comptes créés';
-            echo '<input type="checkbox" name="LogKo"  value="1"' . ($logKo == 1 ? ' checked' : '') . '> Comptes erronés';
-            echo '<input type="checkbox" name="LogRed" value="1"' . ($logRed == 1 ? ' checked' : '') . '> Comptes redondants';
-            echo '</td>';
-            echo "</tr>";
-            echo "<tr><td colspan=\"2\">&nbsp;</td></tr>";
-            echo "<tr><td></td>";
-            echo ' <input type="hidden" name="action" value="submitted">';
-
-            echo '<td><button type="reset" class="btn">Effacer</button>';
-            echo '<button type="submit" class="btn">Charger</button>';
-            echo '<a href="' . $root . '/admin/aide/gestuser.html" class="btn" target="_blank">Aide</a>&nbsp;';
-            echo "</td></tr>";
-            echo "</table>";
-            echo "</form>";
-        } else {
-            echo '<p>';
-            if ($cptadd > 0) {
-                echo '<br>User ajoutés  : ' . $cptadd;
-                writelog('Ajout USERS CSV ', "", "", $cptadd);
-            }
-            if ($cptign > 0) {
-                echo '<br />User erronés  : ' . $cptign;
-            }
-            if ($cptdeja > 0) {
-                echo '<br />User redondants  : ' . $cptdeja;
-            }
-            echo '<br />Durée du traitement  : ' . (time() - $T0) . ' sec.';
-            echo '</p>';
-            echo '<p>Retour à la ';
-            echo '<a href="' . $root . '/admin/utilisateurs"><b>liste des utilisateurs</b></a>';
-            echo '</p>';
-        } ?>
+                    echo '<td><button type="reset" class="btn">Effacer</button>';
+                    echo '<button type="submit" class="btn">Charger</button>';
+                    echo '<a href="' . $root . '/admin/aide/gestuser.html" class="btn" target="_blank">Aide</a>&nbsp;';
+                    echo "</td></tr>";
+                    echo "</table>";
+                    echo "</form>";
+                } else {
+                    echo '<p>';
+                    if ($cptadd > 0) {
+                        echo '<br>User ajoutés  : ' . $cptadd;
+                        writelog('Ajout USERS CSV ', "", "", $cptadd);
+                    }
+                    if ($cptign > 0) {
+                        echo '<br />User erronés  : ' . $cptign;
+                    }
+                    if ($cptdeja > 0) {
+                        echo '<br />User redondants  : ' . $cptdeja;
+                    }
+                    echo '<br />Durée du traitement  : ' . (time() - $T0) . ' sec.';
+                    echo '</p>';
+                    echo '<p>Retour à la ';
+                    echo '<a href="' . $root . '/admin/utilisateurs"><b>liste des utilisateurs</b></a>';
+                    echo '</p>';
+                } ?>
     </div>
 </div>
 <?php include(__DIR__ . '/../templates/front/_footer.php');

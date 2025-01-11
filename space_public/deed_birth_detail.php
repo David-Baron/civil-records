@@ -95,9 +95,14 @@ open_page($title, $root); ?>
             show_item3($row, 0, 2, 1038);  // Date modif
         }
 
-        if ($userAuthorizer->isGranted(6)) {
-            show_signal_erreur('N', $xid);
-        } ?>
+        if (isset($_ENV['EMAIL_CORRECTOR']) && $userAuthorizer->isGranted(6)) { ?>
+            <tr>
+                <td class="fich2 bolder">Trouvé une erreur ?</td>
+                <td class="fich1">
+                <a href="<?= $root; ?>/signal_erreur?xtyp=N&xid=<?= $xid; ?>" target="_blank">Cliquez ici pour la signaler</a>
+                </td>
+            </tr>
+        <?php } ?>
         </table>
     </div>
 </div>

@@ -19,8 +19,8 @@
                 <a href="<?= $root ?>/admin/utilisateurs">Administrer les utilisateurs</a>
                 <a href="<?= $root ?>/admin/serveur/parametres">Administrer le logiciel</a>
             <?php } ?>
-            <a href="<?= $root ?>/admin/aide">Aide</a>
             <a href="<?= $root ?>/admin/a-propos">A propos</a>
+            <a href="<?= $root ?>/admin/aide">Aide</a>
         </nav>
     </div>
 </div>

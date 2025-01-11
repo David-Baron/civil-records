@@ -204,7 +204,7 @@ open_page("Créer mon compte utilisateur", $root); ?>
                 <?php } ?>
                 <?php if ($config->get('AUTO_CAPTCHA') && function_exists('imagettftext')) { ?>
                     <tr>
-                        <td><img src="<?= $root; ?>/tools/captchas/image.php" alt="captcha" id="captcha"></td>
+                        <td><img src="<?= $root; ?>/captcha_image" alt="captcha" id="captcha"></td>
                         <td>
                             Recopiez le code ci-contre : <br>
                             <input type="text" name="captcha" size="6" maxlength="5" value="">

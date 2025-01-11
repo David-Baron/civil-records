@@ -1,6 +1,6 @@
 <?php
 
-use CivilRecords\Model\UserModel;
+use CivilRecords\Domain\UserModel;
 use CivilRecords\Engine\MailerFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -131,7 +131,12 @@ open_page("Gestion des utilisateurs", $root); ?>
                 <tr>
                     <td>Statut : </td>
                     <td>
-                        <?php lb_statut_user($user['statut']); ?>
+                        <select name="statut" size="1">
+                            <option <?= ('W' == $user['statut'] ? 'selected' : ''); ?>>Attente d'activation</option>
+                            <option <?= ('A' == $user['statut'] ? 'selected' : ''); ?>>Attente d'approbation</option>
+                            <option <?= ('N' == $user['statut'] ? 'selected' : ''); ?>>Accès autorisé</option>
+                            <option <?= ('B' == $user['statut'] ? 'selected' : ''); ?>>Accès bloqué</option>
+                        </select>
                         <?php if ($config->get('USER_AUTO_DEF') == 1 && ($user['statut'] == "A" || $user['statut'] == "W")) { ?>
                             <a href="<?= $root; ?>/admin/utilisateurs/approuver_compte?id=<?= $id; ?>&action=OK">Approuver</a>
                             ou <a href="<?= $root; ?>/admin/utilisateurs/approuver_compte?id=<?= $id; ?>&action=KO">Refuser</a>
@@ -141,7 +146,18 @@ open_page("Gestion des utilisateurs", $root); ?>
                 <tr>
                     <td>Droits d'accès : </td>
                     <td>
-                        <?php lb_droits_user($user['level']); ?>
+                        <select name="lelevel" size="1">
+                            <option <?= (0 == $user['level'] ? 'selected' : ''); ?>>Public</option>
+                            <option <?= (1 == $user['level'] ? 'selected' : ''); ?>>1 : Liste des communes</option>
+                            <option <?= (2 == $user['level'] ? 'selected' : ''); ?>>2 : Liste des patronymes</option>
+                            <option <?= (3 == $user['level'] ? 'selected' : ''); ?>>3 : Table des actes</option>
+                            <option <?= (4 == $user['level'] ? 'selected' : ''); ?>>4 : Détails des actes (avec limites)</option>
+                            <option <?= (5 == $user['level'] ? 'selected' : ''); ?>>5 : Détails sans limitation</option>
+                            <option <?= (6 == $user['level'] ? 'selected' : ''); ?>>6 : Chargement NIMEGUE et CSV</option>
+                            <option <?= (7 == $user['level'] ? 'selected' : ''); ?>>7 : Ajout d' actes</option>
+                            <option <?= (8 == $user['level'] ? ' selected' : ''); ?>>8 : Administration tous actes</option>
+                            <option <?= (9 == $user['level'] ? 'selected' : ''); ?>>9 : Gestion des utilisateurs</option>
+                        </select>
                     </td>
                 </tr>
                 <?php if ($config->get('GEST_POINTS') > 0) { ?>
@@ -150,7 +166,13 @@ open_page("Gestion des utilisateurs", $root); ?>
                     </tr>
                     <tr>
                         <td>Régime (points) : </td>
-                        <td><?php lb_regime_user($user['regime']); ?></td>
+                        <td>
+                            <select name="regime" size="1">
+                                <option <?= (0 == $user['regime'] ? 'selected' : ''); ?>>Accès libre</option>
+                                <option <?= (1 == $user['regime'] ? 'selected' : ''); ?>>Recharge manuelle</option>
+                                <option <?= (2 == $user['regime'] ? 'selected' : ''); ?>>Recharge automatique</option>
+                            </select>
+                        </td>
                     </tr>
                     <tr>
                         <td>Solde de points : </td>

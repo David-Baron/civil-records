@@ -127,7 +127,7 @@ function ajuste_date($datetxt, &$datesql, &$badannee)  // remise en forme des da
 
 function statistiques($vue = "T")
 {
-    global $root, $config, $xtyp, $show_alltypes;
+    global $root, $config, $xtyp;
 
     echo '<div class="box">';
     echo '<div class="box-title">Statistiques</div>';
@@ -187,16 +187,15 @@ function statistiques($vue = "T")
     echo '<div class="box-body p-2"><dl>';
     echo '<dt><strong>' . entier($tot) . ' actes</strong> dont :</dt>' . $texte;
     if ($config->get('SHOW_RSS') <> 0) {
-        $urlrss = $root . '/rss';
+        $urlrss = $root . '/rss.php?type=A';
         $mesrss = 'Résumé de la base en RSS';
-        if ($show_alltypes == 0) {
-            $urlrss .= "?type=" . $xtyp;
+        if ($config->get('SHOW_ALLTYPES') == 0) {
+            $urlrss = $root . '/rss.php?type=' . $xtyp;
             $mesrss .= " (" . typact_txt($xtyp) . ")";
         }
         echo '<dt><a href="' . $urlrss . '" title="' . $mesrss . '"><img src="' . $root . '/themes/img/feed-icon-16x16.gif" alt="' . $mesrss . '"></a></dt>';
     }
     echo '</dl></div>';
-
     echo '</div>';
     return $menu_actes;
 }
@@ -223,7 +222,7 @@ function zone_menu($admin, int $userlevel, $pp = array())
         }
     } else {
         if ($userAuthorizer->isGranted($config->get('CHANGE_PW'))) {
-            echo '<a href="' . $root . '/changer_motdepasse">Changer le mot de passe</a>';
+            echo '<a href="' . $root . '/mon_compte/changer_motdepasse">Changer le mot de passe</a>';
         }
         echo '<a href="' . $root . '/accueil?act=logout">Déconnexion</a>';
     }
@@ -629,7 +628,10 @@ function show_grouptitle3($row, $retrait, $format, $type, $group, $sigle = '')
     if ($affich > 0) {
         $lg = $GLOBALS['lg'];
         $label = grp_label($group, $type, $lg, $sigle);
-        show_simple_item($retrait, $format, '', $label);
+        echo '<tr>';
+        echo '<td class="fich2 bolder">' . $label . '</td>';
+        echo '<td class="fich1"></td>';
+        echo '</tr>';
     }
 }
 
@@ -692,9 +694,9 @@ function show_item3($row, $retrait, $format, $zidinfo, $url = "", $zidinfo2 = ""
     }
 }
 
-function show_deposant3($row, $retrait, $format, $zidinfo, $xid, $tact)
 // accessoirement affiche la possibilité de proposer une correction
 // format : somme de 1= label gras, 2 label italique, 4 info gras, 8 info italique
+function show_deposant3($row, $retrait, $format, $zidinfo, $xid, $tact)
 {
     global $root, $config, $session, $userAuthorizer, $u_db;
     $lg = $GLOBALS['lg'];
@@ -756,11 +758,10 @@ function liste_patro_1($script, $root, $xcomm, $xpatr, $titre, $table, $gid = ""
     if ($note <> '') {
         echo "<p>" . $note . "</p>";
     }
-
+    
+    $condDep = "";
     if ($Depart <> "") {
-        $condDep = " AND DEPART = '" . sql_quote($Depart) . "'";
-    } else {
-        $condDep = "";
+        $condDep = " AND DEPART='" . sql_quote($Depart) . "'";
     }
 
     // Faut-il découper le fichier par initiales ?
@@ -1191,7 +1192,7 @@ function actions_deposant($userid, $depid, $actid, $typact)  // version graphiqu
 
     $depinfo = "#" . $depid;
 
-    $req = "SELECT NOM,PRENOM FROM " . $config->get('EA_DB') . "_user3 WHERE (ID=" . $depid . ")";
+    $req = "SELECT NOM, PRENOM FROM " . $config->get('EA_DB') . "_user3 WHERE (ID=" . $depid . ")";
     $curs = EA_sql_query($req);
     if (EA_sql_num_rows($curs) == 1) {
         $res = EA_sql_fetch_assoc($curs);
@@ -1349,14 +1350,6 @@ function current_user_solde()
     return $session->get('user')['solde'];
 }
 
-function show_signal_erreur($typ, $xid)
-{
-    global $root, $config;
-    if (strlen($config->get('EMAIL_SIGN_ERR')) > 0) {
-        show_simple_item(0, 1, '<a href="' . $root . '/signal_erreur?xty=' . $typ . '&xid=' . $xid . '" target="_blank">Cliquez ici pour la signaler</a>', 'Trouvé une erreur ?');
-    }
-}
-
 function show_solde()
 {
     $html_li = '';
@@ -1390,57 +1383,6 @@ function annee_seulement($date_txt)  // affichage date simplifié à l'annee si 
     }
 
     return $date_txt; // date complète
-}
-
-function lb_droits_user($level, $all = 0)  //
-{
-    echo '<select name="lelevel" size="1">';
-    if ($all == 2) {
-        echo '<option ' . (10 == $level ? 'selected' : '') . '>A : -- Envoi à tous -- </option>';
-    }
-    echo '<option ' . (0 == $level ? 'selected' : '') . '>Public</option>';
-    echo '<option ' . (1 == $level ? 'selected' : '') . '>1 : Liste des communes</option>';
-    echo '<option ' . (2 == $level ? 'selected' : '') . '>2 : Liste des patronymes</option>';
-    echo '<option ' . (3 == $level ? 'selected' : '') . '>3 : Table des actes</option>';
-    echo '<option ' . (4 == $level ? 'selected' : '') . '>4 : Détails des actes (avec limites)</option>';
-    echo '<option ' . (5 == $level ? 'selected' : '') . '>5 : Détails sans limitation</option>';
-    echo '<option ' . (6 == $level ? 'selected' : '') . '>6 : Chargement NIMEGUE et CSV</option>';
-    echo '<option ' . (7 == $level ? 'selected' : '') . '>7 : Ajout d\'actes</option>';
-    echo '<option ' . (8 == $level ? 'selected' : '') . '>8 : Administration tous actes</option>';
-    echo '<option ' . (9 == $level ? 'selected' : '') . '>9 : Gestion des utilisateurs</option>';
-    if ($all = 1) {
-        echo '<option ' . (10 == $level ? 'selected' : '') . '>Super administrateur</option>';
-    }
-    echo "</select>";
-}
-
-function lb_statut_user($statut, $vide = 0)
-{
-    echo '<select name="statut" size="1">';
-    if (($vide % 2) == 1) {
-        echo '<option ' . ('0' == $statut ? 'selected' : '') . '> -- Pas de condition -- </option>';
-    }
-    echo '<option ' . ('W' == $statut ? 'selected' : '') . '>W : Attente d\'activation</option>';
-    echo '<option ' . ('A' == $statut ? 'selected' : '') . '>A : Attente d\'approbation</option>';
-    echo '<option ' . ('N' == $statut ? 'selected' : '') . '>N : Accès autorisé</option>';
-    echo '<option ' . ('B' == $statut ? 'selected' : '') . '>B : Accès bloqué</option>';
-    /* @deprecated
-    if (($vide % 4) == 3) {
-        echo '<option ' . ('X' == $statut ? 'selected' : '') . '>X : Compte expiré de ' . DUREE_EXPIR . ' jrs</option>';
-    } */
-    echo "</select>";
-}
-
-function lb_regime_user($regime, $vide = 0)
-{
-    echo '<select name="regime" size="1">';
-    if ($vide == 1) {
-        echo '<option ' . (-1 == $regime ? 'selected' : '') . '> -- Pas de condition -- ';
-    }
-    echo '<option ' . (0 == $regime ? 'selected' : '') . '>0 : Accès libre</option>';
-    echo '<option ' . (1 == $regime ? 'selected' : '') . '>1 : Recharge manuelle</option>';
-    echo '<option ' . (2 == $regime ? 'selected' : '') . '>2 : Recharge automatique</option>';
-    echo "</select>";
 }
 
 function stats_1_comm($xtyp, $lacom)

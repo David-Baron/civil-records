@@ -8,12 +8,32 @@ if (!$userAuthorizer->isGranted(9)) {
     exit();
 }
 
-$xcomm = "";
-$xpatr = "";
-$xord  = getparam('xord', 'N'); // N = Nom
-$page  = getparam('page', 1);
-$init  = getparam('init');
+$xcomm = '';
+$xpatr = '';
+$xord  = $request->get('xord', 'N'); // N = Nom
+$page  = $request->get('page', 1);
+$init  = $request->get('init');
 
+$user_satus = [
+    'W' => 'A activer',
+    'A' => 'A approuver',
+    'N' => 'Normal',
+    'B' => 'Bloqué',
+    'X' => 'Expiré' // @deprecated
+];
+$user_levels = [
+    0 => 'Public',
+    1 => 'Liste des communes',
+    2 => 'Liste des patronymes',
+    3 => 'Table des actes',
+    4 => 'Détails des actes (avec limites)',
+    5 => 'Détails sans limitation',
+    6 => 'Chargement NIMEGUE et CSV',
+    7 => 'Ajout d\'actes',
+    8 => 'Administration tous actes',
+    9 => 'Gestion des utilisateurs',
+    10 => 'Super administrateur'
+];
 $menu_user_active = 'L';
 $initiale = '';
 $pagination = '';
@@ -29,27 +49,24 @@ open_page($config->get('SITENAME') . " : Liste des utilisateurs enregistrés", $
         require(__DIR__ . '/../templates/admin/_menu-user.php');
         echo '<h2>Utilisateurs enregistrés du site ' . $config->get('SITENAME') . '</h2>';
 
-        if (isset($udbname)) {
+        /* if (isset($udbname)) {
             msg('ATTENTION : Base des utilisateurs déportée sur ' . $udbaddr . "/" . $udbuser . "/" . $udbname . "/" . $config->get('EA_UDB') . "</p>", 'info');
-        }
+        } */
 
-        //$sql = "SELECT DISTINCT upper(left(NOM,1)) AS init FROM ".EA_UDB."_user3 ORDER BY init";
+        // $sql = "SELECT DISTINCT upper(left(NOM,1)) AS init FROM ". $config->get('EA_UDB') ."_user3 ORDER BY init";
         // Sélectionner et grouper sur initiale utilisateur et ascii(initiale), ordonner code ascii ascendant pour avoir + grand code (accentué) en dernier
         $sql = "SELECT alphabet.init FROM (SELECT upper(left(NOM,1)) AS init,ascii(upper(left(NOM,1))) AS oo FROM " . $config->get('EA_UDB') . "_user3 GROUP BY init,oo  ORDER BY init , oo ASC) AS alphabet GROUP BY init";
 
-        $result = EA_sql_query($sql, $u_db);
-        $alphabet = "";
-        while ($row = EA_sql_fetch_row($result)) {
-            if ($row[0] == $init) {
-                $alphabet .= '<b>' . $row[0] . '</b> ';
-            } else {
-                $alphabet .= '<a href="' . $root . '/admin/utilisateurs?xord=' . $xord . '&amp;init=' . $row[0] . '">' . $row[0] . '</a> ';
-            }
+        $result = EA_sql_query($sql);
+        $letters = mysqli_fetch_row($result);
+        echo '<p>';
+        foreach ($letters as $letter) {
+            echo '<a href="' . $root . '/admin/utilisateurs?xord=' . $xord . '&init=' . $letter . '">' . $letter . '</a> ';
         }
-        echo '<p align="center">' . $alphabet . '</p>';
+        echo '</p>';
 
         if ($init != "") {
-            $initiale = '&amp;init=' . $init;
+            $initiale = '&init=' . $init;
         }
 
         $hlogin = '<a href="' . $root . '/admin/utilisateurs?xord=L' . $initiale . '">Login</a>';
@@ -126,9 +143,8 @@ open_page($config->get('SITENAME') . " : Liste des utilisateurs enregistrés", $
             echo '<p>' . $pagination . '</p>';
             echo '<table class="m-auto" summary="Liste des utilisateurs">';
             echo '<tr class="rowheader">';
-            echo '<th> Tri : </th>';
+            echo '<th></th>';
             echo '<th>' . $hlogin . '</th>';
-            echo '<th>' . $hid . '</th>';
             echo '<th>' . $hnoms . '</th>';
             echo '<th>' . $hacces . '</th>';
             echo '<th>' . $hstatu . '</th>';
@@ -137,37 +153,27 @@ open_page($config->get('SITENAME') . " : Liste des utilisateurs enregistrés", $
                 echo '<th>' . $hrecha . '</th>';
                 echo '<th>' . $hconso . '</th>';
             }
-            echo '<th> </th>';
+            echo '<th>Email</th>';
             echo '</tr>';
-
-
-            while ($ligne = EA_sql_fetch_row($result)) {
-                echo '<tr class="row' . (fmod($i, 2)) . '">';
-                echo '<td>' . $i . '. </td>';
-                echo '<td>' . $ligne[2] . ' </td>';
-                echo '<td>' . $ligne[4] . ' </td>';
-                $lenom = $ligne[0] . ' ' . $ligne[1];
-                if (trim($lenom) == "") {
-                    $lenom = '&lt;non précisé&gt;';
-                }
-                echo '<td><a href="' . $root . '/admin/utilisateurs/detail?id=' . $ligne[4] . '">' . $lenom . '</a> </td>';
-                echo '<td align="center">' . $ligne[3] . '</td>';
-                $ast = array("W" => "A activer", "A" => "A approuver", "N" => "Normal", "B" => "*Bloqué*", "X" => "*Expiré*");
-
-                echo '<td align="center">' . $ast[$ligne[9]] . '</td>';
+            $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
+            foreach ($users as $user) {
+                echo '<tr>';
+                echo '<td></td>';
+                echo '<td>' . $user['LOGIN'] . ' </td>';
+                echo '<td><a href="' . $root . '/admin/utilisateurs/detail?id=' . $user['ID'] . '">' . $user['NOM'] . ' ' . $user['PRENOM'] . '</a> </td>';
+                echo '<td>' . $user_levels[$user['LEVEL']] . '</td>';
+                echo '<td>' . $user_satus[$user['STATUT']] . '</td>';
                 if ($config->get('GEST_POINTS') > 0) {
-                    if ($ligne[3] >= 8 or $ligne[6] == 0) {
-                        echo '<td colspan=2 align="center">* Libre accès *</td>';
+                    if ($user['LEVEL'] >= 8 or $user['REGIME'] == 0) {
+                        echo '<td colspan=2 class="text-center">* Libre accès *</td>';
                     } else {
-                        echo '<td align="center">' . $ligne[7] . '</td>';
-                        echo '<td>' . date("d-m-Y", strtotime($ligne[8])) . '</td>';
+                        echo '<td class="text-center">' . $user['SOLDE'] . '</td>';
+                        echo '<td>' . date("d-m-Y", strtotime($user['MAJ_SOLDE'])) . '</td>';
                     }
-                    echo '<td align="center">' . $ligne[10] . '</td>';
+                    echo '<td class="text-center">' . $user['PT_CONSO'] . '</td>';
                 }
                 echo '<td>';
-                if ($ligne[5] <> "") {
-                    echo '<a href="mailto:' . $ligne[5] . '">e-mail</a>';
-                }
+                echo '<a href="mailto:' . $user['EMAIL'] . '">' . $user['EMAIL'] . '</a>';
                 echo '</td>';
                 echo '</tr>';
                 $i++;

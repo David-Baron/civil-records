@@ -218,10 +218,10 @@ $user_name = $session->get('user')['nom'] . ", " . $session->get('user')['prenom
 $user_email = $session->get('user')['email'];
 
 $xid   = $request->get('xid');
-$xty   = $request->get('xty');
+$xty   = $request->get('xtyp');
 $xdf   = $request->get('xdf');
 $xcc   = $request->get('xcc');
-
+$msgerreur = '';
 $form_errors = [];
 
 if ($request->getMethod() === 'POST') {
@@ -336,7 +336,7 @@ open_page("Signalement d'une erreur", $root); ?>
 
         <?php if ($config->get('AUTO_CAPTCHA') && function_exists('imagettftext')) { ?>
             <tr>
-                <td><img src="<?= $root; ?>/tools/captchas/image.php" alt="captcha" id="captcha"></td>
+                <td><img src="<?= $root; ?>/captcha_image" alt="captcha" id="captcha"></td>
                 <td>
                     Recopiez le code ci-contre : <br>
                     <input type="text" name="captcha" size="6" maxlength="5" value="">

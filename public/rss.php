@@ -1,35 +1,31 @@
 <?php
 
-require(__DIR__ . '/tools/MakeRss/MakeRss.class.php');
-
-function antispam($email)
-{
-    return str_replace(array("@"), array("@anti.spam.com@"), $email);
-}
+require(__DIR__ . '/../src/bootstrap.php');
+require(__DIR__ . '/../tools/MakeRss/MakeRss.class.php');
 
 $xtyp = $request->get('type', 'N');
-$xall = $request->get('all', '');
+$xall = $request->get('all', null);
 
-$limit = '';
-$max = 1E4;
-$condit = "";
+$sql_limit = '';
+$sql_params = '';
 
-if (empty($xall)) {
-    $limit = ' LIMIT 10';
+if (null === $xall) {
+    $sql_limit = ' LIMIT 10';
 }
 
 if ($xtyp != 'A') {
-    $condit = " WHERE TYPACT = '" . $xtyp . "'";
+    $sql_params = " WHERE TYPACT='" . $xtyp . "'";
 }
 
 $sql = "SELECT TYPACT AS TYP, sum(NB_TOT) AS CPT, COMMUNE, DEPART, max(DTDEPOT) AS DTE, min(AN_MIN) AS DEB, max(AN_MAX) AS FIN "
-    . " FROM " . $config->get('EA_DB') . "_sums AS a "
-    . $condit
-    . ' GROUP BY COMMUNE, DEPART, TYP  '
-    . ' ORDER BY DTE desc, COMMUNE, DEPART '
-    . $limit;
+    . "FROM " . $config->get('EA_DB') . "_sums AS a "
+    . $sql_params
+    . ' GROUP BY COMMUNE, DEPART, TYP'
+    . ' ORDER BY DTE DESC, COMMUNE, DEPART'
+    . $sql_limit;
 
 $result = EA_sql_query($sql);
+$data = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 /* CHARGEMENT DU GENERATEUR */
 $rss = new GenRSS();
@@ -40,11 +36,10 @@ if ($xall !== "") {
 
 /* OUVERTURE DU FIL */
 $rss->Load();
-$titre = 'Actes de ' . $config->get('SITENAME');
 
 /* LES PARAMETRES OBLIGATOIRES */
-$rss->SetTitre(htmlspecialchars($titre, ENTITY_REPLACE_FLAGS, ENTITY_CHARSET));
-$rss->SetLink($config->get('EA_URL_CE_SERVEUR') . $root . '/index.php');
+$rss->SetTitre('Actes de ' . $config->get('SITENAME'));
+$rss->SetLink($config->get('EA_URL_CE_SERVEUR') . $root . '/');
 $rss->SetDetails("Dépouillement de tables et actes d'état-civil ou de registres paroissiaux");
 /* LES PARAMETRES FACULTATIFS (Mettez // devant les paramètres que vous ne voulez pas renseigner) */
 $rss->SetLanguage($lg);
@@ -54,15 +49,12 @@ $rss->SetLanguage($lg);
 //$rss->SetImage('http://'.$_SERVER['SERVER_NAME'].DIR_VIGNET.$row["FICHIER"],'','lien');
 
 /* AJOUT DES ARTICLES AU FIL */
-
-$cpt = 0;
-while ($row = EA_sql_fetch_array($result) and $cpt < $max) {
-    $cpt++;
+foreach ($data as $row) {
     $titre = $row["COMMUNE"];
     if ($row["DEPART"] != "") {
         $titre .= ' [' . $row["DEPART"] . ']';
     }
-    $date_rss = date_rss($row["DTE"]);
+    $date_rss = (new \DateTime($row["DTE"]))->format('Y-m-d'); //date_rss($row["DTE"]);
     switch ($row["TYP"]) {
         case "N":
             $typ = "Naissances/Baptêmes";
@@ -87,9 +79,8 @@ while ($row = EA_sql_fetch_array($result) and $cpt < $max) {
     }
     $titre .= ' : ' . $typ;
     $description = $row["CPT"] . ' ' . $typ . ' de ' . $row["DEB"] . ' à ' . $row["FIN"];
-    $auteur = "";
-    $url = $root . $prog . ".php?args=" . urlencode($row["COMMUNE"] . ' [' . $row["DEPART"] . ']');
-
+    $auteur = '';
+    $url = $config->get('EA_URL_CE_SERVEUR') . $root . $prog . '?xcom=' . $row["COMMUNE"] . ' [' . $row["DEPART"] . ']';
     /* $rss->AddItem('Titre','Descripton','Auteur','Catégorie','date','http://'); */
     $rss->AddItem(
         htmlspecialchars($titre),
@@ -97,7 +88,7 @@ while ($row = EA_sql_fetch_array($result) and $cpt < $max) {
         htmlspecialchars($auteur),
         $typ,
         $date_rss,
-        $config->get('EA_URL_CE_SERVEUR') . $url
+        $url
     );
 }
 
