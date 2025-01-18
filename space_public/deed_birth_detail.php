@@ -54,41 +54,63 @@ open_page($title, $root); ?>
         show_item3($row, 0, 4, 1005);  // Departement
         show_item3($row, 1, 0, 1004);  // Code Departement
 
-        show_grouptitle3($row, 0, 5, 'N', 'D1'); // Nouveau né
+        # show_grouptitle3($row, 0, 5, 'N', 'D1'); // Nouveau né
+        echo '<tr>';
+        echo '<td class="fich2 bolder">' . trans('Newborn') . '</td>';
+        echo '<td class="fich1"></td>';
+        echo '</tr>';
         show_item3($row, 0, 4, 1011, $root . '/actes/naissances?xcomm=' . $xcomm. '&xpatr=' .$row["NOM"], 1012); // Nom et prénom du Nouveau-né
         show_item3($row, 1, 4, 1007);  // date de l'acte
-
         show_item3($row, 1, 0, 1013);  // sexe
         show_item3($row, 1, 0, 1014); // commentaire
 
-        show_grouptitle3($row, 1, 5, 'N', 'D2'); // Parents
+        # show_grouptitle3($row, 1, 5, 'N', 'D2'); // Parents
+        echo '<tr>';
+        echo '<td class="fich2 bolder">' . trans('Parents') . '</td>';
+        echo '<td class="fich1"></td>';
+        echo '</tr>';
         show_item3($row, 2, 0, 1015, '', 1016);  // Père
         show_item3($row, 3, 0, 1018);  // Profession
         show_item3($row, 3, 0, 1017); // Commentaire
-
         show_item3($row, 2, 0, 1019, '', 1020); // Mère
         show_item3($row, 3, 0, 1022);  // Profession
         show_item3($row, 3, 0, 1021);  // Commentaire
 
-        show_grouptitle3($row, 0, 5, 'N', 'T1');  // Témoins
+        # show_grouptitle3($row, 0, 5, 'N', 'T1');  // Témoins
+        echo '<tr>';
+        echo '<td class="fich2 bolder">' . trans('Witnesses') . '</td>';
+        echo '<td class="fich1"></td>';
+        echo '</tr>';
         show_item3($row, 0, 0, 1023, '', 1024);  // Témoin 1
         show_item3($row, 1, 0, 1025);  // Commentaire
         show_item3($row, 0, 0, 1026, '', 1027);  // Témoin 2
         show_item3($row, 1, 0, 1028);  // Commentaire
 
-        show_grouptitle3($row, 0, 5, 'N', 'V1');  // Références
+        # show_grouptitle3($row, 0, 5, 'N', 'V1');  // Références
+        echo '<tr>';
+        echo '<td class="fich2 bolder">' . trans('Reference') . '</td>';
+        echo '<td class="fich1"></td>';
+        echo '</tr>';
         show_item3($row, 0, 0, 1029, "", "", "1");  // Autres infos + Links
         show_item3($row, 0, 0, 1009, "", "", "1");  // Cote
         show_item3($row, 0, 0, 1010, "", "", "1");  // Libre (images)
         show_item3($row, 0, 0, 1039, "", "", "2");  // Photos (links)
 
-        show_grouptitle3($row, 0, 5, 'N', 'W1');  // Crédits
+        # show_grouptitle3($row, 0, 5, 'N', 'W1');  // Crédits
+        echo '<tr>';
+        echo '<td class="fich2 bolder">' . trans('Credits') . '</td>';
+        echo '<td class="fich1"></td>';
+        echo '</tr>';
         show_item3($row, 0, 2, 1034);  // Photographe
         show_item3($row, 0, 2, 1035);  // Releveur
         show_item3($row, 0, 2, 1036);  // Vérificateur
         show_deposant3($row, 0, 2, 1033, $xid, "N"); // Deposant (+corrections)
 
-        show_grouptitle3($row, 0, 5, 'N', 'X0');  // Gestion
+        # show_grouptitle3($row, 0, 5, 'N', 'X0');  // Gestion
+        echo '<tr>';
+        echo '<td class="fich2 bolder">' . trans('Management') . '</td>';
+        echo '<td class="fich1"></td>';
+        echo '</tr>';
         show_item3($row, 0, 2, 1031);  // Date interne
         show_item3($row, 0, 2, 1037);  // DtDepot
         if ($row["DTDEPOT"] <> $row["DTMODIF"]) {

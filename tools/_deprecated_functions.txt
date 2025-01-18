@@ -1864,3 +1864,72 @@ function antispam($email)
 {
     return str_replace(array("@"), array("@anti.spam.com@"), $email);
 }
+
+// Retrait d'une liaison de la table
+function BD_EA_link_remove($LINK, $is_mysql = false)
+{
+    $LINK = EA_sql_which_link($LINK);
+    if (isset($LINK->thread_id) && is_numeric($LINK->thread_id)) {
+        $thread_id =  $LINK->thread_id;
+    } else {
+        $thread_id =  false;
+    }
+    $result = mysqli_close($LINK);
+    // la fermeture est OK et il y avait un ID de liaison BD
+    if ($result && $thread_id) {
+        // parcourir le tableau des liens pour supprimer celui traité
+        foreach ($GLOBALS['BD_EA_link'] as $k => $v) {
+            if ($v['thread_id'] === $thread_id) {
+                array_splice($GLOBALS['BD_EA_link'], $k, 1);
+                break;
+            }
+        }
+    } else {
+        // Ce cas ne devrait pas arriver
+        // la fermeture d'une liaison existante dans le tableau est en échec
+        if ($result === null) {
+            return false;
+        }
+    }
+    echo 'ON FERME';
+    exit;
+    foreach ($GLOBALS['BD_EA_link'] as $k => $v) {
+        print_r($v);
+    }
+
+    return $result;
+}
+
+// format : somme de 1= label gras, 2 label italique, 4 info gras, 8 info italique
+function show_grouptitle3($row, $retrait, $format, $type, $group, $sigle = '')
+{
+    global $config, $userAuthorizer, $lg;
+
+    $listvals = "";
+    $cas = "'O'";
+    if ($userAuthorizer->isGranted(6)) {
+        $cas .= ",'A'";
+    }
+    $req1 = "SELECT count(ZONE) AS CPT FROM " . $config->get('EA_DB') . "_metadb"
+        . " WHERE DTABLE='" . $type . "' AND GROUPE='" . $group . "' AND AFFICH in (" . $cas . ")";
+    $rs = EA_sql_fetch_assoc(EA_sql_query($req1));
+    $affich = $rs["CPT"];
+
+    if ($affich == 0) { // si pas d'obligatoires alors voir les facultatives
+        $req1 = "SELECT ZONE FROM " . $config->get('EA_DB') . "_metadb"
+            . " WHERE DTABLE='" . $type . "' AND GROUPE='" . $group . "' AND AFFICH='F'";
+        $res1 = EA_sql_query($req1);
+
+        while ($rz = EA_sql_fetch_assoc($res1)) {
+            $listvals .= trim($row[$rz["ZONE"]]);
+        }
+        $affich = strlen($listvals);
+    }
+
+    if ($affich > 0) {
+        echo '<tr>';
+        echo '<td class="fich2 bolder">' . grp_label($group, $type, $lg, $sigle) . '</td>';
+        echo '<td class="fich1"></td>';
+        echo '</tr>';
+    }
+}

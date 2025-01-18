@@ -22,9 +22,9 @@ $user_satus = [
 ];
 
 $user_regimes = [
-    0 => '> Accès libre</option>',
-    1 => '>Recharge manuelle</option>',
-    2 => '>Recharge automatique</option>'
+    0 => 'Accès libre',
+    1 => 'Recharge manuelle',
+    2 => 'Recharge automatique'
 ];
 
 $indexed_deed_types = [

@@ -2,6 +2,7 @@
 
 // tableau des connexions aux bases de données. Sauf quand la base utilisateur est sur une autre base, il n'y en a toujours qu'une
 $BD_EA_link = array();
+mysqli_report(MYSQLI_REPORT_OFF);
 
 // == fonctions communes appelées dans les 2 cas mysql et mysqli
 // Recherche la liaison avec le serveur. Mysqli en a toujours besoin alors que Mysql utilise toujours le dernier
@@ -77,42 +78,7 @@ function BD_EA_link_add($ladbaddr, $ladbuser, $ladbpass, $new_link = false, $cli
     );
     return $link;
 }
-// Retrait d'une liaison de la table
-function BD_EA_link_remove($LINK, $is_mysql = false)
-{
-    $LINK = EA_sql_which_link($LINK);
-    if (isset($LINK->thread_id) && is_numeric($LINK->thread_id)) {
-        $thread_id =  $LINK->thread_id;
-    } else {
-        $thread_id =  false;
-    }
-    $result = mysqli_close($LINK);
-    // la fermeture est OK et il y avait un ID de liaison BD
-    if ($result && $thread_id) {
-        // parcourir le tableau des liens pour supprimer celui traité
-        foreach ($GLOBALS['BD_EA_link'] as $k => $v) {
-            if ($v['thread_id'] === $thread_id) {
-                array_splice($GLOBALS['BD_EA_link'], $k, 1);
-                break;
-            }
-        }
-    } else {
-        // Ce cas ne devrait pas arriver
-        // la fermeture d'une liaison existante dans le tableau est en échec
-        if ($result === null) {
-            return false;
-        }
-    }
-    echo 'ON FERME';
-    exit;
-    foreach ($GLOBALS['BD_EA_link'] as $k => $v) {
-        print_r($v);
-    }
 
-    return $result;
-}
-// == Fin des fonctions communes appelées dans les 2 cas mysql et mysqli
-mysqli_report(MYSQLI_REPORT_OFF);
 function EA_sql_query($QUERY, $LINKS = null)
 {
     $LINKS = EA_sql_which_link($LINKS);
@@ -123,6 +89,7 @@ function EA_sql_query($QUERY, $LINKS = null)
     }
     return  $link;
 }
+
 function EA_sql_fetch_array($RESULT)
 {
     $row = mysqli_fetch_array($RESULT, MYSQLI_BOTH);
@@ -136,10 +103,12 @@ function EA_sql_fetch_array($RESULT)
     }
     return $row;
 }
+
 function EA_sql_num_rows($RESULT)
 {
     return mysqli_num_rows($RESULT);
 }
+
 function EA_sql_fetch_assoc($RESULT)
 {
     $row = mysqli_fetch_assoc($RESULT);
@@ -153,6 +122,7 @@ function EA_sql_fetch_assoc($RESULT)
     }
     return $row;
 }
+
 function EA_sql_fetch_row($RESULT)
 {
     $row = mysqli_fetch_row($RESULT);
@@ -166,16 +136,19 @@ function EA_sql_fetch_row($RESULT)
     }
     return $row;
 }
+
 function EA_sql_get_server_info($dblink = null)
 {
     $dblink = EA_sql_which_link($dblink);
     return mysqli_get_server_info($dblink);
 }
+
 function EA_sql_affected_rows($dblink = null)
 {
     $dblink = EA_sql_which_link($dblink);
     return mysqli_affected_rows($dblink);
 }
+
 function EA_sql_stat($dblink = null)
 {
     $dblink = EA_sql_which_link($dblink);
@@ -188,23 +161,28 @@ function EA_sql_error($dblink = null)
         return mysqli_error($dblink);
     }
 }
+
 function EA_sql_num_fields($RESULT)
 {
     return  mysqli_num_fields($RESULT);
 }
+
 function EA_sql_free_result($RESULT)
 {
     return mysqli_free_result($RESULT);
 }
+
 function EA_sql_real_escape_string($param)
 {
     $dblink = EA_sql_which_link(null);
     return mysqli_real_escape_string($dblink, $param);
 }
+
 function EA_sql_connect($ladbaddr, $ladbuser, $ladbpass, $new_link = false, $client_flags = 0)
 {
     return BD_EA_link_add($ladbaddr, $ladbuser, $ladbpass, $new_link, $client_flags, false);
 }
+
 function EA_sql_select_db($ladbname, $dblink)
 {
     $dblink = EA_sql_which_link($dblink);

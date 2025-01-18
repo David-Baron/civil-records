@@ -27,6 +27,20 @@ $root = $_ENV['APP_ROOT'];
 $config = new AppConfiguration();
 $lg = 'fr';
 
+$translations = [];
+$translations['metalg'] = require(__DIR__ . "/../translations/$lg/metalg.php");
+$translations['mgrplg'] = require(__DIR__ . "/../translations/$lg/mgrplg.php");
+
+function trans($key, $namespace = 'metalg')
+{
+    global $translations;
+    if (array_key_exists($key, $translations[$namespace])) {
+        return $translations[$namespace][$key];
+    }
+
+    return $key;
+}
+
 if (isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'dev') {
 
     error_reporting(E_ALL);

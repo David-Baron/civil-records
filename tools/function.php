@@ -159,14 +159,15 @@ function linkifie($texte, $mode)  // transforme en lien actif les noms de fichie
 // mode : 0 = ne rien faire, >0 activer les lien : 1 = séparés par des , ou des blancs ou  2 = séparés par des ;
 {
     global $session, $config;
+    
+    $separs = " , "; // (séparés par des , ou des blancs)
+    $Saut_Ou_Espace = ' ';
+
     if ($mode == "2") {
         $separs = ";";
         $Saut_Ou_Espace = '<br/>';
-    } else {
-        $separs = " , "; // (séparés par des , ou des blancs)
-        $Saut_Ou_Espace = ' ';
-    }
-
+    } 
+    
     $listExtImages = array(".JPG", ".TIF", ".PNG", ".PDF", ".GIF");
     $cpt = 0;  // N° de l'image
 
@@ -537,7 +538,7 @@ function microtime_float()
 function showdate($sqldate, $mode = "T")
 {
     //mode T : Texte 23 jan 2009  S : Slash 23/01/2009
-    $moistxt = array("Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc");
+    $moistxt = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"];
     $jour = mb_substr($sqldate, 8, 2);
     $mois = mb_substr($sqldate, 5, 2);
     $annee = mb_substr($sqldate, 0, 4);

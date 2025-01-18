@@ -12,7 +12,7 @@ return [
     'Contributor ' => 'Intervenant',
     'Parents' => 'Parents',
     '(Ex-)Spouse' => '(Ex-)Conjoint',
-    'Dpouse' => 'Epouse',
+    'Spouse' => 'Epouse',
     'Father' => 'Père',
     'Witnesses' => 'Témoins',
     'References' => 'Références',

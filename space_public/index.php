@@ -20,7 +20,7 @@ $init = $request->get('init', '');
 $vue = $request->get('vue', 'T'); // T = Tableau / C = Carte
 $xpatr = $request->get('xpatr', '');
 $page = $request->get('page', 1);
-// $carto_available = (isset($_ENV['GOOGLE_API_KEY']) && null !== $_ENV['GOOGLE_API_KEY']) ? true : false;
+
 $stylesheets = '';
 
 if ($config->get('SHOW_ALLTYPES') != 1) $xtyp = 'N';

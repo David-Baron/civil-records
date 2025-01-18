@@ -2,7 +2,7 @@
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-//define('EA_MASTER',"Y"); // pour editer les zones "Techniques"
+// define('EA_MASTER', "Y"); // pour editer les zones "Techniques"
 
 if (!$userAuthorizer->isGranted(9)) {
     $response = new RedirectResponse("$root/admin/");
@@ -110,7 +110,7 @@ open_page("Paramétrage des étiquettes", $root); ?>
                 }
             } // etiquettes "normale"
 
-            if ($xconfirm == 'specifique' and $chsigle == 0) { // etiquettes "spécifiques" des actes divers
+            if ($xconfirm == 'specifique' && $chsigle == 0) { // etiquettes "spécifiques" des actes divers
                 // *** Vérification des données reçues
                 $grpnbr = getparam("grpnbr");
                 $j = 1;
