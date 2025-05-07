@@ -1,6 +1,6 @@
 <?php 
 
-use CivilRecords\Model\UserModel;
+use CivilRecords\Domain\UserModel;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 $_ENV = require(__DIR__ . '/../../.env.local.php');

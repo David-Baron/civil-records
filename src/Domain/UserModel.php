@@ -48,7 +48,7 @@ class UserModel extends DatabaseConnection
         return $stmt->fetchAll();
     }
 
-    public function findOneByCriteria(array $criteria): array
+    public function findOneByCriteria(array $criteria): array|null
     {
         $params = '';
         $i = 0;
