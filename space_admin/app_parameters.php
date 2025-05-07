@@ -59,6 +59,7 @@ open_page("Paramétrage du logiciel", $root, $show_help); ?>
         <?php
         navadmin($root, "Paramétrage du logiciel");
         require(__DIR__ . '/../templates/admin/_menu-software.php'); ?>
+        <hr>
         <h2>Paramétrage du site <?= $config->get('SITENAME'); ?></h2>
         <p>
             <strong>Paramètres : </strong>

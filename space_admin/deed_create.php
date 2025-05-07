@@ -27,6 +27,7 @@ $ajax->Run(false, "../tools/PHPLiveX/phplivex.js");
     <div class="main-col-center text-center">
         <?php navadmin($root, $title); ?>Q
         <?php require(__DIR__ . '/../templates/admin/_menu-data.php'); ?>
+        <hr>
         <form method="post" action="<?= $root; ?>/admin/actes/modifier">
             <h2><?= $title; ?></h2>
             <table class="m-auto" summary="Formulaire">

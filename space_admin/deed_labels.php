@@ -62,6 +62,7 @@ open_page("Paramétrage des étiquettes", $root); ?>
             }
         </script>
         <?php require(__DIR__ . '/../templates/admin/_menu-software.php'); ?>
+        <hr>
         <h2>Gestions des étiquettes des données</h2>
         <p><strong>Bases : </strong>
             <?php foreach ($files as $file) {

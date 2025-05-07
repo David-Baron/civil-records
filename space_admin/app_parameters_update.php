@@ -63,12 +63,12 @@ open_page("Mise à jour des paramètres", $root); ?>
         <?php
         navadmin($root, "Mise à jour des paramètres");
         require(__DIR__ . '/../templates/admin/_menu-software.php'); ?>
+        <hr>
         <h2>Backup / Restauration</h2>
         <div><?= $success_message; ?></div>
         <p><strong>Actions sur les paramètres : </strong>
             <a href="<?= $root; ?>/admin/application/export_parametres"><b>Sauvegarder</b></a>
             | Restaurer
-            || <a href="<?= $root; ?>/admin/application/parameters">Retour</a>
         </p>
         <form method="post" enctype="multipart/form-data">
             <h2>Restauration de paramètres sauvegardés</h2>

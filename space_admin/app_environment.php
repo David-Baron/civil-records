@@ -40,6 +40,7 @@ open_page("Paramètres environement", $root); ?>
         <?php navadmin($root, "Paramètres environement"); ?>
 
         <?php require(__DIR__ . '/../templates/admin/_menu-software.php'); ?>
+        <hr>
 
         <h2>Paramètres sensibles de votre environement</h2>
         <form method="post">

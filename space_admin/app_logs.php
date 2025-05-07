@@ -58,8 +58,9 @@ open_page($config->get('SITENAME') . " : Activité du site", $root); ?>
         <?php 
 navadmin($root, "Activité du site");
 
-require(__DIR__ . '/../templates/admin/_menu-software.php');
-
+require(__DIR__ . '/../templates/admin/_menu-software.php');; ?>
+        <hr>
+<?php
 echo '<p><a href="' . $root . '/admin/application/logs?xdel=365">Supprimer les événements âgés de plus d\'un an</a></p>';
 echo '<h2>Activité sur les données du site ' . $config->get('SITENAME') . '</h2>';
 

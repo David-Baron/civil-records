@@ -169,8 +169,8 @@ th {
     text-align: center;
 }
 
-.succes {
-    color: var(--bg-succes);
+.success {
+    color: var(--bg-success);
     font-weight: bold;
     text-align: center;
 }

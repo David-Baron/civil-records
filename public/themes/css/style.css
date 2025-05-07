@@ -165,20 +165,14 @@ th {
 
 .info {
     color: var(--bg-info);
-    font-weight: bold;
-    text-align: center;
 }
 
-.succes {
-    color: var(--bg-succes);
-    font-weight: bold;
-    text-align: center;
+.success {
+    color: var(--bg-success);
 }
 
 .warning {
     color: var(--bg-warning);
-    font-weight: bold;
-    text-align: center;
 }
 
 .message {

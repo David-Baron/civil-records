@@ -26,7 +26,9 @@ open_page("Gestion des index", $root); ?>
         <?php
         navadmin($root, "Gestion des index");
 
-        require(__DIR__ . '/../templates/admin/_menu-software.php');
+        require(__DIR__ . '/../templates/admin/_menu-software.php'); ?>
+        <hr>
+        <?php
 
         if ($action == "ADD") {
             echo '<h2>Ajout d\'un index</h2>';
